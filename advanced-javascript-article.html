@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced JavaScript: The Complete Developer's Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-muted: #9a9a9a;
+    --accent: #d97706;
+    --accent-light: #fffbeb;
+    --accent-subtle: #fef3c7;
+    --border: #e8e3db;
+    --code-bg: #0d1117;
+    --code-text: #e6edf3;
+    --tag-bg: #f3f0eb;
+    --tag-text: #555;
+    --tip-bg: #f0fdf4;
+    --tip-border: #16a34a;
+    --warn-bg: #fff7ed;
+    --warn-border: #ea580c;
+    --info-bg: #eff6ff;
+    --info-border: #2563eb;
+    --keyword: #ff7b72;
+    --string: #a5d6ff;
+    --number: #f0883e;
+    --type: #79c0ff;
+    --comment: #8b949e;
+    --func: #d2a8ff;
+    --operator: #c9d1d9;
+    --builtin: #ffa657;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,248,245,0.93);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  .nav-logo { font-weight: 600; font-size: 15px; color: var(--text-primary); letter-spacing: -0.3px; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 0; }
+  .nav-links a {
+    font-size: 13px; color: var(--text-secondary); text-decoration: none;
+    padding: 6px 10px; border-radius: 6px; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .nav-links a:hover { background: var(--tag-bg); color: var(--text-primary); }
+  .nav-read-time { font-size: 13px; color: var(--text-muted); }
+
+  .hero {
+    max-width: 780px; margin: 0 auto;
+    padding: 64px 2rem 48px;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-subtle); color: var(--accent);
+    font-size: 12px; font-weight: 500; padding: 4px 12px;
+    border-radius: 100px; margin-bottom: 24px; letter-spacing: 0.3px;
+  }
+  .hero h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(32px, 5vw, 50px);
+    font-weight: 600; line-height: 1.15;
+    letter-spacing: -0.5px; color: var(--text-primary);
+    margin-bottom: 20px;
+  }
+  .hero-sub {
+    font-size: 19px; color: var(--text-secondary);
+    font-weight: 300; line-height: 1.6; margin-bottom: 32px;
+  }
+  .hero-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #d97706, #b45309);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600; color: white;
+  }
+  .meta-text { font-size: 14px; color: var(--text-secondary); }
+  .meta-text strong { color: var(--text-primary); }
+  .hero-divider { border: none; border-top: 1px solid var(--border); margin-top: 32px; }
+
+  .toc-wrapper { max-width: 780px; margin: 0 auto; padding: 0 2rem 8px; }
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 28px; margin-bottom: 40px;
+  }
+  .toc h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500; }
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+  .toc a {
+    font-size: 14px; color: var(--text-secondary); text-decoration: none;
+    display: flex; align-items: center; gap: 8px; padding: 4px 0;
+    transition: color 0.15s;
+  }
+  .toc a:hover { color: var(--accent); }
+  .toc-num { font-size: 12px; color: var(--text-muted); font-weight: 500; min-width: 20px; }
+
+  .content { max-width: 780px; margin: 0 auto; padding: 0 2rem 80px; }
+
+  .section { margin-bottom: 72px; scroll-margin-top: 72px; }
+  .section-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--accent); font-weight: 600; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--accent-subtle); }
+  h2 {
+    font-family: 'Lora', serif;
+    font-size: clamp(22px, 3vw, 30px); font-weight: 600;
+    letter-spacing: -0.3px; margin-bottom: 16px; color: var(--text-primary);
+  }
+  h3 { font-size: 19px; font-weight: 600; margin: 32px 0 12px; color: var(--text-primary); }
+  p { margin-bottom: 18px; color: #2d2d2d; }
+  .lead { font-size: 19px; color: var(--text-secondary); font-weight: 300; margin-bottom: 24px; }
+
+  .code-block {
+    background: var(--code-bg); border-radius: 10px;
+    margin: 24px 0; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .code-lang { font-size: 12px; color: #6e7681; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .copy-btn {
+    font-size: 12px; color: #484f58; background: none; border: none;
+    cursor: pointer; padding: 2px 8px; border-radius: 4px;
+    font-family: 'Outfit', sans-serif; transition: all 0.15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.07); color: #8b949e; }
+  pre {
+    padding: 20px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px; line-height: 1.7; color: var(--code-text);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  code {
+    font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+    background: #f0ebe3; color: #b45309;
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* Syntax */
+  .kw  { color: #ff7b72; }
+  .ty  { color: #79c0ff; }
+  .st  { color: #a5d6ff; }
+  .nm  { color: #f0883e; }
+  .cm  { color: #8b949e; font-style: italic; }
+  .fn  { color: #d2a8ff; }
+  .op  { color: #c9d1d9; }
+  .pu  { color: #e6edf3; }
+  .bi  { color: #ffa657; }
+  .rx  { color: #7ee787; }
+
+  .tip { background: var(--tip-bg); border-left: 3px solid var(--tip-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .tip-label { font-size: 12px; font-weight: 600; color: #16a34a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .warn { background: var(--warn-bg); border-left: 3px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .warn-label { font-size: 12px; font-weight: 600; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .info { background: var(--info-bg); border-left: 3px solid var(--info-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .info-label { font-size: 12px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .compare-card { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-header { padding: 10px 16px; font-size: 13px; font-weight: 600; }
+  .compare-header.bad  { background: #fef2f2; color: #dc2626; }
+  .compare-header.good { background: #f0fdf4; color: #16a34a; }
+  .compare-card .code-block { border-radius: 0; margin: 0; border: none; }
+
+  table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
+  th { background: var(--tag-bg); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; letter-spacing: 0.3px; vertical-align: middle; }
+  .badge-amber  { background: #fef3c7; color: #b45309; }
+  .badge-green  { background: #dcfce7; color: #15803d; }
+  .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+  .badge-red    { background: #fee2e2; color: #b91c1c; }
+
+  .pullquote {
+    font-family: 'Lora', serif; font-style: italic;
+    font-size: 22px; line-height: 1.5; color: var(--text-secondary);
+    border-left: 4px solid var(--accent);
+    padding: 12px 24px; margin: 36px 0;
+  }
+
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+  .concept-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 20px;
+  }
+  .concept-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .concept-card p  { font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+  .concept-icon { font-size: 22px; margin-bottom: 10px; }
+
+  .phase-list { list-style: none; margin: 16px 0; }
+  .phase-list li {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .phase-list li:last-child { border-bottom: none; }
+  .phase-num {
+    min-width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent-subtle); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+  footer {
+    background: #1a1a1a; color: rgba(255,255,255,0.65);
+    text-align: center; padding: 40px 2rem; font-size: 14px;
+  }
+  footer strong { color: white; }
+
+  @media (max-width: 640px) {
+    .toc-grid, .compare-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Advanced <span>JavaScript</span></div>
+  <div class="nav-links">
+    <a href="#closures">Closures</a>
+    <a href="#async">Async</a>
+    <a href="#prototypes">Prototypes</a>
+    <a href="#patterns">Patterns</a>
+    <a href="#engine">Engine</a>
+    <a href="#modern">Modern JS</a>
+  </div>
+  <div class="nav-read-time">~30 min read</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; Advanced Guide</div>
+  <h1>Advanced JavaScript: Concepts Every Senior Developer Must Know</h1>
+  <p class="hero-sub">Closures, prototypes, the event loop, async patterns, memory management, design patterns, and the hidden mechanics of V8 — everything that separates JavaScript experts from the rest.</p>
+  <div class="hero-meta">
+    <div class="avatar">JS</div>
+    <div class="meta-text">
+      <strong>Advanced JavaScript Deep Dive</strong><br>
+      Covering ES2024+ and V8 internals — May 2026
+    </div>
+  </div>
+  <hr class="hero-divider">
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <div class="toc-grid">
+      <a href="#closures"><span class="toc-num">01</span> Closures & Lexical Scope</a>
+      <a href="#patterns"><span class="toc-num">07</span> Design Patterns</a>
+      <a href="#prototypes"><span class="toc-num">02</span> Prototypes & Inheritance</a>
+      <a href="#engine"><span class="toc-num">08</span> JS Engine & V8 Internals</a>
+      <a href="#async"><span class="toc-num">03</span> Async: Callbacks → Promises → Async/Await</a>
+      <a href="#memory"><span class="toc-num">09</span> Memory Management & Leaks</a>
+      <a href="#eventloop"><span class="toc-num">04</span> Event Loop & Concurrency</a>
+      <a href="#modern"><span class="toc-num">10</span> Modern JS & Meta-programming</a>
+      <a href="#functional"><span class="toc-num">05</span> Functional Programming</a>
+      <a href="#modules"><span class="toc-num">11</span> Modules & Bundlers</a>
+      <a href="#this"><span class="toc-num">06</span> this, bind, call, apply</a>
+      <a href="#perf"><span class="toc-num">12</span> Performance & Best Practices</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ═══════════════════════ 01 CLOSURES -->
+  <div class="section" id="closures">
+    <div class="section-label">01 — The Foundation</div>
+    <h2>Closures & Lexical Scope</h2>
+    <p class="lead">A closure is a function that remembers its lexical environment even when executed outside of it. This is arguably the most important concept in JavaScript.</p>
+
+    <p>Every function in JS forms a closure over the variables in scope at the time it was defined. The inner function maintains a live reference — not a snapshot — to those variables.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Closure Fundamentals</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Basic closure ────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">makeCounter</span><span class="pu">(</span>start <span class="op">=</span> <span class="nm">0</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">let</span> count <span class="op">=</span> start  <span class="cm">// closed over by inner functions</span>
+
+  <span class="kw">return</span> <span class="pu">{</span>
+    increment<span class="op">:</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="op">++</span>count,
+    decrement<span class="op">:</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="op">--</span>count,
+    reset<span class="op">:</span>     <span class="pu">()</span> <span class="op">=&gt;</span> <span class="pu">{</span> count <span class="op">=</span> start <span class="pu">}</span>,
+    value<span class="op">:</span>     <span class="pu">()</span> <span class="op">=&gt;</span> count,
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> counter <span class="op">=</span> <span class="fn">makeCounter</span><span class="pu">(</span><span class="nm">10</span><span class="pu">)</span>
+counter<span class="pu">.</span><span class="fn">increment</span><span class="pu">()</span>  <span class="cm">// 11</span>
+counter<span class="pu">.</span><span class="fn">increment</span><span class="pu">()</span>  <span class="cm">// 12</span>
+counter<span class="pu">.</span><span class="fn">reset</span><span class="pu">()</span>      <span class="cm">// back to 10</span>
+
+<span class="cm">// ── Private state via closure ────────────────────</span>
+<span class="kw">function</span> <span class="fn">createWallet</span><span class="pu">(</span>initialBalance<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">let</span> balance <span class="op">=</span> initialBalance   <span class="cm">// truly private</span>
+  <span class="kw">const</span> history <span class="op">=</span> <span class="pu">[]</span>
+
+  <span class="kw">return</span> <span class="pu">{</span>
+    deposit<span class="pu">(</span>amount<span class="pu">)</span> <span class="pu">{</span>
+      balance <span class="op">+=</span> amount
+      history<span class="pu">.</span><span class="fn">push</span><span class="pu">({</span> type<span class="op">:</span> <span class="st">"deposit"</span>, amount, balance <span class="pu">})</span>
+    <span class="pu">}</span>,
+    getBalance<span class="pu">()</span> <span class="pu">{</span> <span class="kw">return</span> balance <span class="pu">}</span>,
+    getHistory<span class="pu">()</span> <span class="pu">{</span> <span class="kw">return</span> <span class="pu">[...</span>history<span class="pu">]</span> <span class="pu">}</span>,  <span class="cm">// copy, not reference</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <h3>The Classic Loop Closure Bug</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-header bad">❌ All print 3</div>
+        <div class="code-block"><pre><code><span class="kw">for</span> <span class="pu">(</span><span class="kw">var</span> i <span class="op">=</span> <span class="nm">0</span><span class="pu">;</span> i <span class="op">&lt;</span> <span class="nm">3</span><span class="pu">;</span> i<span class="op">++</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=&gt;</span>
+    <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>i<span class="pu">)</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+<span class="cm">// 3, 3, 3 — all share same `i`</span></code></pre></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-header good">✅ Prints 0, 1, 2</div>
+        <div class="code-block"><pre><code><span class="kw">for</span> <span class="pu">(</span><span class="kw">let</span> i <span class="op">=</span> <span class="nm">0</span><span class="pu">;</span> i <span class="op">&lt;</span> <span class="nm">3</span><span class="pu">;</span> i<span class="op">++</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=&gt;</span>
+    <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>i<span class="pu">)</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+<span class="cm">// 0, 1, 2 — let has block scope</span></code></pre></div>
+      </div>
+    </div>
+
+    <h3>IIFE — Immediately Invoked Function Expressions</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// Classic IIFE — creates isolated scope</span>
+<span class="pu">(</span><span class="kw">function</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> secret <span class="op">=</span> <span class="st">"not global"</span>
+  <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>secret<span class="pu">)</span>
+<span class="pu">})()</span>
+
+<span class="cm">// Memoization using closure</span>
+<span class="kw">function</span> <span class="fn">memoize</span><span class="pu">(</span>fn<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> cache <span class="op">=</span> <span class="kw">new</span> <span class="bi">Map</span><span class="pu">()</span>
+  <span class="kw">return</span> <span class="kw">function</span><span class="pu">(...</span>args<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">const</span> key <span class="op">=</span> <span class="bi">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>args<span class="pu">)</span>
+    <span class="kw">if</span> <span class="pu">(</span>cache<span class="pu">.</span><span class="fn">has</span><span class="pu">(</span>key<span class="pu">))</span> <span class="kw">return</span> cache<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>key<span class="pu">)</span>
+    <span class="kw">const</span> result <span class="op">=</span> fn<span class="pu">.</span><span class="fn">apply</span><span class="pu">(</span><span class="kw">this</span>, args<span class="pu">)</span>
+    cache<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>key, result<span class="pu">)</span>
+    <span class="kw">return</span> result
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> fib <span class="op">=</span> <span class="fn">memoize</span><span class="pu">(</span><span class="kw">function</span> <span class="fn">fibonacci</span><span class="pu">(</span>n<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> n <span class="op">&lt;=</span> <span class="nm">1</span> <span class="op">?</span> n <span class="op">:</span> <span class="fn">fib</span><span class="pu">(</span>n <span class="op">-</span> <span class="nm">1</span><span class="pu">)</span> <span class="op">+</span> <span class="fn">fib</span><span class="pu">(</span>n <span class="op">-</span> <span class="nm">2</span><span class="pu">)</span>
+<span class="pu">})</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 02 PROTOTYPES -->
+  <div class="section" id="prototypes">
+    <div class="section-label">02 — The Object System</div>
+    <h2>Prototypes, Inheritance & the Prototype Chain</h2>
+    <p class="lead">JavaScript is a prototype-based language. Every object has an internal <code>[[Prototype]]</code> link — classes in JS are syntactic sugar over this mechanism.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Prototype Chain</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── How prototype lookup works ───────────────────</span>
+<span class="kw">const</span> animal <span class="op">=</span> <span class="pu">{</span>
+  breathe<span class="pu">()</span> <span class="pu">{</span> <span class="kw">return</span> <span class="st">"breathing"</span> <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="kw">const</span> dog <span class="op">=</span> <span class="bi">Object</span><span class="pu">.</span><span class="fn">create</span><span class="pu">(</span>animal<span class="pu">)</span>
+dog<span class="pu">.</span>bark <span class="op">=</span> <span class="kw">function</span><span class="pu">()</span> <span class="pu">{</span> <span class="kw">return</span> <span class="st">"woof"</span> <span class="pu">}</span>
+
+dog<span class="pu">.</span><span class="fn">bark</span><span class="pu">()</span>    <span class="cm">// found on dog directly</span>
+dog<span class="pu">.</span><span class="fn">breathe</span><span class="pu">()</span> <span class="cm">// walks up chain to animal</span>
+
+<span class="cm">// dog → animal → Object.prototype → null</span>
+<span class="bi">Object</span><span class="pu">.</span><span class="fn">getPrototypeOf</span><span class="pu">(</span>dog<span class="pu">)</span> <span class="op">===</span> animal  <span class="cm">// true</span>
+
+<span class="cm">// ── Constructor function pattern ─────────────────</span>
+<span class="kw">function</span> <span class="fn">Person</span><span class="pu">(</span>name, age<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">this</span><span class="pu">.</span>name <span class="op">=</span> name
+  <span class="kw">this</span><span class="pu">.</span>age  <span class="op">=</span> age
+<span class="pu">}</span>
+<span class="cm">// Shared method — only one copy in memory</span>
+Person<span class="pu">.</span>prototype<span class="pu">.</span>greet <span class="op">=</span> <span class="kw">function</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="st">`Hi, I'm </span><span class="pu">${</span><span class="kw">this</span><span class="pu">.</span>name<span class="pu">}</span><span class="st">`</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> alice <span class="op">=</span> <span class="kw">new</span> <span class="fn">Person</span><span class="pu">(</span><span class="st">"Alice"</span>, <span class="nm">30</span><span class="pu">)</span>
+alice<span class="pu">.</span><span class="fn">greet</span><span class="pu">()</span>            <span class="cm">// "Hi, I'm Alice"</span>
+alice <span class="kw">instanceof</span> <span class="fn">Person</span>  <span class="cm">// true</span>
+
+<span class="cm">// ── ES6 classes = syntactic sugar ────────────────</span>
+<span class="kw">class</span> <span class="ty">Vehicle</span> <span class="pu">{</span>
+  <span class="op">#</span>fuelLevel <span class="op">=</span> <span class="nm">100</span>  <span class="cm">// true private field</span>
+
+  <span class="kw">constructor</span><span class="pu">(</span>make, model<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span>make  <span class="op">=</span> make
+    <span class="kw">this</span><span class="pu">.</span>model <span class="op">=</span> model
+  <span class="pu">}</span>
+
+  <span class="kw">get</span> <span class="fn">fuel</span><span class="pu">()</span>     <span class="pu">{</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>fuelLevel <span class="pu">}</span>
+  <span class="fn">refuel</span><span class="pu">(</span>amount<span class="pu">)</span> <span class="pu">{</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>fuelLevel <span class="op">=</span> <span class="bi">Math</span><span class="pu">.</span><span class="fn">min</span><span class="pu">(</span><span class="nm">100</span>, <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>fuelLevel <span class="op">+</span> amount<span class="pu">)</span> <span class="pu">}</span>
+  <span class="fn">toString</span><span class="pu">()</span>    <span class="pu">{</span> <span class="kw">return</span> <span class="st">`</span><span class="pu">${</span><span class="kw">this</span><span class="pu">.</span>make<span class="pu">}</span><span class="st"> </span><span class="pu">${</span><span class="kw">this</span><span class="pu">.</span>model<span class="pu">}</span><span class="st">`</span> <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">class</span> <span class="ty">ElectricCar</span> <span class="kw">extends</span> <span class="ty">Vehicle</span> <span class="pu">{</span>
+  <span class="op">#</span>batteryLevel <span class="op">=</span> <span class="nm">80</span>
+
+  <span class="kw">constructor</span><span class="pu">(</span>make, model, range<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">super</span><span class="pu">(</span>make, model<span class="pu">)</span>
+    <span class="kw">this</span><span class="pu">.</span>range <span class="op">=</span> range
+  <span class="pu">}</span>
+
+  <span class="kw">static</span> <span class="fn">compare</span><span class="pu">(</span>a, b<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">return</span> a<span class="pu">.</span>range <span class="op">-</span> b<span class="pu">.</span>range
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">💡 How new works</div>
+      When you call <code>new Fn()</code>, JS creates a new object whose <code>[[Prototype]]</code> is <code>Fn.prototype</code>, runs <code>Fn</code> with <code>this</code> pointing to that object, and returns it (unless the constructor returns a different object explicitly).
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 03 ASYNC -->
+  <div class="section" id="async">
+    <div class="section-label">03 — Asynchronous JS</div>
+    <h2>Async Patterns: Callbacks → Promises → Async/Await</h2>
+    <p class="lead">JavaScript is single-threaded but non-blocking. Understanding how it handles async operations is essential for writing performant apps.</p>
+
+    <h3>Promises — The Full API</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Creating and chaining ────────────────────────</span>
+<span class="kw">const</span> delay <span class="op">=</span> <span class="pu">(</span>ms<span class="pu">)</span> <span class="op">=&gt;</span> <span class="kw">new</span> <span class="bi">Promise</span><span class="pu">(</span>resolve <span class="op">=&gt;</span> <span class="fn">setTimeout</span><span class="pu">(</span>resolve, ms<span class="pu">))</span>
+
+<span class="fn">fetchUser</span><span class="pu">(</span><span class="nm">1</span><span class="pu">)</span>
+  <span class="pu">.</span><span class="fn">then</span><span class="pu">(</span>user    <span class="op">=&gt;</span> <span class="fn">fetchPosts</span><span class="pu">(</span>user<span class="pu">.</span>id<span class="pu">))</span>
+  <span class="pu">.</span><span class="fn">then</span><span class="pu">(</span>posts   <span class="op">=&gt;</span> posts<span class="pu">.</span><span class="fn">filter</span><span class="pu">(</span>p <span class="op">=&gt;</span> p<span class="pu">.</span>published<span class="pu">))</span>
+  <span class="pu">.</span><span class="fn">catch</span><span class="pu">(</span>err    <span class="op">=&gt;</span> <span class="fn">console</span><span class="pu">.</span><span class="fn">error</span><span class="pu">(</span>err<span class="pu">))</span>
+  <span class="pu">.</span><span class="fn">finally</span><span class="pu">(()</span>  <span class="op">=&gt;</span> <span class="fn">setLoading</span><span class="pu">(</span><span class="kw">false</span><span class="pu">))</span>
+
+<span class="cm">// ── Promise combinators ──────────────────────────</span>
+<span class="kw">const</span> <span class="pu">[</span>users, posts, comments<span class="pu">]</span> <span class="op">=</span> <span class="kw">await</span> <span class="bi">Promise</span><span class="pu">.</span><span class="fn">all</span><span class="pu">([</span>
+  <span class="fn">fetchUsers</span><span class="pu">(),</span>
+  <span class="fn">fetchPosts</span><span class="pu">(),</span>
+  <span class="fn">fetchComments</span><span class="pu">(),</span>
+<span class="pu">])</span>
+
+<span class="cm">// allSettled — never rejects, gives status for each</span>
+<span class="kw">const</span> results <span class="op">=</span> <span class="kw">await</span> <span class="bi">Promise</span><span class="pu">.</span><span class="fn">allSettled</span><span class="pu">([</span>p1, p2, p3<span class="pu">])</span>
+results<span class="pu">.</span><span class="fn">forEach</span><span class="pu">(</span>r <span class="op">=&gt;</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>r<span class="pu">.</span>status <span class="op">===</span> <span class="st">"fulfilled"</span><span class="pu">)</span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>r<span class="pu">.</span>value<span class="pu">)</span>
+  <span class="kw">else</span>                            <span class="fn">console</span><span class="pu">.</span><span class="fn">error</span><span class="pu">(</span>r<span class="pu">.</span>reason<span class="pu">)</span>
+<span class="pu">})</span>
+
+<span class="bi">Promise</span><span class="pu">.</span><span class="fn">race</span><span class="pu">([</span>p1, p2<span class="pu">])</span>  <span class="cm">// first to settle wins</span>
+<span class="bi">Promise</span><span class="pu">.</span><span class="fn">any</span><span class="pu">([</span>p1, p2<span class="pu">])</span>   <span class="cm">// first to FULFILL wins</span></code></pre>
+    </div>
+
+    <h3>Async/Await Patterns</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Sequential vs parallel ───────────────────────</span>
+<span class="kw">async function</span> <span class="fn">sequential</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> a <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetchA</span><span class="pu">()</span>   <span class="cm">// waits for A</span>
+  <span class="kw">const</span> b <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetchB</span><span class="pu">()</span>   <span class="cm">// then waits for B = slow!</span>
+<span class="pu">}</span>
+
+<span class="kw">async function</span> <span class="fn">parallel</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>a, b<span class="pu">]</span> <span class="op">=</span> <span class="kw">await</span> <span class="bi">Promise</span><span class="pu">.</span><span class="fn">all</span><span class="pu">([</span><span class="fn">fetchA</span><span class="pu">(),</span> <span class="fn">fetchB</span><span class="pu">()])</span>  <span class="cm">// both at once</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Retry with exponential backoff ───────────────</span>
+<span class="kw">async function</span> <span class="fn">retry</span><span class="pu">(</span>fn, maxAttempts <span class="op">=</span> <span class="nm">3</span>, baseDelay <span class="op">=</span> <span class="nm">300</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">for</span> <span class="pu">(</span><span class="kw">let</span> attempt <span class="op">=</span> <span class="nm">1</span><span class="pu">;</span> attempt <span class="op">&lt;=</span> maxAttempts<span class="pu">;</span> attempt<span class="op">++</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">try</span> <span class="pu">{</span>
+      <span class="kw">return</span> <span class="kw">await</span> <span class="fn">fn</span><span class="pu">()</span>
+    <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">(</span>err<span class="pu">)</span> <span class="pu">{</span>
+      <span class="kw">if</span> <span class="pu">(</span>attempt <span class="op">===</span> maxAttempts<span class="pu">)</span> <span class="kw">throw</span> err
+      <span class="kw">await</span> <span class="fn">delay</span><span class="pu">(</span>baseDelay <span class="op">*</span> <span class="nm">2</span> <span class="op">**</span> <span class="pu">(</span>attempt <span class="op">-</span> <span class="nm">1</span><span class="pu">))</span>  <span class="cm">// 300, 600, 1200ms</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── AbortController for cancellable fetches ──────</span>
+<span class="kw">async function</span> <span class="fn">fetchWithTimeout</span><span class="pu">(</span>url, ms <span class="op">=</span> <span class="nm">5000</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> controller <span class="op">=</span> <span class="kw">new</span> <span class="bi">AbortController</span><span class="pu">()</span>
+  <span class="kw">const</span> id <span class="op">=</span> <span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=&gt;</span> controller<span class="pu">.</span><span class="fn">abort</span><span class="pu">(),</span> ms<span class="pu">)</span>
+  <span class="kw">try</span> <span class="pu">{</span>
+    <span class="kw">const</span> res <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span>url, <span class="pu">{</span> signal<span class="op">:</span> controller<span class="pu">.</span>signal <span class="pu">})</span>
+    <span class="kw">return</span> <span class="kw">await</span> res<span class="pu">.</span><span class="fn">json</span><span class="pu">()</span>
+  <span class="pu">}</span> <span class="kw">finally</span> <span class="pu">{</span>
+    <span class="fn">clearTimeout</span><span class="pu">(</span>id<span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 04 EVENT LOOP -->
+  <div class="section" id="eventloop">
+    <div class="section-label">04 — Concurrency Model</div>
+    <h2>The Event Loop, Call Stack & Task Queues</h2>
+    <p class="lead">JavaScript has a single call stack, but it never blocks. Understanding the event loop is the key to understanding why async JS behaves the way it does.</p>
+
+    <div class="info">
+      <div class="info-label">How the Event Loop Works</div>
+      The JS runtime has a call stack (LIFO), a heap (memory), and a message queue. The event loop continuously checks: <em>if the stack is empty, pull the next message from the queue and push it onto the stack.</em>
+    </div>
+
+    <ul class="phase-list">
+      <li><div class="phase-num">1</div><div><strong>Call Stack</strong> — synchronous code executes here. Only one frame at a time. If it blocks, everything blocks.</div></li>
+      <li><div class="phase-num">2</div><div><strong>Microtask Queue</strong> — Promise callbacks (<code>.then</code>, <code>.catch</code>), <code>queueMicrotask()</code>, <code>MutationObserver</code>. Drained completely before the next macrotask.</div></li>
+      <li><div class="phase-num">3</div><div><strong>Macrotask Queue</strong> — <code>setTimeout</code>, <code>setInterval</code>, I/O callbacks, <code>requestAnimationFrame</code>. One runs per event loop iteration.</div></li>
+    </ul>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Execution Order</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">"1 — sync"</span><span class="pu">)</span>
+
+<span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">"4 — macrotask"</span><span class="pu">),</span> <span class="nm">0</span><span class="pu">)</span>
+
+<span class="bi">Promise</span><span class="pu">.</span><span class="fn">resolve</span><span class="pu">()</span>
+  <span class="pu">.</span><span class="fn">then</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">"3 — microtask"</span><span class="pu">))</span>
+
+<span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">"2 — sync"</span><span class="pu">)</span>
+
+<span class="cm">// Output: 1, 2, 3, 4</span>
+<span class="cm">// Sync first → microtasks (Promises) → macrotasks (setTimeout)</span>
+
+<span class="cm">// ── queueMicrotask ───────────────────────────────</span>
+<span class="fn">queueMicrotask</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+  <span class="cm">// Runs at end of current task, before next macrotask</span>
+  <span class="cm">// Useful for deferring work without full async overhead</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Starving the event loop (bad) ───────────────</span>
+<span class="kw">function</span> <span class="fn">blockingLoop</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> end <span class="op">=</span> Date<span class="pu">.</span><span class="fn">now</span><span class="pu">()</span> <span class="op">+</span> <span class="nm">2000</span>
+  <span class="kw">while</span> <span class="pu">(</span>Date<span class="pu">.</span><span class="fn">now</span><span class="pu">()</span> <span class="op">&lt;</span> end<span class="pu">)</span> <span class="pu">{}</span>  <span class="cm">// freezes the browser for 2s!</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Non-blocking chunk processing (good) ────────</span>
+<span class="kw">async function</span> <span class="fn">processInChunks</span><span class="pu">(</span>items, chunkSize <span class="op">=</span> <span class="nm">100</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">for</span> <span class="pu">(</span><span class="kw">let</span> i <span class="op">=</span> <span class="nm">0</span><span class="pu">;</span> i <span class="op">&lt;</span> items<span class="pu">.</span>length<span class="pu">;</span> i <span class="op">+=</span> chunkSize<span class="pu">)</span> <span class="pu">{</span>
+    <span class="fn">processChunk</span><span class="pu">(</span>items<span class="pu">.</span><span class="fn">slice</span><span class="pu">(</span>i, i <span class="op">+</span> chunkSize<span class="pu">))</span>
+    <span class="kw">await</span> <span class="kw">new</span> <span class="bi">Promise</span><span class="pu">(</span>r <span class="op">=&gt;</span> <span class="fn">setTimeout</span><span class="pu">(</span>r<span class="pu">))</span>  <span class="cm">// yield to event loop</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 05 FUNCTIONAL -->
+  <div class="section" id="functional">
+    <div class="section-label">05 — Functional Programming</div>
+    <h2>Functional Programming Techniques</h2>
+    <p class="lead">FP in JS isn't dogma — it's a toolkit. Pure functions, immutability, composition, and higher-order functions lead to more predictable, testable code.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Currying ─────────────────────────────────────</span>
+<span class="kw">const</span> curry <span class="op">=</span> <span class="pu">(</span>fn<span class="pu">)</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+  <span class="kw">const</span> arity <span class="op">=</span> fn<span class="pu">.</span>length
+  <span class="kw">return function</span> <span class="fn">curried</span><span class="pu">(...</span>args<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">return</span> args<span class="pu">.</span>length <span class="op">&gt;=</span> arity
+      <span class="op">?</span> fn<span class="pu">(...</span>args<span class="pu">)</span>
+      <span class="op">:</span> <span class="pu">(...</span>more<span class="pu">)</span> <span class="op">=&gt;</span> <span class="fn">curried</span><span class="pu">(...</span>args, <span class="op">...</span>more<span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> add    <span class="op">=</span> <span class="fn">curry</span><span class="pu">((</span>a, b<span class="pu">)</span> <span class="op">=&gt;</span> a <span class="op">+</span> b<span class="pu">)</span>
+<span class="kw">const</span> add5   <span class="op">=</span> <span class="fn">add</span><span class="pu">(</span><span class="nm">5</span><span class="pu">)</span>          <span class="cm">// partially applied</span>
+<span class="fn">add5</span><span class="pu">(</span><span class="nm">3</span><span class="pu">)</span>                        <span class="cm">// 8</span>
+
+<span class="cm">// ── Function composition ─────────────────────────</span>
+<span class="kw">const</span> compose <span class="op">=</span> <span class="pu">(...</span>fns<span class="pu">)</span> <span class="op">=&gt;</span> <span class="pu">(</span>x<span class="pu">)</span> <span class="op">=&gt;</span> fns<span class="pu">.</span><span class="fn">reduceRight</span><span class="pu">((</span>v, f<span class="pu">)</span> <span class="op">=&gt;</span> <span class="fn">f</span><span class="pu">(</span>v<span class="pu">),</span> x<span class="pu">)</span>
+<span class="kw">const</span> pipe    <span class="op">=</span> <span class="pu">(...</span>fns<span class="pu">)</span> <span class="op">=&gt;</span> <span class="pu">(</span>x<span class="pu">)</span> <span class="op">=&gt;</span> fns<span class="pu">.</span><span class="fn">reduce</span><span class="pu">((</span>v, f<span class="pu">)</span> <span class="op">=&gt;</span> <span class="fn">f</span><span class="pu">(</span>v<span class="pu">),</span> x<span class="pu">)</span>
+
+<span class="kw">const</span> double   <span class="op">=</span> x <span class="op">=&gt;</span> x <span class="op">*</span> <span class="nm">2</span>
+<span class="kw">const</span> addOne   <span class="op">=</span> x <span class="op">=&gt;</span> x <span class="op">+</span> <span class="nm">1</span>
+<span class="kw">const</span> toString <span class="op">=</span> x <span class="op">=&gt;</span> <span class="st">`Result: </span><span class="pu">${</span>x<span class="pu">}</span><span class="st">`</span>
+
+<span class="kw">const</span> transform <span class="op">=</span> <span class="fn">pipe</span><span class="pu">(</span>double, addOne, toString<span class="pu">)</span>
+<span class="fn">transform</span><span class="pu">(</span><span class="nm">5</span><span class="pu">)</span>  <span class="cm">// "Result: 11"  →  5*2=10, +1=11</span>
+
+<span class="cm">// ── Transducer pattern ───────────────────────────</span>
+<span class="cm">// Composes map/filter without creating intermediate arrays</span>
+<span class="kw">const</span> xform <span class="op">=</span> <span class="fn">compose</span><span class="pu">(</span>
+  <span class="fn">map</span><span class="pu">(</span>x <span class="op">=&gt;</span> x <span class="op">*</span> <span class="nm">2</span><span class="pu">),</span>
+  <span class="fn">filter</span><span class="pu">(</span>x <span class="op">=&gt;</span> x <span class="op">%</span> <span class="nm">3</span> <span class="op">===</span> <span class="nm">0</span><span class="pu">)</span>
+<span class="pu">)</span>
+
+<span class="cm">// ── Immutable update patterns ────────────────────</span>
+<span class="kw">const</span> user    <span class="op">=</span> <span class="pu">{</span> name<span class="op">:</span> <span class="st">"Alice"</span>, age<span class="op">:</span> <span class="nm">30</span>, prefs<span class="op">:</span> <span class="pu">{</span> theme<span class="op">:</span> <span class="st">"dark"</span> <span class="pu">}</span> <span class="pu">}</span>
+<span class="kw">const</span> updated <span class="op">=</span> <span class="pu">{</span> <span class="op">...</span>user, age<span class="op">:</span> <span class="nm">31</span>, prefs<span class="op">:</span> <span class="pu">{</span> <span class="op">...</span>user<span class="pu">.</span>prefs, theme<span class="op">:</span> <span class="st">"light"</span> <span class="pu">}</span> <span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 06 THIS -->
+  <div class="section" id="this">
+    <div class="section-label">06 — The this Keyword</div>
+    <h2>this, bind, call & apply</h2>
+    <p><code>this</code> is not about where a function is defined — it's about <em>how it is called</em>. It's the most misunderstood part of JavaScript.</p>
+
+    <table>
+      <thead><tr><th>Call style</th><th><code>this</code> value</th></tr></thead>
+      <tbody>
+        <tr><td><code>fn()</code> — plain call</td><td><code>undefined</code> (strict) or <code>window</code></td></tr>
+        <tr><td><code>obj.method()</code> — method call</td><td><code>obj</code></td></tr>
+        <tr><td><code>new Fn()</code> — constructor</td><td>newly created object</td></tr>
+        <tr><td><code>fn.call(ctx, a, b)</code></td><td><code>ctx</code></td></tr>
+        <tr><td><code>fn.apply(ctx, [a, b])</code></td><td><code>ctx</code></td></tr>
+        <tr><td><code>fn.bind(ctx)</code></td><td><code>ctx</code> (permanent)</td></tr>
+        <tr><td><code>() =&gt; {}</code> — arrow function</td><td>lexical (outer <code>this</code>)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Method context ────────────────────────────────</span>
+<span class="kw">const</span> timer <span class="op">=</span> <span class="pu">{</span>
+  seconds<span class="op">:</span> <span class="nm">0</span>,
+
+  <span class="cm">// ❌ Regular function — loses `this` in callback</span>
+  startBad<span class="pu">()</span> <span class="pu">{</span>
+    <span class="fn">setInterval</span><span class="pu">(</span><span class="kw">function</span><span class="pu">()</span> <span class="pu">{</span>
+      <span class="kw">this</span><span class="pu">.</span>seconds<span class="op">++</span>  <span class="cm">// `this` is undefined / window</span>
+    <span class="pu">},</span> <span class="nm">1000</span><span class="pu">)</span>
+  <span class="pu">}</span>,
+
+  <span class="cm">// ✅ Arrow function — inherits `this` from startGood</span>
+  startGood<span class="pu">()</span> <span class="pu">{</span>
+    <span class="fn">setInterval</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+      <span class="kw">this</span><span class="pu">.</span>seconds<span class="op">++</span>  <span class="cm">// `this` is timer</span>
+    <span class="pu">},</span> <span class="nm">1000</span><span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── call / apply / bind ───────────────────────────</span>
+<span class="kw">function</span> <span class="fn">introduce</span><span class="pu">(</span>greeting, punctuation<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="st">`</span><span class="pu">${</span>greeting<span class="pu">}</span><span class="st">, I'm </span><span class="pu">${</span><span class="kw">this</span><span class="pu">.</span>name<span class="pu">}</span><span class="pu">${</span>punctuation<span class="pu">}</span><span class="st">`</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> alice <span class="op">=</span> <span class="pu">{</span> name<span class="op">:</span> <span class="st">"Alice"</span> <span class="pu">}</span>
+<span class="fn">introduce</span><span class="pu">.</span><span class="fn">call</span><span class="pu">(</span>alice, <span class="st">"Hello"</span>, <span class="st">"!"</span><span class="pu">)</span>   <span class="cm">// "Hello, I'm Alice!"</span>
+<span class="fn">introduce</span><span class="pu">.</span><span class="fn">apply</span><span class="pu">(</span>alice, <span class="pu">[</span><span class="st">"Hey"</span>, <span class="st">"."</span><span class="pu">])</span>  <span class="cm">// "Hey, I'm Alice."</span>
+
+<span class="kw">const</span> aliceIntro <span class="op">=</span> <span class="fn">introduce</span><span class="pu">.</span><span class="fn">bind</span><span class="pu">(</span>alice, <span class="st">"Hi"</span><span class="pu">)</span>
+<span class="fn">aliceIntro</span><span class="pu">(</span><span class="st">"!"</span><span class="pu">)</span>  <span class="cm">// "Hi, I'm Alice!" — bound forever</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 07 PATTERNS -->
+  <div class="section" id="patterns">
+    <div class="section-label">07 — Design Patterns</div>
+    <h2>Essential JavaScript Design Patterns</h2>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Observer / EventEmitter</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">class</span> <span class="ty">EventEmitter</span> <span class="pu">{</span>
+  <span class="op">#</span>events <span class="op">=</span> <span class="kw">new</span> <span class="bi">Map</span><span class="pu">()</span>
+
+  <span class="fn">on</span><span class="pu">(</span>event, listener<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(!</span><span class="kw">this</span><span class="pu">.</span><span class="op">#</span>events<span class="pu">.</span><span class="fn">has</span><span class="pu">(</span>event<span class="pu">))</span>
+      <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>events<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>event, <span class="kw">new</span> <span class="bi">Set</span><span class="pu">())</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>events<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>event<span class="pu">)</span><span class="pu">.</span><span class="fn">add</span><span class="pu">(</span>listener<span class="pu">)</span>
+    <span class="kw">return</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="kw">this</span><span class="pu">.</span><span class="fn">off</span><span class="pu">(</span>event, listener<span class="pu">)</span>  <span class="cm">// unsubscribe fn</span>
+  <span class="pu">}</span>
+
+  <span class="fn">off</span><span class="pu">(</span>event, listener<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>events<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>event<span class="pu">)?.</span><span class="fn">delete</span><span class="pu">(</span>listener<span class="pu">)</span>
+  <span class="pu">}</span>
+
+  <span class="fn">emit</span><span class="pu">(</span>event, <span class="op">...</span>args<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>events<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>event<span class="pu">)?.</span><span class="fn">forEach</span><span class="pu">(</span>fn <span class="op">=&gt;</span> <span class="fn">fn</span><span class="pu">(...</span>args<span class="pu">))</span>
+  <span class="pu">}</span>
+
+  <span class="fn">once</span><span class="pu">(</span>event, listener<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">const</span> wrapper <span class="op">=</span> <span class="pu">(...</span>args<span class="pu">)</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+      <span class="fn">listener</span><span class="pu">(...</span>args<span class="pu">)</span>
+      <span class="kw">this</span><span class="pu">.</span><span class="fn">off</span><span class="pu">(</span>event, wrapper<span class="pu">)</span>
+    <span class="pu">}</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span><span class="fn">on</span><span class="pu">(</span>event, wrapper<span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Singleton, Factory & Proxy</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Singleton ─────────────────────────────────────</span>
+<span class="kw">class</span> <span class="ty">Config</span> <span class="pu">{</span>
+  <span class="kw">static</span> <span class="op">#</span>instance <span class="op">=</span> <span class="kw">null</span>
+  <span class="op">#</span>settings <span class="op">=</span> <span class="pu">{}</span>
+
+  <span class="kw">static</span> <span class="fn">getInstance</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="kw">return</span> <span class="pu">(</span><span class="ty">Config</span><span class="pu">.</span><span class="op">#</span>instance <span class="op">??=</span> <span class="kw">new</span> <span class="ty">Config</span><span class="pu">())</span>
+  <span class="pu">}</span>
+  <span class="fn">get</span><span class="pu">(</span>key<span class="pu">)</span>      <span class="pu">{</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>settings<span class="pu">[</span>key<span class="pu">]</span> <span class="pu">}</span>
+  <span class="fn">set</span><span class="pu">(</span>key, val<span class="pu">)</span> <span class="pu">{</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>settings<span class="pu">[</span>key<span class="pu">]</span> <span class="op">=</span> val <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Factory ───────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">createLogger</span><span class="pu">(</span>level <span class="op">=</span> <span class="st">"info"</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> prefix <span class="op">=</span> <span class="st">`[</span><span class="pu">${</span>level<span class="pu">.</span><span class="fn">toUpperCase</span><span class="pu">()}</span><span class="st">]`</span>
+  <span class="kw">return</span> <span class="pu">{</span>
+    log<span class="pu">(</span>msg<span class="pu">)</span>   <span class="pu">{</span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>prefix, msg<span class="pu">)</span> <span class="pu">}</span>,
+    error<span class="pu">(</span>msg<span class="pu">)</span> <span class="pu">{</span> <span class="fn">console</span><span class="pu">.</span><span class="fn">error</span><span class="pu">(</span>prefix, msg<span class="pu">)</span> <span class="pu">}</span>,
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Proxy — intercept object operations ──────────</span>
+<span class="kw">function</span> <span class="fn">createValidator</span><span class="pu">(</span>target, schema<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="kw">new</span> <span class="bi">Proxy</span><span class="pu">(</span>target, <span class="pu">{</span>
+    <span class="fn">set</span><span class="pu">(</span>obj, prop, value<span class="pu">)</span> <span class="pu">{</span>
+      <span class="kw">const</span> validator <span class="op">=</span> schema<span class="pu">[</span>prop<span class="pu">]</span>
+      <span class="kw">if</span> <span class="pu">(</span>validator <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="fn">validator</span><span class="pu">(</span>value<span class="pu">))</span> <span class="pu">{</span>
+        <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">TypeError</span><span class="pu">(</span><span class="st">`Invalid value for </span><span class="pu">${</span>prop<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+      <span class="pu">}</span>
+      obj<span class="pu">[</span>prop<span class="pu">]</span> <span class="op">=</span> value
+      <span class="kw">return</span> <span class="kw">true</span>
+    <span class="pu">}</span>
+  <span class="pu">})</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> user <span class="op">=</span> <span class="fn">createValidator</span><span class="pu">({},</span> <span class="pu">{</span>
+  age<span class="op">:</span> v <span class="op">=&gt;</span> <span class="kw">typeof</span> v <span class="op">===</span> <span class="st">"number"</span> <span class="op">&amp;&amp;</span> v <span class="op">&gt;</span> <span class="nm">0</span>
+<span class="pu">})</span>
+user<span class="pu">.</span>age <span class="op">=</span> <span class="nm">25</span>   <span class="cm">// ✓</span>
+user<span class="pu">.</span>age <span class="op">=</span> <span class="op">-</span><span class="nm">1</span>   <span class="cm">// ✗ TypeError</span></code></pre>
+    </div>
+
+    <div class="pullquote">"Design patterns aren't rules you follow — they're vocabulary you share with your team."</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 08 ENGINE -->
+  <div class="section" id="engine">
+    <div class="section-label">08 — Under the Hood</div>
+    <h2>JS Engine Internals & V8</h2>
+    <p class="lead">Understanding V8 helps you write code the engine can optimise. Small changes in code patterns can have dramatic performance effects.</p>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-icon">⚙️</div>
+        <h4>Parsing & AST</h4>
+        <p>V8 parses your source into an Abstract Syntax Tree, then uses Ignition (bytecode interpreter) before optimizing hot paths with TurboFan.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔥</div>
+        <h4>JIT Compilation</h4>
+        <p>Functions called repeatedly are JIT-compiled to native machine code. V8 tracks type feedback — changing types causes deoptimization.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🗺️</div>
+        <h4>Hidden Classes</h4>
+        <p>V8 creates hidden classes for object shapes. Objects with the same properties in the same order share a hidden class — which is fast.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">♻️</div>
+        <h4>Garbage Collection</h4>
+        <p>V8 uses generational GC: Scavenger for the young generation, Mark-Compact for the old generation. Short-lived objects are cheap.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — V8 Optimisation Tips</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Hidden classes — keep property order consistent</span>
+<span class="kw">function</span> <span class="fn">Point</span><span class="pu">(</span>x, y<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">this</span><span class="pu">.</span>x <span class="op">=</span> x  <span class="cm">// always x first</span>
+  <span class="kw">this</span><span class="pu">.</span>y <span class="op">=</span> y  <span class="cm">// then y</span>
+<span class="pu">}</span>
+<span class="cm">// Good: new Point(1,2) and new Point(3,4) share hidden class</span>
+<span class="cm">// Bad: adding properties conditionally in different orders</span>
+
+<span class="cm">// ── Monomorphic vs polymorphic functions ─────────</span>
+<span class="cm">// V8 optimizes when a function always receives the same types</span>
+<span class="kw">function</span> <span class="fn">addFast</span><span class="pu">(</span>a, b<span class="pu">)</span> <span class="pu">{</span> <span class="kw">return</span> a <span class="op">+</span> b <span class="pu">}</span>
+<span class="fn">addFast</span><span class="pu">(</span><span class="nm">1</span>, <span class="nm">2</span><span class="pu">)</span>      <span class="cm">// V8 specializes for numbers</span>
+<span class="fn">addFast</span><span class="pu">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="pu">)</span>  <span class="cm">// type change → deoptimize! 😱</span>
+
+<span class="cm">// ── Avoid polymorphic hidden class transitions ───</span>
+<span class="kw">const</span> obj <span class="op">=</span> <span class="pu">{}</span>
+obj<span class="pu">.</span>x <span class="op">=</span> <span class="nm">1</span>  <span class="cm">// shape A</span>
+obj<span class="pu">.</span>y <span class="op">=</span> <span class="nm">2</span>  <span class="cm">// shape B — forces transition</span>
+<span class="cm">// Better: obj = { x: 1, y: 2 } — initialized in one step</span>
+
+<span class="cm">// ── Array type stability ─────────────────────────</span>
+<span class="kw">const</span> nums <span class="op">=</span> <span class="pu">[</span><span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span><span class="pu">]</span>   <span class="cm">// SMI (small integer) array — fast!</span>
+nums<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span><span class="nm">3.14</span><span class="pu">)</span>             <span class="cm">// becomes DOUBLE array</span>
+nums<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span><span class="st">"oops"</span><span class="pu">)</span>           <span class="cm">// becomes GENERIC array — slow</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 09 MEMORY -->
+  <div class="section" id="memory">
+    <div class="section-label">09 — Memory</div>
+    <h2>Memory Management & Leak Prevention</h2>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Common Memory Leaks</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Leak 1: Forgotten event listeners ────────────</span>
+<span class="kw">class</span> <span class="ty">Component</span> <span class="pu">{</span>
+  <span class="kw">constructor</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span>handler <span class="op">=</span> <span class="kw">this</span><span class="pu">.</span><span class="fn">onResize</span><span class="pu">.</span><span class="fn">bind</span><span class="pu">(</span><span class="kw">this</span><span class="pu">)</span>
+    window<span class="pu">.</span><span class="fn">addEventListener</span><span class="pu">(</span><span class="st">"resize"</span>, <span class="kw">this</span><span class="pu">.</span>handler<span class="pu">)</span>
+  <span class="pu">}</span>
+  <span class="fn">destroy</span><span class="pu">()</span> <span class="pu">{</span>
+    window<span class="pu">.</span><span class="fn">removeEventListener</span><span class="pu">(</span><span class="st">"resize"</span>, <span class="kw">this</span><span class="pu">.</span>handler<span class="pu">)</span>  <span class="cm">// ← clean up!</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Leak 2: Closures holding large data ──────────</span>
+<span class="kw">function</span> <span class="fn">processHugeArray</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> bigArray <span class="op">=</span> <span class="kw">new</span> <span class="bi">Array</span><span class="pu">(</span><span class="nm">1_000_000</span><span class="pu">).</span><span class="fn">fill</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+  <span class="kw">const</span> result <span class="op">=</span> bigArray<span class="pu">.</span>length
+
+  <span class="cm">// Only capture what you need, not the whole array</span>
+  <span class="kw">return</span> <span class="pu">()</span> <span class="op">=&gt;</span> result  <span class="cm">// ✓ bigArray can be GCed</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── WeakMap / WeakRef for non-leaking caches ─────</span>
+<span class="kw">const</span> cache <span class="op">=</span> <span class="kw">new</span> <span class="bi">WeakMap</span><span class="pu">()</span>  <span class="cm">// keys GCed when no other references</span>
+
+<span class="kw">function</span> <span class="fn">expensive</span><span class="pu">(</span>obj<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>cache<span class="pu">.</span><span class="fn">has</span><span class="pu">(</span>obj<span class="pu">))</span> <span class="kw">return</span> cache<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>obj<span class="pu">)</span>
+  <span class="kw">const</span> result <span class="op">=</span> <span class="fn">compute</span><span class="pu">(</span>obj<span class="pu">)</span>
+  cache<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>obj, result<span class="pu">)</span>
+  <span class="kw">return</span> result
+<span class="pu">}</span>
+
+<span class="cm">// ── WeakRef — hold object without preventing GC ──</span>
+<span class="kw">const</span> ref  <span class="op">=</span> <span class="kw">new</span> <span class="bi">WeakRef</span><span class="pu">(</span>someObject<span class="pu">)</span>
+<span class="kw">const</span> obj  <span class="op">=</span> ref<span class="pu">.</span><span class="fn">deref</span><span class="pu">()</span>
+<span class="kw">if</span> <span class="pu">(</span>obj<span class="pu">)</span> <span class="pu">{</span>
+  <span class="cm">// object still exists</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="warn">
+      <div class="warn-label">⚠ Common Leak Sources</div>
+      Global variables · Event listeners without cleanup · Closures over large objects · Detached DOM nodes still referenced in JS · Uncleared <code>setInterval</code> timers · Accumulating data in module-level arrays/maps.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 10 MODERN JS -->
+  <div class="section" id="modern">
+    <div class="section-label">10 — Modern JS & Meta-programming</div>
+    <h2>Modern ES Features & Meta-programming</h2>
+
+    <h3>Generators & Iterators</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Generator functions ──────────────────────────</span>
+<span class="kw">function*</span> <span class="fn">range</span><span class="pu">(</span>start, end, step <span class="op">=</span> <span class="nm">1</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">for</span> <span class="pu">(</span><span class="kw">let</span> i <span class="op">=</span> start<span class="pu">;</span> i <span class="op">&lt;</span> end<span class="pu">;</span> i <span class="op">+=</span> step<span class="pu">)</span> <span class="kw">yield</span> i
+<span class="pu">}</span>
+<span class="pu">[...</span><span class="fn">range</span><span class="pu">(</span><span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">2</span><span class="pu">)]</span>  <span class="cm">// [0, 2, 4, 6, 8]</span>
+
+<span class="cm">// ── Infinite generator ───────────────────────────</span>
+<span class="kw">function*</span> <span class="fn">fibonacci</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">let</span> <span class="pu">[</span>a, b<span class="pu">]</span> <span class="op">=</span> <span class="pu">[</span><span class="nm">0</span>, <span class="nm">1</span><span class="pu">]</span>
+  <span class="kw">while</span> <span class="pu">(</span><span class="kw">true</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">yield</span> a;
+    <span class="pu">[</span>a, b<span class="pu">]</span> <span class="op">=</span> <span class="pu">[</span>b, a <span class="op">+</span> b<span class="pu">]</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="kw">const</span> fib <span class="op">=</span> <span class="fn">fibonacci</span><span class="pu">()</span>
+<span class="fn">Array</span><span class="pu">.</span><span class="fn">from</span><span class="pu">({</span> length<span class="op">:</span> <span class="nm">8</span> <span class="pu">},</span> <span class="pu">()</span> <span class="op">=&gt;</span> fib<span class="pu">.</span><span class="fn">next</span><span class="pu">().</span>value<span class="pu">)</span>
+<span class="cm">// [0, 1, 1, 2, 3, 5, 8, 13]</span>
+
+<span class="cm">// ── Custom iterable ──────────────────────────────</span>
+<span class="kw">class</span> <span class="ty">Range</span> <span class="pu">{</span>
+  <span class="kw">constructor</span><span class="pu">(</span>from, to<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span>from <span class="op">=</span> from<span class="pu">;</span> <span class="kw">this</span><span class="pu">.</span>to <span class="op">=</span> to
+  <span class="pu">}</span>
+  <span class="pu">[</span><span class="bi">Symbol</span><span class="pu">.</span>iterator<span class="pu">]*()</span> <span class="pu">{</span>
+    <span class="kw">for</span> <span class="pu">(</span><span class="kw">let</span> i <span class="op">=</span> <span class="kw">this</span><span class="pu">.</span>from<span class="pu">;</span> i <span class="op">&lt;=</span> <span class="kw">this</span><span class="pu">.</span>to<span class="pu">;</span> i<span class="op">++</span><span class="pu">)</span> <span class="kw">yield</span> i
+  <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="pu">[...</span><span class="kw">new</span> <span class="fn">Range</span><span class="pu">(</span><span class="nm">1</span>, <span class="nm">5</span><span class="pu">)]</span>  <span class="cm">// [1, 2, 3, 4, 5]</span></code></pre>
+    </div>
+
+    <h3>Symbols & Well-Known Symbols</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Symbols are unique, non-enumerable keys ──────</span>
+<span class="kw">const</span> ID <span class="op">=</span> <span class="bi">Symbol</span><span class="pu">(</span><span class="st">"id"</span><span class="pu">)</span>
+<span class="kw">const</span> obj <span class="op">=</span> <span class="pu">{</span> <span class="pu">[</span>ID<span class="pu">]</span><span class="op">:</span> <span class="nm">123</span>, name<span class="op">:</span> <span class="st">"Alice"</span> <span class="pu">}</span>
+<span class="bi">Object</span><span class="pu">.</span><span class="fn">keys</span><span class="pu">(</span>obj<span class="pu">)</span>  <span class="cm">// ["name"] — symbol not included</span>
+
+<span class="cm">// ── Well-known symbols customise JS behaviour ────</span>
+<span class="kw">class</span> <span class="ty">Money</span> <span class="pu">{</span>
+  <span class="kw">constructor</span><span class="pu">(</span>amount, currency<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span>amount   <span class="op">=</span> amount
+    <span class="kw">this</span><span class="pu">.</span>currency <span class="op">=</span> currency
+  <span class="pu">}</span>
+  <span class="cm">// Custom string coercion</span>
+  <span class="pu">[</span><span class="bi">Symbol</span><span class="pu">.</span>toPrimitive<span class="pu">](</span>hint<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(</span>hint <span class="op">===</span> <span class="st">"number"</span><span class="pu">)</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>amount
+    <span class="kw">return</span> <span class="st">`</span><span class="pu">${</span><span class="kw">this</span><span class="pu">.</span>currency<span class="pu">}</span><span class="st"> </span><span class="pu">${</span><span class="kw">this</span><span class="pu">.</span>amount<span class="pu">}</span><span class="st">`</span>
+  <span class="pu">}</span>
+  <span class="cm">// Custom instanceof behaviour</span>
+  <span class="kw">static</span> <span class="pu">[</span><span class="bi">Symbol</span><span class="pu">.</span>hasInstance<span class="pu">](</span>instance<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">return</span> <span class="kw">typeof</span> instance<span class="pu">.</span>amount <span class="op">===</span> <span class="st">"number"</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> price <span class="op">=</span> <span class="kw">new</span> <span class="fn">Money</span><span class="pu">(</span><span class="nm">29.99</span>, <span class="st">"USD"</span><span class="pu">)</span>
+<span class="st">`Cost: </span><span class="pu">${</span>price<span class="pu">}</span><span class="st">`</span>   <span class="cm">// "Cost: USD 29.99"</span>
+<span class="nm">+</span>price              <span class="cm">// 29.99</span></code></pre>
+    </div>
+
+    <h3>Reflect & Object Introspection</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Reflect mirrors Proxy traps ──────────────────</span>
+<span class="kw">const</span> handler <span class="op">=</span> <span class="pu">{</span>
+  <span class="fn">get</span><span class="pu">(</span>target, key, receiver<span class="pu">)</span> <span class="pu">{</span>
+    <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">`Getting </span><span class="pu">${</span>key<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+    <span class="kw">return</span> <span class="bi">Reflect</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>target, key, receiver<span class="pu">)</span>  <span class="cm">// proper forwarding</span>
+  <span class="pu">}</span>,
+  <span class="fn">has</span><span class="pu">(</span>target, key<span class="pu">)</span> <span class="pu">{</span>
+    <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">`Checking </span><span class="pu">${</span>key<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+    <span class="kw">return</span> <span class="bi">Reflect</span><span class="pu">.</span><span class="fn">has</span><span class="pu">(</span>target, key<span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Object descriptor tricks ─────────────────────</span>
+<span class="bi">Object</span><span class="pu">.</span><span class="fn">defineProperty</span><span class="pu">(</span>obj, <span class="st">"readonlyProp"</span>, <span class="pu">{</span>
+  value<span class="op">:</span>        <span class="nm">42</span>,
+  writable<span class="op">:</span>     <span class="kw">false</span>,
+  enumerable<span class="op">:</span>   <span class="kw">false</span>,
+  configurable<span class="op">:</span> <span class="kw">false</span>,
+<span class="pu">})</span>
+
+<span class="bi">Object</span><span class="pu">.</span><span class="fn">freeze</span><span class="pu">(</span>obj<span class="pu">)</span>    <span class="cm">// shallow immutability</span>
+<span class="bi">Object</span><span class="pu">.</span><span class="fn">seal</span><span class="pu">(</span>obj<span class="pu">)</span>     <span class="cm">// can change but not add/delete props</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 11 MODULES -->
+  <div class="section" id="modules">
+    <div class="section-label">11 — Modules</div>
+    <h2>ES Modules, Dynamic Imports & Bundlers</h2>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — ESM Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Named and default exports ────────────────────</span>
+<span class="kw">export const</span> PI <span class="op">=</span> <span class="nm">3.14159</span>
+<span class="kw">export function</span> <span class="fn">square</span><span class="pu">(</span>x<span class="pu">)</span> <span class="pu">{</span> <span class="kw">return</span> x <span class="op">**</span> <span class="nm">2</span> <span class="pu">}</span>
+<span class="kw">export default class</span> <span class="ty">Calculator</span> <span class="pu">{</span> <span class="cm">/* ... */</span> <span class="pu">}</span>
+
+<span class="cm">// ── Named imports with aliases ───────────────────</span>
+<span class="kw">import</span> <span class="ty">Calculator</span>, <span class="pu">{</span> PI, square <span class="kw">as</span> sq <span class="pu">}</span> <span class="kw">from</span> <span class="st">"./math.js"</span>
+<span class="kw">import</span> <span class="op">*</span> <span class="kw">as</span> Math <span class="kw">from</span> <span class="st">"./math.js"</span>  <span class="cm">// namespace import</span>
+
+<span class="cm">// ── Dynamic import — code splitting ─────────────</span>
+<span class="kw">async function</span> <span class="fn">loadChart</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">{</span> default<span class="op">:</span> Chart <span class="pu">}</span> <span class="op">=</span> <span class="kw">await</span> <span class="kw">import</span><span class="pu">(</span><span class="st">"chart.js"</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="kw">new</span> <span class="fn">Chart</span><span class="pu">(</span>canvas<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Import assertions (JSON modules) ────────────</span>
+<span class="kw">import</span> data <span class="kw">from</span> <span class="st">"./config.json"</span> <span class="kw">with</span> <span class="pu">{</span> type<span class="op">:</span> <span class="st">"json"</span> <span class="pu">}</span>
+
+<span class="cm">// ── Top-level await (ESM only) ───────────────────</span>
+<span class="kw">const</span> config <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span><span class="st">"/config"</span><span class="pu">).</span><span class="fn">then</span><span class="pu">(</span>r <span class="op">=&gt;</span> r<span class="pu">.</span><span class="fn">json</span><span class="pu">())</span>
+<span class="cm">// Works at module top-level in modern runtimes!</span>
+
+<span class="cm">// ── Module patterns for lazy loading ─────────────</span>
+<span class="kw">const</span> routes <span class="op">=</span> <span class="pu">{</span>
+  <span class="st">"/dashboard"</span><span class="op">:</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="kw">import</span><span class="pu">(</span><span class="st">"./pages/Dashboard.js"</span><span class="pu">),</span>
+  <span class="st">"/settings"</span><span class="op">:</span>  <span class="pu">()</span> <span class="op">=&gt;</span> <span class="kw">import</span><span class="pu">(</span><span class="st">"./pages/Settings.js"</span><span class="pu">),</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 12 PERF -->
+  <div class="section" id="perf">
+    <div class="section-label">12 — Performance</div>
+    <h2>Performance Patterns & Best Practices</h2>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Debounce & Throttle</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Debounce — delay until quiet ─────────────────</span>
+<span class="kw">function</span> <span class="fn">debounce</span><span class="pu">(</span>fn, wait<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">let</span> timer
+  <span class="kw">return</span> <span class="kw">function</span><span class="pu">(...</span>args<span class="pu">)</span> <span class="pu">{</span>
+    <span class="fn">clearTimeout</span><span class="pu">(</span>timer<span class="pu">)</span>
+    timer <span class="op">=</span> <span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=&gt;</span> fn<span class="pu">.</span><span class="fn">apply</span><span class="pu">(</span><span class="kw">this</span>, args<span class="pu">),</span> wait<span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Throttle — at most once per interval ─────────</span>
+<span class="kw">function</span> <span class="fn">throttle</span><span class="pu">(</span>fn, limit<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">let</span> inThrottle
+  <span class="kw">return</span> <span class="kw">function</span><span class="pu">(...</span>args<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(!</span>inThrottle<span class="pu">)</span> <span class="pu">{</span>
+      fn<span class="pu">.</span><span class="fn">apply</span><span class="pu">(</span><span class="kw">this</span>, args<span class="pu">)</span>
+      inThrottle <span class="op">=</span> <span class="kw">true</span>
+      <span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=&gt;</span> inThrottle <span class="op">=</span> <span class="kw">false</span>, limit<span class="pu">)</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> onSearch   <span class="op">=</span> <span class="fn">debounce</span><span class="pu">(</span>search, <span class="nm">300</span><span class="pu">)</span>    <span class="cm">// search input</span>
+<span class="kw">const</span> onScroll   <span class="op">=</span> <span class="fn">throttle</span><span class="pu">(</span>handleScroll, <span class="nm">16</span><span class="pu">)</span>  <span class="cm">// ~60fps</span>
+
+<span class="cm">// ── requestAnimationFrame for animations ─────────</span>
+<span class="kw">function</span> <span class="fn">animate</span><span class="pu">(</span>update<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">let</span> rafId
+  <span class="kw">const</span> <span class="fn">loop</span> <span class="op">=</span> <span class="pu">(</span>timestamp<span class="pu">)</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+    <span class="fn">update</span><span class="pu">(</span>timestamp<span class="pu">)</span>
+    rafId <span class="op">=</span> <span class="fn">requestAnimationFrame</span><span class="pu">(</span>loop<span class="pu">)</span>
+  <span class="pu">}</span>
+  rafId <span class="op">=</span> <span class="fn">requestAnimationFrame</span><span class="pu">(</span>loop<span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="fn">cancelAnimationFrame</span><span class="pu">(</span>rafId<span class="pu">)</span>  <span class="cm">// cleanup</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Structural cloning ───────────────────────────</span>
+<span class="kw">const</span> deepCopy <span class="op">=</span> <span class="bi">structuredClone</span><span class="pu">(</span>original<span class="pu">)</span>  <span class="cm">// fast native deep clone</span></code></pre>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">💡 Final Performance Checklist</div>
+      Use <code>structuredClone</code> over <code>JSON.parse(JSON.stringify())</code> · Prefer <code>Map</code>/<code>Set</code> over plain objects for frequent reads/writes · Use <code>WeakMap</code> for per-object metadata · Avoid property deletion (shapes transition) · Keep arrays homogeneous · Use <code>for...of</code> over <code>.forEach</code> for arrays when you need <code>break</code> · Profile with DevTools before optimizing — measure, don't guess.
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Modern Array Methods</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">const</span> nums <span class="op">=</span> <span class="pu">[</span><span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span><span class="pu">]</span>
+
+<span class="cm">// ES2023+</span>
+nums<span class="pu">.</span><span class="fn">toSorted</span><span class="pu">((</span>a, b<span class="pu">)</span> <span class="op">=&gt;</span> b <span class="op">-</span> a<span class="pu">)</span>  <span class="cm">// sorted copy, non-mutating</span>
+nums<span class="pu">.</span><span class="fn">toReversed</span><span class="pu">()</span>              <span class="cm">// reversed copy</span>
+nums<span class="pu">.</span><span class="fn">toSpliced</span><span class="pu">(</span><span class="nm">2</span>, <span class="nm">1</span>, <span class="nm">99</span><span class="pu">)</span>       <span class="cm">// spliced copy</span>
+nums<span class="pu">.</span><span class="fn">with</span><span class="pu">(</span><span class="nm">0</span>, <span class="nm">100</span><span class="pu">)</span>              <span class="cm">// copy with index replaced</span>
+nums<span class="pu">.</span><span class="fn">findLast</span><span class="pu">(</span>x <span class="op">=&gt;</span> x <span class="op">%</span> <span class="nm">2</span> <span class="op">===</span> <span class="nm">0</span><span class="pu">)</span> <span class="cm">// 8 — search from end</span>
+nums<span class="pu">.</span><span class="fn">at</span><span class="pu">(</span><span class="op">-</span><span class="nm">1</span><span class="pu">)</span>                    <span class="cm">// 8 — last element, no length-1</span>
+
+<span class="cm">// Object.groupBy (ES2024)</span>
+<span class="kw">const</span> grouped <span class="op">=</span> <span class="bi">Object</span><span class="pu">.</span><span class="fn">groupBy</span><span class="pu">(</span>nums, n <span class="op">=&gt;</span> n <span class="op">%</span> <span class="nm">2</span> <span class="op">===</span> <span class="nm">0</span> <span class="op">?</span> <span class="st">"even"</span> <span class="op">:</span> <span class="st">"odd"</span><span class="pu">)</span>
+<span class="cm">// { odd: [1,3,5,7], even: [2,4,6,8] }</span>
+
+<span class="cm">// Promise.withResolvers — exposes resolve/reject outside</span>
+<span class="kw">const</span> <span class="pu">{</span> promise, resolve, reject <span class="pu">}</span> <span class="op">=</span> <span class="bi">Promise</span><span class="pu">.</span><span class="fn">withResolvers</span><span class="pu">()</span>
+<span class="fn">resolve</span><span class="pu">(</span><span class="st">"done"</span><span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p><strong>Advanced JavaScript Deep Dive</strong> — Covering ES2024+ and V8 internals</p>
+  <p style="margin-top: 8px; font-size: 13px;">Master the engine, own the language.</p>
+</footer>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre')
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      btn.textContent = 'Copied!'
+      setTimeout(() => btn.textContent = 'Copy', 2000)
+    })
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault()
+      const target = document.querySelector(a.getAttribute('href'))
+      if (target) target.scrollIntoView({ behavior: 'smooth' })
+    })
+  })
+</script>
+</body>
+</html>

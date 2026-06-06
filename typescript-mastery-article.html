@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypeScript Mastery: The Complete Developer's Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-muted: #9a9a9a;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --accent-subtle: #dbeafe;
+    --border: #e8e5e0;
+    --code-bg: #0f172a;
+    --code-text: #e2e8f0;
+    --tag-bg: #f1f0ed;
+    --tag-text: #555;
+    --tip-bg: #f0fdf4;
+    --tip-border: #16a34a;
+    --warn-bg: #fffbeb;
+    --warn-border: #d97706;
+    --keyword: #c084fc;
+    --string: #34d399;
+    --number: #fb923c;
+    --type: #60a5fa;
+    --comment: #64748b;
+    --func: #f0abfc;
+    --operator: #f1f5f9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* TOP NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250,249,247,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .nav-logo { font-weight: 600; font-size: 15px; color: var(--text-primary); letter-spacing: -0.3px; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 0; }
+  .nav-links a {
+    font-size: 13px; color: var(--text-secondary); text-decoration: none;
+    padding: 6px 10px; border-radius: 6px; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .nav-links a:hover { background: var(--tag-bg); color: var(--text-primary); }
+  .nav-read-time { font-size: 13px; color: var(--text-muted); }
+
+  /* HERO */
+  .hero {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 64px 2rem 48px;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-subtle); color: var(--accent);
+    font-size: 12px; font-weight: 500; padding: 4px 12px;
+    border-radius: 100px; margin-bottom: 24px; letter-spacing: 0.3px;
+  }
+  .hero h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(32px, 5vw, 50px);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+  }
+  .hero-sub {
+    font-size: 19px; color: var(--text-secondary);
+    font-weight: 300; line-height: 1.6; margin-bottom: 32px;
+  }
+  .hero-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600; color: white;
+  }
+  .meta-text { font-size: 14px; color: var(--text-secondary); }
+  .meta-text strong { color: var(--text-primary); }
+  .hero-divider { border: none; border-top: 1px solid var(--border); margin-top: 32px; }
+
+  /* TOC */
+  .toc-wrapper {
+    max-width: 780px; margin: 0 auto; padding: 0 2rem 8px;
+  }
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 28px; margin-bottom: 40px;
+  }
+  .toc h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500; }
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+  .toc a {
+    font-size: 14px; color: var(--text-secondary); text-decoration: none;
+    display: flex; align-items: center; gap: 8px; padding: 4px 0;
+    transition: color 0.15s;
+  }
+  .toc a:hover { color: var(--accent); }
+  .toc-num { font-size: 12px; color: var(--text-muted); font-weight: 500; min-width: 20px; }
+
+  /* MAIN CONTENT */
+  .content { max-width: 780px; margin: 0 auto; padding: 0 2rem 80px; }
+
+  /* SECTIONS */
+  .section { margin-bottom: 72px; scroll-margin-top: 72px; }
+  .section-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--accent); font-weight: 600; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--accent-subtle); }
+  h2 {
+    font-family: 'Lora', serif;
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+  h3 {
+    font-size: 19px; font-weight: 600;
+    margin: 32px 0 12px; color: var(--text-primary);
+  }
+  p { margin-bottom: 18px; color: #2d2d2d; }
+  .lead { font-size: 19px; color: var(--text-secondary); font-weight: 300; margin-bottom: 24px; }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 10px;
+    margin: 24px 0;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .code-lang {
+    font-size: 12px; color: #64748b; font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .copy-btn {
+    font-size: 12px; color: #475569; background: none; border: none;
+    cursor: pointer; padding: 2px 8px; border-radius: 4px;
+    font-family: 'Outfit', sans-serif; transition: all 0.15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.08); color: #94a3b8; }
+  pre {
+    padding: 20px 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--code-text);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    background: #f1ede8;
+    color: #c2410c;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* SYNTAX HIGHLIGHTING */
+  .kw { color: #c084fc; }
+  .ty { color: #60a5fa; }
+  .st { color: #34d399; }
+  .nm { color: #fb923c; }
+  .cm { color: #4b6a8b; font-style: italic; }
+  .fn { color: #f0abfc; }
+  .op { color: #94a3b8; }
+  .pu { color: #e2e8f0; }
+  .cn { color: #fbbf24; }
+
+  /* CALLOUTS */
+  .tip {
+    background: var(--tip-bg); border-left: 3px solid var(--tip-border);
+    border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0;
+    font-size: 15px;
+  }
+  .tip-label { font-size: 12px; font-weight: 600; color: #16a34a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .warn {
+    background: var(--warn-bg); border-left: 3px solid var(--warn-border);
+    border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0;
+    font-size: 15px;
+  }
+  .warn-label { font-size: 12px; font-weight: 600; color: #d97706; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+  /* COMPARISON GRID */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .compare-card { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-header { padding: 10px 16px; font-size: 13px; font-weight: 600; }
+  .compare-header.bad { background: #fef2f2; color: #dc2626; }
+  .compare-header.good { background: #f0fdf4; color: #16a34a; }
+  .compare-card .code-block { border-radius: 0; margin: 0; border: none; }
+
+  /* FEATURE TABLE */
+  table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
+  th { background: var(--tag-bg); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  /* BADGE */
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 100px; letter-spacing: 0.3px; vertical-align: middle;
+  }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-amber { background: #fef3c7; color: #b45309; }
+  .badge-red { background: #fee2e2; color: #b91c1c; }
+
+  /* PULL QUOTE */
+  .pullquote {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    border-left: 4px solid var(--accent);
+    padding: 12px 24px;
+    margin: 36px 0;
+  }
+
+  /* SECTION DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+  /* FOOTER */
+  footer {
+    background: var(--text-primary); color: rgba(255,255,255,0.7);
+    text-align: center; padding: 40px 2rem;
+    font-size: 14px;
+  }
+  footer strong { color: white; }
+
+  @media (max-width: 640px) {
+    .toc-grid { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Type<span>Script</span> Mastery</div>
+  <div class="nav-links">
+    <a href="#basics">Basics</a>
+    <a href="#generics">Generics</a>
+    <a href="#advanced">Advanced</a>
+    <a href="#patterns">Patterns</a>
+    <a href="#tips">Pro Tips</a>
+  </div>
+  <div class="nav-read-time">~25 min read</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; Comprehensive Guide</div>
+  <h1>TypeScript Mastery: Every Concept You Need to Know</h1>
+  <p class="hero-sub">From primitive types to advanced generics, utility types, decorators, and real-world patterns — a complete deep dive for developers who want to write TypeScript like an expert.</p>
+  <div class="hero-meta">
+    <div class="avatar">TS</div>
+    <div class="meta-text">
+      <strong>TypeScript Deep Dive</strong><br>
+      Covering TypeScript 5.x — May 2026
+    </div>
+  </div>
+  <hr class="hero-divider">
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <div class="toc-grid">
+      <a href="#basics"><span class="toc-num">01</span> Basics & Primitive Types</a>
+      <a href="#interfaces"><span class="toc-num">06</span> Interfaces & Type Aliases</a>
+      <a href="#narrowing"><span class="toc-num">02</span> Type Narrowing & Guards</a>
+      <a href="#generics"><span class="toc-num">07</span> Generics</a>
+      <a href="#enums"><span class="toc-num">03</span> Enums & Literal Types</a>
+      <a href="#utility"><span class="toc-num">08</span> Utility Types</a>
+      <a href="#functions"><span class="toc-num">04</span> Functions & Overloads</a>
+      <a href="#advanced"><span class="toc-num">09</span> Advanced Types</a>
+      <a href="#classes"><span class="toc-num">05</span> Classes & OOP</a>
+      <a href="#tips"><span class="toc-num">10</span> Pro Tips & Patterns</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ═══════════════════════════════════════════ SECTION 1 -->
+  <div class="section" id="basics">
+    <div class="section-label">01 — Core Fundamentals</div>
+    <h2>Primitive Types & Type Annotations</h2>
+    <p class="lead">TypeScript is a superset of JavaScript. Every valid JS file is valid TS, but TypeScript adds a powerful static type system on top.</p>
+
+    <p>Type annotations tell TypeScript the "shape" of your data. The compiler checks these at build time — meaning bugs are caught before your code ever runs in a browser or Node server.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Primitive types ─────────────────────────────</span>
+<span class="kw">let</span> username<span class="op">:</span> <span class="ty">string</span>  <span class="op">=</span> <span class="st">"Alice"</span>
+<span class="kw">let</span> age<span class="op">:</span>      <span class="ty">number</span>  <span class="op">=</span> <span class="nm">30</span>
+<span class="kw">let</span> active<span class="op">:</span>   <span class="ty">boolean</span> <span class="op">=</span> <span class="kw">true</span>
+<span class="kw">let</span> nothing<span class="op">:</span>  <span class="ty">null</span>    <span class="op">=</span> <span class="kw">null</span>
+<span class="kw">let</span> undef<span class="op">:</span>    <span class="ty">undefined</span> <span class="op">=</span> <span class="kw">undefined</span>
+<span class="kw">let</span> big<span class="op">:</span>      <span class="ty">bigint</span>  <span class="op">=</span> <span class="nm">9007199254740991n</span>
+<span class="kw">let</span> sym<span class="op">:</span>      <span class="ty">symbol</span>  <span class="op">=</span> <span class="fn">Symbol</span><span class="pu">(</span><span class="st">"unique"</span><span class="pu">)</span>
+
+<span class="cm">// ── Arrays ──────────────────────────────────────</span>
+<span class="kw">const</span> scores<span class="op">:</span> <span class="ty">number</span><span class="op">[]</span>        <span class="op">=</span> <span class="pu">[</span><span class="nm">90</span>, <span class="nm">85</span>, <span class="nm">92</span><span class="pu">]</span>
+<span class="kw">const</span> names<span class="op">:</span>  <span class="ty">Array</span><span class="op">&lt;</span><span class="ty">string</span><span class="op">&gt;</span>   <span class="op">=</span> <span class="pu">[</span><span class="st">"Alice"</span>, <span class="st">"Bob"</span><span class="pu">]</span>
+
+<span class="cm">// ── Tuples ──────────────────────────────────────</span>
+<span class="kw">const</span> point<span class="op">:</span> <span class="pu">[</span><span class="ty">number</span>, <span class="ty">number</span><span class="pu">]</span>          <span class="op">=</span> <span class="pu">[</span><span class="nm">12.5</span>, <span class="nm">-8.3</span><span class="pu">]</span>
+<span class="kw">const</span> entry<span class="op">:</span> <span class="pu">[</span><span class="ty">string</span>, <span class="ty">number</span>, <span class="ty">boolean</span><span class="pu">]</span> <span class="op">=</span> <span class="pu">[</span><span class="st">"Alice"</span>, <span class="nm">30</span>, <span class="kw">true</span><span class="pu">]</span>
+
+<span class="cm">// ── Special types ───────────────────────────────</span>
+<span class="kw">let</span> anything<span class="op">:</span> <span class="ty">any</span>     <span class="op">=</span> <span class="st">"no type safety"</span>  <span class="cm">// ⚠ avoid</span>
+<span class="kw">let</span> flexible<span class="op">:</span> <span class="ty">unknown</span> <span class="op">=</span> <span class="fn">fetchData</span><span class="pu">()</span>       <span class="cm">// safe version of any</span>
+<span class="kw">let</span> neverVal<span class="op">:</span> <span class="ty">never</span>            <span class="cm">// unreachable code / exhaustive checks</span>
+<span class="kw">function</span> <span class="fn">log</span><span class="pu">(</span>msg<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span><span class="op">:</span> <span class="ty">void</span> <span class="pu">{</span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>msg<span class="pu">)</span> <span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="warn">
+      <div class="warn-label">⚠ Warning — Avoid <code>any</code></div>
+      Using <code>any</code> disables all TypeScript checks for that variable. Prefer <code>unknown</code> when the type is truly unknown — it forces you to narrow before use.
+    </div>
+
+    <h3>Type Inference</h3>
+    <p>TypeScript infers types automatically — you don't need to annotate everything explicitly. Annotations are most valuable at API boundaries: function parameters and return types.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// TypeScript infers `count` as number, `greeting` as string</span>
+<span class="kw">let</span> count    <span class="op">=</span> <span class="nm">42</span>
+<span class="kw">let</span> greeting <span class="op">=</span> <span class="st">"Hello"</span>
+
+<span class="cm">// Array of strings is inferred too</span>
+<span class="kw">const</span> fruits <span class="op">=</span> <span class="pu">[</span><span class="st">"apple"</span>, <span class="st">"banana"</span>, <span class="st">"cherry"</span><span class="pu">]</span> <span class="cm">// string[]</span>
+
+<span class="cm">// Return type inferred as number</span>
+<span class="kw">function</span> <span class="fn">add</span><span class="pu">(</span>a<span class="op">:</span> <span class="ty">number</span>, b<span class="op">:</span> <span class="ty">number</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> a <span class="op">+</span> b
+<span class="pu">}</span>
+
+<span class="cm">// But explicit is better at boundaries:</span>
+<span class="kw">function</span> <span class="fn">getUser</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span><span class="op">:</span> <span class="ty">User</span> <span class="pu">{</span>
+  <span class="cm">// ...</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════ SECTION 2 -->
+  <div class="section" id="narrowing">
+    <div class="section-label">02 — Safety First</div>
+    <h2>Type Narrowing & Type Guards</h2>
+    <p class="lead">Narrowing is the process of refining a broad type into a more specific one. It's one of TypeScript's most powerful features.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── typeof narrowing ────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">formatValue</span><span class="pu">(</span>val<span class="op">:</span> <span class="ty">string</span> <span class="op">|</span> <span class="ty">number</span><span class="pu">)</span><span class="op">:</span> <span class="ty">string</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span><span class="kw">typeof</span> val <span class="op">===</span> <span class="st">"string"</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">return</span> val<span class="pu">.</span><span class="fn">toUpperCase</span><span class="pu">()</span>  <span class="cm">// val is string here</span>
+  <span class="pu">}</span>
+  <span class="kw">return</span> val<span class="pu">.</span><span class="fn">toFixed</span><span class="pu">(</span><span class="nm">2</span><span class="pu">)</span>      <span class="cm">// val is number here</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── instanceof narrowing ─────────────────────────</span>
+<span class="kw">function</span> <span class="fn">handleError</span><span class="pu">(</span>err<span class="op">:</span> <span class="ty">unknown</span><span class="pu">)</span><span class="op">:</span> <span class="ty">string</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>err <span class="kw">instanceof</span> <span class="ty">Error</span><span class="pu">)</span> <span class="kw">return</span> err<span class="pu">.</span>message
+  <span class="kw">if</span> <span class="pu">(</span><span class="kw">typeof</span> err <span class="op">===</span> <span class="st">"string"</span><span class="pu">)</span> <span class="kw">return</span> err
+  <span class="kw">return</span> <span class="st">"Unknown error"</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Custom type guard (predicate) ────────────────</span>
+<span class="kw">interface</span> <span class="ty">Cat</span> <span class="pu">{</span> meow<span class="op">:</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="ty">void</span> <span class="pu">}</span>
+<span class="kw">interface</span> <span class="ty">Dog</span> <span class="pu">{</span> bark<span class="op">:</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="ty">void</span> <span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">isCat</span><span class="pu">(</span>animal<span class="op">:</span> <span class="ty">Cat</span> <span class="op">|</span> <span class="ty">Dog</span><span class="pu">)</span><span class="op">:</span> animal <span class="kw">is</span> <span class="ty">Cat</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="pu">(</span>animal <span class="kw">as</span> <span class="ty">Cat</span><span class="pu">)</span><span class="pu">.</span>meow <span class="op">!==</span> <span class="kw">undefined</span>
+<span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">makeSound</span><span class="pu">(</span>animal<span class="op">:</span> <span class="ty">Cat</span> <span class="op">|</span> <span class="ty">Dog</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span><span class="fn">isCat</span><span class="pu">(</span>animal<span class="pu">))</span> animal<span class="pu">.</span><span class="fn">meow</span><span class="pu">()</span>  <span class="cm">// Cat</span>
+  <span class="kw">else</span>             animal<span class="pu">.</span><span class="fn">bark</span><span class="pu">()</span>  <span class="cm">// Dog</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Discriminated unions ─────────────────────────</span>
+<span class="kw">type</span> <span class="ty">Result</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="op">=</span>
+  <span class="op">|</span> <span class="pu">{</span> status<span class="op">:</span> <span class="st">"ok"</span><span class="op">;</span>    data<span class="op">:</span>  <span class="ty">T</span>      <span class="pu">}</span>
+  <span class="op">|</span> <span class="pu">{</span> status<span class="op">:</span> <span class="st">"error"</span><span class="op">;</span> error<span class="op">:</span> <span class="ty">string</span> <span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">handleResult</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span><span class="pu">(</span>r<span class="op">:</span> <span class="ty">Result</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">switch</span> <span class="pu">(</span>r<span class="pu">.</span>status<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">case</span> <span class="st">"ok"</span><span class="op">:</span>    <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>r<span class="pu">.</span>data<span class="pu">)</span>;  <span class="kw">break</span>
+    <span class="kw">case</span> <span class="st">"error"</span><span class="op">:</span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>r<span class="pu">.</span>error<span class="pu">)</span>; <span class="kw">break</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">💡 Pro Tip — Exhaustive Checks</div>
+      Use <code>never</code> in the <code>default</code> branch of a switch to get a compile error if you forget to handle a new union member.
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Exhaustive Check</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">function</span> <span class="fn">assertNever</span><span class="pu">(</span>x<span class="op">:</span> <span class="ty">never</span><span class="pu">)</span><span class="op">:</span> <span class="ty">never</span> <span class="pu">{</span>
+  <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">`Unhandled case: </span><span class="pu">${</span>x<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="kw">type</span> <span class="ty">Shape</span> <span class="op">=</span> <span class="ty">Circle</span> <span class="op">|</span> <span class="ty">Square</span> <span class="op">|</span> <span class="ty">Triangle</span>
+
+<span class="kw">function</span> <span class="fn">area</span><span class="pu">(</span>s<span class="op">:</span> <span class="ty">Shape</span><span class="pu">)</span><span class="op">:</span> <span class="ty">number</span> <span class="pu">{</span>
+  <span class="kw">switch</span> <span class="pu">(</span>s<span class="pu">.</span>kind<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">case</span> <span class="st">"circle"</span><span class="op">:</span>   <span class="kw">return</span> Math<span class="pu">.</span>PI <span class="op">*</span> s<span class="pu">.</span>r <span class="op">**</span> <span class="nm">2</span>
+    <span class="kw">case</span> <span class="st">"square"</span><span class="op">:</span>   <span class="kw">return</span> s<span class="pu">.</span>side <span class="op">**</span> <span class="nm">2</span>
+    <span class="kw">case</span> <span class="st">"triangle"</span><span class="op">:</span> <span class="kw">return</span> <span class="nm">0.5</span> <span class="op">*</span> s<span class="pu">.</span>base <span class="op">*</span> s<span class="pu">.</span>height
+    <span class="kw">default</span><span class="op">:</span>        <span class="kw">return</span> <span class="fn">assertNever</span><span class="pu">(</span>s<span class="pu">)</span> <span class="cm">// TS error if case missed</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════ SECTION 3 -->
+  <div class="section" id="enums">
+    <div class="section-label">03 — Enums & Literals</div>
+    <h2>Enums, Literal Types & Union Types</h2>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── String Enum ──────────────────────────────────</span>
+<span class="kw">enum</span> <span class="ty">Direction</span> <span class="pu">{</span>
+  Up    <span class="op">=</span> <span class="st">"UP"</span>,
+  Down  <span class="op">=</span> <span class="st">"DOWN"</span>,
+  Left  <span class="op">=</span> <span class="st">"LEFT"</span>,
+  Right <span class="op">=</span> <span class="st">"RIGHT"</span>,
+<span class="pu">}</span>
+<span class="kw">const</span> move<span class="op">:</span> <span class="ty">Direction</span> <span class="op">=</span> Direction<span class="pu">.</span>Up
+
+<span class="cm">// ── Const Enum (no runtime overhead) ────────────</span>
+<span class="kw">const enum</span> <span class="ty">Status</span> <span class="pu">{</span> Active, Inactive, Pending <span class="pu">}</span>
+<span class="kw">const</span> s <span class="op">=</span> Status<span class="pu">.</span>Active <span class="cm">// compiles to `0`, no object created</span>
+
+<span class="cm">// ── Literal Types ────────────────────────────────</span>
+<span class="kw">type</span> <span class="ty">Alignment</span> <span class="op">=</span> <span class="st">"left"</span> <span class="op">|</span> <span class="st">"center"</span> <span class="op">|</span> <span class="st">"right"</span>
+<span class="kw">type</span> <span class="ty">Dice</span>      <span class="op">=</span> <span class="nm">1</span> <span class="op">|</span> <span class="nm">2</span> <span class="op">|</span> <span class="nm">3</span> <span class="op">|</span> <span class="nm">4</span> <span class="op">|</span> <span class="nm">5</span> <span class="op">|</span> <span class="nm">6</span>
+<span class="kw">type</span> <span class="ty">YesNo</span>     <span class="op">=</span> <span class="kw">true</span>  <span class="op">|</span> <span class="kw">false</span>
+
+<span class="kw">function</span> <span class="fn">align</span><span class="pu">(</span>a<span class="op">:</span> <span class="ty">Alignment</span><span class="pu">)</span> <span class="pu">{</span> <span class="cm">/* ... */</span> <span class="pu">}</span>
+<span class="fn">align</span><span class="pu">(</span><span class="st">"left"</span><span class="pu">)</span>   <span class="cm">// ✓</span>
+<span class="fn">align</span><span class="pu">(</span><span class="st">"middle"</span><span class="pu">)</span> <span class="cm">// ✗ Type error</span>
+
+<span class="cm">// ── Template Literal Types ───────────────────────</span>
+<span class="kw">type</span> <span class="ty">EventName</span> <span class="op">=</span> <span class="st">`on</span><span class="pu">${</span><span class="ty">Capitalize</span><span class="op">&lt;</span><span class="ty">string</span><span class="op">&gt;</span><span class="pu">}</span><span class="st">`</span>
+<span class="cm">// "onClick" | "onHover" | "onChange" ...</span>
+
+<span class="kw">type</span> <span class="ty">CSSProperty</span> <span class="op">=</span> <span class="st">`margin-</span><span class="pu">${</span><span class="st">"top"</span> <span class="op">|</span> <span class="st">"right"</span> <span class="op">|</span> <span class="st">"bottom"</span> <span class="op">|</span> <span class="st">"left"</span><span class="pu">}</span><span class="st">`</span>
+<span class="cm">// "margin-top" | "margin-right" | "margin-bottom" | "margin-left"</span></code></pre>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">💡 Prefer Literal Union over Enum</div>
+      String literal unions like <code>"asc" | "desc"</code> are often cleaner than enums — they produce no runtime code and work seamlessly with JSON APIs.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════ SECTION 4 -->
+  <div class="section" id="functions">
+    <div class="section-label">04 — Functions</div>
+    <h2>Functions, Overloads & Parameter Types</h2>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Basic function signature ─────────────────────</span>
+<span class="kw">function</span> <span class="fn">greet</span><span class="pu">(</span>name<span class="op">:</span> <span class="ty">string</span>, greeting<span class="op">?:</span> <span class="ty">string</span><span class="pu">)</span><span class="op">:</span> <span class="ty">string</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="st">`</span><span class="pu">${</span>greeting <span class="op">??</span> <span class="st">"Hello"</span><span class="pu">}</span><span class="st">, </span><span class="pu">${</span>name<span class="pu">}</span><span class="st">!`</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Default parameters ───────────────────────────</span>
+<span class="kw">function</span> <span class="fn">createUser</span><span class="pu">(</span>name<span class="op">:</span> <span class="ty">string</span>, role<span class="op">:</span> <span class="ty">string</span> <span class="op">=</span> <span class="st">"viewer"</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="pu">{</span> name, role <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Rest parameters ──────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">sum</span><span class="pu">(</span><span class="op">...</span>nums<span class="op">:</span> <span class="ty">number</span><span class="op">[]</span><span class="pu">)</span><span class="op">:</span> <span class="ty">number</span> <span class="pu">{</span>
+  <span class="kw">return</span> nums<span class="pu">.</span><span class="fn">reduce</span><span class="pu">((</span>a, b<span class="pu">)</span> <span class="op">=&gt;</span> a <span class="op">+</span> b, <span class="nm">0</span><span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Function type as type alias ──────────────────</span>
+<span class="kw">type</span> <span class="ty">Transformer</span><span class="op">&lt;</span><span class="ty">T</span>, <span class="ty">U</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pu">(</span>input<span class="op">:</span> <span class="ty">T</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">U</span>
+<span class="kw">const</span> stringify<span class="op">:</span> <span class="ty">Transformer</span><span class="op">&lt;</span><span class="ty">number</span>, <span class="ty">string</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pu">(</span>n<span class="pu">)</span> <span class="op">=&gt;</span> n<span class="pu">.</span><span class="fn">toString</span><span class="pu">()</span>
+
+<span class="cm">// ── Function Overloads ───────────────────────────</span>
+<span class="kw">function</span> <span class="fn">createElement</span><span class="pu">(</span>tag<span class="op">:</span> <span class="st">"a"</span><span class="pu">)</span><span class="op">:</span> HTMLAnchorElement
+<span class="kw">function</span> <span class="fn">createElement</span><span class="pu">(</span>tag<span class="op">:</span> <span class="st">"canvas"</span><span class="pu">)</span><span class="op">:</span> HTMLCanvasElement
+<span class="kw">function</span> <span class="fn">createElement</span><span class="pu">(</span>tag<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span><span class="op">:</span> HTMLElement <span class="pu">{</span>
+  <span class="kw">return</span> document<span class="pu">.</span><span class="fn">createElement</span><span class="pu">(</span>tag<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Async functions ──────────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">fetchUser</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">number</span><span class="pu">)</span><span class="op">:</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">User</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="kw">const</span> res  <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span><span class="st">`/api/users/</span><span class="pu">${</span>id<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+  <span class="kw">return</span> res<span class="pu">.</span><span class="fn">json</span><span class="pu">()</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════ SECTION 5 -->
+  <div class="section" id="classes">
+    <div class="section-label">05 — OOP</div>
+    <h2>Classes, Access Modifiers & OOP</h2>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">class</span> <span class="ty">BankAccount</span> <span class="pu">{</span>
+  <span class="cm">// Access modifiers: public, private, protected, readonly</span>
+  <span class="kw">readonly</span> id<span class="op">:</span> <span class="ty">string</span>
+  <span class="kw">public</span>   owner<span class="op">:</span> <span class="ty">string</span>
+  <span class="kw">private</span>  balance<span class="op">:</span> <span class="ty">number</span>
+  <span class="kw">protected</span> interestRate<span class="op">:</span> <span class="ty">number</span>
+
+  <span class="cm">// Shorthand constructor — declare + assign in one go</span>
+  <span class="kw">constructor</span><span class="pu">(</span>
+    <span class="kw">public readonly</span>  accountId<span class="op">:</span>  <span class="ty">string</span>,
+    <span class="kw">private</span>          _balance<span class="op">:</span>   <span class="ty">number</span> <span class="op">=</span> <span class="nm">0</span>
+  <span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span>id      <span class="op">=</span> accountId
+    <span class="kw">this</span><span class="pu">.</span>balance <span class="op">=</span> _balance
+  <span class="pu">}</span>
+
+  <span class="cm">// Getter / Setter</span>
+  <span class="kw">get</span> <span class="fn">currentBalance</span><span class="pu">()</span><span class="op">:</span> <span class="ty">number</span> <span class="pu">{</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>balance <span class="pu">}</span>
+
+  <span class="kw">set</span> <span class="fn">currentBalance</span><span class="pu">(</span>val<span class="op">:</span> <span class="ty">number</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(</span>val <span class="op">&lt;</span> <span class="nm">0</span><span class="pu">)</span> <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">"Negative balance"</span><span class="pu">)</span>
+    <span class="kw">this</span><span class="pu">.</span>balance <span class="op">=</span> val
+  <span class="pu">}</span>
+
+  <span class="kw">deposit</span><span class="pu">(</span>amount<span class="op">:</span> <span class="ty">number</span><span class="pu">)</span><span class="op">:</span> <span class="kw">this</span> <span class="pu">{</span>  <span class="cm">// return `this` for chaining</span>
+    <span class="kw">this</span><span class="pu">.</span>balance <span class="op">+=</span> amount
+    <span class="kw">return</span> <span class="kw">this</span>
+  <span class="pu">}</span>
+
+  <span class="kw">static</span> <span class="fn">create</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span><span class="op">:</span> <span class="ty">BankAccount</span> <span class="pu">{</span>
+    <span class="kw">return new</span> <span class="ty">BankAccount</span><span class="pu">(</span>id<span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// Inheritance</span>
+<span class="kw">class</span> <span class="ty">SavingsAccount</span> <span class="kw">extends</span> <span class="ty">BankAccount</span> <span class="pu">{</span>
+  <span class="kw">constructor</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">string</span>, <span class="kw">private</span> goal<span class="op">:</span> <span class="ty">number</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">super</span><span class="pu">(</span>id<span class="pu">)</span>
+  <span class="pu">}</span>
+  <span class="kw">get</span> <span class="fn">progress</span><span class="pu">()</span> <span class="pu">{</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>currentBalance <span class="op">/</span> <span class="kw">this</span><span class="pu">.</span>goal <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// Abstract class</span>
+<span class="kw">abstract class</span> <span class="ty">Animal</span> <span class="pu">{</span>
+  <span class="kw">abstract</span> <span class="fn">speak</span><span class="pu">()</span><span class="op">:</span> <span class="ty">string</span>
+  <span class="fn">describe</span><span class="pu">()</span> <span class="pu">{</span> <span class="kw">return</span> <span class="st">`I say: </span><span class="pu">${</span><span class="kw">this</span><span class="pu">.</span><span class="fn">speak</span><span class="pu">()}</span><span class="st">`</span> <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="pullquote">"TypeScript's class system lets you apply the principle of least privilege — expose only what callers need to know."</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════ SECTION 6 -->
+  <div class="section" id="interfaces">
+    <div class="section-label">06 — Contracts</div>
+    <h2>Interfaces & Type Aliases</h2>
+    <p>Both <code>interface</code> and <code>type</code> can describe object shapes. Know when to use which.</p>
+
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>Interface</th><th>Type Alias</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Object shapes</td><td>✅ Primary use</td><td>✅ Supported</td></tr>
+        <tr><td>Declaration merging</td><td>✅ Yes</td><td>❌ No</td></tr>
+        <tr><td>Union types</td><td>❌ No</td><td>✅ Yes</td></tr>
+        <tr><td>Mapped types</td><td>❌ No</td><td>✅ Yes</td></tr>
+        <tr><td>Extends / implements</td><td>✅ Yes</td><td>Limited via &amp;</td></tr>
+        <tr><td>Error messages</td><td>Often cleaner</td><td>Can be verbose</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Interface ────────────────────────────────────</span>
+<span class="kw">interface</span> <span class="ty">User</span> <span class="pu">{</span>
+  <span class="kw">readonly</span> id<span class="op">:</span>  <span class="ty">number</span>
+  name<span class="op">:</span>         <span class="ty">string</span>
+  email<span class="op">?:</span>       <span class="ty">string</span>        <span class="cm">// optional</span>
+  role<span class="op">:</span>         <span class="ty">Role</span>
+  address<span class="op">:</span>      <span class="ty">Address</span>       <span class="cm">// nested type</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Declaration merging (unique to interface) ────</span>
+<span class="kw">interface</span> <span class="ty">Window</span> <span class="pu">{</span> analytics<span class="op">:</span> <span class="ty">Analytics</span> <span class="pu">}</span>  <span class="cm">// extends global Window</span>
+
+<span class="cm">// ── Type aliases for complex types ───────────────</span>
+<span class="kw">type</span> <span class="ty">ID</span>        <span class="op">=</span> <span class="ty">string</span> <span class="op">|</span> <span class="ty">number</span>
+<span class="kw">type</span> <span class="ty">Callback</span>  <span class="op">=</span> <span class="pu">(</span>err<span class="op">:</span> <span class="ty">Error</span> <span class="op">|</span> <span class="kw">null</span>, data<span class="op">?:</span> <span class="ty">unknown</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">void</span>
+<span class="kw">type</span> <span class="ty">NonEmpty</span>  <span class="op">=</span> <span class="pu">[</span><span class="ty">string</span>, <span class="op">...</span><span class="ty">string</span><span class="op">[]</span><span class="pu">]</span>   <span class="cm">// non-empty array</span>
+
+<span class="cm">// ── Intersection types ───────────────────────────</span>
+<span class="kw">type</span> <span class="ty">AdminUser</span> <span class="op">=</span> <span class="ty">User</span> <span class="op">&amp;</span> <span class="pu">{</span> adminLevel<span class="op">:</span> <span class="ty">number</span> <span class="pu">}</span>
+
+<span class="cm">// ── Index signatures ─────────────────────────────</span>
+<span class="kw">interface</span> <span class="ty">Dict</span><span class="op">&lt;</span><span class="ty">V</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="pu">[</span>key<span class="op">:</span> <span class="ty">string</span><span class="pu">]</span><span class="op">:</span> <span class="ty">V</span>
+<span class="pu">}</span>
+<span class="kw">const</span> scores<span class="op">:</span> <span class="ty">Dict</span><span class="op">&lt;</span><span class="ty">number</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pu">{</span> alice<span class="op">:</span> <span class="nm">95</span>, bob<span class="op">:</span> <span class="nm">87</span> <span class="pu">}</span>
+
+<span class="cm">// ── Callable interface ───────────────────────────</span>
+<span class="kw">interface</span> <span class="ty">Formatter</span> <span class="pu">{</span>
+  <span class="pu">(</span>value<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span><span class="op">:</span> <span class="ty">string</span>
+  locale<span class="op">:</span> <span class="ty">string</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════ SECTION 7 -->
+  <div class="section" id="generics">
+    <div class="section-label">07 — Generics</div>
+    <h2>Generics: Write Once, Type Safely</h2>
+    <p class="lead">Generics let you write reusable, type-safe code that works across many types — without losing type information.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Basic generic function ───────────────────────</span>
+<span class="kw">function</span> <span class="fn">identity</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span><span class="pu">(</span>arg<span class="op">:</span> <span class="ty">T</span><span class="pu">)</span><span class="op">:</span> <span class="ty">T</span> <span class="pu">{</span> <span class="kw">return</span> arg <span class="pu">}</span>
+
+<span class="kw">const</span> num <span class="op">=</span> <span class="fn">identity</span><span class="pu">(</span><span class="nm">42</span><span class="pu">)</span>     <span class="cm">// T inferred as number</span>
+<span class="kw">const</span> str <span class="op">=</span> <span class="fn">identity</span><span class="pu">(</span><span class="st">"hi"</span><span class="pu">)</span>   <span class="cm">// T inferred as string</span>
+
+<span class="cm">// ── Constrained generics ─────────────────────────</span>
+<span class="kw">function</span> <span class="fn">getProperty</span><span class="op">&lt;</span><span class="ty">T</span>, <span class="ty">K</span> <span class="kw">extends</span> <span class="kw">keyof</span> <span class="ty">T</span><span class="op">&gt;</span><span class="pu">(</span>obj<span class="op">:</span> <span class="ty">T</span>, key<span class="op">:</span> <span class="ty">K</span><span class="pu">)</span><span class="op">:</span> <span class="ty">T</span><span class="pu">[</span><span class="ty">K</span><span class="pu">]</span> <span class="pu">{</span>
+  <span class="kw">return</span> obj<span class="pu">[</span>key<span class="pu">]</span>
+<span class="pu">}</span>
+<span class="kw">const</span> user  <span class="op">=</span> <span class="pu">{</span> name<span class="op">:</span> <span class="st">"Alice"</span>, age<span class="op">:</span> <span class="nm">30</span> <span class="pu">}</span>
+<span class="kw">const</span> uName <span class="op">=</span> <span class="fn">getProperty</span><span class="pu">(</span>user, <span class="st">"name"</span><span class="pu">)</span> <span class="cm">// string</span>
+
+<span class="cm">// ── Generic interface & class ────────────────────</span>
+<span class="kw">interface</span> <span class="ty">Repository</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="fn">findById</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span><span class="op">:</span>   <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">T</span> <span class="op">|</span> <span class="kw">null</span><span class="op">&gt;</span>
+  <span class="fn">save</span><span class="pu">(</span>entity<span class="op">:</span> <span class="ty">T</span><span class="pu">)</span><span class="op">:</span>         <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span>
+  <span class="fn">delete</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span><span class="op">:</span>      <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">void</span><span class="op">&gt;</span>
+<span class="pu">}</span>
+
+<span class="kw">class</span> <span class="ty">Stack</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="kw">private</span> items<span class="op">:</span> <span class="ty">T</span><span class="op">[]</span> <span class="op">=</span> <span class="pu">[]</span>
+  <span class="fn">push</span><span class="pu">(</span>item<span class="op">:</span> <span class="ty">T</span><span class="pu">)</span>  <span class="pu">{</span> <span class="kw">this</span><span class="pu">.</span>items<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>item<span class="pu">)</span> <span class="pu">}</span>
+  <span class="fn">pop</span><span class="pu">()</span><span class="op">:</span> <span class="ty">T</span> <span class="op">|</span> <span class="kw">undefined</span> <span class="pu">{</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>items<span class="pu">.</span><span class="fn">pop</span><span class="pu">()</span> <span class="pu">}</span>
+  <span class="fn">peek</span><span class="pu">()</span><span class="op">:</span> <span class="ty">T</span> <span class="op">|</span> <span class="kw">undefined</span> <span class="pu">{</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>items<span class="pu">.</span><span class="fn">at</span><span class="pu">(</span><span class="op">-</span><span class="nm">1</span><span class="pu">)</span> <span class="pu">}</span>
+  <span class="kw">get</span> <span class="fn">size</span><span class="pu">()</span> <span class="pu">{</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>items<span class="pu">.</span>length <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Generic with default ─────────────────────────</span>
+<span class="kw">interface</span> <span class="ty">ApiResponse</span><span class="op">&lt;</span><span class="ty">T</span> <span class="op">=</span> <span class="ty">unknown</span><span class="op">&gt;</span> <span class="pu">{</span>
+  data<span class="op">:</span>    <span class="ty">T</span>
+  status<span class="op">:</span>  <span class="ty">number</span>
+  message<span class="op">:</span> <span class="ty">string</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════ SECTION 8 -->
+  <div class="section" id="utility">
+    <div class="section-label">08 — Utility Types</div>
+    <h2>Built-in Utility Types</h2>
+    <p>TypeScript ships with powerful generic utilities. Learn these and you'll write far less boilerplate.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Object Utilities</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">interface</span> <span class="ty">User</span> <span class="pu">{</span>
+  id<span class="op">:</span>    <span class="ty">number</span>
+  name<span class="op">:</span>  <span class="ty">string</span>
+  email<span class="op">:</span> <span class="ty">string</span>
+  age<span class="op">:</span>   <span class="ty">number</span>
+<span class="pu">}</span>
+
+<span class="ty">Partial</span><span class="op">&lt;</span><span class="ty">User</span><span class="op">&gt;</span>             <span class="cm">// all props optional</span>
+<span class="ty">Required</span><span class="op">&lt;</span><span class="ty">User</span><span class="op">&gt;</span>            <span class="cm">// all props required</span>
+<span class="ty">Readonly</span><span class="op">&lt;</span><span class="ty">User</span><span class="op">&gt;</span>            <span class="cm">// all props readonly</span>
+<span class="ty">Pick</span><span class="op">&lt;</span><span class="ty">User</span>, <span class="st">"id"</span> <span class="op">|</span> <span class="st">"name"</span><span class="op">&gt;</span>  <span class="cm">// { id, name } subset</span>
+<span class="ty">Omit</span><span class="op">&lt;</span><span class="ty">User</span>, <span class="st">"age"</span><span class="op">&gt;</span>          <span class="cm">// everything except age</span>
+<span class="ty">Record</span><span class="op">&lt;</span><span class="ty">string</span>, <span class="ty">User</span><span class="op">&gt;</span>       <span class="cm">// { [key: string]: User }</span>
+
+<span class="cm">// ── Real usage ───────────────────────────────────</span>
+<span class="kw">type</span> <span class="ty">CreateUserInput</span> <span class="op">=</span> <span class="ty">Omit</span><span class="op">&lt;</span><span class="ty">User</span>, <span class="st">"id"</span><span class="op">&gt;</span>
+<span class="kw">type</span> <span class="ty">UpdateUserInput</span> <span class="op">=</span> <span class="ty">Partial</span><span class="op">&lt;</span><span class="ty">Omit</span><span class="op">&lt;</span><span class="ty">User</span>, <span class="st">"id"</span><span class="op">&gt;&gt;</span>
+<span class="kw">type</span> <span class="ty">UserProfile</span>    <span class="op">=</span> <span class="ty">Pick</span><span class="op">&lt;</span><span class="ty">User</span>, <span class="st">"name"</span> <span class="op">|</span> <span class="st">"email"</span><span class="op">&gt;</span></code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Function & Conditional Utilities</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Function utilities ───────────────────────────</span>
+<span class="kw">function</span> <span class="fn">fetchUser</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">number</span><span class="pu">)</span><span class="op">:</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">User</span><span class="op">&gt;</span> <span class="pu">{</span> <span class="cm">/* ... */</span> <span class="pu">}</span>
+
+<span class="kw">type</span> <span class="ty">FetchParams</span>   <span class="op">=</span> <span class="ty">Parameters</span><span class="op">&lt;</span><span class="kw">typeof</span> fetchUser<span class="op">&gt;</span>    <span class="cm">// [number]</span>
+<span class="kw">type</span> <span class="ty">FetchReturn</span>   <span class="op">=</span> <span class="ty">ReturnType</span><span class="op">&lt;</span><span class="kw">typeof</span> fetchUser<span class="op">&gt;</span>    <span class="cm">// Promise&lt;User&gt;</span>
+<span class="kw">type</span> <span class="ty">Awaited</span>       <span class="op">=</span> <span class="ty">Awaited</span><span class="op">&lt;</span><span class="ty">FetchReturn</span><span class="op">&gt;</span>           <span class="cm">// User</span>
+<span class="kw">type</span> <span class="ty">CtorInstance</span>  <span class="op">=</span> <span class="ty">InstanceType</span><span class="op">&lt;</span><span class="kw">typeof</span> <span class="ty">BankAccount</span><span class="op">&gt;</span> <span class="cm">// BankAccount</span>
+
+<span class="cm">// ── String utilities ─────────────────────────────</span>
+<span class="kw">type</span> <span class="ty">U</span> <span class="op">=</span> <span class="ty">Uppercase</span><span class="op">&lt;</span><span class="st">"hello"</span><span class="op">&gt;</span>    <span class="cm">// "HELLO"</span>
+<span class="kw">type</span> <span class="ty">L</span> <span class="op">=</span> <span class="ty">Lowercase</span><span class="op">&lt;</span><span class="st">"HELLO"</span><span class="op">&gt;</span>    <span class="cm">// "hello"</span>
+<span class="kw">type</span> <span class="ty">C</span> <span class="op">=</span> <span class="ty">Capitalize</span><span class="op">&lt;</span><span class="st">"hello"</span><span class="op">&gt;</span>   <span class="cm">// "Hello"</span>
+<span class="kw">type</span> <span class="ty">UC</span><span class="op">=</span> <span class="ty">Uncapitalize</span><span class="op">&lt;</span><span class="st">"Hello"</span><span class="op">&gt;</span> <span class="cm">// "hello"</span>
+
+<span class="cm">// ── Conditional utility ──────────────────────────</span>
+<span class="kw">type</span> <span class="ty">NonNullable</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ty">T</span> <span class="kw">extends</span> <span class="kw">null</span> <span class="op">|</span> <span class="kw">undefined</span> <span class="op">?</span> <span class="ty">never</span> <span class="op">:</span> <span class="ty">T</span>
+<span class="kw">type</span> <span class="ty">Clean</span> <span class="op">=</span> <span class="ty">NonNullable</span><span class="op">&lt;</span><span class="ty">string</span> <span class="op">|</span> <span class="kw">null</span> <span class="op">|</span> <span class="kw">undefined</span><span class="op">&gt;</span> <span class="cm">// string</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════ SECTION 9 -->
+  <div class="section" id="advanced">
+    <div class="section-label">09 — Advanced</div>
+    <h2>Advanced Types & Type-Level Programming</h2>
+    <p class="lead">This is where TypeScript gets truly expressive — conditional types, mapped types, infer, and template literals give you a complete type-level programming language.</p>
+
+    <h3>Mapped Types</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Mapped types ─────────────────────────────────</span>
+<span class="kw">type</span> <span class="ty">Getters</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pu">{</span>
+  <span class="pu">[</span><span class="ty">K</span> <span class="kw">in</span> <span class="kw">keyof</span> <span class="ty">T</span> <span class="kw">as</span> <span class="st">`get</span><span class="pu">${</span><span class="ty">Capitalize</span><span class="op">&lt;</span><span class="ty">string</span> <span class="op">&amp;</span> <span class="ty">K</span><span class="op">&gt;</span><span class="pu">}</span><span class="st">`</span><span class="pu">]</span><span class="op">:</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="ty">T</span><span class="pu">[</span><span class="ty">K</span><span class="pu">]</span>
+<span class="pu">}</span>
+<span class="cm">// Getters&lt;{name: string; age: number}&gt;</span>
+<span class="cm">// → { getName: () =&gt; string; getAge: () =&gt; number }</span>
+
+<span class="cm">// Remove readonly modifier with -readonly</span>
+<span class="kw">type</span> <span class="ty">Mutable</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pu">{</span> <span class="op">-</span><span class="kw">readonly</span> <span class="pu">[</span><span class="ty">K</span> <span class="kw">in</span> <span class="kw">keyof</span> <span class="ty">T</span><span class="pu">]</span><span class="op">:</span> <span class="ty">T</span><span class="pu">[</span><span class="ty">K</span><span class="pu">]</span> <span class="pu">}</span>
+
+<span class="cm">// Remove optional with -?</span>
+<span class="kw">type</span> <span class="ty">Concrete</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pu">{</span> <span class="pu">[</span><span class="ty">K</span> <span class="kw">in</span> <span class="kw">keyof</span> <span class="ty">T</span><span class="pu">]</span><span class="op">-?:</span> <span class="ty">T</span><span class="pu">[</span><span class="ty">K</span><span class="pu">]</span> <span class="pu">}</span></code></pre>
+    </div>
+
+    <h3>Conditional Types & infer</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Conditional types ────────────────────────────</span>
+<span class="kw">type</span> <span class="ty">IsArray</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ty">T</span> <span class="kw">extends</span> <span class="ty">any</span><span class="op">[]</span> <span class="op">?</span> <span class="kw">true</span> <span class="op">:</span> <span class="kw">false</span>
+
+<span class="kw">type</span> <span class="ty">A</span> <span class="op">=</span> <span class="ty">IsArray</span><span class="op">&lt;</span><span class="ty">string</span><span class="op">[]</span><span class="op">&gt;</span>  <span class="cm">// true</span>
+<span class="kw">type</span> <span class="ty">B</span> <span class="op">=</span> <span class="ty">IsArray</span><span class="op">&lt;</span><span class="ty">string</span><span class="op">&gt;</span>    <span class="cm">// false</span>
+
+<span class="cm">// ── infer — extract types ────────────────────────</span>
+<span class="cm">// Get element type from an array</span>
+<span class="kw">type</span> <span class="ty">ElementOf</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="op">=</span>
+  <span class="ty">T</span> <span class="kw">extends</span> <span class="pu">(</span><span class="kw">infer</span> <span class="ty">Item</span><span class="pu">)[]</span> <span class="op">?</span> <span class="ty">Item</span> <span class="op">:</span> <span class="ty">T</span>
+
+<span class="kw">type</span> <span class="ty">Num</span> <span class="op">=</span> <span class="ty">ElementOf</span><span class="op">&lt;</span><span class="ty">number</span><span class="op">[]</span><span class="op">&gt;</span>   <span class="cm">// number</span>
+<span class="kw">type</span> <span class="ty">Str</span> <span class="op">=</span> <span class="ty">ElementOf</span><span class="op">&lt;</span><span class="ty">string</span><span class="op">[]</span><span class="op">&gt;</span>   <span class="cm">// string</span>
+
+<span class="cm">// Get the resolved type of a Promise</span>
+<span class="kw">type</span> <span class="ty">UnPromise</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="op">=</span>
+  <span class="ty">T</span> <span class="kw">extends</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="kw">infer</span> <span class="ty">R</span><span class="op">&gt;</span> <span class="op">?</span> <span class="ty">R</span> <span class="op">:</span> <span class="ty">T</span>
+
+<span class="kw">type</span> <span class="ty">UserFromPromise</span> <span class="op">=</span> <span class="ty">UnPromise</span><span class="op">&lt;</span><span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">User</span><span class="op">&gt;&gt;</span>  <span class="cm">// User</span>
+
+<span class="cm">// Extract first arg type</span>
+<span class="kw">type</span> <span class="ty">FirstArg</span><span class="op">&lt;</span><span class="ty">T</span> <span class="kw">extends</span> <span class="pu">(</span><span class="op">...</span>args<span class="op">:</span> <span class="ty">any</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">any</span><span class="op">&gt;</span> <span class="op">=</span>
+  <span class="ty">T</span> <span class="kw">extends</span> <span class="pu">(</span>first<span class="op">:</span> <span class="kw">infer</span> <span class="ty">F</span>, <span class="op">...</span>_<span class="op">:</span> <span class="ty">any</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">any</span> <span class="op">?</span> <span class="ty">F</span> <span class="op">:</span> <span class="ty">never</span>
+
+<span class="kw">type</span> <span class="ty">FA</span> <span class="op">=</span> <span class="ty">FirstArg</span><span class="op">&lt;</span><span class="pu">(</span>a<span class="op">:</span> <span class="ty">number</span>, b<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">void</span><span class="op">&gt;</span>  <span class="cm">// number</span></code></pre>
+    </div>
+
+    <h3>Decorators (TypeScript 5.x)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Decorators</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Method decorator ─────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">log</span><span class="pu">(</span>target<span class="op">:</span> <span class="ty">any</span>, key<span class="op">:</span> <span class="ty">string</span>, desc<span class="op">:</span> <span class="ty">PropertyDescriptor</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> orig <span class="op">=</span> desc<span class="pu">.</span>value
+  desc<span class="pu">.</span>value <span class="op">=</span> <span class="kw">function</span><span class="pu">(</span><span class="op">...</span>args<span class="op">:</span> <span class="ty">any</span><span class="op">[]</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">`Calling </span><span class="pu">${</span>key<span class="pu">}</span><span class="st"> with`</span>, args<span class="pu">)</span>
+    <span class="kw">return</span> orig<span class="pu">.</span><span class="fn">apply</span><span class="pu">(</span><span class="kw">this</span>, args<span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">readonly</span><span class="pu">(</span>target<span class="op">:</span> <span class="ty">any</span>, key<span class="op">:</span> <span class="ty">string</span>, desc<span class="op">:</span> <span class="ty">PropertyDescriptor</span><span class="pu">)</span> <span class="pu">{</span>
+  desc<span class="pu">.</span>writable <span class="op">=</span> <span class="kw">false</span>
+<span class="pu">}</span>
+
+<span class="kw">class</span> <span class="ty">Service</span> <span class="pu">{</span>
+  <span class="op">@</span>log
+  <span class="op">@</span>readonly
+  <span class="fn">greet</span><span class="pu">(</span>name<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">return</span> <span class="st">`Hello, </span><span class="pu">${</span>name<span class="pu">}</span><span class="st">`</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════ SECTION 10 -->
+  <div class="section" id="tips">
+    <div class="section-label">10 — Best Practices</div>
+    <h2>Pro Tips, Patterns & Common Pitfalls</h2>
+    <p class="lead">These are the things experienced TypeScript developers know that beginners don't.</p>
+
+    <h3>1. Use <code>as const</code> for literal inference</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// Without as const — type is string[]</span>
+<span class="kw">const</span> colors <span class="op">=</span> <span class="pu">[</span><span class="st">"red"</span>, <span class="st">"green"</span>, <span class="st">"blue"</span><span class="pu">]</span>
+
+<span class="cm">// With as const — type is readonly ["red","green","blue"]</span>
+<span class="kw">const</span> COLORS <span class="op">=</span> <span class="pu">[</span><span class="st">"red"</span>, <span class="st">"green"</span>, <span class="st">"blue"</span><span class="pu">]</span> <span class="kw">as const</span>
+<span class="kw">type</span> <span class="ty">Color</span> <span class="op">=</span> <span class="pu">(</span><span class="kw">typeof</span> COLORS<span class="pu">)[</span><span class="ty">number</span><span class="pu">]</span> <span class="cm">// "red" | "green" | "blue"</span>
+
+<span class="cm">// Works great for config objects too</span>
+<span class="kw">const</span> CONFIG <span class="op">=</span> <span class="pu">{</span>
+  endpoint<span class="op">:</span> <span class="st">"https://api.example.com"</span>,
+  timeout<span class="op">:</span>  <span class="nm">5000</span>,
+<span class="pu">}</span> <span class="kw">as const</span>
+<span class="kw">type</span> <span class="ty">Endpoint</span> <span class="op">=</span> <span class="kw">typeof</span> CONFIG<span class="pu">.</span>endpoint  <span class="cm">// literal string type</span></code></pre>
+    </div>
+
+    <h3>2. Branded / Nominal Types</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// Problem: these are both `number` — easy to confuse</span>
+<span class="kw">function</span> <span class="fn">transfer</span><span class="pu">(</span>from<span class="op">:</span> <span class="ty">number</span>, to<span class="op">:</span> <span class="ty">number</span>, amount<span class="op">:</span> <span class="ty">number</span><span class="pu">)</span> <span class="pu">{}</span>
+
+<span class="cm">// Solution: brand types</span>
+<span class="kw">type</span> <span class="ty">UserId</span> <span class="op">=</span> <span class="ty">number</span> <span class="op">&amp;</span> <span class="pu">{</span> <span class="kw">readonly</span> _brand<span class="op">:</span> <span class="st">"UserId"</span>  <span class="pu">}</span>
+<span class="kw">type</span> <span class="ty">USD</span>    <span class="op">=</span> <span class="ty">number</span> <span class="op">&amp;</span> <span class="pu">{</span> <span class="kw">readonly</span> _brand<span class="op">:</span> <span class="st">"USD"</span>     <span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">asUserId</span><span class="pu">(</span>n<span class="op">:</span> <span class="ty">number</span><span class="pu">)</span><span class="op">:</span> <span class="ty">UserId</span> <span class="pu">{</span> <span class="kw">return</span> n <span class="kw">as</span> <span class="ty">UserId</span> <span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">asUSD</span><span class="pu">(</span>n<span class="op">:</span>    <span class="ty">number</span><span class="pu">)</span><span class="op">:</span> <span class="ty">USD</span>    <span class="pu">{</span> <span class="kw">return</span> n <span class="kw">as</span> <span class="ty">USD</span>    <span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">transfer</span><span class="pu">(</span>from<span class="op">:</span> <span class="ty">UserId</span>, to<span class="op">:</span> <span class="ty">UserId</span>, amount<span class="op">:</span> <span class="ty">USD</span><span class="pu">)</span> <span class="pu">{}</span>
+
+<span class="kw">const</span> alice <span class="op">=</span> <span class="fn">asUserId</span><span class="pu">(</span><span class="nm">1</span><span class="pu">)</span>
+<span class="kw">const</span> bob   <span class="op">=</span> <span class="fn">asUserId</span><span class="pu">(</span><span class="nm">2</span><span class="pu">)</span>
+<span class="kw">const</span> amt   <span class="op">=</span> <span class="fn">asUSD</span><span class="pu">(</span><span class="nm">100</span><span class="pu">)</span>
+
+<span class="fn">transfer</span><span class="pu">(</span>alice, bob, amt<span class="pu">)</span>    <span class="cm">// ✓ correct order</span>
+<span class="fn">transfer</span><span class="pu">(</span>alice, amt, bob<span class="pu">)</span>    <span class="cm">// ✗ Type error! amt ≠ UserId</span></code></pre>
+    </div>
+
+    <h3>3. Satisfies Operator (TypeScript 4.9+)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">type</span> <span class="ty">Palette</span> <span class="op">=</span> <span class="ty">Record</span><span class="op">&lt;</span><span class="ty">string</span>, <span class="ty">string</span> <span class="op">|</span> <span class="pu">[</span><span class="ty">number</span>, <span class="ty">number</span>, <span class="ty">number</span><span class="pu">]</span><span class="op">&gt;</span>
+
+<span class="cm">// satisfies validates the type but PRESERVES literal inference</span>
+<span class="kw">const</span> palette <span class="op">=</span> <span class="pu">{</span>
+  red<span class="op">:</span>   <span class="pu">[</span><span class="nm">255</span>, <span class="nm">0</span>, <span class="nm">0</span><span class="pu">]</span>,
+  green<span class="op">:</span> <span class="st">"#00ff00"</span>,
+<span class="pu">}</span> <span class="kw">satisfies</span> <span class="ty">Palette</span>
+
+<span class="cm">// `palette.red` is still `[255,0,0]` not `string | [n,n,n]`</span>
+<span class="kw">const</span> r <span class="op">=</span> palette<span class="pu">.</span>red<span class="pu">[</span><span class="nm">0</span><span class="pu">]</span>  <span class="cm">// number ✓ (not an error!)</span></code></pre>
+    </div>
+
+    <h3>4. Template Literal Types for Typed APIs</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// Build typed event systems</span>
+<span class="kw">type</span> <span class="ty">EntityEvent</span><span class="op">&lt;</span><span class="ty">T</span> <span class="kw">extends</span> <span class="ty">string</span><span class="op">&gt;</span> <span class="op">=</span>
+  <span class="st">`</span><span class="pu">${</span><span class="ty">T</span><span class="pu">}</span><span class="st">:created`</span> <span class="op">|</span> <span class="st">`</span><span class="pu">${</span><span class="ty">T</span><span class="pu">}</span><span class="st">:updated`</span> <span class="op">|</span> <span class="st">`</span><span class="pu">${</span><span class="ty">T</span><span class="pu">}</span><span class="st">:deleted`</span>
+
+<span class="kw">type</span> <span class="ty">UserEvent</span> <span class="op">=</span> <span class="ty">EntityEvent</span><span class="op">&lt;</span><span class="st">"user"</span><span class="op">&gt;</span>
+<span class="cm">// "user:created" | "user:updated" | "user:deleted"</span>
+
+<span class="kw">function</span> <span class="fn">on</span><span class="pu">(</span>event<span class="op">:</span> <span class="ty">UserEvent</span>, handler<span class="op">:</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="ty">void</span><span class="pu">)</span> <span class="pu">{}</span>
+
+<span class="fn">on</span><span class="pu">(</span><span class="st">"user:created"</span>, <span class="pu">()</span> <span class="op">=&gt;</span> <span class="pu">{}</span><span class="pu">)</span>  <span class="cm">// ✓</span>
+<span class="fn">on</span><span class="pu">(</span><span class="st">"user:login"</span>,   <span class="pu">()</span> <span class="op">=&gt;</span> <span class="pu">{}</span><span class="pu">)</span>  <span class="cm">// ✗ Type error</span></code></pre>
+    </div>
+
+    <h3>5. Avoid Type Assertions — Validate Instead</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-header bad">❌ Unsafe assertion</div>
+        <div class="code-block">
+          <pre><code><span class="kw">const</span> data <span class="op">=</span>
+  <span class="kw">await</span> res<span class="pu">.</span><span class="fn">json</span><span class="pu">()</span>
+
+<span class="cm">// Pretending it's User</span>
+<span class="kw">const</span> user <span class="op">=</span> data <span class="kw">as</span> <span class="ty">User</span>
+<span class="cm">// Crashes at runtime</span>
+<span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>user<span class="pu">.</span>name<span class="pu">.</span>toUpperCase<span class="pu">())</span></code></pre>
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-header good">✅ Runtime validation</div>
+        <div class="code-block">
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> z <span class="pu">}</span> <span class="kw">from</span> <span class="st">"zod"</span>
+<span class="kw">const</span> UserSchema <span class="op">=</span> z<span class="pu">.</span><span class="fn">object</span><span class="pu">({</span>
+  name<span class="op">:</span> z<span class="pu">.</span><span class="fn">string</span><span class="pu">(),</span>
+  age<span class="op">:</span>  z<span class="pu">.</span><span class="fn">number</span><span class="pu">(),</span>
+<span class="pu">})</span>
+<span class="kw">type</span> <span class="ty">User</span> <span class="op">=</span> z<span class="pu">.</span><span class="ty">infer</span><span class="op">&lt;</span><span class="kw">typeof</span> UserSchema<span class="op">&gt;</span>
+<span class="cm">// Safe parse at runtime ✓</span>
+<span class="kw">const</span> user <span class="op">=</span> UserSchema<span class="pu">.</span><span class="fn">parse</span><span class="pu">(</span>data<span class="pu">)</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">💡 Use Zod, Valibot, or io-ts</div>
+      These libraries let you define a schema once and get both the runtime validator AND the TypeScript type for free. This is the gold standard for handling external data (API responses, env vars, form inputs).
+    </div>
+
+    <h3>6. tsconfig.json Essentials</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JSON — tsconfig.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="pu">{</span>
+  <span class="st">"compilerOptions"</span><span class="pu">:</span> <span class="pu">{</span>
+    <span class="st">"target"</span><span class="op">:</span>           <span class="st">"ES2022"</span>,
+    <span class="st">"module"</span><span class="op">:</span>           <span class="st">"NodeNext"</span>,
+    <span class="st">"lib"</span><span class="op">:</span>              <span class="pu">[</span><span class="st">"ES2022"</span>, <span class="st">"DOM"</span><span class="pu">]</span>,
+
+    <span class="cm">/* Strict mode — enable these */</span>
+    <span class="st">"strict"</span><span class="op">:</span>           <span class="kw">true</span>,         <span class="cm">// enables all below</span>
+    <span class="st">"noUncheckedIndexedAccess"</span><span class="op">:</span> <span class="kw">true</span>, <span class="cm">// arr[i] is T | undefined</span>
+    <span class="st">"noImplicitReturns"</span><span class="op">:</span> <span class="kw">true</span>,       <span class="cm">// all paths must return</span>
+    <span class="st">"exactOptionalPropertyTypes"</span><span class="op">:</span> <span class="kw">true</span>,
+
+    <span class="cm">/* Paths */</span>
+    <span class="st">"baseUrl"</span><span class="op">:</span>          <span class="st">"."</span>,
+    <span class="st">"paths"</span><span class="op">:</span>            <span class="pu">{</span> <span class="st">"@/*"</span><span class="op">:</span> <span class="pu">[</span><span class="st">"src/*"</span><span class="pu">]</span> <span class="pu">}</span>,
+    <span class="st">"outDir"</span><span class="op">:</span>           <span class="st">"dist"</span>,
+    <span class="st">"declaration"</span><span class="op">:</span>      <span class="kw">true</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <h3>7. Namespace Imports for large modules</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Organize related types into namespaces ───────</span>
+<span class="kw">namespace</span> <span class="ty">API</span> <span class="pu">{</span>
+  <span class="kw">export interface</span> <span class="ty">Request</span>  <span class="pu">{</span> url<span class="op">:</span> <span class="ty">string</span><span class="op">;</span> method<span class="op">:</span> <span class="ty">string</span> <span class="pu">}</span>
+  <span class="kw">export interface</span> <span class="ty">Response</span> <span class="pu">{</span> data<span class="op">:</span> <span class="ty">unknown</span><span class="op">;</span> status<span class="op">:</span> <span class="ty">number</span> <span class="pu">}</span>
+  <span class="kw">export type</span> <span class="ty">Handler</span> <span class="op">=</span> <span class="pu">(</span>req<span class="op">:</span> <span class="ty">Request</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">Response</span><span class="op">&gt;</span>
+<span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">handle</span><span class="pu">(</span>req<span class="op">:</span> <span class="ty">API.Request</span><span class="pu">)</span><span class="op">:</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">API.Response</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="cm">/* ... */</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <h3>8. Variance & Covariance</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript 5.x — Variance Annotations</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// in = contravariant (consumer), out = covariant (producer)</span>
+<span class="kw">interface</span> <span class="ty">Animal</span>   <span class="pu">{</span> name<span class="op">:</span> <span class="ty">string</span> <span class="pu">}</span>
+<span class="kw">interface</span> <span class="ty">Dog</span> <span class="kw">extends</span> <span class="ty">Animal</span> <span class="pu">{</span> breed<span class="op">:</span> <span class="ty">string</span> <span class="pu">}</span>
+
+<span class="cm">// Covariant: produces T — safe to assign Dog[] to Animal[]</span>
+<span class="kw">interface</span> <span class="ty">Producer</span><span class="op">&lt;</span><span class="kw">out</span> <span class="ty">T</span><span class="op">&gt;</span> <span class="pu">{</span> <span class="fn">produce</span><span class="pu">()</span><span class="op">:</span> <span class="ty">T</span> <span class="pu">}</span>
+
+<span class="cm">// Contravariant: consumes T — a Dog handler can be used where Animal is expected</span>
+<span class="kw">interface</span> <span class="ty">Consumer</span><span class="op">&lt;</span><span class="kw">in</span> <span class="ty">T</span><span class="op">&gt;</span>  <span class="pu">{</span> <span class="fn">consume</span><span class="pu">(</span>val<span class="op">:</span> <span class="ty">T</span><span class="pu">)</span><span class="op">:</span> <span class="ty">void</span> <span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">💡 Final Checklist</div>
+      Enable <code>strict: true</code> from day one · Use <code>unknown</code> not <code>any</code> · Prefer <code>type</code> for unions/utilities and <code>interface</code> for objects · Use Zod for runtime validation · Enable <code>noUncheckedIndexedAccess</code> · Use <code>satisfies</code> over <code>as</code> · Use <code>as const</code> for enum-like values
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  <p><strong>TypeScript Mastery</strong> — A comprehensive guide covering TypeScript 5.x</p>
+  <p style="margin-top: 8px; font-size: 13px;">Types save bugs. Bugs cost time. Time is everything.</p>
+</footer>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre')
+    const text = pre.textContent
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!'
+      setTimeout(() => btn.textContent = 'Copy', 2000)
+    })
+  }
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault()
+      const target = document.querySelector(a.getAttribute('href'))
+      if (target) target.scrollIntoView({ behavior: 'smooth' })
+    })
+  })
+</script>
+</body>
+</html>

@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js: The Complete Developer's Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7faf8;
+    --surface: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-muted: #9a9a9a;
+    --accent: #16a34a;
+    --accent-light: #f0fdf4;
+    --accent-subtle: #dcfce7;
+    --border: #e0e8e2;
+    --code-bg: #0d1117;
+    --code-text: #e6edf3;
+    --tag-bg: #f0f4f1;
+    --tag-text: #555;
+    --tip-bg: #f0fdf4;
+    --tip-border: #16a34a;
+    --warn-bg: #fff7ed;
+    --warn-border: #ea580c;
+    --info-bg: #eff6ff;
+    --info-border: #2563eb;
+    --keyword: #ff7b72;
+    --string: #a5d6ff;
+    --number: #f0883e;
+    --type: #79c0ff;
+    --comment: #8b949e;
+    --func: #d2a8ff;
+    --operator: #c9d1d9;
+    --builtin: #ffa657;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(247,250,248,0.93);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  .nav-logo { font-weight: 600; font-size: 15px; color: var(--text-primary); letter-spacing: -0.3px; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 0; }
+  .nav-links a {
+    font-size: 13px; color: var(--text-secondary); text-decoration: none;
+    padding: 6px 10px; border-radius: 6px; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .nav-links a:hover { background: var(--tag-bg); color: var(--text-primary); }
+  .nav-read-time { font-size: 13px; color: var(--text-muted); }
+
+  .hero {
+    max-width: 780px; margin: 0 auto;
+    padding: 64px 2rem 48px;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-subtle); color: var(--accent);
+    font-size: 12px; font-weight: 500; padding: 4px 12px;
+    border-radius: 100px; margin-bottom: 24px; letter-spacing: 0.3px;
+  }
+  .hero h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(32px, 5vw, 50px);
+    font-weight: 600; line-height: 1.15;
+    letter-spacing: -0.5px; color: var(--text-primary);
+    margin-bottom: 20px;
+  }
+  .hero-sub {
+    font-size: 19px; color: var(--text-secondary);
+    font-weight: 300; line-height: 1.6; margin-bottom: 32px;
+  }
+  .hero-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #16a34a, #14532d);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: white;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .meta-text { font-size: 14px; color: var(--text-secondary); }
+  .meta-text strong { color: var(--text-primary); }
+  .hero-divider { border: none; border-top: 1px solid var(--border); margin-top: 32px; }
+
+  .toc-wrapper { max-width: 780px; margin: 0 auto; padding: 0 2rem 8px; }
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 28px; margin-bottom: 40px;
+  }
+  .toc h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500; }
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+  .toc a {
+    font-size: 14px; color: var(--text-secondary); text-decoration: none;
+    display: flex; align-items: center; gap: 8px; padding: 4px 0;
+    transition: color 0.15s;
+  }
+  .toc a:hover { color: var(--accent); }
+  .toc-num { font-size: 12px; color: var(--text-muted); font-weight: 500; min-width: 20px; }
+
+  .content { max-width: 780px; margin: 0 auto; padding: 0 2rem 80px; }
+
+  .section { margin-bottom: 72px; scroll-margin-top: 72px; }
+  .section-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--accent); font-weight: 600; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--accent-subtle); }
+  h2 {
+    font-family: 'Lora', serif;
+    font-size: clamp(22px, 3vw, 30px); font-weight: 600;
+    letter-spacing: -0.3px; margin-bottom: 16px; color: var(--text-primary);
+  }
+  h3 { font-size: 19px; font-weight: 600; margin: 32px 0 12px; color: var(--text-primary); }
+  p { margin-bottom: 18px; color: #2d2d2d; }
+  .lead { font-size: 19px; color: var(--text-secondary); font-weight: 300; margin-bottom: 24px; }
+
+  .code-block {
+    background: var(--code-bg); border-radius: 10px;
+    margin: 24px 0; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .code-lang { font-size: 12px; color: #6e7681; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .copy-btn {
+    font-size: 12px; color: #484f58; background: none; border: none;
+    cursor: pointer; padding: 2px 8px; border-radius: 4px;
+    font-family: 'Outfit', sans-serif; transition: all 0.15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.07); color: #8b949e; }
+  pre {
+    padding: 20px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px; line-height: 1.7; color: var(--code-text);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  code {
+    font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+    background: #e8f5ec; color: #166534;
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* Syntax highlighting */
+  .kw  { color: #ff7b72; }
+  .ty  { color: #79c0ff; }
+  .st  { color: #a5d6ff; }
+  .nm  { color: #f0883e; }
+  .cm  { color: #8b949e; font-style: italic; }
+  .fn  { color: #d2a8ff; }
+  .op  { color: #c9d1d9; }
+  .pu  { color: #e6edf3; }
+  .bi  { color: #ffa657; }
+  .rx  { color: #7ee787; }
+
+  .tip { background: var(--tip-bg); border-left: 3px solid var(--tip-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .tip-label { font-size: 12px; font-weight: 600; color: #16a34a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .warn { background: var(--warn-bg); border-left: 3px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .warn-label { font-size: 12px; font-weight: 600; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .info { background: var(--info-bg); border-left: 3px solid var(--info-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .info-label { font-size: 12px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .compare-card { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-header { padding: 10px 16px; font-size: 13px; font-weight: 600; }
+  .compare-header.bad  { background: #fef2f2; color: #dc2626; }
+  .compare-header.good { background: #f0fdf4; color: #16a34a; }
+  .compare-card .code-block { border-radius: 0; margin: 0; border: none; }
+
+  table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
+  th { background: var(--tag-bg); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; letter-spacing: 0.3px; vertical-align: middle; }
+  .badge-green  { background: #dcfce7; color: #15803d; }
+  .badge-amber  { background: #fef3c7; color: #b45309; }
+  .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+  .badge-red    { background: #fee2e2; color: #b91c1c; }
+
+  .pullquote {
+    font-family: 'Lora', serif; font-style: italic;
+    font-size: 22px; line-height: 1.5; color: var(--text-secondary);
+    border-left: 4px solid var(--accent);
+    padding: 12px 24px; margin: 36px 0;
+  }
+
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+  .concept-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 20px;
+  }
+  .concept-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .concept-card p  { font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+  .concept-icon { font-size: 22px; margin-bottom: 10px; }
+
+  .phase-list { list-style: none; margin: 16px 0; }
+  .phase-list li {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .phase-list li:last-child { border-bottom: none; }
+  .phase-num {
+    min-width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent-subtle); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+  footer {
+    background: #0f1a12; color: rgba(255,255,255,0.65);
+    text-align: center; padding: 40px 2rem; font-size: 14px;
+  }
+  footer strong { color: white; }
+  footer a { color: #4ade80; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .toc-grid, .compare-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Node<span>.js</span> Complete Guide</div>
+  <div class="nav-links">
+    <a href="#architecture">Architecture</a>
+    <a href="#modules">Modules</a>
+    <a href="#streams">Streams</a>
+    <a href="#http">HTTP</a>
+    <a href="#async">Async</a>
+    <a href="#security">Security</a>
+    <a href="#production">Production</a>
+  </div>
+  <div class="nav-read-time">~35 min read</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; Complete Guide</div>
+  <h1>Node.js: The Complete Developer's Guide</h1>
+  <p class="hero-sub">Architecture, core modules, async patterns, streams, HTTP servers, databases, security, testing, clustering, and production deployment — everything you need to build and ship professional Node.js applications.</p>
+  <div class="hero-meta">
+    <div class="avatar">N</div>
+    <div class="meta-text">
+      <strong>Node.js Deep Dive</strong><br>
+      Covering Node.js 22 LTS and modern ecosystem — June 2026
+    </div>
+  </div>
+  <hr class="hero-divider">
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <div class="toc-grid">
+      <a href="#architecture"><span class="toc-num">01</span> Architecture & the Event Loop</a>
+      <a href="#databases"><span class="toc-num">08</span> Databases & ORMs</a>
+      <a href="#modules"><span class="toc-num">02</span> Module System: CJS vs ESM</a>
+      <a href="#security"><span class="toc-num">09</span> Security Hardening</a>
+      <a href="#async"><span class="toc-num">03</span> Async Patterns & Error Handling</a>
+      <a href="#testing"><span class="toc-num">10</span> Testing Strategies</a>
+      <a href="#streams"><span class="toc-num">04</span> Streams & Buffers</a>
+      <a href="#clustering"><span class="toc-num">11</span> Clustering & Worker Threads</a>
+      <a href="#http"><span class="toc-num">05</span> HTTP Servers & Express</a>
+      <a href="#performance"><span class="toc-num">12</span> Performance & Profiling</a>
+      <a href="#core"><span class="toc-num">06</span> Core Modules Deep Dive</a>
+      <a href="#docker"><span class="toc-num">13</span> Docker & Deployment</a>
+      <a href="#patterns"><span class="toc-num">07</span> Design Patterns in Node.js</a>
+      <a href="#observability"><span class="toc-num">14</span> Observability & Logging</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ═══════════════════════ 01 ARCHITECTURE -->
+  <div class="section" id="architecture">
+    <div class="section-label">01 — The Foundation</div>
+    <h2>Architecture & the Event Loop</h2>
+    <p class="lead">Node.js is a single-threaded, non-blocking runtime built on V8 and libuv. Understanding its event loop is non-negotiable for writing performant server-side code.</p>
+
+    <p>Unlike threaded servers (Apache, Java), Node.js uses a single thread with an asynchronous I/O model. When I/O happens (file reads, network calls, DB queries), Node delegates to libuv's thread pool and moves on — the callback fires when the operation completes. This is the secret to handling tens of thousands of concurrent connections on commodity hardware.</p>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-icon">🔄</div>
+        <h4>Event Loop</h4>
+        <p>Single thread that continuously checks queues of callbacks to execute. Six distinct phases, each with its own FIFO queue.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">⚙️</div>
+        <h4>libuv Thread Pool</h4>
+        <p>4 threads by default (configurable with <code>UV_THREADPOOL_SIZE</code>) for CPU-bound I/O: file system, DNS, crypto.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔢</div>
+        <h4>V8 Engine</h4>
+        <p>Google's JavaScript engine. Compiles JS to machine code via JIT. Manages the heap, garbage collector, and JS execution.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">📡</div>
+        <h4>Non-blocking I/O</h4>
+        <p>Network and I/O operations are handled by the OS kernel directly, signaling Node via epoll/kqueue when data is ready.</p>
+      </div>
+    </div>
+
+    <h3>The Six Event Loop Phases</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Event Loop Phase Order</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// Event loop phases (simplified):
+//  1. timers        — setTimeout, setInterval callbacks
+//  2. pending I/O   — deferred I/O callbacks from previous iteration
+//  3. idle/prepare  — internal use only
+//  4. poll          — retrieve new I/O events; execute I/O callbacks
+//  5. check         — setImmediate callbacks
+//  6. close         — close event callbacks (socket.on('close'))
+//
+// Between each phase: process.nextTick + Promise microtasks drain first</span>
+
+<span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=></span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">'setTimeout'</span><span class="pu">),</span>   <span class="nm">0</span><span class="pu">)</span>
+<span class="fn">setImmediate</span><span class="pu">(()</span> <span class="op">=></span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">'setImmediate'</span><span class="pu">))</span>
+<span class="kw">Promise</span><span class="pu">.</span><span class="fn">resolve</span><span class="pu">().</span><span class="fn">then</span><span class="pu">(()</span> <span class="op">=></span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">'Promise microtask'</span><span class="pu">))</span>
+<span class="bi">process</span><span class="pu">.</span><span class="fn">nextTick</span><span class="pu">(()</span> <span class="op">=></span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">'nextTick'</span><span class="pu">))</span>
+<span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">'synchronous'</span><span class="pu">)</span>
+
+<span class="cm">// Output order:
+//   synchronous         ← executes immediately
+//   nextTick            ← drains before any I/O phase
+//   Promise microtask   ← microtask queue (after nextTick queue)
+//   setTimeout          ← timers phase (next loop iteration)
+//   setImmediate        ← check phase (same or next iteration)</span>
+
+<span class="cm">// ── Blocking the event loop — NEVER DO THIS ──────</span>
+<span class="cm">// Bad: synchronous heavy computation blocks all requests</span>
+<span class="bi">app</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'/compute'</span><span class="pu">,</span> <span class="pu">(</span>req, res<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">let</span> sum <span class="op">=</span> <span class="nm">0</span>
+  <span class="kw">for</span> <span class="pu">(</span><span class="kw">let</span> i <span class="op">=</span> <span class="nm">0</span><span class="pu">;</span> i <span class="op"><</span> <span class="nm">1e9</span><span class="pu">;</span> i<span class="op">++</span><span class="pu">)</span> sum <span class="op">+=</span> i  <span class="cm">// blocks for ~1s!</span>
+  res<span class="pu">.</span><span class="fn">json</span><span class="pu">({</span> sum <span class="pu">})</span>
+<span class="pu">})</span>
+
+<span class="cm">// Good: offload to worker thread (see section 11)</span>
+<span class="bi">app</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'/compute'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span>req, res<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">const</span> sum <span class="op">=</span> <span class="kw">await</span> <span class="fn">runInWorker</span><span class="pu">(</span>heavyComputation<span class="pu">)</span>
+  res<span class="pu">.</span><span class="fn">json</span><span class="pu">({</span> sum <span class="pu">})</span>
+<span class="pu">})</span></code></pre>
+    </div>
+
+    <div class="warn">
+      <div class="warn-label">⚠️ Event Loop Blocking</div>
+      Any synchronous operation over ~1–2ms will delay all other requests. JSON parsing of large payloads, complex regex on untrusted input, and synchronous crypto are the most common offenders. Use <code>--prof</code> and clinic.js to identify blockage.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 02 MODULES -->
+  <div class="section" id="modules">
+    <div class="section-label">02 — Module System</div>
+    <h2>Module System: CommonJS vs ESM</h2>
+    <p class="lead">Node.js supports two module systems. CommonJS is the legacy default; ECMAScript Modules (ESM) is the modern standard. Understanding both — and how to interop — is essential.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-header bad">CommonJS (CJS)</div>
+        <div class="code-block"><pre><code><span class="cm">// Synchronous, dynamic requires ok</span>
+<span class="kw">const</span> path <span class="op">=</span> <span class="fn">require</span><span class="pu">(</span><span class="st">'path'</span><span class="pu">)</span>
+<span class="kw">const</span> <span class="pu">{</span> readFile <span class="pu">}</span> <span class="op">=</span> <span class="fn">require</span><span class="pu">(</span><span class="st">'fs'</span><span class="pu">)</span>
+
+<span class="cm">// Conditional import at runtime</span>
+<span class="kw">if</span> <span class="pu">(</span>isDev<span class="pu">)</span> <span class="fn">require</span><span class="pu">(</span><span class="st">'./debug'</span><span class="pu">)</span>
+
+module<span class="pu">.</span>exports <span class="op">=</span> <span class="pu">{</span> myFn <span class="pu">}</span>
+<span class="cm">// package.json: "type": "commonjs"
+// or .cjs extension</span></code></pre></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-header good">ESM (Modern)</div>
+        <div class="code-block"><pre><code><span class="cm">// Static, hoisted, tree-shakeable</span>
+<span class="kw">import</span> path <span class="kw">from</span> <span class="st">'node:path'</span>
+<span class="kw">import</span> <span class="pu">{</span> readFile <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:fs/promises'</span>
+
+<span class="cm">// Dynamic import still possible</span>
+<span class="kw">const</span> mod <span class="op">=</span> <span class="kw">await</span> <span class="kw">import</span><span class="pu">(</span>path<span class="pu">)</span>
+
+<span class="kw">export</span> <span class="pu">{</span> myFn <span class="pu">}</span>
+<span class="kw">export</span> <span class="kw">default</span> myFn
+<span class="cm">// package.json: "type": "module"
+// or .mjs extension</span></code></pre></div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Module Best Practices</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Always use 'node:' prefix for built-ins (Node 14.18+) ──</span>
+<span class="kw">import</span> fs   <span class="kw">from</span> <span class="st">'node:fs/promises'</span>   <span class="cm">// not 'fs'</span>
+<span class="kw">import</span> path <span class="kw">from</span> <span class="st">'node:path'</span>
+<span class="kw">import</span> http <span class="kw">from</span> <span class="st">'node:http'</span>
+<span class="kw">import</span> <span class="pu">{</span> createHash <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:crypto'</span>
+
+<span class="cm">// ── __dirname / __filename equivalents in ESM ──────────────</span>
+<span class="kw">import</span> <span class="pu">{</span> fileURLToPath <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:url'</span>
+<span class="kw">import</span> <span class="pu">{</span> dirname <span class="pu">}</span>      <span class="kw">from</span> <span class="st">'node:path'</span>
+
+<span class="kw">const</span> __filename <span class="op">=</span> <span class="fn">fileURLToPath</span><span class="pu">(</span><span class="kw">import</span><span class="pu">.</span>meta<span class="pu">.</span>url<span class="pu">)</span>
+<span class="kw">const</span> __dirname  <span class="op">=</span> <span class="fn">dirname</span><span class="pu">(</span>__filename<span class="pu">)</span>
+
+<span class="cm">// ── Barrel exports pattern ──────────────────────────────────</span>
+<span class="cm">// services/index.js — centralise public API</span>
+<span class="kw">export</span> <span class="pu">{</span> UserService <span class="pu">}</span>  <span class="kw">from</span> <span class="st">'./user.service.js'</span>
+<span class="kw">export</span> <span class="pu">{</span> AuthService <span class="pu">}</span>  <span class="kw">from</span> <span class="st">'./auth.service.js'</span>
+<span class="kw">export</span> <span class="pu">{</span> MailService <span class="pu">}</span>  <span class="kw">from</span> <span class="st">'./mail.service.js'</span>
+
+<span class="cm">// ── Interop: require a CJS package in ESM ─────────────────</span>
+<span class="kw">import</span> <span class="pu">{</span> createRequire <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:module'</span>
+<span class="kw">const</span> require <span class="op">=</span> <span class="fn">createRequire</span><span class="pu">(</span><span class="kw">import</span><span class="pu">.</span>meta<span class="pu">.</span>url<span class="pu">)</span>
+<span class="kw">const</span> legacyLib <span class="op">=</span> <span class="fn">require</span><span class="pu">(</span><span class="st">'legacy-cjs-package'</span><span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 03 ASYNC -->
+  <div class="section" id="async">
+    <div class="section-label">03 — Asynchronous Node.js</div>
+    <h2>Async Patterns & Robust Error Handling</h2>
+    <p class="lead">Node's single-threaded model means unhandled rejections and synchronous throws can crash your entire process. Structured async patterns are not optional — they are the job.</p>
+
+    <h3>Async/Await with Proper Error Handling</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Production Async Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Result-type pattern — no more try/catch soup ──</span>
+<span class="kw">async function</span> <span class="fn">safe</span><span class="pu">(</span>promise<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">try</span> <span class="pu">{</span>
+    <span class="kw">return</span> <span class="pu">[</span><span class="kw">null</span>, <span class="kw">await</span> promise<span class="pu">]</span>
+  <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">(</span>err<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">return</span> <span class="pu">[</span>err, <span class="kw">null</span><span class="pu">]</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> <span class="pu">[</span>err, user<span class="pu">]</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">safe</span><span class="pu">(</span>db<span class="pu">.</span>findUser<span class="pu">(</span>id<span class="pu">))</span>
+<span class="kw">if</span> <span class="pu">(</span>err<span class="pu">)</span> <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">500</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> err<span class="pu">.</span>message <span class="pu">})</span>
+
+<span class="cm">// ── Retry with exponential backoff ───────────────</span>
+<span class="kw">async function</span> <span class="fn">withRetry</span><span class="pu">(</span>fn, <span class="pu">{</span> retries <span class="op">=</span> <span class="nm">3</span>, base <span class="op">=</span> <span class="nm">200</span> <span class="pu">}</span> <span class="op">=</span> <span class="pu">{})</span> <span class="pu">{</span>
+  <span class="kw">for</span> <span class="pu">(</span><span class="kw">let</span> attempt <span class="op">=</span> <span class="nm">0</span><span class="pu">;</span> attempt <span class="op"><=</span> retries<span class="pu">;</span> attempt<span class="op">++</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">try</span> <span class="pu">{</span>
+      <span class="kw">return</span> <span class="kw">await</span> <span class="fn">fn</span><span class="pu">()</span>
+    <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">(</span>err<span class="pu">)</span> <span class="pu">{</span>
+      <span class="kw">if</span> <span class="pu">(</span>attempt <span class="op">===</span> retries<span class="pu">)</span> <span class="kw">throw</span> err
+      <span class="kw">const</span> delay <span class="op">=</span> base <span class="op">*</span> <span class="nm">2</span> <span class="op">**</span> attempt <span class="op">+</span> <span class="bi">Math</span><span class="pu">.</span><span class="fn">random</span><span class="pu">()</span> <span class="op">*</span> <span class="nm">100</span>
+      <span class="kw">await</span> <span class="kw">new</span> <span class="bi">Promise</span><span class="pu">(</span>r <span class="op">=></span> <span class="fn">setTimeout</span><span class="pu">(</span>r, delay<span class="pu">))</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Timeout wrapper ───────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">withTimeout</span><span class="pu">(</span>promise, ms<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> timeout <span class="op">=</span> <span class="kw">new</span> <span class="bi">Promise</span><span class="pu">((</span>_, reject<span class="pu">)</span> <span class="op">=></span>
+    <span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=></span> reject<span class="pu">(</span><span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">`Timed out after </span><span class="pu">${</span>ms<span class="pu">}</span><span class="st">ms`</span><span class="pu">)),</span> ms<span class="pu">)</span>
+  <span class="pu">)</span>
+  <span class="kw">return</span> <span class="bi">Promise</span><span class="pu">.</span><span class="fn">race</span><span class="pu">([</span>promise, timeout<span class="pu">])</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Global safety net — always add these ─────────</span>
+<span class="bi">process</span><span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'unhandledRejection'</span><span class="pu">,</span> <span class="pu">(</span>reason<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  logger<span class="pu">.</span><span class="fn">error</span><span class="pu">({</span> reason <span class="pu">},</span> <span class="st">'Unhandled promise rejection'</span><span class="pu">)</span>
+  <span class="bi">process</span><span class="pu">.</span><span class="fn">exit</span><span class="pu">(</span><span class="nm">1</span><span class="pu">)</span>
+<span class="pu">})</span>
+<span class="bi">process</span><span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'uncaughtException'</span><span class="pu">,</span> <span class="pu">(</span>err<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  logger<span class="pu">.</span><span class="fn">fatal</span><span class="pu">({</span> err <span class="pu">},</span> <span class="st">'Uncaught exception — shutting down'</span><span class="pu">)</span>
+  <span class="bi">process</span><span class="pu">.</span><span class="fn">exit</span><span class="pu">(</span><span class="nm">1</span><span class="pu">)</span>
+<span class="pu">})</span></code></pre>
+    </div>
+
+    <h3>Async Iteration & Concurrency Control</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Concurrency Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Limit concurrency — avoid overwhelming DB/API ─</span>
+<span class="kw">async function</span> <span class="fn">pLimit</span><span class="pu">(</span>tasks, concurrency<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> results <span class="op">=</span> <span class="pu">[]</span>
+  <span class="kw">const</span> executing <span class="op">=</span> <span class="kw">new</span> <span class="ty">Set</span><span class="pu">()</span>
+
+  <span class="kw">for</span> <span class="pu">(</span><span class="kw">const</span> task <span class="kw">of</span> tasks<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">const</span> p <span class="op">=</span> <span class="fn">task</span><span class="pu">().</span><span class="fn">then</span><span class="pu">(</span>res <span class="op">=></span> <span class="pu">{</span>
+      results<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>res<span class="pu">)</span>
+      executing<span class="pu">.</span><span class="fn">delete</span><span class="pu">(</span>p<span class="pu">)</span>
+    <span class="pu">})</span>
+    executing<span class="pu">.</span><span class="fn">add</span><span class="pu">(</span>p<span class="pu">)</span>
+    <span class="kw">if</span> <span class="pu">(</span>executing<span class="pu">.</span>size <span class="op">>=</span> concurrency<span class="pu">)</span>
+      <span class="kw">await</span> <span class="bi">Promise</span><span class="pu">.</span><span class="fn">race</span><span class="pu">(</span>executing<span class="pu">)</span>
+  <span class="pu">}</span>
+  <span class="kw">await</span> <span class="bi">Promise</span><span class="pu">.</span><span class="fn">allSettled</span><span class="pu">(</span>executing<span class="pu">)</span>
+  <span class="kw">return</span> results
+<span class="pu">}</span>
+
+<span class="cm">// Process 1000 URLs, 10 at a time</span>
+<span class="kw">const</span> tasks <span class="op">=</span> urls<span class="pu">.</span><span class="fn">map</span><span class="pu">(</span>url <span class="op">=></span> <span class="pu">()</span> <span class="op">=></span> <span class="fn">fetch</span><span class="pu">(</span>url<span class="pu">))</span>
+<span class="kw">const</span> results <span class="op">=</span> <span class="kw">await</span> <span class="fn">pLimit</span><span class="pu">(</span>tasks, <span class="nm">10</span><span class="pu">)</span>
+
+<span class="cm">// ── Async generators for lazy streaming ──────────</span>
+<span class="kw">async function</span><span class="op">*</span> <span class="fn">paginate</span><span class="pu">(</span>url<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">let</span> page <span class="op">=</span> <span class="nm">1</span>
+  <span class="kw">while</span> <span class="pu">(</span><span class="kw">true</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">const</span> data <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span><span class="st">`</span><span class="pu">${</span>url<span class="pu">}</span><span class="st">?page=</span><span class="pu">${</span>page<span class="pu">}</span><span class="st">`</span><span class="pu">).</span><span class="fn">then</span><span class="pu">(</span>r <span class="op">=></span> r<span class="pu">.</span><span class="fn">json</span><span class="pu">())</span>
+    <span class="kw">if</span> <span class="pu">(</span><span class="op">!</span>data<span class="pu">.</span>items<span class="pu">.</span>length<span class="pu">)</span> <span class="kw">break</span>
+    <span class="kw">yield</span><span class="op">*</span> data<span class="pu">.</span>items
+    page<span class="op">++</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">for await</span> <span class="pu">(</span><span class="kw">const</span> item <span class="kw">of</span> <span class="fn">paginate</span><span class="pu">(</span><span class="st">'/api/products'</span><span class="pu">))</span> <span class="pu">{</span>
+  <span class="kw">await</span> <span class="fn">processItem</span><span class="pu">(</span>item<span class="pu">)</span>  <span class="cm">// memory-efficient, lazy</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 04 STREAMS -->
+  <div class="section" id="streams">
+    <div class="section-label">04 — Data in Motion</div>
+    <h2>Streams & Buffers</h2>
+    <p class="lead">Streams are Node's most powerful and underused primitive. They let you process gigabytes of data with constant memory usage by operating on chunks rather than loading everything at once.</p>
+
+    <p>There are four stream types: <strong>Readable</strong> (source), <strong>Writable</strong> (destination), <strong>Duplex</strong> (both), and <strong>Transform</strong> (duplex that modifies data). Every stream is an EventEmitter.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Stream Fundamentals</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> createReadStream, createWriteStream <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:fs'</span>
+<span class="kw">import</span> <span class="pu">{</span> createGzip <span class="pu">}</span>             <span class="kw">from</span> <span class="st">'node:zlib'</span>
+<span class="kw">import</span> <span class="pu">{</span> pipeline <span class="pu">}</span>               <span class="kw">from</span> <span class="st">'node:stream/promises'</span>
+<span class="kw">import</span> <span class="pu">{</span> Transform <span class="pu">}</span>              <span class="kw">from</span> <span class="st">'node:stream'</span>
+
+<span class="cm">// ── ALWAYS use pipeline — it handles backpressure + cleanup ─</span>
+<span class="kw">await</span> <span class="fn">pipeline</span><span class="pu">(</span>
+  <span class="fn">createReadStream</span><span class="pu">(</span><span class="st">'huge-file.csv'</span><span class="pu">)</span>,
+  <span class="fn">createGzip</span><span class="pu">(),</span>
+  <span class="fn">createWriteStream</span><span class="pu">(</span><span class="st">'huge-file.csv.gz'</span><span class="pu">)</span>
+<span class="pu">)</span>
+<span class="cm">// Compresses a 2GB file using ~64KB of memory — try that with readFileSync!</span>
+
+<span class="cm">// ── Custom Transform stream ───────────────────────</span>
+<span class="kw">class</span> <span class="ty">CSVToJSON</span> <span class="kw">extends</span> <span class="ty">Transform</span> <span class="pu">{</span>
+  <span class="op">#</span>headers <span class="op">=</span> <span class="kw">null</span>
+  <span class="op">#</span>remainder <span class="op">=</span> <span class="st">''</span>
+
+  <span class="fn">_transform</span><span class="pu">(</span>chunk, encoding, callback<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">const</span> lines <span class="op">=</span> <span class="pu">(</span><span class="kw">this</span><span class="pu">.</span><span class="op">#</span>remainder <span class="op">+</span> chunk<span class="pu">.</span><span class="fn">toString</span><span class="pu">()).</span><span class="fn">split</span><span class="pu">(</span><span class="st">'\n'</span><span class="pu">)</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>remainder <span class="op">=</span> lines<span class="pu">.</span><span class="fn">pop</span><span class="pu">()</span>  <span class="cm">// save incomplete last line</span>
+
+    <span class="kw">for</span> <span class="pu">(</span><span class="kw">const</span> line <span class="kw">of</span> lines<span class="pu">)</span> <span class="pu">{</span>
+      <span class="kw">if</span> <span class="pu">(!</span><span class="kw">this</span><span class="pu">.</span><span class="op">#</span>headers<span class="pu">)</span> <span class="pu">{</span>
+        <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>headers <span class="op">=</span> line<span class="pu">.</span><span class="fn">split</span><span class="pu">(</span><span class="st">','</span><span class="pu">)</span>
+        <span class="kw">continue</span>
+      <span class="pu">}</span>
+      <span class="kw">const</span> values <span class="op">=</span> line<span class="pu">.</span><span class="fn">split</span><span class="pu">(</span><span class="st">','</span><span class="pu">)</span>
+      <span class="kw">const</span> obj <span class="op">=</span> <span class="bi">Object</span><span class="pu">.</span><span class="fn">fromEntries</span><span class="pu">(</span><span class="kw">this</span><span class="pu">.</span><span class="op">#</span>headers<span class="pu">.</span><span class="fn">map</span><span class="pu">((</span>h, i<span class="pu">)</span> <span class="op">=></span> <span class="pu">[</span>h, values<span class="pu">[</span>i<span class="pu">]]))</span>
+      <span class="kw">this</span><span class="pu">.</span><span class="fn">push</span><span class="pu">(</span><span class="bi">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>obj<span class="pu">)</span> <span class="op">+</span> <span class="st">'\n'</span><span class="pu">)</span>
+    <span class="pu">}</span>
+    <span class="fn">callback</span><span class="pu">()</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// Stream a 500MB CSV to JSON without loading it in memory</span>
+<span class="kw">await</span> <span class="fn">pipeline</span><span class="pu">(</span>
+  <span class="fn">createReadStream</span><span class="pu">(</span><span class="st">'big.csv'</span><span class="pu">),</span>
+  <span class="kw">new</span> <span class="fn">CSVToJSON</span><span class="pu">(),</span>
+  <span class="fn">createWriteStream</span><span class="pu">(</span><span class="st">'output.jsonl'</span><span class="pu">)</span>
+<span class="pu">)</span></code></pre>
+    </div>
+
+    <h3>Buffers — Understanding Binary Data</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Buffer Operations</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Buffer creation ───────────────────────────────</span>
+<span class="kw">const</span> buf1 <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span><span class="st">'hello world'</span>, <span class="st">'utf8'</span><span class="pu">)</span>
+<span class="kw">const</span> buf2 <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">alloc</span><span class="pu">(</span><span class="nm">16</span><span class="pu">)</span>          <span class="cm">// zero-filled, safe</span>
+<span class="kw">const</span> buf3 <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">allocUnsafe</span><span class="pu">(</span><span class="nm">16</span><span class="pu">)</span>    <span class="cm">// faster, not zeroed</span>
+
+<span class="cm">// ── Encoding / decoding ───────────────────────────</span>
+buf1<span class="pu">.</span><span class="fn">toString</span><span class="pu">(</span><span class="st">'hex'</span><span class="pu">)</span>     <span class="cm">// '68656c6c6f...'</span>
+buf1<span class="pu">.</span><span class="fn">toString</span><span class="pu">(</span><span class="st">'base64'</span><span class="pu">)</span>  <span class="cm">// 'aGVsbG8gd29ybGQ='</span>
+
+<span class="cm">// ── Constant-time comparison (timing-safe!) ───────</span>
+<span class="kw">import</span> <span class="pu">{</span> timingSafeEqual <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:crypto'</span>
+<span class="kw">const</span> a <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span>tokenFromUser<span class="pu">)</span>
+<span class="kw">const</span> b <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span>storedToken<span class="pu">)</span>
+<span class="kw">const</span> valid <span class="op">=</span> a<span class="pu">.</span>length <span class="op">===</span> b<span class="pu">.</span>length <span class="op">&&</span> <span class="fn">timingSafeEqual</span><span class="pu">(</span>a, b<span class="pu">)</span></code></pre>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">💡 Backpressure</div>
+      When a writable stream's internal buffer fills up, <code>write()</code> returns <code>false</code>. You must pause the readable until the writable emits <code>'drain'</code>. <code>pipeline()</code> handles this automatically — it's the main reason to always prefer it over manual piping.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 05 HTTP -->
+  <div class="section" id="http">
+    <div class="section-label">05 — Building Servers</div>
+    <h2>HTTP Servers & Express</h2>
+    <p class="lead">Node's built-in <code>http</code> module is lean and powerful. Express adds routing and middleware. Understanding both makes you a better API developer at either layer.</p>
+
+    <h3>Bare HTTP Server — The Foundation</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Native HTTP Server</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> http <span class="kw">from</span> <span class="st">'node:http'</span>
+
+<span class="kw">const</span> server <span class="op">=</span> http<span class="pu">.</span><span class="fn">createServer</span><span class="pu">((</span>req, res<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="cm">// Read body manually (req is a Readable stream)</span>
+  <span class="kw">const</span> chunks <span class="op">=</span> <span class="pu">[]</span>
+  req<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'data'</span>, chunk <span class="op">=></span> chunks<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>chunk<span class="pu">))</span>
+  req<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'end'</span>, <span class="pu">()</span> <span class="op">=></span> <span class="pu">{</span>
+    <span class="kw">const</span> body <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">concat</span><span class="pu">(</span>chunks<span class="pu">).</span><span class="fn">toString</span><span class="pu">()</span>
+    res<span class="pu">.</span><span class="fn">writeHead</span><span class="pu">(</span><span class="nm">200</span>, <span class="pu">{</span> <span class="st">'Content-Type'</span><span class="pu">:</span> <span class="st">'application/json'</span> <span class="pu">})</span>
+    res<span class="pu">.</span><span class="fn">end</span><span class="pu">(</span><span class="bi">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">({</span> received<span class="pu">:</span> body<span class="pu">.</span>length <span class="pu">}))</span>
+  <span class="pu">})</span>
+<span class="pu">})</span>
+
+server<span class="pu">.</span><span class="fn">listen</span><span class="pu">(</span><span class="nm">3000</span>, <span class="pu">()</span> <span class="op">=></span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">'Server on :3000'</span><span class="pu">))</span></code></pre>
+    </div>
+
+    <h3>Express — Production API Structure</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Express Production Setup</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> express     <span class="kw">from</span> <span class="st">'express'</span>
+<span class="kw">import</span> helmet      <span class="kw">from</span> <span class="st">'helmet'</span>
+<span class="kw">import</span> rateLimit   <span class="kw">from</span> <span class="st">'express-rate-limit'</span>
+<span class="kw">import</span> compression <span class="kw">from</span> <span class="st">'compression'</span>
+
+<span class="kw">const</span> app <span class="op">=</span> <span class="fn">express</span><span class="pu">()</span>
+
+<span class="cm">// ── Security middleware ───────────────────────────</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="fn">helmet</span><span class="pu">())</span>               <span class="cm">// Sets 14 security headers</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="fn">compression</span><span class="pu">())</span>          <span class="cm">// gzip responses</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span>express<span class="pu">.</span><span class="fn">json</span><span class="pu">({</span> limit<span class="pu">:</span> <span class="st">'100kb'</span> <span class="pu">}))</span>  <span class="cm">// limit body size</span>
+
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="fn">rateLimit</span><span class="pu">({</span>
+  windowMs<span class="pu">:</span> <span class="nm">15</span> <span class="op">*</span> <span class="nm">60</span> <span class="op">*</span> <span class="nm">1000</span>,   <span class="cm">// 15 minutes</span>
+  max<span class="pu">:</span>       <span class="nm">100</span>,              <span class="cm">// 100 requests per window</span>
+  standardHeaders<span class="pu">:</span> <span class="kw">true</span>,
+<span class="pu">}))</span>
+
+<span class="cm">// ── Router separation ─────────────────────────────</span>
+<span class="kw">const</span> userRouter <span class="op">=</span> express<span class="pu">.</span><span class="fn">Router</span><span class="pu">()</span>
+
+userRouter<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'/:id'</span><span class="pu">,</span>         asyncHandler<span class="pu">(</span>getUser<span class="pu">))</span>
+userRouter<span class="pu">.</span><span class="fn">post</span><span class="pu">(</span><span class="st">'/'</span><span class="pu">,</span>           asyncHandler<span class="pu">(</span>createUser<span class="pu">))</span>
+userRouter<span class="pu">.</span><span class="fn">patch</span><span class="pu">(</span><span class="st">'/:id'</span><span class="pu">,</span>       asyncHandler<span class="pu">(</span>updateUser<span class="pu">))</span>
+userRouter<span class="pu">.</span><span class="fn">delete</span><span class="pu">(</span><span class="st">'/:id'</span><span class="pu">,</span>      asyncHandler<span class="pu">(</span>deleteUser<span class="pu">))</span>
+
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="st">'/api/users'</span><span class="pu">,</span> authenticate, userRouter<span class="pu">)</span>
+
+<span class="cm">// ── asyncHandler — no more try/catch in controllers</span>
+<span class="kw">function</span> <span class="fn">asyncHandler</span><span class="pu">(</span>fn<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="pu">(</span>req, res, next<span class="pu">)</span> <span class="op">=></span> <span class="bi">Promise</span><span class="pu">.</span><span class="fn">resolve</span><span class="pu">(</span><span class="fn">fn</span><span class="pu">(</span>req, res, next<span class="pu">)).</span><span class="fn">catch</span><span class="pu">(</span>next<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Centralized error handler (last middleware) ───</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">((</span>err, req, res, _next<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">const</span> status <span class="op">=</span> err<span class="pu">.</span>status <span class="op">||</span> <span class="nm">500</span>
+  logger<span class="pu">.</span><span class="fn">error</span><span class="pu">({</span> err, req<span class="pu">:</span> req<span class="pu">.</span>path <span class="pu">})</span>
+  res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span>status<span class="pu">).</span><span class="fn">json</span><span class="pu">({</span>
+    error<span class="pu">:</span> status <span class="op"><</span> <span class="nm">500</span> <span class="op">?</span> err<span class="pu">.</span>message <span class="op">:</span> <span class="st">'Internal server error'</span>
+  <span class="pu">})</span>
+<span class="pu">})</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 06 CORE MODULES -->
+  <div class="section" id="core">
+    <div class="section-label">06 — Built-In Power</div>
+    <h2>Core Modules Deep Dive</h2>
+    <p class="lead">Node ships an exceptionally rich standard library. Most third-party packages are wrappers around it. Knowing the core modules well reduces your dependency footprint significantly.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — fs, path, crypto, os</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> fs     <span class="kw">from</span> <span class="st">'node:fs/promises'</span>
+<span class="kw">import</span> path   <span class="kw">from</span> <span class="st">'node:path'</span>
+<span class="kw">import</span> os     <span class="kw">from</span> <span class="st">'node:os'</span>
+<span class="kw">import</span> crypto <span class="kw">from</span> <span class="st">'node:crypto'</span>
+<span class="kw">import</span> <span class="pu">{</span> promisify <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:util'</span>
+
+<span class="cm">// ── fs — file operations ──────────────────────────</span>
+<span class="kw">const</span> content  <span class="op">=</span> <span class="kw">await</span> fs<span class="pu">.</span><span class="fn">readFile</span><span class="pu">(</span><span class="st">'config.json'</span>, <span class="st">'utf8'</span><span class="pu">)</span>
+<span class="kw">const</span> stats    <span class="op">=</span> <span class="kw">await</span> fs<span class="pu">.</span><span class="fn">stat</span><span class="pu">(</span><span class="st">'./dist'</span><span class="pu">)</span>
+
+<span class="cm">// Recursive mkdir — no more mkdir -p wrappers</span>
+<span class="kw">await</span> fs<span class="pu">.</span><span class="fn">mkdir</span><span class="pu">(</span><span class="st">'./dist/assets/images'</span>, <span class="pu">{</span> recursive<span class="pu">:</span> <span class="kw">true</span> <span class="pu">})</span>
+
+<span class="cm">// Walk a directory tree</span>
+<span class="kw">for await</span> <span class="pu">(</span><span class="kw">const</span> entry <span class="kw">of</span> <span class="kw">await</span> fs<span class="pu">.</span><span class="fn">opendir</span><span class="pu">(</span><span class="st">'./src'</span><span class="pu">))</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>entry<span class="pu">.</span><span class="fn">isFile</span><span class="pu">())</span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>entry<span class="pu">.</span>name<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── path — cross-platform paths ───────────────────</span>
+path<span class="pu">.</span><span class="fn">join</span><span class="pu">(</span>__dirname, <span class="st">'assets'</span>, <span class="st">'img.png'</span><span class="pu">)</span>
+path<span class="pu">.</span><span class="fn">resolve</span><span class="pu">(</span><span class="st">'./relative/path'</span><span class="pu">)</span>   <span class="cm">// → absolute</span>
+path<span class="pu">.</span><span class="fn">extname</span><span class="pu">(</span><span class="st">'file.min.js'</span><span class="pu">)</span>        <span class="cm">// '.js'</span>
+path<span class="pu">.</span><span class="fn">basename</span><span class="pu">(</span><span class="st">'src/foo/bar.ts'</span><span class="pu">)</span>    <span class="cm">// 'bar.ts'</span>
+
+<span class="cm">// ── crypto — hashing, signing, random bytes ───────</span>
+<span class="kw">const</span> hash <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">createHash</span><span class="pu">(</span><span class="st">'sha256'</span><span class="pu">)</span>
+               <span class="pu">.</span><span class="fn">update</span><span class="pu">(</span>data<span class="pu">).</span><span class="fn">digest</span><span class="pu">(</span><span class="st">'hex'</span><span class="pu">)</span>
+
+<span class="kw">const</span> token  <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">randomBytes</span><span class="pu">(</span><span class="nm">32</span><span class="pu">).</span><span class="fn">toString</span><span class="pu">(</span><span class="st">'base64url'</span><span class="pu">)</span>
+<span class="kw">const</span> uuid   <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">randomUUID</span><span class="pu">()</span>
+
+<span class="cm">// Password hashing via scrypt (KDF)</span>
+<span class="kw">const</span> scrypt  <span class="op">=</span> <span class="fn">promisify</span><span class="pu">(</span>crypto<span class="pu">.</span>scrypt<span class="pu">)</span>
+<span class="kw">const</span> salt    <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">randomBytes</span><span class="pu">(</span><span class="nm">16</span><span class="pu">)</span>
+<span class="kw">const</span> derived <span class="op">=</span> <span class="kw">await</span> <span class="fn">scrypt</span><span class="pu">(</span>password, salt, <span class="nm">64</span><span class="pu">)</span>
+
+<span class="cm">// ── os — system information ───────────────────────</span>
+os<span class="pu">.</span><span class="fn">cpus</span><span class="pu">().</span>length    <span class="cm">// number of CPU cores → ideal cluster workers</span>
+os<span class="pu">.</span><span class="fn">freemem</span><span class="pu">()</span>       <span class="cm">// free RAM in bytes</span>
+os<span class="pu">.</span><span class="fn">totalmem</span><span class="pu">()</span>      <span class="cm">// total RAM in bytes</span>
+os<span class="pu">.</span><span class="fn">uptime</span><span class="pu">()</span>         <span class="cm">// seconds since last boot</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 07 PATTERNS -->
+  <div class="section" id="patterns">
+    <div class="section-label">07 — Architecture</div>
+    <h2>Design Patterns in Node.js</h2>
+    <p class="lead">Node's module system, EventEmitter, and async-first design lend themselves to patterns that feel different from classical OOP. These are the ones that matter most at scale.</p>
+
+    <h3>Dependency Injection Container</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — DI & Service Layer</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Simple DI container ───────────────────────────</span>
+<span class="kw">class</span> <span class="ty">Container</span> <span class="pu">{</span>
+  <span class="op">#</span>registry <span class="op">=</span> <span class="kw">new</span> <span class="ty">Map</span><span class="pu">()</span>
+
+  <span class="fn">register</span><span class="pu">(</span>name, factory<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>registry<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>name, <span class="pu">{</span> factory, instance<span class="pu">:</span> <span class="kw">null</span> <span class="pu">})</span>
+    <span class="kw">return</span> <span class="kw">this</span>
+  <span class="pu">}</span>
+  <span class="fn">resolve</span><span class="pu">(</span>name<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">const</span> entry <span class="op">=</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>registry<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>name<span class="pu">)</span>
+    <span class="kw">if</span> <span class="pu">(!</span>entry<span class="pu">)</span> <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">`Unknown service: </span><span class="pu">${</span>name<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+    entry<span class="pu">.</span>instance <span class="op">??=</span> entry<span class="pu">.</span><span class="fn">factory</span><span class="pu">(</span><span class="kw">this</span><span class="pu">)</span>  <span class="cm">// singleton</span>
+    <span class="kw">return</span> entry<span class="pu">.</span>instance
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> container <span class="op">=</span> <span class="kw">new</span> <span class="fn">Container</span><span class="pu">()</span>
+  <span class="pu">.</span><span class="fn">register</span><span class="pu">(</span><span class="st">'db'</span>,   <span class="pu">()</span>    <span class="op">=></span> <span class="kw">new</span> <span class="fn">Database</span><span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>DATABASE_URL<span class="pu">))</span>
+  <span class="pu">.</span><span class="fn">register</span><span class="pu">(</span><span class="st">'mail'</span>, <span class="pu">()</span>    <span class="op">=></span> <span class="kw">new</span> <span class="fn">MailService</span><span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>SMTP_URL<span class="pu">))</span>
+  <span class="pu">.</span><span class="fn">register</span><span class="pu">(</span><span class="st">'users'</span>, <span class="pu">(</span>c<span class="pu">)</span>  <span class="op">=></span> <span class="kw">new</span> <span class="fn">UserService</span><span class="pu">(</span>c<span class="pu">.</span><span class="fn">resolve</span><span class="pu">(</span><span class="st">'db'</span><span class="pu">),</span> c<span class="pu">.</span><span class="fn">resolve</span><span class="pu">(</span><span class="st">'mail'</span><span class="pu">)))</span>
+
+<span class="cm">// ── EventEmitter for decoupled events ────────────</span>
+<span class="kw">import</span> <span class="pu">{</span> EventEmitter <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:events'</span>
+
+<span class="kw">class</span> <span class="ty">OrderService</span> <span class="kw">extends</span> <span class="ty">EventEmitter</span> <span class="pu">{</span>
+  <span class="kw">async</span> <span class="fn">create</span><span class="pu">(</span>data<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">const</span> order <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>orders<span class="pu">.</span><span class="fn">create</span><span class="pu">(</span>data<span class="pu">)</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="fn">emit</span><span class="pu">(</span><span class="st">'order.created'</span>, order<span class="pu">)</span>  <span class="cm">// decouple side effects</span>
+    <span class="kw">return</span> order
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> orders <span class="op">=</span> <span class="kw">new</span> <span class="fn">OrderService</span><span class="pu">()</span>
+orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'order.created'</span>, sendConfirmationEmail<span class="pu">)</span>
+orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'order.created'</span>, updateInventory<span class="pu">)</span>
+orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'order.created'</span>, notifyWarehouse<span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 08 DATABASES -->
+  <div class="section" id="databases">
+    <div class="section-label">08 — Data Layer</div>
+    <h2>Databases & ORMs</h2>
+    <p class="lead">Node.js works well with every major database. Connection pooling and query efficiency are where most performance gains — and losses — live.</p>
+
+    <h3>Prisma — Type-Safe ORM</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Prisma ORM Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> PrismaClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@prisma/client'</span>
+
+<span class="cm">// ── Single shared instance — critical for pooling ─</span>
+<span class="kw">const</span> prisma <span class="op">=</span> globalThis<span class="pu">.</span>prisma <span class="op">??=</span> <span class="kw">new</span> <span class="fn">PrismaClient</span><span class="pu">({</span>
+  log<span class="pu">:</span> <span class="pu">[</span><span class="st">'query'</span>, <span class="st">'error'</span><span class="pu">]</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Eager loading prevents N+1 queries ───────────</span>
+<span class="kw">const</span> users <span class="op">=</span> <span class="kw">await</span> prisma<span class="pu">.</span>user<span class="pu">.</span><span class="fn">findMany</span><span class="pu">({</span>
+  include<span class="pu">:</span> <span class="pu">{</span> posts<span class="pu">:</span> <span class="pu">{</span> include<span class="pu">:</span> <span class="pu">{</span> tags<span class="pu">:</span> <span class="kw">true</span> <span class="pu">}</span> <span class="pu">}</span> <span class="pu">},</span>
+  where<span class="pu">:</span>   <span class="pu">{</span> active<span class="pu">:</span> <span class="kw">true</span> <span class="pu">},</span>
+  orderBy<span class="pu">:</span> <span class="pu">{</span> createdAt<span class="pu">:</span> <span class="st">'desc'</span> <span class="pu">},</span>
+  skip<span class="pu">:</span>    <span class="pu">(</span>page <span class="op">-</span> <span class="nm">1</span><span class="pu">)</span> <span class="op">*</span> pageSize<span class="pu">,</span>
+  take<span class="pu">:</span>    pageSize
+<span class="pu">})</span>
+
+<span class="cm">// ── Transactions ──────────────────────────────────</span>
+<span class="kw">const</span> <span class="pu">[</span>transfer<span class="pu">,</span> _<span class="pu">]</span> <span class="op">=</span> <span class="kw">await</span> prisma<span class="pu">.</span><span class="fn">$transaction</span><span class="pu">([</span>
+  prisma<span class="pu">.</span>account<span class="pu">.</span><span class="fn">update</span><span class="pu">({</span>
+    where<span class="pu">:</span> <span class="pu">{</span> id<span class="pu">:</span> fromId <span class="pu">},</span>
+    data<span class="pu">:</span>  <span class="pu">{</span> balance<span class="pu">:</span> <span class="pu">{</span> decrement<span class="pu">:</span> amount <span class="pu">}</span> <span class="pu">}</span>
+  <span class="pu">}),</span>
+  prisma<span class="pu">.</span>account<span class="pu">.</span><span class="fn">update</span><span class="pu">({</span>
+    where<span class="pu">:</span> <span class="pu">{</span> id<span class="pu">:</span> toId <span class="pu">},</span>
+    data<span class="pu">:</span>  <span class="pu">{</span> balance<span class="pu">:</span> <span class="pu">{</span> increment<span class="pu">:</span> amount <span class="pu">}</span> <span class="pu">}</span>
+  <span class="pu">})</span>
+<span class="pu">])</span>
+
+<span class="cm">// ── Raw queries when ORM isn't enough ────────────</span>
+<span class="kw">const</span> stats <span class="op">=</span> <span class="kw">await</span> prisma<span class="pu">.</span><span class="fn">$queryRaw</span><span class="op">`</span>
+  <span class="st">SELECT DATE_TRUNC('month', created_at) AS month,</span>
+         <span class="st">COUNT(*)::int                   AS count</span>
+  <span class="st">FROM orders</span>
+  <span class="st">GROUP BY 1 ORDER BY 1 DESC LIMIT 12</span>
+<span class="op">`</span></code></pre>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">💡 Connection Pool Sizing</div>
+      For PostgreSQL with Prisma, the default pool is <code>min: 2, max: 10</code>. In a clustered app with 4 workers, you'll have up to 40 connections. Most Postgres servers cap at 100. Set <code>connection_limit</code> to <code>Math.floor(100 / numWorkers)</code> and use PgBouncer in production.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 09 SECURITY -->
+  <div class="section" id="security">
+    <div class="section-label">09 — Hardening</div>
+    <h2>Security Hardening</h2>
+    <p class="lead">Node.js apps face the same OWASP Top 10 threats as any web app — plus a few Node-specific pitfalls. Security is not a middleware you add at the end; it is woven through every decision.</p>
+
+    <h3>JWT Authentication Done Right</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — JWT & Auth Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> jwt    <span class="kw">from</span> <span class="st">'jsonwebtoken'</span>
+<span class="kw">import</span> bcrypt <span class="kw">from</span> <span class="st">'bcrypt'</span>
+
+<span class="cm">// ── Password hashing ──────────────────────────────</span>
+<span class="kw">const</span> SALT_ROUNDS <span class="op">=</span> <span class="nm">12</span>  <span class="cm">// tune so hash takes ~300ms</span>
+<span class="kw">const</span> hash     <span class="op">=</span> <span class="kw">await</span> bcrypt<span class="pu">.</span><span class="fn">hash</span><span class="pu">(</span>password, SALT_ROUNDS<span class="pu">)</span>
+<span class="kw">const</span> isValid  <span class="op">=</span> <span class="kw">await</span> bcrypt<span class="pu">.</span><span class="fn">compare</span><span class="pu">(</span>password, hash<span class="pu">)</span>
+
+<span class="cm">// ── Token pair: access (short) + refresh (long) ──</span>
+<span class="kw">function</span> <span class="fn">issueTokens</span><span class="pu">(</span>userId<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> access <span class="op">=</span> jwt<span class="pu">.</span><span class="fn">sign</span><span class="pu">(</span>
+    <span class="pu">{</span> sub<span class="pu">:</span> userId, type<span class="pu">:</span> <span class="st">'access'</span> <span class="pu">},</span>
+    process<span class="pu">.</span>env<span class="pu">.</span>JWT_SECRET,
+    <span class="pu">{</span> expiresIn<span class="pu">:</span> <span class="st">'15m'</span>, algorithm<span class="pu">:</span> <span class="st">'HS256'</span> <span class="pu">}</span>
+  <span class="pu">)</span>
+  <span class="kw">const</span> refresh <span class="op">=</span> jwt<span class="pu">.</span><span class="fn">sign</span><span class="pu">(</span>
+    <span class="pu">{</span> sub<span class="pu">:</span> userId, type<span class="pu">:</span> <span class="st">'refresh'</span>, jti<span class="pu">:</span> crypto<span class="pu">.</span><span class="fn">randomUUID</span><span class="pu">() },</span>
+    process<span class="pu">.</span>env<span class="pu">.</span>JWT_REFRESH_SECRET,
+    <span class="pu">{</span> expiresIn<span class="pu">:</span> <span class="st">'7d'</span> <span class="pu">}</span>
+  <span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">{</span> access, refresh <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Middleware: verify & attach user ─────────────</span>
+<span class="kw">async function</span> <span class="fn">authenticate</span><span class="pu">(</span>req, res, next<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> token <span class="op">=</span> req<span class="pu">.</span>headers<span class="pu">.</span>authorization<span class="pu">?.</span><span class="fn">split</span><span class="pu">(</span><span class="st">' '</span><span class="pu">)[</span><span class="nm">1</span><span class="pu">]</span>
+  <span class="kw">if</span> <span class="pu">(!</span>token<span class="pu">)</span> <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">401</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> <span class="st">'Unauthorised'</span> <span class="pu">})</span>
+  <span class="kw">try</span> <span class="pu">{</span>
+    req<span class="pu">.</span>user <span class="op">=</span> jwt<span class="pu">.</span><span class="fn">verify</span><span class="pu">(</span>token, process<span class="pu">.</span>env<span class="pu">.</span>JWT_SECRET<span class="pu">)</span>
+    <span class="fn">next</span><span class="pu">()</span>
+  <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">{</span>
+    res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">401</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> <span class="st">'Invalid or expired token'</span> <span class="pu">})</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <h3>Input Validation & SQL Injection Prevention</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Validation with Zod</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> z <span class="pu">}</span> <span class="kw">from</span> <span class="st">'zod'</span>
+
+<span class="kw">const</span> CreateUserSchema <span class="op">=</span> z<span class="pu">.</span><span class="fn">object</span><span class="pu">({</span>
+  name<span class="pu">:</span>     z<span class="pu">.</span><span class="fn">string</span><span class="pu">().</span><span class="fn">min</span><span class="pu">(</span><span class="nm">2</span><span class="pu">).</span><span class="fn">max</span><span class="pu">(</span><span class="nm">100</span><span class="pu">),</span>
+  email<span class="pu">:</span>    z<span class="pu">.</span><span class="fn">string</span><span class="pu">().</span><span class="fn">email</span><span class="pu">(),</span>
+  password<span class="pu">:</span> z<span class="pu">.</span><span class="fn">string</span><span class="pu">().</span><span class="fn">min</span><span class="pu">(</span><span class="nm">12</span><span class="pu">).</span><span class="fn">regex</span><span class="pu">(</span><span class="rx">/[A-Z]/</span><span class="pu">).</span><span class="fn">regex</span><span class="pu">(</span><span class="rx">/[0-9]/</span><span class="pu">),</span>
+  role<span class="pu">:</span>     z<span class="pu">.</span><span class="fn">enum</span><span class="pu">([</span><span class="st">'user'</span><span class="pu">,</span> <span class="st">'admin'</span><span class="pu">]).</span><span class="fn">default</span><span class="pu">(</span><span class="st">'user'</span><span class="pu">),</span>
+<span class="pu">})</span>
+
+<span class="kw">async function</span> <span class="fn">createUser</span><span class="pu">(</span>req, res<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> result <span class="op">=</span> CreateUserSchema<span class="pu">.</span><span class="fn">safeParse</span><span class="pu">(</span>req<span class="pu">.</span>body<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(!</span>result<span class="pu">.</span>success<span class="pu">)</span>
+    <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">400</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> errors<span class="pu">:</span> result<span class="pu">.</span>error<span class="pu">.</span><span class="fn">flatten</span><span class="pu">() })</span>
+
+  <span class="kw">const</span> data <span class="op">=</span> result<span class="pu">.</span>data  <span class="cm">// fully typed, sanitised</span>
+  <span class="cm">// ...</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── NEVER string-interpolate SQL ─────────────────</span>
+<span class="cm">// ❌ const q = `SELECT * FROM users WHERE id = ${req.query.id}`</span>
+<span class="cm">// ✅ always use parameterised queries:</span>
+<span class="kw">const</span> user <span class="op">=</span> <span class="kw">await</span> pool<span class="pu">.</span><span class="fn">query</span><span class="pu">(</span>
+  <span class="st">'SELECT * FROM users WHERE id = $1'</span><span class="pu">,</span>
+  <span class="pu">[</span>req<span class="pu">.</span>query<span class="pu">.</span>id<span class="pu">]</span>
+<span class="pu">)</span></code></pre>
+    </div>
+
+    <div class="warn">
+      <div class="warn-label">⚠️ Prototype Pollution</div>
+      Merging user-controlled objects (like <code>req.body</code>) using naive spread or deep-merge utilities can pollute <code>Object.prototype</code>, affecting all objects globally. Always use <code>Object.create(null)</code> as merge targets, or libraries patched against this attack (e.g. <code>lodash 4.17.21+</code>).
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 10 TESTING -->
+  <div class="section" id="testing">
+    <div class="section-label">10 — Quality Assurance</div>
+    <h2>Testing Strategies</h2>
+    <p class="lead">Node.js 18+ ships a built-in test runner. For serious test suites, Vitest and Jest remain dominant. The strategy matters more than the tool.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Vitest Unit & Integration Tests</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> describe, it, expect, vi, beforeEach <span class="pu">}</span> <span class="kw">from</span> <span class="st">'vitest'</span>
+<span class="kw">import</span> <span class="pu">{</span> UserService <span class="pu">}</span>                          <span class="kw">from</span> <span class="st">'./user.service.js'</span>
+
+<span class="cm">// ── Unit test with mocked dependencies ───────────</span>
+<span class="fn">describe</span><span class="pu">(</span><span class="st">'UserService'</span><span class="pu">,</span> <span class="pu">()</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">let</span> service, mockDb, mockMail
+
+  <span class="fn">beforeEach</span><span class="pu">(()</span> <span class="op">=></span> <span class="pu">{</span>
+    mockDb   <span class="op">=</span> <span class="pu">{</span> users<span class="pu">:</span> <span class="pu">{</span> create<span class="pu">:</span> vi<span class="pu">.</span><span class="fn">fn</span><span class="pu">(),</span> findUnique<span class="pu">:</span> vi<span class="pu">.</span><span class="fn">fn</span><span class="pu">() } }</span>
+    mockMail <span class="op">=</span> <span class="pu">{</span> send<span class="pu">:</span> vi<span class="pu">.</span><span class="fn">fn</span><span class="pu">().</span><span class="fn">mockResolvedValue</span><span class="pu">(</span><span class="kw">true</span><span class="pu">) }</span>
+    service  <span class="op">=</span> <span class="kw">new</span> <span class="fn">UserService</span><span class="pu">(</span>mockDb, mockMail<span class="pu">)</span>
+  <span class="pu">})</span>
+
+  <span class="fn">it</span><span class="pu">(</span><span class="st">'creates user and sends welcome email'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">()</span> <span class="op">=></span> <span class="pu">{</span>
+    mockDb<span class="pu">.</span>users<span class="pu">.</span>create<span class="pu">.</span><span class="fn">mockResolvedValue</span><span class="pu">({</span> id<span class="pu">:</span> <span class="st">'1'</span><span class="pu">,</span> email<span class="pu">:</span> <span class="st">'a@b.com'</span> <span class="pu">})</span>
+    <span class="kw">await</span> service<span class="pu">.</span><span class="fn">create</span><span class="pu">({</span> email<span class="pu">:</span> <span class="st">'a@b.com'</span><span class="pu">,</span> name<span class="pu">:</span> <span class="st">'Alice'</span> <span class="pu">})</span>
+
+    expect<span class="pu">(</span>mockDb<span class="pu">.</span>users<span class="pu">.</span>create<span class="pu">).</span><span class="fn">toHaveBeenCalledOnce</span><span class="pu">()</span>
+    expect<span class="pu">(</span>mockMail<span class="pu">.</span>send<span class="pu">).</span><span class="fn">toHaveBeenCalledWith</span><span class="pu">(</span>
+      expect<span class="pu">.</span><span class="fn">objectContaining</span><span class="pu">({</span> to<span class="pu">:</span> <span class="st">'a@b.com'</span> <span class="pu">})</span>
+    <span class="pu">)</span>
+  <span class="pu">})</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Integration test with supertest ──────────────</span>
+<span class="kw">import</span> request <span class="kw">from</span> <span class="st">'supertest'</span>
+<span class="kw">import</span> <span class="pu">{</span> app <span class="pu">}</span>    <span class="kw">from</span> <span class="st">'../app.js'</span>
+
+<span class="fn">it</span><span class="pu">(</span><span class="st">'POST /api/users → 201 with created user'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">()</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">const</span> res <span class="op">=</span> <span class="kw">await</span> <span class="fn">request</span><span class="pu">(</span>app<span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">post</span><span class="pu">(</span><span class="st">'/api/users'</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">send</span><span class="pu">({</span> email<span class="pu">:</span> <span class="st">'test@example.com'</span><span class="pu">,</span> name<span class="pu">:</span> <span class="st">'Test'</span><span class="pu">,</span> password<span class="pu">:</span> <span class="st">'Password123'</span> <span class="pu">})</span>
+    <span class="pu">.</span><span class="fn">expect</span><span class="pu">(</span><span class="nm">201</span><span class="pu">)</span>
+
+  expect<span class="pu">(</span>res<span class="pu">.</span>body<span class="pu">).</span><span class="fn">toMatchObject</span><span class="pu">({</span>
+    email<span class="pu">:</span> <span class="st">'test@example.com'</span><span class="pu">,</span>
+    id<span class="pu">:</span> expect<span class="pu">.</span><span class="fn">any</span><span class="pu">(</span>String<span class="pu">)</span>
+  <span class="pu">})</span>
+  expect<span class="pu">(</span>res<span class="pu">.</span>body<span class="pu">.</span>password<span class="pu">).</span><span class="fn">toBeUndefined</span><span class="pu">()</span>  <span class="cm">// never leak hashes</span>
+<span class="pu">})</span></code></pre>
+    </div>
+
+    <table>
+      <tr><th>Layer</th><th>Tool</th><th>Scope</th><th>Speed</th></tr>
+      <tr><td>Unit</td><td>Vitest</td><td>Single function/class</td><td class="badge badge-green">~ms</td></tr>
+      <tr><td>Integration</td><td>Supertest + Vitest</td><td>API endpoint</td><td class="badge badge-amber">~100ms</td></tr>
+      <tr><td>E2E</td><td>Playwright</td><td>Full browser flow</td><td class="badge badge-red">~10s</td></tr>
+      <tr><td>Load</td><td>k6 / autocannon</td><td>Throughput, latency</td><td class="badge badge-blue">Minutes</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 11 CLUSTERING -->
+  <div class="section" id="clustering">
+    <div class="section-label">11 — Scaling</div>
+    <h2>Clustering & Worker Threads</h2>
+    <p class="lead">A single Node.js process uses one CPU core. To use all cores: cluster spawns multiple processes (each with its own event loop), while worker threads share memory in the same process for CPU-intensive work.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Cluster Module</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> cluster <span class="kw">from</span> <span class="st">'node:cluster'</span>
+<span class="kw">import</span> os      <span class="kw">from</span> <span class="st">'node:os'</span>
+<span class="kw">import</span> <span class="pu">{</span> createServer <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:http'</span>
+
+<span class="kw">if</span> <span class="pu">(</span>cluster<span class="pu">.</span>isPrimary<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> numCPUs <span class="op">=</span> os<span class="pu">.</span><span class="fn">cpus</span><span class="pu">().</span>length
+  <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">`Primary </span><span class="pu">${</span>process<span class="pu">.</span>pid<span class="pu">}</span><span class="st"> spawning </span><span class="pu">${</span>numCPUs<span class="pu">}</span><span class="st"> workers`</span><span class="pu">)</span>
+
+  <span class="kw">for</span> <span class="pu">(</span><span class="kw">let</span> i <span class="op">=</span> <span class="nm">0</span><span class="pu">;</span> i <span class="op"><</span> numCPUs<span class="pu">;</span> i<span class="op">++</span><span class="pu">)</span> cluster<span class="pu">.</span><span class="fn">fork</span><span class="pu">()</span>
+
+  cluster<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'exit'</span><span class="pu">,</span> <span class="pu">(</span>worker<span class="pu">,</span> code<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+    <span class="fn">console</span><span class="pu">.</span><span class="fn">error</span><span class="pu">(</span><span class="st">`Worker </span><span class="pu">${</span>worker<span class="pu">.</span>process<span class="pu">.</span>pid<span class="pu">}</span><span class="st"> died (</span><span class="pu">${</span>code<span class="pu">}</span><span class="st">) — restarting`</span><span class="pu">)</span>
+    cluster<span class="pu">.</span><span class="fn">fork</span><span class="pu">()</span>  <span class="cm">// auto-restart crashed workers</span>
+  <span class="pu">})</span>
+<span class="pu">}</span> <span class="kw">else</span> <span class="pu">{</span>
+  <span class="cm">// Worker: each runs the full Express/http app</span>
+  <span class="kw">const</span> <span class="pu">{</span> app <span class="pu">}</span> <span class="op">=</span> <span class="kw">await</span> <span class="kw">import</span><span class="pu">(</span><span class="st">'./app.js'</span><span class="pu">)</span>
+  app<span class="pu">.</span><span class="fn">listen</span><span class="pu">(</span><span class="nm">3000</span><span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <h3>Worker Threads for CPU-Bound Tasks</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Worker Thread Pool</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> Worker, isMainThread, parentPort, workerData <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:worker_threads'</span>
+
+<span class="cm">// ── worker.js — the CPU-bound work ────────────────</span>
+<span class="kw">if</span> <span class="pu">(!</span>isMainThread<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">{</span> data <span class="pu">}</span> <span class="op">=</span> workerData
+  <span class="kw">const</span> result <span class="op">=</span> <span class="fn">heavyProcessing</span><span class="pu">(</span>data<span class="pu">)</span>  <span class="cm">// runs on separate thread</span>
+  parentPort<span class="pu">.</span><span class="fn">postMessage</span><span class="pu">(</span>result<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── main thread — dispatch to worker ─────────────</span>
+<span class="kw">function</span> <span class="fn">runInWorker</span><span class="pu">(</span>data<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="kw">new</span> <span class="bi">Promise</span><span class="pu">((</span>resolve, reject<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+    <span class="kw">const</span> worker <span class="op">=</span> <span class="kw">new</span> <span class="fn">Worker</span><span class="pu">(</span><span class="kw">new</span> <span class="ty">URL</span><span class="pu">(</span><span class="st">'./worker.js'</span><span class="pu">,</span> <span class="kw">import</span><span class="pu">.</span>meta<span class="pu">.</span>url<span class="pu">),</span> <span class="pu">{</span>
+      workerData<span class="pu">:</span> <span class="pu">{</span> data <span class="pu">}</span>
+    <span class="pu">})</span>
+    worker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'message'</span><span class="pu">,</span> resolve<span class="pu">)</span>
+    worker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'error'</span><span class="pu">,</span> reject<span class="pu">)</span>
+  <span class="pu">})</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── SharedArrayBuffer for zero-copy data sharing ─</span>
+<span class="kw">const</span> shared <span class="op">=</span> <span class="kw">new</span> <span class="ty">SharedArrayBuffer</span><span class="pu">(</span><span class="nm">4</span> <span class="op">*</span> <span class="nm">1024</span> <span class="op">*</span> <span class="nm">1024</span><span class="pu">)</span>  <span class="cm">// 4MB</span>
+<span class="kw">const</span> arr    <span class="op">=</span> <span class="kw">new</span> <span class="ty">Float64Array</span><span class="pu">(</span>shared<span class="pu">)</span>
+<span class="cm">// Both main thread and worker can read/write arr with zero copying</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 12 PERFORMANCE -->
+  <div class="section" id="performance">
+    <div class="section-label">12 — Going Fast</div>
+    <h2>Performance & Profiling</h2>
+    <p class="lead">Profile before optimising. The most common Node.js bottlenecks are I/O queue starvation, GC pressure from too many allocations, and JSON parsing of large payloads.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Performance Techniques</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Object pooling — reduce GC pressure ──────────</span>
+<span class="kw">class</span> <span class="ty">ObjectPool</span> <span class="pu">{</span>
+  <span class="op">#</span>pool <span class="op">=</span> <span class="pu">[]</span>
+  <span class="op">#</span>create
+
+  <span class="kw">constructor</span><span class="pu">(</span>create<span class="pu">)</span> <span class="pu">{</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>create <span class="op">=</span> create <span class="pu">}</span>
+
+  <span class="fn">acquire</span><span class="pu">()</span>     <span class="pu">{</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>pool<span class="pu">.</span><span class="fn">pop</span><span class="pu">()</span> <span class="op">??</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span><span class="fn">create</span><span class="pu">() }</span>
+  <span class="fn">release</span><span class="pu">(</span>obj<span class="pu">)</span>  <span class="pu">{</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>pool<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>obj<span class="pu">)</span> <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> bufPool <span class="op">=</span> <span class="kw">new</span> <span class="fn">ObjectPool</span><span class="pu">(()</span> <span class="op">=></span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">allocUnsafe</span><span class="pu">(</span><span class="nm">64</span> <span class="op">*</span> <span class="nm">1024</span><span class="pu">))</span>
+
+<span class="cm">// ── Caching with LRU ──────────────────────────────</span>
+<span class="kw">import</span> <span class="pu">{</span> LRUCache <span class="pu">}</span> <span class="kw">from</span> <span class="st">'lru-cache'</span>
+
+<span class="kw">const</span> cache <span class="op">=</span> <span class="kw">new</span> <span class="fn">LRUCache</span><span class="pu">({</span>
+  max<span class="pu">:</span>     <span class="nm">500</span>,            <span class="cm">// max 500 items</span>
+  ttl<span class="pu">:</span>     <span class="nm">60_000</span>,         <span class="cm">// 60 second TTL</span>
+  maxSize<span class="pu">:</span> <span class="nm">5_000_000</span>,      <span class="cm">// 5MB max total</span>
+  sizeCalculation<span class="pu">:</span> v <span class="op">=></span> <span class="bi">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>v<span class="pu">).</span>length
+<span class="pu">})</span>
+
+<span class="kw">async function</span> <span class="fn">getCachedUser</span><span class="pu">(</span>id<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> cached <span class="op">=</span> cache<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>id<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>cached<span class="pu">)</span> <span class="kw">return</span> cached
+
+  <span class="kw">const</span> user <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>users<span class="pu">.</span><span class="fn">findUnique</span><span class="pu">({</span> where<span class="pu">:</span> <span class="pu">{</span> id <span class="pu">}</span> <span class="pu">})</span>
+  cache<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>id, user<span class="pu">)</span>
+  <span class="kw">return</span> user
+<span class="pu">}</span>
+
+<span class="cm">// ── Fast JSON with simdjson / orjson alternatives ─</span>
+<span class="cm">// For large payloads, consider fast-json-stringify:</span>
+<span class="kw">import</span> fastJson <span class="kw">from</span> <span class="st">'fast-json-stringify'</span>
+<span class="kw">const</span> stringify <span class="op">=</span> <span class="fn">fastJson</span><span class="pu">({</span>
+  type<span class="pu">:</span> <span class="st">'object'</span><span class="pu">,</span>
+  properties<span class="pu">:</span> <span class="pu">{</span>
+    id<span class="pu">:</span>    <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'string'</span> <span class="pu">},</span>
+    name<span class="pu">:</span>  <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'string'</span> <span class="pu">},</span>
+    score<span class="pu">:</span> <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'number'</span> <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>  <span class="cm">// 2-3× faster than JSON.stringify for known schemas</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 13 DOCKER -->
+  <div class="section" id="docker">
+    <div class="section-label">13 — Shipping to Production</div>
+    <h2>Docker & Deployment</h2>
+    <p class="lead">A well-crafted Dockerfile is the difference between a 1.2GB image and a 120MB one. Multi-stage builds and non-root users are non-negotiable for production.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Dockerfile — Multi-Stage Production Build</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm"># ── Stage 1: install dependencies ────────────────</span>
+<span class="kw">FROM</span> <span class="ty">node:22-alpine</span> <span class="kw">AS</span> deps
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> package*.json ./
+<span class="kw">RUN</span> npm ci --only=production
+
+<span class="cm"># ── Stage 2: final image ──────────────────────────</span>
+<span class="kw">FROM</span> <span class="ty">node:22-alpine</span> <span class="kw">AS</span> runner
+<span class="kw">WORKDIR</span> /app
+
+<span class="cm"># Run as non-root</span>
+<span class="kw">RUN</span> addgroup -S appgroup && adduser -S appuser -G appgroup
+<span class="kw">USER</span> appuser
+
+<span class="kw">COPY</span> --from=deps /app/node_modules ./node_modules
+<span class="kw">COPY</span> --chown=appuser:appgroup . .
+
+<span class="cm"># Tell Node.js it's in production</span>
+<span class="kw">ENV</span> NODE_ENV=production
+<span class="kw">ENV</span> PORT=3000
+<span class="kw">EXPOSE</span> 3000
+
+<span class="cm"># Use exec form — receives signals, enables graceful shutdown</span>
+<span class="kw">CMD</span> ["node", "--max-old-space-size=512", "src/server.js"]</code></pre>
+    </div>
+
+    <h3>Graceful Shutdown</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Graceful Shutdown Handler</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Essential for Kubernetes rolling deploys ──────</span>
+<span class="kw">async function</span> <span class="fn">gracefulShutdown</span><span class="pu">(</span>signal<span class="pu">)</span> <span class="pu">{</span>
+  logger<span class="pu">.</span><span class="fn">info</span><span class="pu">(</span><span class="st">`Received </span><span class="pu">${</span>signal<span class="pu">}</span><span class="st"> — starting graceful shutdown`</span><span class="pu">)</span>
+
+  <span class="cm">// 1. Stop accepting new connections</span>
+  <span class="kw">await</span> <span class="kw">new</span> <span class="bi">Promise</span><span class="pu">((</span>resolve, reject<span class="pu">)</span> <span class="op">=></span>
+    server<span class="pu">.</span><span class="fn">close</span><span class="pu">(</span>err <span class="op">=></span> err <span class="op">?</span> <span class="fn">reject</span><span class="pu">(</span>err<span class="pu">)</span> <span class="op">:</span> <span class="fn">resolve</span><span class="pu">())</span>
+  <span class="pu">)</span>
+
+  <span class="cm">// 2. Finish in-flight requests (wait up to 10s)</span>
+  <span class="kw">await</span> <span class="fn">withTimeout</span><span class="pu">(</span><span class="fn">waitForActiveRequests</span><span class="pu">(),</span> <span class="nm">10_000</span><span class="pu">)</span>
+
+  <span class="cm">// 3. Close DB connections</span>
+  <span class="kw">await</span> prisma<span class="pu">.</span><span class="fn">$disconnect</span><span class="pu">()</span>
+
+  logger<span class="pu">.</span><span class="fn">info</span><span class="pu">(</span><span class="st">'Shutdown complete'</span><span class="pu">)</span>
+  <span class="bi">process</span><span class="pu">.</span><span class="fn">exit</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="bi">process</span><span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'SIGTERM'</span><span class="pu">,</span> gracefulShutdown<span class="pu">)</span>
+<span class="bi">process</span><span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'SIGINT'</span><span class="pu">,</span>  gracefulShutdown<span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 14 OBSERVABILITY -->
+  <div class="section" id="observability">
+    <div class="section-label">14 — Production Visibility</div>
+    <h2>Observability & Logging</h2>
+    <p class="lead">You can't improve what you can't measure. The three pillars of observability — logs, metrics, traces — each answer a different question about your running system.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Structured Logging with Pino</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> pino <span class="kw">from</span> <span class="st">'pino'</span>
+
+<span class="cm">// ── Structured JSON logging (fastest Node.js logger)</span>
+<span class="kw">const</span> logger <span class="op">=</span> <span class="fn">pino</span><span class="pu">({</span>
+  level<span class="pu">:</span>    process<span class="pu">.</span>env<span class="pu">.</span>LOG_LEVEL <span class="op">||</span> <span class="st">'info'</span><span class="pu">,</span>
+  redact<span class="pu">:</span>  <span class="pu">[</span><span class="st">'req.headers.authorization'</span><span class="pu">,</span> <span class="st">'*.password'</span><span class="pu">],</span>  <span class="cm">// auto-redact secrets</span>
+  base<span class="pu">:</span>    <span class="pu">{</span> service<span class="pu">:</span> <span class="st">'api'</span><span class="pu">,</span> version<span class="pu">:</span> process<span class="pu">.</span>env<span class="pu">.</span>npm_package_version <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Request logging middleware ────────────────────</span>
+<span class="kw">function</span> <span class="fn">requestLogger</span><span class="pu">(</span>req, res, next<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> start <span class="op">=</span> <span class="bi">Date</span><span class="pu">.</span><span class="fn">now</span><span class="pu">()</span>
+  res<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'finish'</span><span class="pu">,</span> <span class="pu">()</span> <span class="op">=></span> <span class="pu">{</span>
+    logger<span class="pu">.</span><span class="fn">info</span><span class="pu">({</span>
+      method<span class="pu">:</span>      req<span class="pu">.</span>method,
+      url<span class="pu">:</span>         req<span class="pu">.</span>url,
+      status<span class="pu">:</span>      res<span class="pu">.</span>statusCode,
+      durationMs<span class="pu">:</span>  <span class="bi">Date</span><span class="pu">.</span><span class="fn">now</span><span class="pu">()</span> <span class="op">-</span> start<span class="pu">,</span>
+      ip<span class="pu">:</span>          req<span class="pu">.</span>ip,
+    <span class="pu">},</span> <span class="st">'request'</span><span class="pu">)</span>
+  <span class="pu">})</span>
+  <span class="fn">next</span><span class="pu">()</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Metrics with prom-client (Prometheus) ─────────</span>
+<span class="kw">import</span> promClient <span class="kw">from</span> <span class="st">'prom-client'</span>
+promClient<span class="pu">.</span>collectDefaultMetrics<span class="pu">()</span>  <span class="cm">// GC, memory, event loop lag, etc.</span>
+
+<span class="kw">const</span> httpDuration <span class="op">=</span> <span class="kw">new</span> promClient<span class="pu">.</span><span class="fn">Histogram</span><span class="pu">({</span>
+  name<span class="pu">:</span>       <span class="st">'http_request_duration_seconds'</span><span class="pu">,</span>
+  help<span class="pu">:</span>       <span class="st">'HTTP request duration'</span><span class="pu">,</span>
+  labelNames<span class="pu">:</span> <span class="pu">[</span><span class="st">'method'</span><span class="pu">,</span> <span class="st">'route'</span><span class="pu">,</span> <span class="st">'status'</span><span class="pu">],</span>
+  buckets<span class="pu">:</span>    <span class="pu">[</span><span class="nm">0.005</span><span class="pu">,</span> <span class="nm">0.01</span><span class="pu">,</span> <span class="nm">0.025</span><span class="pu">,</span> <span class="nm">0.1</span><span class="pu">,</span> <span class="nm">0.5</span><span class="pu">,</span> <span class="nm">1</span><span class="pu">,</span> <span class="nm">5</span><span class="pu">]</span>
+<span class="pu">})</span>
+
+<span class="cm">// Scrape endpoint for Prometheus / Grafana</span>
+app<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'/metrics'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span>req, res<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  res<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span><span class="st">'Content-Type'</span><span class="pu">,</span> promClient<span class="pu">.</span>register<span class="pu">.</span>contentType<span class="pu">)</span>
+  res<span class="pu">.</span><span class="fn">end</span><span class="pu">(</span><span class="kw">await</span> promClient<span class="pu">.</span>register<span class="pu">.</span><span class="fn">metrics</span><span class="pu">())</span>
+<span class="pu">})</span></code></pre>
+    </div>
+
+    <div class="pullquote">
+      "A Node.js process in production that can't tell you its p99 latency, active connections, and event loop lag is flying blind."
+    </div>
+
+    <div class="info">
+      <div class="info-label">ℹ️ What to Alert On</div>
+      The four golden signals for Node.js: <strong>Latency</strong> (p95 &gt;500ms), <strong>Traffic</strong> (requests/sec sudden drop or spike), <strong>Errors</strong> (5xx rate &gt;1%), and <strong>Saturation</strong> (event loop lag &gt;100ms, heap &gt;80%). Instrument all four before your first production deployment.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Node.js: The Complete Developer's Guide</strong><br>
+  Part of the <a href="index.html">DevDive</a> series — Deep dives for serious developers.<br><br>
+  <span style="color:rgba(255,255,255,0.35)">© 2026 DevDive · Node.js 22 LTS · June 2026</span>
+</footer>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre')
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    const original = btn.textContent
+    btn.textContent = 'Copied!'
+    setTimeout(() => { btn.textContent = original }, 2000)
+  })
+}
+</script>
+</body>
+</html>
