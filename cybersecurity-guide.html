@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Security for JavaScript Engineers — The Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f7;
+    --surface: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-muted: #9a9a9a;
+    --accent: #dc2626;
+    --accent-light: #fff1f2;
+    --accent-subtle: #fee2e2;
+    --border: #ede8e8;
+    --code-bg: #0d1117;
+    --code-text: #e6edf3;
+    --tag-bg: #f5f0f0;
+    --tag-text: #555;
+    --tip-bg: #f0fdf4;
+    --tip-border: #16a34a;
+    --warn-bg: #fff7ed;
+    --warn-border: #ea580c;
+    --danger-bg: #fff1f2;
+    --danger-border: #dc2626;
+    --info-bg: #eff6ff;
+    --info-border: #2563eb;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,247,247,0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  .nav-logo { font-weight: 600; font-size: 15px; color: var(--text-primary); letter-spacing: -0.3px; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a {
+    font-size: 12.5px; color: var(--text-secondary); text-decoration: none;
+    padding: 5px 9px; border-radius: 6px; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .nav-links a:hover { background: var(--tag-bg); color: var(--text-primary); }
+  .nav-read-time { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+
+  .hero {
+    max-width: 780px; margin: 0 auto;
+    padding: 64px 2rem 48px;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-subtle); color: var(--accent);
+    font-size: 12px; font-weight: 600; padding: 4px 12px;
+    border-radius: 100px; margin-bottom: 24px; letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(32px, 5vw, 50px);
+    font-weight: 600; line-height: 1.12;
+    letter-spacing: -0.5px; color: var(--text-primary);
+    margin-bottom: 20px;
+  }
+  .hero-sub {
+    font-size: 19px; color: var(--text-secondary);
+    font-weight: 300; line-height: 1.6; margin-bottom: 32px;
+  }
+  .hero-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #dc2626, #7f1d1d);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: white;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .meta-text { font-size: 14px; color: var(--text-secondary); }
+  .meta-text strong { color: var(--text-primary); }
+  .hero-divider { border: none; border-top: 1px solid var(--border); margin-top: 32px; }
+
+  /* Threat level badges in hero */
+  .threat-bar {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;
+  }
+  .threat-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600; padding: 4px 12px;
+    border-radius: 100px; border: 1px solid;
+  }
+  .threat-critical { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+  .threat-high     { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+  .threat-medium   { background: #fefce8; color: #a16207; border-color: #fef08a; }
+
+  .toc-wrapper { max-width: 780px; margin: 0 auto; padding: 0 2rem 8px; }
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 28px; margin-bottom: 40px;
+  }
+  .toc h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500; }
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+  .toc a {
+    font-size: 14px; color: var(--text-secondary); text-decoration: none;
+    display: flex; align-items: center; gap: 8px; padding: 4px 0;
+    transition: color 0.15s;
+  }
+  .toc a:hover { color: var(--accent); }
+  .toc-num { font-size: 12px; color: var(--text-muted); font-weight: 500; min-width: 20px; }
+
+  .content { max-width: 780px; margin: 0 auto; padding: 0 2rem 80px; }
+
+  .section { margin-bottom: 72px; scroll-margin-top: 72px; }
+  .section-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--accent); font-weight: 600; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--accent-subtle); }
+  h2 {
+    font-family: 'Lora', serif;
+    font-size: clamp(22px, 3vw, 30px); font-weight: 600;
+    letter-spacing: -0.3px; margin-bottom: 16px; color: var(--text-primary);
+  }
+  h3 { font-size: 19px; font-weight: 600; margin: 32px 0 12px; color: var(--text-primary); }
+  h4 { font-size: 16px; font-weight: 600; margin: 20px 0 8px; color: var(--text-primary); }
+  p { margin-bottom: 18px; color: #2d2d2d; }
+  .lead { font-size: 19px; color: var(--text-secondary); font-weight: 300; margin-bottom: 24px; }
+
+  .code-block {
+    background: var(--code-bg); border-radius: 10px;
+    margin: 24px 0; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .code-lang { font-size: 12px; color: #6e7681; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .copy-btn {
+    font-size: 12px; color: #484f58; background: none; border: none;
+    cursor: pointer; padding: 2px 8px; border-radius: 4px;
+    font-family: 'Outfit', sans-serif; transition: all 0.15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.07); color: #8b949e; }
+  pre {
+    padding: 20px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px; line-height: 1.7; color: var(--code-text);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  code {
+    font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
+    background: #fde8e8; color: #9f1239;
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* Syntax */
+  .kw  { color: #ff7b72; }
+  .ty  { color: #79c0ff; }
+  .st  { color: #a5d6ff; }
+  .nm  { color: #f0883e; }
+  .cm  { color: #8b949e; font-style: italic; }
+  .fn  { color: #d2a8ff; }
+  .op  { color: #c9d1d9; }
+  .pu  { color: #e6edf3; }
+  .bi  { color: #ffa657; }
+  .rx  { color: #7ee787; }
+  .at  { color: #ffa657; }
+
+  .tip    { background: var(--tip-bg);    border-left: 3px solid var(--tip-border);    border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .warn   { background: var(--warn-bg);   border-left: 3px solid var(--warn-border);   border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .danger { background: var(--danger-bg); border-left: 3px solid var(--danger-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .info   { background: var(--info-bg);   border-left: 3px solid var(--info-border);   border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+  .tip-label    { font-size: 12px; font-weight: 600; color: #16a34a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .warn-label   { font-size: 12px; font-weight: 600; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .danger-label { font-size: 12px; font-weight: 600; color: #dc2626; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .info-label   { font-size: 12px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .compare-card { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .compare-header { padding: 10px 16px; font-size: 13px; font-weight: 600; }
+  .compare-header.bad  { background: #fef2f2; color: #dc2626; }
+  .compare-header.good { background: #f0fdf4; color: #16a34a; }
+  .compare-card .code-block { border-radius: 0; margin: 0; border: none; }
+
+  table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
+  th { background: var(--tag-bg); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; letter-spacing: 0.3px; vertical-align: middle; }
+  .badge-red    { background: #fee2e2; color: #b91c1c; }
+  .badge-orange { background: #ffedd5; color: #c2410c; }
+  .badge-amber  { background: #fef3c7; color: #b45309; }
+  .badge-green  { background: #dcfce7; color: #15803d; }
+  .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+
+  .pullquote {
+    font-family: 'Lora', serif; font-style: italic;
+    font-size: 22px; line-height: 1.5; color: var(--text-secondary);
+    border-left: 4px solid var(--accent);
+    padding: 12px 24px; margin: 36px 0;
+  }
+
+  /* OWASP cards */
+  .owasp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+  .owasp-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px;
+    border-left: 3px solid var(--accent);
+  }
+  .owasp-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 5px; letter-spacing: 0.5px; }
+  .owasp-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .owasp-desc  { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+
+  /* Attack/defense two-col */
+  .ad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .ad-card { border-radius: 10px; padding: 18px 20px; border: 1px solid; }
+  .ad-attack  { background: #fff1f2; border-color: #fecdd3; }
+  .ad-defense { background: #f0fdf4; border-color: #bbf7d0; }
+  .ad-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+  .ad-attack  .ad-label { color: #be123c; }
+  .ad-defense .ad-label { color: #15803d; }
+  .ad-card ul { padding-left: 18px; font-size: 14px; line-height: 1.8; color: #2d2d2d; }
+
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+  .concept-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 20px;
+  }
+  .concept-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; margin-top: 0; }
+  .concept-card p  { font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+  .concept-icon { font-size: 22px; margin-bottom: 10px; }
+
+  .checklist { list-style: none; margin: 16px 0; padding: 0; }
+  .checklist li {
+    display: flex; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid var(--border); font-size: 15px;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-icon { font-size: 14px; flex-shrink: 0; margin-top: 3px; }
+
+  .phase-list { list-style: none; margin: 16px 0; }
+  .phase-list li {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 15px;
+  }
+  .phase-list li:last-child { border-bottom: none; }
+  .phase-num {
+    min-width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent-subtle); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+  footer {
+    background: #1a0a0a; color: rgba(255,255,255,0.6);
+    text-align: center; padding: 40px 2rem; font-size: 14px;
+  }
+  footer strong { color: white; }
+  footer a { color: #f87171; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .toc-grid, .compare-grid, .owasp-grid, .ad-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Cyber<span>Security</span> Guide</div>
+  <div class="nav-links">
+    <a href="#authn">Auth</a>
+    <a href="#owasp">OWASP</a>
+    <a href="#passwords">Passwords</a>
+    <a href="#api">API Security</a>
+    <a href="#browser">Browser</a>
+    <a href="#iam">IAM</a>
+    <a href="#secrets">Secrets</a>
+    <a href="#threat">Threat Model</a>
+    <a href="#zerotrust">Zero Trust</a>
+    <a href="#pentest">Pen Testing</a>
+    <a href="#crypto">Crypto</a>
+    <a href="#supply">Supply Chain</a>
+  </div>
+  <div class="nav-read-time">~40 min read</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">🔐 Complete Guide</div>
+  <h1>Cyber Security for JavaScript Engineers</h1>
+  <p class="hero-sub">Authentication, OWASP Top 10, browser attacks, secure API design, secrets management, zero-trust architecture, cloud IAM, threat modelling, and pen testing basics — everything a senior JS engineer needs to build and ship secure systems.</p>
+  <div class="hero-meta">
+    <div class="avatar">🔐</div>
+    <div class="meta-text">
+      <strong>Security Deep Dive — Senior JavaScript Edition</strong><br>
+      OWASP 2025 · Node.js 22 · Cloud-native patterns — June 2026
+    </div>
+  </div>
+  <div class="threat-bar">
+    <span class="threat-pill threat-critical">🔴 Critical: Injection, Broken Auth</span>
+    <span class="threat-pill threat-high">🟠 High: XSS, CSRF, SSRF</span>
+    <span class="threat-pill threat-medium">🟡 Medium: Misconfig, Supply Chain</span>
+  </div>
+  <hr class="hero-divider">
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <div class="toc-grid">
+      <a href="#authn"><span class="toc-num">01</span> Authentication & Authorization</a>
+      <a href="#secrets"><span class="toc-num">07</span> Secrets Management</a>
+      <a href="#owasp"><span class="toc-num">02</span> OWASP Top 10 (2025)</a>
+      <a href="#threat"><span class="toc-num">08</span> Threat Modeling</a>
+      <a href="#passwords"><span class="toc-num">03</span> Password Security</a>
+      <a href="#zerotrust"><span class="toc-num">09</span> Zero-Trust Architecture</a>
+      <a href="#api"><span class="toc-num">04</span> Secure API Design</a>
+      <a href="#pentest"><span class="toc-num">10</span> Penetration Testing Basics</a>
+      <a href="#browser"><span class="toc-num">05</span> Browser Security (XSS, CSRF, CORS)</a>
+      <a href="#crypto"><span class="toc-num">11</span> Cryptography in Practice</a>
+      <a href="#iam"><span class="toc-num">06</span> Cloud IAM & Networking</a>
+      <a href="#supply"><span class="toc-num">12</span> Supply Chain & Dependency Security</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ═══════════════════════ 01 AUTH -->
+  <div class="section" id="authn">
+    <div class="section-label">01 — Identity</div>
+    <h2>Authentication & Authorization</h2>
+    <p class="lead">AuthN proves who you are. AuthZ decides what you can do. Confusing the two — or implementing either badly — is the root cause of most breach headlines.</p>
+
+    <h3>JWT Architecture Done Right</h3>
+    <p>JSON Web Tokens are stateless and portable — but misuse is rampant. The three cardinal rules: always verify the signature, never trust the <code>alg</code> header blindly, and keep access tokens short-lived.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Secure JWT Implementation</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> SignJWT, jwtVerify, importJWK <span class="pu">}</span> <span class="kw">from</span> <span class="st">'jose'</span>  <span class="cm">// prefer jose over jsonwebtoken</span>
+<span class="kw">import</span> crypto <span class="kw">from</span> <span class="st">'node:crypto'</span>
+
+<span class="cm">// ── Key generation — RS256 asymmetric (preferred for APIs) ──</span>
+<span class="cm">// Private key signs tokens; public key verifies them.
+// You can publish the public key as JWKS; services verify without your secret.</span>
+<span class="kw">const</span> <span class="pu">{</span> privateKey, publicKey <span class="pu">}</span> <span class="op">=</span> <span class="kw">await</span> crypto<span class="pu">.</span>subtle<span class="pu">.</span><span class="fn">generateKey</span><span class="pu">(</span>
+  <span class="pu">{</span> name<span class="pu">:</span> <span class="st">'RSASSA-PKCS1-v1_5'</span><span class="pu">,</span> modulusLength<span class="pu">:</span> <span class="nm">2048</span><span class="pu">,</span> hash<span class="pu">:</span> <span class="st">'SHA-256'</span><span class="pu">,</span>
+    publicExponent<span class="pu">:</span> <span class="kw">new</span> <span class="ty">Uint8Array</span><span class="pu">([</span><span class="nm">1</span>, <span class="nm">0</span>, <span class="nm">1</span><span class="pu">]) },</span>
+  <span class="kw">true</span><span class="pu">,</span> <span class="pu">[</span><span class="st">'sign'</span><span class="pu">,</span> <span class="st">'verify'</span><span class="pu">]</span>
+<span class="pu">)</span>
+
+<span class="cm">// ── Issue access + refresh token pair ────────────</span>
+<span class="kw">async function</span> <span class="fn">issueTokens</span><span class="pu">(</span>userId, roles<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> now <span class="op">=</span> <span class="bi">Math</span><span class="pu">.</span><span class="fn">floor</span><span class="pu">(</span><span class="bi">Date</span><span class="pu">.</span><span class="fn">now</span><span class="pu">()</span> <span class="op">/</span> <span class="nm">1000</span><span class="pu">)</span>
+
+  <span class="kw">const</span> access <span class="op">=</span> <span class="kw">await</span> <span class="kw">new</span> <span class="fn">SignJWT</span><span class="pu">({</span> sub<span class="pu">:</span> userId, roles, type<span class="pu">:</span> <span class="st">'access'</span> <span class="pu">})</span>
+    <span class="pu">.</span><span class="fn">setProtectedHeader</span><span class="pu">({</span> alg<span class="pu">:</span> <span class="st">'RS256'</span> <span class="pu">})</span>   <span class="cm">// never 'none', never trust client alg</span>
+    <span class="pu">.</span><span class="fn">setIssuedAt</span><span class="pu">(</span>now<span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">setExpirationTime</span><span class="pu">(</span><span class="st">'15m'</span><span class="pu">)</span>              <span class="cm">// short-lived — 15 minutes max</span>
+    <span class="pu">.</span><span class="fn">setJti</span><span class="pu">(</span>crypto<span class="pu">.</span><span class="fn">randomUUID</span><span class="pu">())</span>           <span class="cm">// unique ID for revocation</span>
+    <span class="pu">.</span><span class="fn">sign</span><span class="pu">(</span>privateKey<span class="pu">)</span>
+
+  <span class="kw">const</span> refresh <span class="op">=</span> <span class="kw">await</span> <span class="kw">new</span> <span class="fn">SignJWT</span><span class="pu">({</span> sub<span class="pu">:</span> userId, type<span class="pu">:</span> <span class="st">'refresh'</span> <span class="pu">})</span>
+    <span class="pu">.</span><span class="fn">setProtectedHeader</span><span class="pu">({</span> alg<span class="pu">:</span> <span class="st">'RS256'</span> <span class="pu">})</span>
+    <span class="pu">.</span><span class="fn">setExpirationTime</span><span class="pu">(</span><span class="st">'7d'</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">setJti</span><span class="pu">(</span>crypto<span class="pu">.</span><span class="fn">randomUUID</span><span class="pu">())</span>
+    <span class="pu">.</span><span class="fn">sign</span><span class="pu">(</span>privateKey<span class="pu">)</span>
+
+  <span class="kw">return</span> <span class="pu">{</span> access, refresh <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Verification with audience + issuer checks ────</span>
+<span class="kw">async function</span> <span class="fn">verifyAccessToken</span><span class="pu">(</span>token<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">{</span> payload <span class="pu">}</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">jwtVerify</span><span class="pu">(</span>token, publicKey, <span class="pu">{</span>
+    algorithms<span class="pu">:</span> <span class="pu">[</span><span class="st">'RS256'</span><span class="pu">],</span>     <span class="cm">// whitelist — reject 'none' or 'HS256'</span>
+    issuer<span class="pu">:</span>     <span class="st">'https://auth.myapp.com'</span><span class="pu">,</span>
+    audience<span class="pu">:</span>   <span class="st">'https://api.myapp.com'</span><span class="pu">,</span>
+  <span class="pu">})</span>
+  <span class="kw">if</span> <span class="pu">(</span>payload<span class="pu">.</span>type <span class="op">!==</span> <span class="st">'access'</span><span class="pu">)</span> <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">'Wrong token type'</span><span class="pu">)</span>
+  <span class="kw">return</span> payload
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="danger">
+      <div class="danger-label">🚨 Critical Vulnerability — alg:none Attack</div>
+      Some JWT libraries honour <code>{"alg":"none"}</code> in the header, accepting unsigned tokens as valid. Always specify an algorithm allowlist server-side. Never trust the algorithm from the incoming token header.
+    </div>
+
+    <h3>OAuth 2.0 & OIDC — The Right Flow Per Context</h3>
+    <table>
+      <tr><th>Context</th><th>Flow</th><th>Why</th></tr>
+      <tr><td>Web app (server-side)</td><td>Authorization Code + PKCE</td><td>Tokens never exposed to browser</td></tr>
+      <tr><td>SPA / mobile</td><td>Authorization Code + PKCE</td><td>PKCE replaces client secret</td></tr>
+      <tr><td>Machine-to-machine</td><td>Client Credentials</td><td>No user interaction needed</td></tr>
+      <tr><td>Legacy / deprecated</td><td><span class="badge badge-red">Implicit Flow</span></td><td>Tokens in URL fragments — avoid</td></tr>
+      <tr><td>Legacy / deprecated</td><td><span class="badge badge-red">Password Grant</span></td><td>Exposes credentials to app — avoid</td></tr>
+    </table>
+
+    <h3>Role-Based & Attribute-Based Access Control</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — RBAC & ABAC Middleware</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── RBAC: simple role checks ──────────────────────</span>
+<span class="kw">const</span> <span class="fn">requireRole</span> <span class="op">=</span> <span class="pu">(...</span>roles<span class="pu">)</span> <span class="op">=></span> <span class="pu">(</span>req, res, next<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">const</span> userRoles <span class="op">=</span> req<span class="pu">.</span>user<span class="pu">?.</span>roles <span class="op">??</span> <span class="pu">[]</span>
+  <span class="kw">if</span> <span class="pu">(!</span>roles<span class="pu">.</span><span class="fn">some</span><span class="pu">(</span>r <span class="op">=></span> userRoles<span class="pu">.</span><span class="fn">includes</span><span class="pu">(</span>r<span class="pu">)))</span>
+    <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">403</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> <span class="st">'Forbidden'</span> <span class="pu">})</span>
+  <span class="fn">next</span><span class="pu">()</span>
+<span class="pu">}</span>
+router<span class="pu">.</span><span class="fn">delete</span><span class="pu">(</span><span class="st">'/posts/:id'</span><span class="pu">,</span> authenticate, <span class="fn">requireRole</span><span class="pu">(</span><span class="st">'admin'</span><span class="pu">,</span> <span class="st">'moderator'</span><span class="pu">),</span> deletePost<span class="pu">)</span>
+
+<span class="cm">// ── ABAC: fine-grained attribute checks ───────────</span>
+<span class="kw">class</span> <span class="ty">PolicyEngine</span> <span class="pu">{</span>
+  <span class="op">#</span>policies <span class="op">=</span> <span class="pu">[]</span>
+
+  <span class="fn">addPolicy</span><span class="pu">(</span>resource, action, condition<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>policies<span class="pu">.</span><span class="fn">push</span><span class="pu">({</span> resource, action, condition <span class="pu">})</span>
+    <span class="kw">return</span> <span class="kw">this</span>
+  <span class="pu">}</span>
+
+  <span class="fn">can</span><span class="pu">(</span>user, action, resource<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span><span class="op">#</span>policies<span class="pu">.</span><span class="fn">some</span><span class="pu">(</span>p <span class="op">=></span>
+      p<span class="pu">.</span>resource <span class="op">===</span> resource<span class="pu">.</span>type <span class="op">&&</span>
+      p<span class="pu">.</span>action   <span class="op">===</span> action <span class="op">&&</span>
+      p<span class="pu">.</span><span class="fn">condition</span><span class="pu">(</span>user, resource<span class="pu">)</span>
+    <span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> policy <span class="op">=</span> <span class="kw">new</span> <span class="fn">PolicyEngine</span><span class="pu">()</span>
+  <span class="pu">.</span><span class="fn">addPolicy</span><span class="pu">(</span><span class="st">'post'</span><span class="pu">,</span> <span class="st">'delete'</span><span class="pu">,</span> <span class="pu">(</span>user, post<span class="pu">)</span> <span class="op">=></span>
+    user<span class="pu">.</span>id <span class="op">===</span> post<span class="pu">.</span>authorId <span class="op">||</span> user<span class="pu">.</span>roles<span class="pu">.</span><span class="fn">includes</span><span class="pu">(</span><span class="st">'admin'</span><span class="pu">)</span>
+  <span class="pu">)</span>
+  <span class="pu">.</span><span class="fn">addPolicy</span><span class="pu">(</span><span class="st">'billing'</span><span class="pu">,</span> <span class="st">'view'</span><span class="pu">,</span> <span class="pu">(</span>user, _<span class="pu">)</span> <span class="op">=></span>
+    user<span class="pu">.</span>subscription <span class="op">===</span> <span class="st">'pro'</span> <span class="op">&&</span> user<span class="pu">.</span>emailVerified
+  <span class="pu">)</span>
+
+<span class="cm">// Usage: fail loudly if unauthorised</span>
+<span class="kw">if</span> <span class="pu">(!</span>policy<span class="pu">.</span><span class="fn">can</span><span class="pu">(</span>req<span class="pu">.</span>user, <span class="st">'delete'</span>, post<span class="pu">))</span>
+  <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">403</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> <span class="st">'Forbidden'</span> <span class="pu">})</span></code></pre>
+    </div>
+
+    <h3>Multi-Factor Authentication (MFA)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — TOTP MFA (RFC 6238)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> TOTP <span class="pu">}</span> <span class="kw">from</span> <span class="st">'otpauth'</span>
+<span class="kw">import</span> QRCode  <span class="kw">from</span> <span class="st">'qrcode'</span>
+
+<span class="cm">// ── Enrol user — generate secret ─────────────────</span>
+<span class="kw">async function</span> <span class="fn">enrolMFA</span><span class="pu">(</span>userId, email<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> totp <span class="op">=</span> <span class="kw">new</span> <span class="fn">TOTP</span><span class="pu">({</span>
+    issuer<span class="pu">:</span>    <span class="st">'MyApp'</span><span class="pu">,</span>
+    label<span class="pu">:</span>     email<span class="pu">,</span>
+    algorithm<span class="pu">:</span> <span class="st">'SHA1'</span><span class="pu">,</span>
+    digits<span class="pu">:</span>    <span class="nm">6</span><span class="pu">,</span>
+    period<span class="pu">:</span>    <span class="nm">30</span><span class="pu">,</span>
+  <span class="pu">})</span>
+
+  <span class="kw">const</span> secret <span class="op">=</span> totp<span class="pu">.</span>secret<span class="pu">.</span>base32   <span class="cm">// store encrypted in DB</span>
+  <span class="kw">const</span> qrUrl  <span class="op">=</span> <span class="kw">await</span> QRCode<span class="pu">.</span><span class="fn">toDataURL</span><span class="pu">(</span>totp<span class="pu">.</span><span class="fn">toString</span><span class="pu">())</span>
+
+  <span class="kw">await</span> db<span class="pu">.</span>users<span class="pu">.</span><span class="fn">update</span><span class="pu">({</span>
+    where<span class="pu">:</span> <span class="pu">{</span> id<span class="pu">:</span> userId <span class="pu">},</span>
+    data<span class="pu">:</span>  <span class="pu">{</span> mfaSecret<span class="pu">:</span> <span class="kw">await</span> <span class="fn">encryptSecret</span><span class="pu">(</span>secret<span class="pu">),</span> mfaEnabled<span class="pu">:</span> <span class="kw">false</span> <span class="pu">}</span>
+  <span class="pu">})</span>
+  <span class="kw">return</span> <span class="pu">{</span> qrUrl, backupCodes<span class="pu">:</span> <span class="kw">await</span> <span class="fn">generateBackupCodes</span><span class="pu">(</span>userId<span class="pu">)</span> <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Verify TOTP token ─────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">verifyMFA</span><span class="pu">(</span>secret, token<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> totp <span class="op">=</span> <span class="kw">new</span> <span class="fn">TOTP</span><span class="pu">({</span> secret <span class="pu">})</span>
+  <span class="cm">// window:1 allows ±30s clock drift</span>
+  <span class="kw">const</span> delta <span class="op">=</span> totp<span class="pu">.</span><span class="fn">validate</span><span class="pu">({</span> token<span class="pu">,</span> window<span class="pu">:</span> <span class="nm">1</span> <span class="pu">})</span>
+  <span class="kw">return</span> delta <span class="op">!==</span> <span class="kw">null</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 02 OWASP -->
+  <div class="section" id="owasp">
+    <div class="section-label">02 — Attack Surface</div>
+    <h2>OWASP Top 10 (2025) for JavaScript Engineers</h2>
+    <p class="lead">The OWASP Top 10 is not a checklist to tick once — it is a map of where attackers look first. Know each category deeply enough to find it in a code review.</p>
+
+    <div class="owasp-grid">
+      <div class="owasp-card">
+        <div class="owasp-num">A01 — CRITICAL</div>
+        <div class="owasp-title">Broken Access Control</div>
+        <p class="owasp-desc">Insecure direct object references, missing AuthZ checks, CORS misconfiguration. Most common critical finding in pen tests.</p>
+      </div>
+      <div class="owasp-card">
+        <div class="owasp-num">A02 — CRITICAL</div>
+        <div class="owasp-title">Cryptographic Failures</div>
+        <p class="owasp-desc">Weak algorithms, hardcoded keys, plaintext secrets in logs, HTTP for sensitive data, predictable IVs.</p>
+      </div>
+      <div class="owasp-card">
+        <div class="owasp-num">A03 — CRITICAL</div>
+        <div class="owasp-title">Injection</div>
+        <p class="owasp-desc">SQL, NoSQL, OS command, LDAP, and template injection. Caused by untrusted data reaching an interpreter.</p>
+      </div>
+      <div class="owasp-card">
+        <div class="owasp-num">A04 — HIGH</div>
+        <div class="owasp-title">Insecure Design</div>
+        <p class="owasp-desc">Missing rate limits, no abuse cases in design, business logic flaws. Threat modeling addresses this category.</p>
+      </div>
+      <div class="owasp-card">
+        <div class="owasp-num">A05 — HIGH</div>
+        <div class="owasp-title">Security Misconfiguration</div>
+        <p class="owasp-desc">Default credentials, unnecessary features enabled, verbose error messages, missing security headers.</p>
+      </div>
+      <div class="owasp-card">
+        <div class="owasp-num">A06 — HIGH</div>
+        <div class="owasp-title">Vulnerable Components</div>
+        <p class="owasp-desc">Outdated npm packages with known CVEs. The Log4Shell of the JavaScript world waiting to happen.</p>
+      </div>
+      <div class="owasp-card">
+        <div class="owasp-num">A07 — HIGH</div>
+        <div class="owasp-title">Broken Authentication</div>
+        <p class="owasp-desc">Weak passwords, no MFA, credential stuffing, session fixation, insecure password reset flows.</p>
+      </div>
+      <div class="owasp-card">
+        <div class="owasp-num">A08 — MEDIUM</div>
+        <div class="owasp-title">Software & Data Integrity Failures</div>
+        <p class="owasp-desc">Unsigned packages, insecure CI/CD pipelines, deserializing untrusted data (prototype pollution).</p>
+      </div>
+      <div class="owasp-card">
+        <div class="owasp-num">A09 — MEDIUM</div>
+        <div class="owasp-title">Security Logging Failures</div>
+        <p class="owasp-desc">Missing audit logs, not alerting on suspicious events, logging sensitive data (tokens, passwords).</p>
+      </div>
+      <div class="owasp-card">
+        <div class="owasp-num">A10 — MEDIUM</div>
+        <div class="owasp-title">Server-Side Request Forgery (SSRF)</div>
+        <p class="owasp-desc">App fetches user-supplied URLs, reaching internal services (metadata APIs, databases, admin panels).</p>
+      </div>
+    </div>
+
+    <h3>Injection — The Most Critical Category in Practice</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-header bad">❌ SQL Injection</div>
+        <div class="code-block"><pre><code><span class="cm">// NEVER do this</span>
+<span class="kw">const</span> q <span class="op">=</span> <span class="st">`SELECT * FROM users
+  WHERE email = '</span><span class="pu">${</span>req<span class="pu">.</span>body<span class="pu">.</span>email<span class="pu">}</span><span class="st">'`</span>
+
+<span class="cm">// Attack input:
+// ' OR '1'='1'; DROP TABLE users; --</span></code></pre></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-header good">✅ Parameterised Query</div>
+        <div class="code-block"><pre><code><span class="cm">// Always use parameterised queries</span>
+<span class="kw">const</span> result <span class="op">=</span> <span class="kw">await</span> pool<span class="pu">.</span><span class="fn">query</span><span class="pu">(</span>
+  <span class="st">'SELECT * FROM users WHERE email = $1'</span><span class="pu">,</span>
+  <span class="pu">[</span>req<span class="pu">.</span>body<span class="pu">.</span>email<span class="pu">]</span>  <span class="cm">// driver escapes it</span>
+<span class="pu">)</span></code></pre></div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — NoSQL Injection (MongoDB)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ❌ Vulnerable — operator injection</span>
+<span class="cm">// req.body = { "$gt": "" } — matches all documents!</span>
+<span class="kw">const</span> user <span class="op">=</span> <span class="kw">await</span> User<span class="pu">.</span><span class="fn">findOne</span><span class="pu">({</span> password<span class="pu">:</span> req<span class="pu">.</span>body<span class="pu">.</span>password <span class="pu">})</span>
+
+<span class="cm">// ✅ Sanitise — ensure string type before query</span>
+<span class="kw">import</span> mongoSanitize <span class="kw">from</span> <span class="st">'express-mongo-sanitize'</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="fn">mongoSanitize</span><span class="pu">())</span>  <span class="cm">// strips keys starting with '$' or containing '.'</span>
+
+<span class="cm">// Or enforce types explicitly with Zod before any DB call</span>
+<span class="kw">const</span> LoginSchema <span class="op">=</span> z<span class="pu">.</span><span class="fn">object</span><span class="pu">({</span>
+  email<span class="pu">:</span>    z<span class="pu">.</span><span class="fn">string</span><span class="pu">().</span><span class="fn">email</span><span class="pu">(),</span>
+  password<span class="pu">:</span> z<span class="pu">.</span><span class="fn">string</span><span class="pu">().</span><span class="fn">min</span><span class="pu">(</span><span class="nm">1</span><span class="pu">).</span><span class="fn">max</span><span class="pu">(</span><span class="nm">128</span><span class="pu">),</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── SSRF prevention ───────────────────────────────</span>
+<span class="kw">import</span> <span class="pu">{</span> Resolver <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:dns/promises'</span>
+
+<span class="kw">async function</span> <span class="fn">safeRequest</span><span class="pu">(</span>urlStr<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> url <span class="op">=</span> <span class="kw">new</span> <span class="ty">URL</span><span class="pu">(</span>urlStr<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(![</span><span class="st">'https:'</span><span class="pu">].</span><span class="fn">includes</span><span class="pu">(</span>url<span class="pu">.</span>protocol<span class="pu">))</span>
+    <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">'Only HTTPS allowed'</span><span class="pu">)</span>
+
+  <span class="cm">// Block private IP ranges (RFC 1918, loopback, link-local)</span>
+  <span class="kw">const</span> addrs <span class="op">=</span> <span class="kw">await</span> <span class="kw">new</span> <span class="fn">Resolver</span><span class="pu">().</span><span class="fn">resolve4</span><span class="pu">(</span>url<span class="pu">.</span>hostname<span class="pu">)</span>
+  <span class="kw">for</span> <span class="pu">(</span><span class="kw">const</span> ip <span class="kw">of</span> addrs<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(</span><span class="rx">/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|127\.|169\.254\.)/</span><span class="pu">.</span><span class="fn">test</span><span class="pu">(</span>ip<span class="pu">))</span>
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">`Blocked private IP: </span><span class="pu">${</span>ip<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+  <span class="pu">}</span>
+  <span class="kw">return</span> <span class="fn">fetch</span><span class="pu">(</span>url<span class="pu">.</span><span class="fn">toString</span><span class="pu">())</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 03 PASSWORDS -->
+  <div class="section" id="passwords">
+    <div class="section-label">03 — Credential Security</div>
+    <h2>Password Security</h2>
+    <p class="lead">Password security is a solved problem — if you use the right tools. The mistakes are always the same: MD5/SHA hashing, no salt, too-fast algorithms, or leaking hashes in logs.</p>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-icon">🔴</div>
+        <h4>Never Use</h4>
+        <p>MD5, SHA-1, SHA-256 for passwords. These are fast — attackers can try billions/second. A 6-char password cracked in seconds.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">✅</div>
+        <h4>Use Instead</h4>
+        <p>Argon2id (winner of Password Hashing Competition), bcrypt (time-tested), or scrypt. All are slow by design and resist GPU attacks.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">⚙️</div>
+        <h4>Tuning</h4>
+        <p>Calibrate so hashing takes 200–500ms on your server. Too fast = weak. Too slow = DoS vector. Re-calibrate yearly.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔑</div>
+        <h4>Pepper</h4>
+        <p>Server-side secret appended before hashing. Stored in env vars, not DB. If DB is compromised, attacker still can't crack without the pepper.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Argon2id Password Hashing</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> argon2 <span class="kw">from</span> <span class="st">'argon2'</span>
+
+<span class="cm">// ── Argon2id — recommended algorithm in 2025 ─────</span>
+<span class="kw">const</span> ARGON2_CONFIG <span class="op">=</span> <span class="pu">{</span>
+  type<span class="pu">:</span>        argon2<span class="pu">.</span>argon2id,
+  memoryCost<span class="pu">:</span>  <span class="nm">65536</span>,   <span class="cm">// 64 MB RAM per hash — GPU-hostile</span>
+  timeCost<span class="pu">:</span>    <span class="nm">3</span>,       <span class="cm">// iterations</span>
+  parallelism<span class="pu">:</span> <span class="nm">4</span>,       <span class="cm">// threads</span>
+  hashLength<span class="pu">:</span>  <span class="nm">32</span><span class="pu">,</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> PEPPER <span class="op">=</span> process<span class="pu">.</span>env<span class="pu">.</span>PASSWORD_PEPPER  <span class="cm">// secret, not in DB</span>
+
+<span class="kw">async function</span> <span class="fn">hashPassword</span><span class="pu">(</span>plaintext<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> argon2<span class="pu">.</span><span class="fn">hash</span><span class="pu">(</span>plaintext <span class="op">+</span> PEPPER, ARGON2_CONFIG<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="kw">async function</span> <span class="fn">verifyPassword</span><span class="pu">(</span>hash, plaintext<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> argon2<span class="pu">.</span><span class="fn">verify</span><span class="pu">(</span>hash, plaintext <span class="op">+</span> PEPPER<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Rehash on login if config upgraded ───────────</span>
+<span class="kw">async function</span> <span class="fn">login</span><span class="pu">(</span>email, password<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> user <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>users<span class="pu">.</span><span class="fn">findByEmail</span><span class="pu">(</span>email<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(!</span>user <span class="op">||</span> <span class="op">!</span><span class="kw">await</span> <span class="fn">verifyPassword</span><span class="pu">(</span>user<span class="pu">.</span>hash, password<span class="pu">))</span>
+    <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">'Invalid credentials'</span><span class="pu">)</span>  <span class="cm">// same message — no enumeration</span>
+
+  <span class="cm">// Migrate to stronger hash on successful login</span>
+  <span class="kw">if</span> <span class="pu">(</span>argon2<span class="pu">.</span><span class="fn">needsRehash</span><span class="pu">(</span>user<span class="pu">.</span>hash, ARGON2_CONFIG<span class="pu">))</span> <span class="pu">{</span>
+    <span class="kw">const</span> newHash <span class="op">=</span> <span class="kw">await</span> <span class="fn">hashPassword</span><span class="pu">(</span>password<span class="pu">)</span>
+    <span class="kw">await</span> db<span class="pu">.</span>users<span class="pu">.</span><span class="fn">update</span><span class="pu">({</span> where<span class="pu">:</span> <span class="pu">{</span> id<span class="pu">:</span> user<span class="pu">.</span>id <span class="pu">},</span> data<span class="pu">:</span> <span class="pu">{</span> hash<span class="pu">:</span> newHash <span class="pu">}</span> <span class="pu">})</span>
+  <span class="pu">}</span>
+
+  <span class="kw">return</span> <span class="fn">issueTokens</span><span class="pu">(</span>user<span class="pu">.</span>id<span class="pu">,</span> user<span class="pu">.</span>roles<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Secure password reset flow ────────────────────</span>
+<span class="kw">async function</span> <span class="fn">initiateReset</span><span class="pu">(</span>email<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> user <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>users<span class="pu">.</span><span class="fn">findByEmail</span><span class="pu">(</span>email<span class="pu">)</span>
+  <span class="cm">// Always respond with same message — prevents user enumeration</span>
+  <span class="kw">if</span> <span class="pu">(!</span>user<span class="pu">)</span> <span class="kw">return</span>
+
+  <span class="kw">const</span> token   <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">randomBytes</span><span class="pu">(</span><span class="nm">32</span><span class="pu">).</span><span class="fn">toString</span><span class="pu">(</span><span class="st">'base64url'</span><span class="pu">)</span>
+  <span class="kw">const</span> tokenHash <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">createHash</span><span class="pu">(</span><span class="st">'sha256'</span><span class="pu">).</span><span class="fn">update</span><span class="pu">(</span>token<span class="pu">).</span><span class="fn">digest</span><span class="pu">(</span><span class="st">'hex'</span><span class="pu">)</span>
+  <span class="kw">await</span> db<span class="pu">.</span>resetTokens<span class="pu">.</span><span class="fn">create</span><span class="pu">({</span>
+    data<span class="pu">:</span> <span class="pu">{</span> userId<span class="pu">:</span> user<span class="pu">.</span>id, tokenHash, expiresAt<span class="pu">:</span> <span class="kw">new</span> <span class="ty">Date</span><span class="pu">(</span><span class="bi">Date</span><span class="pu">.</span><span class="fn">now</span><span class="pu">()</span> <span class="op">+</span> <span class="nm">15</span><span class="op">*</span><span class="nm">60</span><span class="op">*</span><span class="nm">1000</span><span class="pu">)</span> <span class="pu">}</span>
+  <span class="pu">})</span>
+  <span class="cm">// Only store the hash in DB; send the raw token in email</span>
+  <span class="kw">await</span> mail<span class="pu">.</span><span class="fn">send</span><span class="pu">({</span> to<span class="pu">:</span> email, template<span class="pu">:</span> <span class="st">'password-reset'</span><span class="pu">,</span> data<span class="pu">:</span> <span class="pu">{</span> token <span class="pu">}</span> <span class="pu">})</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 04 API SECURITY -->
+  <div class="section" id="api">
+    <div class="section-label">04 — API Hardening</div>
+    <h2>Secure API Design</h2>
+    <p class="lead">Every API endpoint is an attack surface. Defence-in-depth means multiple independent controls — no single layer should be the only thing between an attacker and your data.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Security Middleware Stack</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> express      <span class="kw">from</span> <span class="st">'express'</span>
+<span class="kw">import</span> helmet       <span class="kw">from</span> <span class="st">'helmet'</span>
+<span class="kw">import</span> rateLimit    <span class="kw">from</span> <span class="st">'express-rate-limit'</span>
+<span class="kw">import</span> slowDown     <span class="kw">from</span> <span class="st">'express-slow-down'</span>
+<span class="kw">import</span> hpp          <span class="kw">from</span> <span class="st">'hpp'</span>
+<span class="kw">import</span> { v4: uuidv4 } <span class="kw">from</span> <span class="st">'uuid'</span>
+
+<span class="kw">const</span> app <span class="op">=</span> <span class="fn">express</span><span class="pu">()</span>
+
+<span class="cm">// ── 1. Security headers (helmet covers 14 headers) ─</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="fn">helmet</span><span class="pu">({</span>
+  contentSecurityPolicy<span class="pu">:</span> <span class="pu">{</span>
+    directives<span class="pu">:</span> <span class="pu">{</span>
+      defaultSrc<span class="pu">:</span>     <span class="pu">[</span><span class="st">"'self'"</span><span class="pu">],</span>
+      scriptSrc<span class="pu">:</span>      <span class="pu">[</span><span class="st">"'self'"</span><span class="pu">],</span>       <span class="cm">// no unsafe-inline</span>
+      objectSrc<span class="pu">:</span>      <span class="pu">[</span><span class="st">"'none'"</span><span class="pu">],</span>
+      upgradeInsecureRequests<span class="pu">:</span> <span class="pu">[],</span>
+    <span class="pu">}</span>
+  <span class="pu">},</span>
+  hsts<span class="pu">:</span> <span class="pu">{</span> maxAge<span class="pu">:</span> <span class="nm">31536000</span><span class="pu">,</span> includeSubDomains<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span> preload<span class="pu">:</span> <span class="kw">true</span> <span class="pu">}</span>
+<span class="pu">}))</span>
+
+<span class="cm">// ── 2. Request ID for tracing ──────────────────────</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">((</span>req, res, next<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  req<span class="pu">.</span>id <span class="op">=</span> req<span class="pu">.</span>headers<span class="pu">[</span><span class="st">'x-request-id'</span><span class="pu">]</span> <span class="op">||</span> <span class="fn">uuidv4</span><span class="pu">()</span>
+  res<span class="pu">.</span><span class="fn">setHeader</span><span class="pu">(</span><span class="st">'X-Request-ID'</span><span class="pu">,</span> req<span class="pu">.</span>id<span class="pu">)</span>
+  <span class="fn">next</span><span class="pu">()</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── 3. Rate limiting with progressive slowdown ────</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="st">'/api/auth'</span><span class="pu">,</span> <span class="fn">rateLimit</span><span class="pu">({</span>
+  windowMs<span class="pu">:</span>    <span class="nm">15</span> <span class="op">*</span> <span class="nm">60</span> <span class="op">*</span> <span class="nm">1000</span><span class="pu">,</span>  <span class="cm">// 15 min window</span>
+  max<span class="pu">:</span>         <span class="nm">5</span><span class="pu">,</span>                <span class="cm">// 5 attempts per window</span>
+  skipSuccessfulRequests<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span>
+  handler<span class="pu">:</span>     <span class="pu">(</span>req, res<span class="pu">)</span> <span class="op">=></span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">429</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span>
+    error<span class="pu">:</span> <span class="st">'Too many attempts. Try again in 15 minutes.'</span>
+  <span class="pu">})</span>
+<span class="pu">}))</span>
+
+<span class="cm">// ── 4. HTTP Parameter Pollution protection ─────────</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="fn">hpp</span><span class="pu">())</span>  <span class="cm">// ?sort=asc&sort=desc → keeps last only</span>
+
+<span class="cm">// ── 5. Body size limits ────────────────────────────</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span>express<span class="pu">.</span><span class="fn">json</span><span class="pu">({</span>    limit<span class="pu">:</span> <span class="st">'50kb'</span>  <span class="pu">}))</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span>express<span class="pu">.</span><span class="fn">urlencoded</span><span class="pu">({</span> limit<span class="pu">:</span> <span class="st">'50kb'</span><span class="pu">,</span> extended<span class="pu">:</span> <span class="kw">false</span> <span class="pu">}))</span>
+
+<span class="cm">// ── 6. Never expose stack traces in production ─────</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">((</span>err, req, res, _next<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  logger<span class="pu">.</span><span class="fn">error</span><span class="pu">({</span> err, requestId<span class="pu">:</span> req<span class="pu">.</span>id <span class="pu">})</span>
+  res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span>err<span class="pu">.</span>status <span class="op">||</span> <span class="nm">500</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span>
+    error<span class="pu">:</span> process<span class="pu">.</span>env<span class="pu">.</span>NODE_ENV <span class="op">===</span> <span class="st">'production'</span>
+      <span class="op">?</span> <span class="st">'Internal server error'</span>   <span class="cm">// never leak stack traces</span>
+      <span class="op">:</span> err<span class="pu">.</span>message<span class="pu">,</span>
+    requestId<span class="pu">:</span> req<span class="pu">.</span>id               <span class="cm">// helps correlate support tickets</span>
+  <span class="pu">})</span>
+<span class="pu">})</span></code></pre>
+    </div>
+
+    <h3>API Key Rotation & Scoped Tokens</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — API Key Management</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Issue scoped API keys ──────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">createApiKey</span><span class="pu">(</span>userId, <span class="pu">{</span> name, scopes, expiresIn <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">const</span> rawKey  <span class="op">=</span> <span class="st">`sk_live_</span><span class="pu">${</span>crypto<span class="pu">.</span><span class="fn">randomBytes</span><span class="pu">(</span><span class="nm">32</span><span class="pu">).</span><span class="fn">toString</span><span class="pu">(</span><span class="st">'base64url'</span><span class="pu">)}</span><span class="st">`</span>
+  <span class="kw">const</span> keyHash  <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">createHash</span><span class="pu">(</span><span class="st">'sha256'</span><span class="pu">).</span><span class="fn">update</span><span class="pu">(</span>rawKey<span class="pu">).</span><span class="fn">digest</span><span class="pu">(</span><span class="st">'hex'</span><span class="pu">)</span>
+  <span class="kw">const</span> keyPrefix <span class="op">=</span> rawKey<span class="pu">.</span><span class="fn">slice</span><span class="pu">(</span><span class="nm">0</span><span class="pu">,</span> <span class="nm">12</span><span class="pu">)</span>  <span class="cm">// show in UI for identification</span>
+
+  <span class="kw">await</span> db<span class="pu">.</span>apiKeys<span class="pu">.</span><span class="fn">create</span><span class="pu">({</span>
+    data<span class="pu">:</span> <span class="pu">{</span> userId, name, keyHash, keyPrefix,
+            scopes,  <span class="cm">// e.g. ['read:users', 'write:posts']</span>
+            expiresAt<span class="pu">:</span> <span class="kw">new</span> <span class="ty">Date</span><span class="pu">(</span><span class="bi">Date</span><span class="pu">.</span><span class="fn">now</span><span class="pu">()</span> <span class="op">+</span> expiresIn<span class="pu">)</span> <span class="pu">}</span>
+  <span class="pu">})</span>
+  <span class="kw">return</span> rawKey  <span class="cm">// shown once — never stored plaintext</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Authenticate API key ───────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">authenticateApiKey</span><span class="pu">(</span>req, res, next<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> key <span class="op">=</span> req<span class="pu">.</span>headers<span class="pu">[</span><span class="st">'x-api-key'</span><span class="pu">]</span>
+  <span class="kw">if</span> <span class="pu">(!</span>key<span class="pu">)</span> <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">401</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> <span class="st">'API key required'</span> <span class="pu">})</span>
+
+  <span class="kw">const</span> hash   <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">createHash</span><span class="pu">(</span><span class="st">'sha256'</span><span class="pu">).</span><span class="fn">update</span><span class="pu">(</span>key<span class="pu">).</span><span class="fn">digest</span><span class="pu">(</span><span class="st">'hex'</span><span class="pu">)</span>
+  <span class="kw">const</span> apiKey <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>apiKeys<span class="pu">.</span><span class="fn">findUnique</span><span class="pu">({</span> where<span class="pu">:</span> <span class="pu">{</span> keyHash<span class="pu">:</span> hash <span class="pu">}</span> <span class="pu">})</span>
+
+  <span class="kw">if</span> <span class="pu">(!</span>apiKey <span class="op">||</span> apiKey<span class="pu">.</span>revokedAt <span class="op">||</span> apiKey<span class="pu">.</span>expiresAt <span class="op"><</span> <span class="kw">new</span> <span class="ty">Date</span><span class="pu">())</span>
+    <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">401</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> <span class="st">'Invalid or expired API key'</span> <span class="pu">})</span>
+
+  req<span class="pu">.</span>apiKey <span class="op">=</span> apiKey
+  <span class="cm">// Update last used (async — don't await, don't block request)</span>
+  db<span class="pu">.</span>apiKeys<span class="pu">.</span><span class="fn">update</span><span class="pu">({</span> where<span class="pu">:</span> <span class="pu">{</span> id<span class="pu">:</span> apiKey<span class="pu">.</span>id <span class="pu">},</span> data<span class="pu">:</span> <span class="pu">{</span> lastUsedAt<span class="pu">:</span> <span class="kw">new</span> <span class="ty">Date</span><span class="pu">() </span><span class="pu">}</span> <span class="pu">}).</span><span class="fn">catch</span><span class="pu">(</span>noop<span class="pu">)</span>
+  <span class="fn">next</span><span class="pu">()</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 05 BROWSER SECURITY -->
+  <div class="section" id="browser">
+    <div class="section-label">05 — Client-Side Attacks</div>
+    <h2>Browser Security: XSS, CSRF & CORS</h2>
+    <p class="lead">Three of the most exploited web vulnerabilities live in the browser layer. Understanding the attack mechanics is the only way to truly defend against them.</p>
+
+    <h3>Cross-Site Scripting (XSS)</h3>
+    <p>XSS lets attackers inject and execute JavaScript in a victim's browser — stealing cookies, tokens, form data, or performing actions as the user. There are three types: Stored (in DB), Reflected (in URL), and DOM-based (client-side manipulation).</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-header bad">❌ Vulnerable</div>
+        <div class="code-block"><pre><code><span class="cm">// React — dangerouslySetInnerHTML</span>
+<span class="pu"><</span><span class="kw">div</span> dangerouslySetInnerHTML<span class="op">=</span><span class="pu">{{</span>
+  __html<span class="pu">:</span> userInput  <span class="cm">// executes scripts!</span>
+<span class="pu">}} /></span>
+
+<span class="cm">// Express template — unescaped</span>
+res<span class="pu">.</span><span class="fn">send</span><span class="pu">(</span><span class="st">`<h1></span><span class="pu">${</span>req<span class="pu">.</span>query<span class="pu">.</span>name<span class="pu">}</span><span class="st"></h1>`</span><span class="pu">)</span></code></pre></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-header good">✅ Safe</div>
+        <div class="code-block"><pre><code><span class="cm">// React escapes by default</span>
+<span class="pu"><</span><span class="kw">div</span><span class="pu">>{</span>userInput<span class="pu">}</div></span>
+
+<span class="cm">// If HTML needed: DOMPurify</span>
+<span class="kw">import</span> DOMPurify <span class="kw">from</span> <span class="st">'isomorphic-dompurify'</span>
+<span class="pu"><</span><span class="kw">div</span> dangerouslySetInnerHTML<span class="op">=</span><span class="pu">{{</span>
+  __html<span class="pu">:</span> DOMPurify<span class="pu">.</span><span class="fn">sanitize</span><span class="pu">(</span>html<span class="pu">)</span>
+<span class="pu">}} /></span></code></pre></div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — XSS Prevention & CSP</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Server-side output encoding ───────────────────</span>
+<span class="kw">function</span> <span class="fn">escapeHtml</span><span class="pu">(</span>str<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="ty">String</span><span class="pu">(</span>str<span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">replace</span><span class="pu">(</span><span class="rx">/&/g</span><span class="pu">,</span>  <span class="st">'&amp;'</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">replace</span><span class="pu">(</span><span class="rx">/</g</span><span class="pu">,</span>  <span class="st">'&lt;'</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">replace</span><span class="pu">(</span><span class="rx">/>/g</span><span class="pu">,</span>  <span class="st">'&gt;'</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">replace</span><span class="pu">(</span><span class="rx">/"/g</span><span class="pu">,</span>  <span class="st">'&quot;'</span><span class="pu">)</span>
+    <span class="pu">.</span><span class="fn">replace</span><span class="pu">(</span><span class="rx">/'/g</span><span class="pu">,</span>  <span class="st">'&#x27;'</span><span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Content Security Policy (most powerful XSS defence)</span>
+<span class="cm">// With nonces — allows specific inline scripts, blocks all others</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">((</span>req, res, next<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  res<span class="pu">.</span>locals<span class="pu">.</span>nonce <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">randomBytes</span><span class="pu">(</span><span class="nm">16</span><span class="pu">).</span><span class="fn">toString</span><span class="pu">(</span><span class="st">'base64'</span><span class="pu">)</span>
+  res<span class="pu">.</span><span class="fn">setHeader</span><span class="pu">(</span><span class="st">'Content-Security-Policy'</span><span class="pu">,</span>
+    <span class="st">`default-src 'self'; `</span> <span class="op">+</span>
+    <span class="st">`script-src 'self' 'nonce-</span><span class="pu">${</span>res<span class="pu">.</span>locals<span class="pu">.</span>nonce<span class="pu">}</span><span class="st">'; `</span> <span class="op">+</span>
+    <span class="st">`style-src 'self' 'nonce-</span><span class="pu">${</span>res<span class="pu">.</span>locals<span class="pu">.</span>nonce<span class="pu">}</span><span class="st">'; `</span> <span class="op">+</span>
+    <span class="st">`img-src 'self' data: https:; `</span> <span class="op">+</span>
+    <span class="st">`object-src 'none'; `</span> <span class="op">+</span>
+    <span class="st">`base-uri 'self'; `</span> <span class="op">+</span>
+    <span class="st">`frame-ancestors 'none'`</span>  <span class="cm">// clickjacking protection too</span>
+  <span class="pu">)</span>
+  <span class="fn">next</span><span class="pu">()</span>
+<span class="pu">})</span></code></pre>
+    </div>
+
+    <h3>Cross-Site Request Forgery (CSRF)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Double Submit CSRF Pattern</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> csrf <span class="kw">from</span> <span class="st">'csrf'</span>
+<span class="kw">const</span> tokens <span class="op">=</span> <span class="kw">new</span> <span class="fn">csrf</span><span class="pu">()</span>
+
+<span class="cm">// ── Issue CSRF token ──────────────────────────────</span>
+app<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'/csrf-token'</span><span class="pu">,</span> <span class="pu">(</span>req, res<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">const</span> secret <span class="op">=</span> req<span class="pu">.</span>session<span class="pu">.</span>csrfSecret <span class="op">??=</span> tokens<span class="pu">.</span><span class="fn">secretSync</span><span class="pu">()</span>
+  <span class="kw">const</span> token  <span class="op">=</span> tokens<span class="pu">.</span><span class="fn">create</span><span class="pu">(</span>secret<span class="pu">)</span>
+  res<span class="pu">.</span><span class="fn">json</span><span class="pu">({</span> csrfToken<span class="pu">:</span> token <span class="pu">})</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Verify on state-mutating requests ─────────────</span>
+<span class="kw">function</span> <span class="fn">verifyCsrf</span><span class="pu">(</span>req, res, next<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> token <span class="op">=</span> req<span class="pu">.</span>headers<span class="pu">[</span><span class="st">'x-csrf-token'</span><span class="pu">]</span> <span class="op">||</span> req<span class="pu">.</span>body<span class="pu">.</span>_csrf
+  <span class="kw">if</span> <span class="pu">(!</span>tokens<span class="pu">.</span><span class="fn">verify</span><span class="pu">(</span>req<span class="pu">.</span>session<span class="pu">.</span>csrfSecret, token<span class="pu">))</span>
+    <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">403</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> <span class="st">'CSRF token mismatch'</span> <span class="pu">})</span>
+  <span class="fn">next</span><span class="pu">()</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Cookie settings that prevent CSRF ─────────────</span>
+res<span class="pu">.</span><span class="fn">cookie</span><span class="pu">(</span><span class="st">'sessionId'</span><span class="pu">,</span> token<span class="pu">,</span> <span class="pu">{</span>
+  httpOnly<span class="pu">:</span>  <span class="kw">true</span><span class="pu">,</span>      <span class="cm">// JS can't read it (blocks XSS theft)</span>
+  secure<span class="pu">:</span>    <span class="kw">true</span><span class="pu">,</span>      <span class="cm">// HTTPS only</span>
+  sameSite<span class="pu">:</span>  <span class="st">'strict'</span><span class="pu">,</span> <span class="cm">// blocks cross-site submission (replaces CSRF tokens for simple cases)</span>
+  maxAge<span class="pu">:</span>    <span class="nm">15</span> <span class="op">*</span> <span class="nm">60</span> <span class="op">*</span> <span class="nm">1000</span>
+<span class="pu">})</span></code></pre>
+    </div>
+
+    <h3>CORS — Configured Correctly</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Strict CORS Policy</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> cors <span class="kw">from</span> <span class="st">'cors'</span>
+
+<span class="kw">const</span> ALLOWED_ORIGINS <span class="op">=</span> <span class="kw">new</span> <span class="ty">Set</span><span class="pu">([</span>
+  <span class="st">'https://app.mysite.com'</span><span class="pu">,</span>
+  <span class="st">'https://www.mysite.com'</span><span class="pu">,</span>
+  ... <span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>NODE_ENV <span class="op">!==</span> <span class="st">'production'</span>
+    <span class="op">?</span> <span class="pu">[</span><span class="st">'http://localhost:3000'</span><span class="pu">]</span>
+    <span class="op">:</span> <span class="pu">[]</span>
+  <span class="pu">)</span>
+<span class="pu">])</span>
+
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="fn">cors</span><span class="pu">({</span>
+  origin<span class="pu">:</span> <span class="pu">(</span>origin, cb<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+    <span class="cm">// null origin = same-origin or non-browser request — allow explicitly</span>
+    <span class="kw">if</span> <span class="pu">(!</span>origin <span class="op">||</span> ALLOWED_ORIGINS<span class="pu">.</span><span class="fn">has</span><span class="pu">(</span>origin<span class="pu">))</span> <span class="fn">cb</span><span class="pu">(</span><span class="kw">null</span><span class="pu">,</span> <span class="kw">true</span><span class="pu">)</span>
+    <span class="kw">else</span> <span class="fn">cb</span><span class="pu">(</span><span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">`Origin </span><span class="pu">${</span>origin<span class="pu">}</span><span class="st"> not allowed by CORS`</span><span class="pu">))</span>
+  <span class="pu">},</span>
+  credentials<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span>      <span class="cm">// allow cookies in cross-origin requests</span>
+  methods<span class="pu">:</span>     <span class="pu">[</span><span class="st">'GET'</span><span class="pu">,</span> <span class="st">'POST'</span><span class="pu">,</span> <span class="st">'PUT'</span><span class="pu">,</span> <span class="st">'PATCH'</span><span class="pu">,</span> <span class="st">'DELETE'</span><span class="pu">,</span> <span class="st">'OPTIONS'</span><span class="pu">],</span>
+  allowedHeaders<span class="pu">:</span> <span class="pu">[</span><span class="st">'Content-Type'</span><span class="pu">,</span> <span class="st">'Authorization'</span><span class="pu">,</span> <span class="st">'X-CSRF-Token'</span><span class="pu">],</span>
+  maxAge<span class="pu">:</span>      <span class="nm">86400</span>       <span class="cm">// cache preflight for 1 day</span>
+<span class="pu">}))</span>
+
+<span class="cm">// ❌ Never do this — opens to any attacker origin:</span>
+<span class="cm">// Access-Control-Allow-Origin: *  +  credentials: true</span>
+<span class="cm">// This is spec-prohibited but misconfigured proxies can expose it</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 06 IAM -->
+  <div class="section" id="iam">
+    <div class="section-label">06 — Cloud Security</div>
+    <h2>Cloud IAM & Network Security</h2>
+    <p class="lead">Cloud environments give you enormous control — and enormous rope to hang yourself with. The principle of least privilege is the cornerstone of every secure cloud deployment.</p>
+
+    <h3>AWS IAM — Least Privilege in Practice</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JSON — IAM Policy: Minimal S3 Access</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ❌ Wildcard policies — never in production</span>
+<span class="pu">{</span>
+  <span class="st">"Effect"</span><span class="pu">:</span>   <span class="st">"Allow"</span><span class="pu">,</span>
+  <span class="st">"Action"</span><span class="pu">:</span>   <span class="st">"*"</span><span class="pu">,</span>
+  <span class="st">"Resource"</span><span class="pu">:</span> <span class="st">"*"</span>
+<span class="pu">}</span>
+
+<span class="cm">// ✅ Scoped policy — API server can only read its specific prefix</span>
+<span class="pu">{</span>
+  <span class="st">"Version"</span><span class="pu">:</span> <span class="st">"2012-10-17"</span><span class="pu">,</span>
+  <span class="st">"Statement"</span><span class="pu">:</span> <span class="pu">[{</span>
+    <span class="st">"Effect"</span><span class="pu">:</span>    <span class="st">"Allow"</span><span class="pu">,</span>
+    <span class="st">"Action"</span><span class="pu">:</span>    <span class="pu">[</span><span class="st">"s3:GetObject"</span><span class="pu">,</span> <span class="st">"s3:PutObject"</span><span class="pu">],</span>
+    <span class="st">"Resource"</span><span class="pu">:</span>  <span class="st">"arn:aws:s3:::my-uploads-bucket/user-uploads/*"</span><span class="pu">,</span>
+    <span class="st">"Condition"</span><span class="pu">:</span> <span class="pu">{</span>
+      <span class="st">"StringEquals"</span><span class="pu">:</span> <span class="pu">{</span>
+        <span class="st">"aws:RequestedRegion"</span><span class="pu">:</span> <span class="st">"eu-west-1"</span>
+      <span class="pu">}</span>
+    <span class="pu">}</span>
+  <span class="pu">}]</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — AWS SDK with Role Assumption</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> S3Client, PutObjectCommand <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@aws-sdk/client-s3'</span>
+<span class="kw">import</span> <span class="pu">{</span> STSClient, AssumeRoleCommand <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@aws-sdk/client-sts'</span>
+<span class="kw">import</span> <span class="pu">{</span> getSignedUrl <span class="pu">}</span>               <span class="kw">from</span> <span class="st">'@aws-sdk/s3-request-presigner'</span>
+
+<span class="cm">// ── Presigned URLs — client uploads directly to S3 (no proxy) ─</span>
+<span class="kw">async function</span> <span class="fn">generateUploadUrl</span><span class="pu">(</span>userId, filename<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> s3  <span class="op">=</span> <span class="kw">new</span> <span class="fn">S3Client</span><span class="pu">({</span> region<span class="pu">:</span> <span class="st">'eu-west-1'</span> <span class="pu">})</span>
+  <span class="kw">const</span> key <span class="op">=</span> <span class="st">`user-uploads/</span><span class="pu">${</span>userId<span class="pu">}</span><span class="st">/</span><span class="pu">${</span>crypto<span class="pu">.</span><span class="fn">randomUUID</span><span class="pu">()}</span><span class="st">-</span><span class="pu">${</span><span class="fn">sanitize</span><span class="pu">(</span>filename<span class="pu">)}</span><span class="st">`</span>
+
+  <span class="kw">const</span> cmd <span class="op">=</span> <span class="kw">new</span> <span class="fn">PutObjectCommand</span><span class="pu">({</span>
+    Bucket<span class="pu">:</span>      process<span class="pu">.</span>env<span class="pu">.</span>S3_BUCKET<span class="pu">,</span>
+    Key<span class="pu">:</span>         key<span class="pu">,</span>
+    ContentType<span class="pu">:</span> <span class="st">'application/octet-stream'</span><span class="pu">,</span>
+    <span class="cm">// Force content-type — prevents polyglot file attacks</span>
+    ServerSideEncryption<span class="pu">:</span> <span class="st">'AES256'</span><span class="pu">,</span>
+  <span class="pu">})</span>
+
+  <span class="kw">const</span> url <span class="op">=</span> <span class="kw">await</span> <span class="fn">getSignedUrl</span><span class="pu">(</span>s3, cmd, <span class="pu">{</span> expiresIn<span class="pu">:</span> <span class="nm">300</span> <span class="pu">})</span>  <span class="cm">// 5 minutes</span>
+  <span class="kw">return</span> <span class="pu">{</span> url, key <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── IMDSv2 — fetch instance metadata securely ─────</span>
+<span class="cm">// IMDSv1 is vulnerable to SSRF; IMDSv2 requires a PUT first</span>
+<span class="kw">async function</span> <span class="fn">getInstanceMetadata</span><span class="pu">(</span>path<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> token <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span>
+    <span class="st">'http://169.254.169.254/latest/api/token'</span><span class="pu">,</span>
+    <span class="pu">{</span> method<span class="pu">:</span> <span class="st">'PUT'</span><span class="pu">,</span> headers<span class="pu">:</span> <span class="pu">{</span> <span class="st">'X-aws-ec2-metadata-token-ttl-seconds'</span><span class="pu">:</span> <span class="st">'21600'</span> <span class="pu">}</span> <span class="pu">}</span>
+  <span class="pu">).</span><span class="fn">then</span><span class="pu">(</span>r <span class="op">=></span> r<span class="pu">.</span><span class="fn">text</span><span class="pu">())</span>
+  <span class="kw">return</span> <span class="fn">fetch</span><span class="pu">(</span><span class="st">`http://169.254.169.254/latest/meta-data/</span><span class="pu">${</span>path<span class="pu">}</span><span class="st">`</span><span class="pu">,</span>
+    <span class="pu">{</span> headers<span class="pu">:</span> <span class="pu">{</span> <span class="st">'X-aws-ec2-metadata-token'</span><span class="pu">:</span> token <span class="pu">}</span> <span class="pu">}</span>
+  <span class="pu">).</span><span class="fn">then</span><span class="pu">(</span>r <span class="op">=></span> r<span class="pu">.</span><span class="fn">text</span><span class="pu">())</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 07 SECRETS -->
+  <div class="section" id="secrets">
+    <div class="section-label">07 — Secrets Management</div>
+    <h2>Secrets Management</h2>
+    <p class="lead">A hardcoded API key in a public GitHub repo is breached within minutes. Secrets management is not optional — it is the difference between a secure system and a liability.</p>
+
+    <div class="danger">
+      <div class="danger-label">🚨 Never Do These</div>
+      Never commit secrets to git (even private repos), never log secrets, never put secrets in environment variables on shared CI runners without masking, never store secrets in Docker image layers.
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — AWS Secrets Manager Integration</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> SecretsManagerClient, GetSecretValueCommand <span class="pu">}</span>
+  <span class="kw">from</span> <span class="st">'@aws-sdk/client-secrets-manager'</span>
+
+<span class="kw">const</span> client <span class="op">=</span> <span class="kw">new</span> <span class="fn">SecretsManagerClient</span><span class="pu">({</span> region<span class="pu">:</span> <span class="st">'eu-west-1'</span> <span class="pu">})</span>
+
+<span class="cm">// ── Cache secrets to avoid per-request API calls ─</span>
+<span class="kw">const</span> secretCache <span class="op">=</span> <span class="kw">new</span> <span class="bi">Map</span><span class="pu">()</span>
+
+<span class="kw">async function</span> <span class="fn">getSecret</span><span class="pu">(</span>secretName<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> cached <span class="op">=</span> secretCache<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>secretName<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>cached <span class="op">&&</span> cached<span class="pu">.</span>expiresAt <span class="op">></span> <span class="bi">Date</span><span class="pu">.</span><span class="fn">now</span><span class="pu">())</span> <span class="kw">return</span> cached<span class="pu">.</span>value
+
+  <span class="kw">const</span> res <span class="op">=</span> <span class="kw">await</span> client<span class="pu">.</span><span class="fn">send</span><span class="pu">(</span>
+    <span class="kw">new</span> <span class="fn">GetSecretValueCommand</span><span class="pu">({</span> SecretId<span class="pu">:</span> secretName <span class="pu">})</span>
+  <span class="pu">)</span>
+  <span class="kw">const</span> value <span class="op">=</span> <span class="bi">JSON</span><span class="pu">.</span><span class="fn">parse</span><span class="pu">(</span>res<span class="pu">.</span>SecretString<span class="pu">)</span>
+  secretCache<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>secretName<span class="pu">,</span> <span class="pu">{</span> value, expiresAt<span class="pu">:</span> <span class="bi">Date</span><span class="pu">.</span><span class="fn">now</span><span class="pu">()</span> <span class="op">+</span> <span class="nm">5</span><span class="op">*</span><span class="nm">60</span><span class="op">*</span><span class="nm">1000</span> <span class="pu">})</span>
+  <span class="kw">return</span> value
+<span class="pu">}</span>
+
+<span class="cm">// ── Startup secret loading ────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">loadConfig</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> dbSecret <span class="op">=</span> <span class="kw">await</span> <span class="fn">getSecret</span><span class="pu">(</span><span class="st">'prod/myapp/database'</span><span class="pu">)</span>
+  <span class="kw">const</span> appSecret <span class="op">=</span> <span class="kw">await</span> <span class="fn">getSecret</span><span class="pu">(</span><span class="st">'prod/myapp/app-keys'</span><span class="pu">)</span>
+
+  <span class="kw">return</span> <span class="pu">{</span>
+    databaseUrl<span class="pu">:</span>  dbSecret<span class="pu">.</span>connectionString<span class="pu">,</span>
+    jwtSecret<span class="pu">:</span>    appSecret<span class="pu">.</span>jwtSecret<span class="pu">,</span>
+    stripeKey<span class="pu">:</span>    appSecret<span class="pu">.</span>stripeSecretKey<span class="pu">,</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── .env audit with dotenv-safe ───────────────────</span>
+<span class="cm">// .env.example lists all required vars (committed to git)
+// .env fills the values (gitignored)
+// dotenv-safe throws at startup if any required var is missing</span>
+<span class="kw">import</span> <span class="st">'dotenv-safe/config'</span>  <span class="cm">// fails fast if .env is incomplete</span></code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell — git-secrets & pre-commit hooks</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm"># Install git-secrets to scan commits for leaked credentials</span>
+brew install git-secrets
+git secrets --install    <span class="cm"># adds hooks to current repo</span>
+git secrets --register-aws  <span class="cm"># add AWS patterns</span>
+
+<span class="cm"># Or use gitleaks in CI (supports 150+ secret patterns)</span>
+gitleaks detect --source . --verbose
+
+<span class="cm"># .pre-commit-config.yaml — run on every commit</span>
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.0
+    hooks:
+      - id: gitleaks</code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 08 THREAT MODELING -->
+  <div class="section" id="threat">
+    <div class="section-label">08 — Proactive Security</div>
+    <h2>Threat Modeling</h2>
+    <p class="lead">Threat modeling is structured thinking about what can go wrong before it does. Done in design reviews, it finds architectural flaws that code review and pen testing cannot.</p>
+
+    <p>The most widely used framework is <strong>STRIDE</strong>, developed at Microsoft. Each letter identifies a threat category. Apply it to every trust boundary in your system.</p>
+
+    <table>
+      <tr><th>Letter</th><th>Threat</th><th>JS/Node Example</th><th>Mitigation</th></tr>
+      <tr><td><strong>S</strong></td><td>Spoofing</td><td>Forged JWT, cookie theft</td><td>Signature verification, httpOnly cookies</td></tr>
+      <tr><td><strong>T</strong></td><td>Tampering</td><td>Modified request body, IDOR</td><td>Input validation, integrity checks</td></tr>
+      <tr><td><strong>R</strong></td><td>Repudiation</td><td>No audit log of admin actions</td><td>Structured audit logging with actor ID</td></tr>
+      <tr><td><strong>I</strong></td><td>Info Disclosure</td><td>Stack traces in 500s, verbose errors</td><td>Generic errors in prod, log internally</td></tr>
+      <tr><td><strong>D</strong></td><td>Denial of Service</td><td>No rate limits, ReDoS, large payloads</td><td>Rate limiting, body size caps, safe regex</td></tr>
+      <tr><td><strong>E</strong></td><td>Elevation of Privilege</td><td>IDOR, missing AuthZ check, JWT role tampering</td><td>ABAC policies, signed payloads</td></tr>
+    </table>
+
+    <h3>Practical Threat Modeling in 4 Steps</h3>
+    <ul class="phase-list">
+      <li>
+        <div class="phase-num">1</div>
+        <div><strong>Diagram the system.</strong> Draw a Data Flow Diagram (DFD) with every component, data store, external entity, and trust boundary. Use OWASP Threat Dragon or draw.io. Every line crossing a trust boundary is a potential attack surface.</div>
+      </li>
+      <li>
+        <div class="phase-num">2</div>
+        <div><strong>Apply STRIDE to each boundary.</strong> For each arrow crossing a trust boundary: can an attacker Spoof the sender? Tamper with the data? Not be identified (Repudiation)? Read it (Info Disclosure)? DoS it? Escalate privileges through it?</div>
+      </li>
+      <li>
+        <div class="phase-num">3</div>
+        <div><strong>Rate each threat by DREAD or CVSS.</strong> Damage, Reproducibility, Exploitability, Affected users, Discoverability. Prioritise the high scorers for immediate mitigation before writing code.</div>
+      </li>
+      <li>
+        <div class="phase-num">4</div>
+        <div><strong>Define mitigations and test cases.</strong> Each threat becomes a security requirement and a test case. Put them in the ticket backlog. Verify them in code review and pen test.</div>
+      </li>
+    </ul>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Security Audit Log Pattern</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Structured audit log — addresses Repudiation (R in STRIDE)</span>
+<span class="kw">async function</span> <span class="fn">auditLog</span><span class="pu">(</span>event<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">await</span> db<span class="pu">.</span>auditLogs<span class="pu">.</span><span class="fn">create</span><span class="pu">({</span>
+    data<span class="pu">:</span> <span class="pu">{</span>
+      actorId<span class="pu">:</span>   event<span class="pu">.</span>userId<span class="pu">,</span>
+      actorIp<span class="pu">:</span>   event<span class="pu">.</span>ip<span class="pu">,</span>
+      action<span class="pu">:</span>    event<span class="pu">.</span>action<span class="pu">,</span>         <span class="cm">// 'user.delete', 'api_key.create'</span>
+      resource<span class="pu">:</span>  event<span class="pu">.</span>resource<span class="pu">,</span>
+      resourceId<span class="pu">:</span>event<span class="pu">.</span>resourceId<span class="pu">,</span>
+      metadata<span class="pu">:</span>  event<span class="pu">.</span>metadata<span class="pu">,</span>      <span class="cm">// before/after for mutation events</span>
+      result<span class="pu">:</span>    event<span class="pu">.</span>result<span class="pu">,</span>         <span class="cm">// 'success' | 'failure'</span>
+      timestamp<span class="pu">:</span> <span class="kw">new</span> <span class="ty">Date</span><span class="pu">(),</span>
+      requestId<span class="pu">:</span> event<span class="pu">.</span>requestId<span class="pu">,</span>
+    <span class="pu">}</span>
+  <span class="pu">})</span>
+<span class="pu">}</span>
+
+<span class="cm">// Wrap sensitive operations</span>
+<span class="kw">async function</span> <span class="fn">deleteUser</span><span class="pu">(</span>req, res<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">await</span> db<span class="pu">.</span>users<span class="pu">.</span><span class="fn">delete</span><span class="pu">({</span> where<span class="pu">:</span> <span class="pu">{</span> id<span class="pu">:</span> req<span class="pu">.</span>params<span class="pu">.</span>id <span class="pu">}</span> <span class="pu">})</span>
+  <span class="kw">await</span> <span class="fn">auditLog</span><span class="pu">({</span>
+    userId<span class="pu">:</span>     req<span class="pu">.</span>user<span class="pu">.</span>sub<span class="pu">,</span>
+    action<span class="pu">:</span>     <span class="st">'user.delete'</span><span class="pu">,</span>
+    resourceId<span class="pu">:</span> req<span class="pu">.</span>params<span class="pu">.</span>id<span class="pu">,</span>
+    result<span class="pu">:</span>     <span class="st">'success'</span><span class="pu">,</span>
+    requestId<span class="pu">:</span>  req<span class="pu">.</span>id<span class="pu">,</span>
+    ip<span class="pu">:</span>         req<span class="pu">.</span>ip<span class="pu">,</span>
+  <span class="pu">})</span>
+  res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">204</span><span class="pu">).</span><span class="fn">send</span><span class="pu">()</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 09 ZERO TRUST -->
+  <div class="section" id="zerotrust">
+    <div class="section-label">09 — Modern Architecture</div>
+    <h2>Zero-Trust Architecture</h2>
+    <p class="lead">Zero-trust is a security model based on one axiom: <em>never trust, always verify</em>. There is no "inside the network" — every request, from any source, is treated as potentially hostile until proven otherwise.</p>
+
+    <div class="pullquote">
+      "Assume breach. Verify explicitly. Use least privilege access."
+      — Microsoft Zero Trust Principles
+    </div>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-icon">🔒</div>
+        <h4>Verify Explicitly</h4>
+        <p>Authenticate and authorise every request based on all available data: identity, location, device health, service, workload.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">📏</div>
+        <h4>Least Privilege</h4>
+        <p>JIT/JEA access, risk-based adaptive policies, data protection. No standing admin permissions. Scope every token.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">💥</div>
+        <h4>Assume Breach</h4>
+        <p>Segment networks. Encrypt all traffic end-to-end. Use analytics for visibility. Minimise blast radius.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔍</div>
+        <h4>Continuous Validation</h4>
+        <p>Re-verify trust on every request. Short token TTLs. Step-up auth for sensitive operations. Real-time anomaly detection.</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — mTLS Service-to-Service Auth</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> https  <span class="kw">from</span> <span class="st">'node:https'</span>
+<span class="kw">import</span> fs     <span class="kw">from</span> <span class="st">'node:fs'</span>
+
+<span class="cm">// ── Zero-trust internal service: require client cert ─</span>
+<span class="kw">const</span> server <span class="op">=</span> https<span class="pu">.</span><span class="fn">createServer</span><span class="pu">({</span>
+  cert<span class="pu">:</span>              fs<span class="pu">.</span><span class="fn">readFileSync</span><span class="pu">(</span><span class="st">'/etc/certs/server.crt'</span><span class="pu">),</span>
+  key<span class="pu">:</span>               fs<span class="pu">.</span><span class="fn">readFileSync</span><span class="pu">(</span><span class="st">'/etc/certs/server.key'</span><span class="pu">),</span>
+  ca<span class="pu">:</span>                fs<span class="pu">.</span><span class="fn">readFileSync</span><span class="pu">(</span><span class="st">'/etc/certs/internal-ca.crt'</span><span class="pu">),</span>
+  requestCert<span class="pu">:</span>       <span class="kw">true</span><span class="pu">,</span>   <span class="cm">// demand client cert</span>
+  rejectUnauthorized<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span>   <span class="cm">// reject if not signed by our CA</span>
+<span class="pu">},</span> app<span class="pu">)</span>
+
+<span class="cm">// ── Extract caller identity from cert ────────────</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">((</span>req, _res, next<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">const</span> cert <span class="op">=</span> req<span class="pu">.</span>socket<span class="pu">.</span><span class="fn">getPeerCertificate</span><span class="pu">()</span>
+  <span class="kw">if</span> <span class="pu">(!</span>cert<span class="pu">?.</span>subject<span class="pu">?.</span>CN<span class="pu">)</span>
+    <span class="kw">throw</span> <span class="ty">Object</span><span class="pu">.</span><span class="fn">assign</span><span class="pu">(</span><span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">'mTLS required'</span><span class="pu">),</span> <span class="pu">{</span> status<span class="pu">:</span> <span class="nm">401</span> <span class="pu">})</span>
+
+  req<span class="pu">.</span>callerService <span class="op">=</span> cert<span class="pu">.</span>subject<span class="pu">.</span>CN  <span class="cm">// e.g. 'payments-service'</span>
+  <span class="fn">next</span><span class="pu">()</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Service allow-list ────────────────────────────</span>
+<span class="kw">const</span> <span class="fn">allowedServices</span> <span class="op">=</span> <span class="pu">(...</span>services<span class="pu">)</span> <span class="op">=></span> <span class="pu">(</span>req, res, next<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(!</span>services<span class="pu">.</span><span class="fn">includes</span><span class="pu">(</span>req<span class="pu">.</span>callerService<span class="pu">))</span>
+    <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">403</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> <span class="st">'Service not authorised'</span> <span class="pu">})</span>
+  <span class="fn">next</span><span class="pu">()</span>
+<span class="pu">}</span>
+
+router<span class="pu">.</span><span class="fn">post</span><span class="pu">(</span><span class="st">'/internal/charge'</span><span class="pu">,</span>
+  <span class="fn">allowedServices</span><span class="pu">(</span><span class="st">'order-service'</span><span class="pu">,</span> <span class="st">'subscription-service'</span><span class="pu">),</span>
+  processCharge
+<span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 10 PEN TESTING -->
+  <div class="section" id="pentest">
+    <div class="section-label">10 — Offensive Knowledge</div>
+    <h2>Penetration Testing Basics</h2>
+    <p class="lead">Understanding how attackers work makes you a better defender. These techniques are for testing systems you own or have explicit permission to test.</p>
+
+    <div class="danger">
+      <div class="danger-label">⚖️ Legal Reminder</div>
+      Only test systems you own or have explicit written permission to test. Unauthorised pen testing is illegal in most jurisdictions under the Computer Fraud and Abuse Act (USA), Computer Misuse Act (UK), and equivalents globally.
+    </div>
+
+    <h3>The Pen Test Methodology</h3>
+    <ul class="phase-list">
+      <li><div class="phase-num">1</div><div><strong>Reconnaissance</strong> — Passive: OSINT (Shodan, WHOIS, LinkedIn, GitHub dorking). Active: port scanning (nmap), service fingerprinting, subdomain enumeration (subfinder, amass).</div></li>
+      <li><div class="phase-num">2</div><div><strong>Enumeration</strong> — Directory brute-force (gobuster, ffuf), API endpoint discovery, technology fingerprinting (Wappalyzer), SSL/TLS analysis (testssl.sh).</div></li>
+      <li><div class="phase-num">3</div><div><strong>Vulnerability Scanning</strong> — Automated: OWASP ZAP, Nuclei, Burp Suite Pro scanner. Manual review of authentication, session management, and input handling.</div></li>
+      <li><div class="phase-num">4</div><div><strong>Exploitation</strong> — Confirm vulnerabilities are real, not false positives. Document exact steps. Capture minimal evidence. Stop at first confirmed access — no lateral movement without scope approval.</div></li>
+      <li><div class="phase-num">5</div><div><strong>Reporting</strong> — Risk-rated findings (CVSS), reproduction steps, business impact, specific remediation advice. Executive summary + technical details. Fix verification after remediation.</div></li>
+    </ul>
+
+    <h3>Testing Your Own Node.js APIs</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell — API Security Testing with curl & httpie</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm"># ── Test for IDOR (Insecure Direct Object Reference) ──────────</span>
+<span class="cm"># Login as user A, try to access user B's resources</span>
+TOKEN_A=$(curl -s -X POST /api/auth/login -d '{"email":"a@test.com","password":"Aa12345678!"}' | jq -r .access)
+curl -H "Authorization: Bearer $TOKEN_A" /api/users/USER_B_ID  <span class="cm"># should 403</span>
+
+<span class="cm"># ── Test rate limiting ────────────────────────────────────────</span>
+for i in $(seq 1 10); do
+  curl -s -o /dev/null -w "%{http_code}\n" \
+    -X POST /api/auth/login \
+    -d '{"email":"x@x.com","password":"wrong"}'
+done
+<span class="cm"># Expected: first 5 → 401, then → 429</span>
+
+<span class="cm"># ── Test SQL injection ────────────────────────────────────────</span>
+curl -s "/api/users?search=' OR '1'='1" | jq .
+<span class="cm"># Should return empty or error, never all users</span>
+
+<span class="cm"># ── Check security headers ────────────────────────────────────</span>
+curl -sI https://api.myapp.com/ | grep -E "(Strict-Transport|Content-Security|X-Frame|X-Content)"
+<span class="cm"># Must see: Strict-Transport-Security, Content-Security-Policy, X-Frame-Options</span>
+
+<span class="cm"># ── JWT algorithm confusion test ─────────────────────────────</span>
+<span class="cm"># Craft a token with alg:none and check if it's accepted</span>
+NONE_TOKEN="eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbImFkbWluIl19."
+curl -H "Authorization: Bearer $NONE_TOKEN" /api/admin
+<span class="cm"># Must return 401, never 200</span></code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — ReDoS Detection</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── ReDoS (Regular Expression DoS) ───────────────
+// Certain regex + crafted input = catastrophic backtracking
+// This can block the event loop for seconds</span>
+
+<span class="cm">// ❌ Vulnerable patterns — exponential backtracking</span>
+<span class="rx">/^(a+)+$/</span><span class="pu">.</span><span class="fn">test</span><span class="pu">(</span><span class="st">'aaaaaaaaaaaaaaaaaaX'</span><span class="pu">)</span>  <span class="cm">// hangs Node for seconds!</span>
+<span class="rx">/(a|a)+$/</span><span class="pu">.</span><span class="fn">test</span><span class="pu">(</span><span class="st">'aaaaaaaaaaaab'</span><span class="pu">)</span>
+
+<span class="cm">// ✅ Use safe-regex to audit your patterns</span>
+<span class="kw">import</span> safeRegex <span class="kw">from</span> <span class="st">'safe-regex'</span>
+<span class="fn">safeRegex</span><span class="pu">(</span><span class="rx">/^(a+)+$/</span><span class="pu">)</span>  <span class="cm">// → false (unsafe!)</span>
+<span class="fn">safeRegex</span><span class="pu">(</span><span class="rx">/^[a-z]+$/</span><span class="pu">)</span> <span class="cm">// → true (safe)</span>
+
+<span class="cm">// ✅ For user-supplied patterns, use re2 (linear time)</span>
+<span class="kw">import</span> RE2 <span class="kw">from</span> <span class="st">'re2'</span>
+<span class="kw">const</span> re <span class="op">=</span> <span class="kw">new</span> <span class="fn">RE2</span><span class="pu">(</span>userSuppliedPattern<span class="pu">)</span>
+re<span class="pu">.</span><span class="fn">test</span><span class="pu">(</span>input<span class="pu">)</span>  <span class="cm">// guaranteed O(n), cannot hang</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 11 CRYPTO -->
+  <div class="section" id="crypto">
+    <div class="section-label">11 — Cryptography</div>
+    <h2>Cryptography in Practice</h2>
+    <p class="lead">Don't invent cryptography. Use standard algorithms correctly. The most common mistake is using encryption when you need a hash, or a hash when you need a MAC.</p>
+
+    <table>
+      <tr><th>Use Case</th><th>Algorithm</th><th>Node.js API</th><th>Avoid</th></tr>
+      <tr><td>Password storage</td><td>Argon2id / bcrypt</td><td><code>argon2</code> npm</td><td class="badge badge-red">MD5, SHA-*</td></tr>
+      <tr><td>Data integrity (MAC)</td><td>HMAC-SHA256</td><td><code>crypto.createHmac</code></td><td class="badge badge-red">Plain SHA256</td></tr>
+      <tr><td>Symmetric encryption</td><td>AES-256-GCM</td><td><code>crypto.createCipheriv</code></td><td class="badge badge-red">AES-ECB, DES</td></tr>
+      <tr><td>Asymmetric encryption</td><td>RSA-OAEP / X25519</td><td><code>crypto.subtle</code></td><td class="badge badge-red">RSA PKCS#1 v1.5</td></tr>
+      <tr><td>Digital signatures</td><td>Ed25519 / RS256</td><td><code>crypto.sign</code></td><td class="badge badge-red">MD5withRSA</td></tr>
+      <tr><td>Random tokens</td><td>CSPRNG</td><td><code>crypto.randomBytes</code></td><td class="badge badge-red">Math.random()</td></tr>
+      <tr><td>Key derivation</td><td>HKDF / scrypt</td><td><code>crypto.hkdfSync</code></td><td class="badge badge-red">PBKDF2 (SHA1)</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — AES-256-GCM Encryption</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> crypto <span class="kw">from</span> <span class="st">'node:crypto'</span>
+
+<span class="kw">const</span> ALGORITHM <span class="op">=</span> <span class="st">'aes-256-gcm'</span>
+<span class="kw">const</span> KEY_LEN   <span class="op">=</span> <span class="nm">32</span>  <span class="cm">// 256 bits</span>
+<span class="kw">const</span> IV_LEN    <span class="op">=</span> <span class="nm">12</span>  <span class="cm">// 96 bits — GCM standard</span>
+
+<span class="kw">function</span> <span class="fn">encrypt</span><span class="pu">(</span>plaintext, keyHex<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> key    <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span>keyHex, <span class="st">'hex'</span><span class="pu">)</span>
+  <span class="kw">const</span> iv     <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">randomBytes</span><span class="pu">(</span>IV_LEN<span class="pu">)</span>  <span class="cm">// fresh IV per message</span>
+  <span class="kw">const</span> cipher <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">createCipheriv</span><span class="pu">(</span>ALGORITHM, key, iv<span class="pu">)</span>
+
+  <span class="kw">const</span> encrypted <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">concat</span><span class="pu">([</span>
+    cipher<span class="pu">.</span><span class="fn">update</span><span class="pu">(</span>plaintext, <span class="st">'utf8'</span><span class="pu">),</span>
+    cipher<span class="pu">.</span><span class="fn">final</span><span class="pu">(),</span>
+  <span class="pu">])</span>
+  <span class="kw">const</span> authTag <span class="op">=</span> cipher<span class="pu">.</span><span class="fn">getAuthTag</span><span class="pu">()</span>  <span class="cm">// GCM authentication tag</span>
+
+  <span class="cm">// Pack: iv(12) | authTag(16) | ciphertext — all needed for decryption</span>
+  <span class="kw">return</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">concat</span><span class="pu">([</span>iv, authTag, encrypted<span class="pu">]).</span><span class="fn">toString</span><span class="pu">(</span><span class="st">'base64url'</span><span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">decrypt</span><span class="pu">(</span>ciphertextB64, keyHex<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> buf     <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span>ciphertextB64, <span class="st">'base64url'</span><span class="pu">)</span>
+  <span class="kw">const</span> iv      <span class="op">=</span> buf<span class="pu">.</span><span class="fn">subarray</span><span class="pu">(</span><span class="nm">0</span><span class="pu">,</span> IV_LEN<span class="pu">)</span>
+  <span class="kw">const</span> authTag <span class="op">=</span> buf<span class="pu">.</span><span class="fn">subarray</span><span class="pu">(</span>IV_LEN<span class="pu">,</span> IV_LEN <span class="op">+</span> <span class="nm">16</span><span class="pu">)</span>
+  <span class="kw">const</span> data    <span class="op">=</span> buf<span class="pu">.</span><span class="fn">subarray</span><span class="pu">(</span>IV_LEN <span class="op">+</span> <span class="nm">16</span><span class="pu">)</span>
+  <span class="kw">const</span> key     <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span>keyHex, <span class="st">'hex'</span><span class="pu">)</span>
+
+  <span class="kw">const</span> decipher <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">createDecipheriv</span><span class="pu">(</span>ALGORITHM, key, iv<span class="pu">)</span>
+  decipher<span class="pu">.</span><span class="fn">setAuthTag</span><span class="pu">(</span>authTag<span class="pu">)</span>  <span class="cm">// verifies integrity — throws if tampered</span>
+
+  <span class="kw">return</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">concat</span><span class="pu">([</span>decipher<span class="pu">.</span><span class="fn">update</span><span class="pu">(</span>data<span class="pu">),</span> decipher<span class="pu">.</span><span class="fn">final</span><span class="pu">()])</span><span class="pu">.</span><span class="fn">toString</span><span class="pu">(</span><span class="st">'utf8'</span><span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Derive encryption key from password ───────────</span>
+<span class="kw">const</span> key <span class="op">=</span> crypto<span class="pu">.</span><span class="fn">hkdfSync</span><span class="pu">(</span>
+  <span class="st">'sha256'</span><span class="pu">,</span>
+  masterKey<span class="pu">,</span>                      <span class="cm">// input key material</span>
+  crypto<span class="pu">.</span><span class="fn">randomBytes</span><span class="pu">(</span><span class="nm">32</span><span class="pu">),</span>          <span class="cm">// salt</span>
+  <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span><span class="st">'encryption v1'</span><span class="pu">),</span>    <span class="cm">// context info</span>
+  <span class="nm">32</span>                              <span class="cm">// output length (256-bit key)</span>
+<span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════ 12 SUPPLY CHAIN -->
+  <div class="section" id="supply">
+    <div class="section-label">12 — Ecosystem Security</div>
+    <h2>Supply Chain & Dependency Security</h2>
+    <p class="lead">The npm ecosystem is a massive attack surface. A single compromised dependency can affect thousands of downstream projects. The <code>event-stream</code> and <code>ua-parser-js</code> incidents proved this is not theoretical.</p>
+
+    <div class="ad-grid">
+      <div class="ad-card ad-attack">
+        <div class="ad-label">⚔️ Known Attacks</div>
+        <ul>
+          <li>Typosquatting (<code>lodsh</code> instead of <code>lodash</code>)</li>
+          <li>Dependency confusion (private package name hijacking)</li>
+          <li>Maintainer account takeover</li>
+          <li>Malicious postinstall scripts</li>
+          <li>Protestware (deliberate sabotage by maintainer)</li>
+        </ul>
+      </div>
+      <div class="ad-card ad-defense">
+        <div class="ad-label">🛡️ Defences</div>
+        <ul>
+          <li>Audit with <code>npm audit</code> and Snyk in CI</li>
+          <li>Lock dependencies with <code>package-lock.json</code></li>
+          <li>Review new deps: stars, last published, maintainers</li>
+          <li>Use <code>--ignore-scripts</code> for untrusted packages</li>
+          <li>Scope private packages with a registry prefix</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell / JSON — Dependency Security in Practice</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm"># ── Audit dependencies for known CVEs ─────────────</span>
+npm audit --audit-level=high  <span class="cm"># fail CI on high+ severity</span>
+npx snyk test                 <span class="cm"># richer CVE database than npm audit</span>
+
+<span class="cm"># ── Check package before installing ───────────────</span>
+npx package-inspector some-package    <span class="cm"># inspect scripts, files, metadata</span>
+npm info some-package | grep -E "(publishedCount|maintainers)"
+
+<span class="cm"># ── Lock down .npmrc ───────────────────────────────</span>
+<span class="cm"># .npmrc</span>
+ignore-scripts=true           <span class="cm"># don't run postinstall scripts</span>
+audit-level=moderate
+fund=false</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">YAML — GitHub Actions Security Scanning</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm"># .github/workflows/security.yml</span>
+name: Security Scan
+on: [push, pull_request]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      <span class="cm"># Dependency vulnerability scanning</span>
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+
+      <span class="cm"># Static analysis for security issues</span>
+      - name: Run Semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/javascript
+            p/nodejs
+            p/owasp-top-ten
+
+      <span class="cm"># Secret scanning</span>
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+
+      <span class="cm"># SBOM generation (Software Bill of Materials)</span>
+      - name: Generate SBOM
+        run: npx @cyclonedx/cyclonedx-npm --output-file sbom.json</code></pre>
+    </div>
+
+    <h3>Security Checklist for Every Release</h3>
+    <ul class="checklist">
+      <li><span class="check-icon">✅</span><div><strong>Dependencies audited</strong> — <code>npm audit</code> passes with no high/critical CVEs. Outdated packages reviewed.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Secrets scanned</strong> — Gitleaks pre-commit hook passes. No hardcoded keys, tokens, or passwords in any file.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Security headers verified</strong> — Helmet configured. CSP, HSTS, X-Frame-Options, X-Content-Type-Options all present.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Input validation on all endpoints</strong> — Zod schemas, parameterised DB queries, file upload type restrictions.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Auth & AuthZ tested</strong> — IDOR tests pass. Role boundaries verified. JWT algorithm fixed to RS256/ES256.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Rate limits active</strong> — Auth endpoints, API endpoints, and file upload endpoints all rate-limited.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Error messages sanitised</strong> — Production errors return generic messages. Stack traces logged internally only.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Audit logs in place</strong> — Auth events, admin actions, data mutations all captured with actor, action, timestamp, IP.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>TLS enforced everywhere</strong> — HTTPS only. HSTS preload submitted. Internal service traffic uses mTLS.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Docker image hardened</strong> — Non-root user, read-only filesystem, no unnecessary capabilities, distroless or Alpine base.</div></li>
+    </ul>
+
+  </div>
+
+</div>
+
+<footer>
+  <strong>Cyber Security for JavaScript Engineers — Complete Guide</strong><br>
+  Part of the <a href="index.html">DevDive</a> series — Deep dives for serious developers.<br><br>
+  <span style="color:rgba(255,255,255,0.3)">© 2026 DevDive · OWASP 2025 · Node.js 22 · June 2026</span>
+</footer>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre')
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    const original = btn.textContent
+    btn.textContent = 'Copied!'
+    setTimeout(() => { btn.textContent = original }, 2000)
+  })
+}
+</script>
+</body>
+</html>
