@@ -39,6 +39,8 @@
         --c-practices-bg: #fffbeb;
         --c-guidelines: #0f766e;
         --c-guidelines-bg: #f0fdfa;
+        --c-ai: #7c3aed;
+        --c-ai-bg: #f5f3ff;
       }
 
       * {
@@ -389,6 +391,9 @@
       .card[data-cat="security"]:hover {
         border-color: #fca5a5;
       }
+      .card[data-cat="ai"]:hover {
+        border-color: #c4b5fd;
+      }
 
       .card-cover {
         height: 172px;
@@ -406,6 +411,9 @@
       }
       .card[data-cat="security"] .card-cover {
         background: linear-gradient(140deg, #450a0a, #dc2626 60%, #f87171);
+      }
+      .card[data-cat="ai"] .card-cover {
+        background: linear-gradient(140deg, #2e1065, #7c3aed 60%, #a78bfa);
       }
 
       .cover-bg-text {
@@ -559,6 +567,13 @@
       }
       .card[data-cat="security"] .read-link:hover {
         background: #fee2e2;
+      }
+      .card[data-cat="ai"] .read-link {
+        background: #f5f3ff;
+        color: #7c3aed;
+      }
+      .card[data-cat="ai"] .read-link:hover {
+        background: #ede9fe;
       }
       .card-rt {
         font-size: 12px;
@@ -887,6 +902,10 @@
           <span class="nav-cat-dot" style="background: var(--c-security)"></span
           >Cyber Security
         </button>
+        <button class="nav-cat" onclick="filterCat(this, 'ai')">
+          <span class="nav-cat-dot" style="background: var(--c-ai)"></span>AI
+          Engineering
+        </button>
         <button class="nav-cat" onclick="filterCat(this, 'devops')">
           <span class="nav-cat-dot" style="background: var(--c-devops)"></span
           >DevOps
@@ -912,7 +931,7 @@
       </div>
 
       <div class="nav-right">
-        <span class="nav-count" id="article-count">5 articles</span>
+        <span class="nav-count" id="article-count">6 articles</span>
       </div>
     </nav>
 
@@ -1055,6 +1074,17 @@
           <div class="cat-ov-count">2 articles</div>
         </div>
 
+        <div
+          class="cat-overview-card"
+          data-cat="ai"
+          onclick="filterCat(null, 'ai')"
+          style="cursor: pointer; border-color: #c4b5fd"
+        >
+          <div class="cat-ov-icon" style="background: #f5f3ff">🤖</div>
+          <div class="cat-ov-name">AI Engineering</div>
+          <div class="cat-ov-count">1 article</div>
+        </div>
+
         <div class="cat-overview-card">
           <div class="cat-ov-icon" style="background: #fffbeb">📋</div>
           <div class="cat-ov-name">Best Practices</div>
@@ -1076,7 +1106,7 @@
       <div class="section-title-row">
         <h2 class="section-title">Published Articles</h2>
         <span class="section-meta" id="filter-label"
-          >Showing all · 5 articles</span
+          >Showing all · 6 articles</span
         >
       </div>
 
@@ -1177,6 +1207,50 @@
               >Read Article <span class="arr">→</span></span
             >
             <span class="card-rt">~30 min read</span>
+          </div>
+        </a>
+
+        <!-- AI Engineering Card -->
+        <a class="card" data-cat="ai" href="ai-engineering-guide.html">
+          <div class="card-cover">
+            <div class="cover-bg-text">AI</div>
+            <div class="cover-badge">
+              <span class="cover-badge-lang">🤖</span>
+              <span class="cover-badge-sub">AI Engineering</span>
+            </div>
+            <div class="cover-pills">
+              <span class="cover-pill">Prompting</span>
+              <span class="cover-pill">RAG</span>
+              <span class="cover-pill">Agents</span>
+              <span class="cover-pill">Evals</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-row">
+              <span class="cat-chip" style="background: #f5f3ff; color: #7c3aed"
+                >AI Engineering</span
+              >
+              <span class="card-sections">12 sections</span>
+            </div>
+            <div class="card-title">AI-Augmented Engineering</div>
+            <p class="card-desc">
+              Prompt engineering, context engineering, AI-assisted coding, RAG,
+              agents & tool calling, AI security, system design, cost
+              optimisation, human evaluation, and workflow integration.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Prompting</span>
+              <span class="tag">RAG</span>
+              <span class="tag">Agents</span>
+              <span class="tag">LLM Security</span>
+              <span class="tag">Evals</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="read-link"
+              >Read Article <span class="arr">→</span></span
+            >
+            <span class="card-rt">~45 min read</span>
           </div>
         </a>
 
