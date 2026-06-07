@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MongoDB & NoSQL Databases — The Complete Developer's Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f4faf7; --surface:#ffffff; --text-primary:#1a1a1a; --text-secondary:#6b6b6b;
+    --text-muted:#9a9a9a; --accent:#057a55; --accent-light:#ecfdf5; --accent-subtle:#d1fae5;
+    --border:#ddeee6; --code-bg:#0d1117; --code-text:#e6edf3; --tag-bg:#ebf7f1;
+    --tip-bg:#f0fdf4; --tip-border:#16a34a; --warn-bg:#fff7ed; --warn-border:#ea580c;
+    --danger-bg:#fff1f2; --danger-border:#dc2626; --info-bg:#eff6ff; --info-border:#2563eb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.75}
+  nav{position:sticky;top:0;z-index:100;background:rgba(244,250,247,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+  .nav-logo{font-weight:600;font-size:15px;letter-spacing:-0.3px}.nav-logo span{color:var(--accent)}
+  .nav-links{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}.nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{font-size:12.5px;color:var(--text-secondary);text-decoration:none;padding:5px 9px;border-radius:6px;transition:all .15s;white-space:nowrap}
+  .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
+  .nav-read-time{font-size:13px;color:var(--text-muted);flex-shrink:0}
+  .hero{max-width:780px;margin:0 auto;padding:64px 2rem 48px}
+  .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;margin-bottom:24px;letter-spacing:.3px;text-transform:uppercase}
+  .hero h1{font-family:'Lora',serif;font-size:clamp(32px,5vw,50px);font-weight:600;line-height:1.12;letter-spacing:-.5px;margin-bottom:20px}
+  .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+  .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#057a55,#064e3b);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .meta-text{font-size:14px;color:var(--text-secondary)}.meta-text strong{color:var(--text-primary)}
+  .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+  .db-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+  .db-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;border:1px solid}
+  .pill-mongo{background:#edfdf5;color:#065f46;border-color:#a7f3d0}
+  .pill-redis{background:#fff1f2;color:#be123c;border-color:#fecdd3}
+  .pill-elastic{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+  .pill-cassandra{background:#faf5ff;color:#6d28d9;border-color:#ddd6fe}
+  .toc-wrapper{max-width:780px;margin:0 auto;padding:0 2rem 8px}
+  .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:40px}
+  .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+  .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+  .toc a{font-size:14px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
+  .toc a:hover{color:var(--accent)}.toc-num{font-size:12px;color:var(--text-muted);font-weight:500;min-width:20px}
+  .content{max-width:780px;margin:0 auto;padding:0 2rem 80px}
+  .section{margin-bottom:72px;scroll-margin-top:72px}
+  .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--accent-subtle)}
+  h2{font-family:'Lora',serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:16px}
+  h3{font-size:19px;font-weight:600;margin:32px 0 12px}
+  p{margin-bottom:18px;color:#2d2d2d}
+  .lead{font-size:19px;color:var(--text-secondary);font-weight:300;margin-bottom:24px}
+  .code-block{background:var(--code-bg);border-radius:10px;margin:24px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+  .code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+  .code-lang{font-size:12px;color:#6e7681;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
+  .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:'Outfit',sans-serif;transition:all .15s}
+  .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+  pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:var(--code-text)}
+  pre code{background:none;padding:0;font-size:inherit}
+  code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#e6f4ee;color:#065f46;padding:2px 6px;border-radius:4px}
+  .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+  .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+  .pu{color:#e6edf3}.bi{color:#ffa657}.rx{color:#7ee787}.str2{color:#7ee787}
+  .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+  .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+  .danger{background:var(--danger-bg);border-left:3px solid var(--danger-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+  .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+  .tip-label{font-size:12px;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .warn-label{font-size:12px;font-weight:600;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .danger-label{font-size:12px;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .info-label{font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+  .compare-card{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+  .compare-header{padding:10px 16px;font-size:13px;font-weight:600}
+  .compare-header.bad{background:#fef2f2;color:#dc2626}.compare-header.good{background:#f0fdf4;color:#16a34a}
+  .compare-header.sql{background:#eff6ff;color:#1d4ed8}.compare-header.mongo{background:#f0fdf4;color:#057a55}
+  .compare-card .code-block{border-radius:0;margin:0;border:none}
+  table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px}
+  th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+  td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg)}
+  .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;letter-spacing:.3px;vertical-align:middle}
+  .badge-green{background:#dcfce7;color:#15803d}.badge-amber{background:#fef3c7;color:#b45309}
+  .badge-red{background:#fee2e2;color:#b91c1c}.badge-blue{background:#dbeafe;color:#1d4ed8}
+  .badge-violet{background:#ede9fe;color:#5b21b6}
+  .pullquote{font-family:'Lora',serif;font-style:italic;font-size:22px;line-height:1.5;color:var(--text-secondary);border-left:4px solid var(--accent);padding:12px 24px;margin:36px 0}
+  .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:24px 0}
+  .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+  .concept-card h4{font-size:15px;font-weight:600;margin-bottom:6px;margin-top:0}
+  .concept-card p{font-size:14px;color:var(--text-secondary);margin:0;line-height:1.5}
+  .concept-icon{font-size:22px;margin-bottom:10px}
+  .phase-list{list-style:none;margin:16px 0}
+  .phase-list li{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border);font-size:15px}
+  .phase-list li:last-child{border-bottom:none}
+  .phase-num{min-width:28px;height:28px;border-radius:50%;background:var(--accent-subtle);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+  .divider{border:none;border-top:1px solid var(--border);margin:56px 0}
+  footer{background:#052e16;color:rgba(255,255,255,.6);text-align:center;padding:40px 2rem;font-size:14px}
+  footer strong{color:white}footer a{color:#6ee7b7;text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  @media(max-width:640px){.toc-grid,.compare-grid{grid-template-columns:1fr}.nav-links{display:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Mongo<span>DB</span> & NoSQL</div>
+  <div class="nav-links">
+    <a href="#nosql">NoSQL Landscape</a>
+    <a href="#modelling">Data Modelling</a>
+    <a href="#queries">CRUD & Queries</a>
+    <a href="#aggregation">Aggregation</a>
+    <a href="#indexes">Indexes</a>
+    <a href="#transactions">Transactions</a>
+    <a href="#mongoose">Mongoose & ODM</a>
+    <a href="#redis">Redis</a>
+    <a href="#elasticsearch">Elasticsearch</a>
+    <a href="#patterns">Patterns</a>
+    <a href="#performance">Performance</a>
+    <a href="#production">Production</a>
+  </div>
+  <div class="nav-read-time">~40 min read</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">🍃 Complete Guide</div>
+  <h1>MongoDB & NoSQL Databases</h1>
+  <p class="hero-sub">Data modelling, CRUD, the aggregation pipeline, indexes, transactions, Mongoose, schema design patterns, Redis caching, Elasticsearch, performance tuning, and production operations — everything a senior JavaScript engineer needs to master NoSQL.</p>
+  <div class="hero-meta">
+    <div class="avatar">🍃</div>
+    <div class="meta-text">
+      <strong>NoSQL Deep Dive — Senior JS Edition</strong><br>
+      MongoDB 7 · Redis 7 · Elasticsearch 8 · Node.js 22 — June 2026
+    </div>
+  </div>
+  <div class="db-pills">
+    <span class="db-pill pill-mongo">🍃 MongoDB 7</span>
+    <span class="db-pill pill-redis">⚡ Redis 7</span>
+    <span class="db-pill pill-elastic">🔍 Elasticsearch 8</span>
+    <span class="db-pill pill-cassandra">💠 NoSQL Patterns</span>
+  </div>
+  <hr class="hero-divider">
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <div class="toc-grid">
+      <a href="#nosql"><span class="toc-num">01</span> The NoSQL Landscape</a>
+      <a href="#mongoose"><span class="toc-num">07</span> Mongoose & ODM Patterns</a>
+      <a href="#modelling"><span class="toc-num">02</span> Data Modelling & Schema Design</a>
+      <a href="#redis"><span class="toc-num">08</span> Redis — Caching & Data Structures</a>
+      <a href="#queries"><span class="toc-num">03</span> CRUD & Query Operators</a>
+      <a href="#elasticsearch"><span class="toc-num">09</span> Elasticsearch & Full-Text Search</a>
+      <a href="#aggregation"><span class="toc-num">04</span> The Aggregation Pipeline</a>
+      <a href="#patterns"><span class="toc-num">10</span> Advanced Schema Patterns</a>
+      <a href="#indexes"><span class="toc-num">05</span> Indexes & Query Optimisation</a>
+      <a href="#performance"><span class="toc-num">11</span> Performance Tuning</a>
+      <a href="#transactions"><span class="toc-num">06</span> Transactions & ACID</a>
+      <a href="#production"><span class="toc-num">12</span> Production Operations</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ══════════════ 01 NOSQL LANDSCAPE -->
+  <div class="section" id="nosql">
+    <div class="section-label">01 — The Landscape</div>
+    <h2>The NoSQL Landscape</h2>
+    <p class="lead">NoSQL is not one thing — it is a family of database paradigms that trade relational consistency guarantees for flexibility, horizontal scale, or specialised performance. Choosing the right one requires understanding the trade-offs of each.</p>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-icon">📄</div>
+        <h4>Document (MongoDB)</h4>
+        <p>Stores JSON-like documents. Rich query language, flexible schema, naturally maps to JavaScript objects. Best for product catalogues, user profiles, CMS.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">⚡</div>
+        <h4>Key-Value (Redis)</h4>
+        <p>Ultra-fast in-memory store with optional persistence. O(1) reads and writes. Best for caching, sessions, rate limiting, pub/sub, leaderboards.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🔍</div>
+        <h4>Search (Elasticsearch)</h4>
+        <p>Inverted-index engine built on Lucene. Full-text search, faceting, geospatial queries. Best for log analytics, search boxes, observability.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">📊</div>
+        <h4>Wide-Column (Cassandra)</h4>
+        <p>Distributed, linear write scale. Query by partition key. Best for time-series, IoT data, activity feeds at massive scale.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🕸️</div>
+        <h4>Graph (Neo4j)</h4>
+        <p>Native graph storage and traversal. Efficient for highly-connected data. Best for social networks, fraud detection, recommendation engines.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon">🕐</div>
+        <h4>Time-Series (InfluxDB)</h4>
+        <p>Optimised for timestamped data ingestion and range queries. Best for metrics, monitoring, financial tick data, sensor streams.</p>
+      </div>
+    </div>
+
+    <h3>The CAP Theorem in Practice</h3>
+    <p>Every distributed system must choose two of three guarantees when a network partition occurs. MongoDB prioritises CP (consistency + partition tolerance) with replica sets. Redis Cluster prioritises AP (availability + partition tolerance) by default.</p>
+
+    <table>
+      <tr><th>Database</th><th>CAP</th><th>Consistency Model</th><th>Best Use Case</th></tr>
+      <tr><td>MongoDB</td><td><span class="badge badge-green">CP</span></td><td>Tunable (eventual → strong)</td><td>General purpose, documents</td></tr>
+      <tr><td>Redis</td><td><span class="badge badge-amber">AP</span></td><td>Eventual (Cluster) / Strong (single)</td><td>Cache, sessions, pub/sub</td></tr>
+      <tr><td>Elasticsearch</td><td><span class="badge badge-amber">AP</span></td><td>Near-real-time (~1s)</td><td>Search, analytics, logs</td></tr>
+      <tr><td>Cassandra</td><td><span class="badge badge-amber">AP</span></td><td>Tunable (quorum)</td><td>High-write time-series</td></tr>
+      <tr><td>PostgreSQL</td><td><span class="badge badge-green">CP</span></td><td>ACID / Serializable</td><td>Financial, relational data</td></tr>
+    </table>
+
+    <div class="info">
+      <div class="info-label">ℹ️ SQL vs NoSQL — Not Either/Or</div>
+      Modern production stacks frequently use both. PostgreSQL for financial transactions, MongoDB for product data, Redis for caching, and Elasticsearch for search is a completely normal architecture. Choose based on access patterns, not hype.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 02 DATA MODELLING -->
+  <div class="section" id="modelling">
+    <div class="section-label">02 — Schema Design</div>
+    <h2>Data Modelling & Schema Design</h2>
+    <p class="lead">MongoDB is schema-flexible, not schema-free. Designing documents well — knowing when to embed vs reference, how to optimise for your read patterns, and how to handle relationships — is the skill that separates good from great MongoDB engineers.</p>
+
+    <h3>Embed vs Reference</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-header mongo">✅ Embed — One-to-few, read together</div>
+        <div class="code-block"><pre><code><span class="cm">// Always read order with its line items
+// Items won't grow unboundedly
+// No cross-document transactions needed</span>
+<span class="pu">{</span>
+  _id<span class="pu">:</span>        <span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">),</span>
+  userId<span class="pu">:</span>     <span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">),</span>
+  status<span class="pu">:</span>     <span class="st">"paid"</span><span class="pu">,</span>
+  items<span class="pu">:</span> <span class="pu">[</span>            <span class="cm">// embedded array</span>
+    <span class="pu">{</span> sku<span class="pu">:</span> <span class="st">"T-001"</span><span class="pu">,</span> qty<span class="pu">:</span> <span class="nm">2</span><span class="pu">,</span> price<span class="pu">:</span> <span class="nm">29.99</span> <span class="pu">},</span>
+    <span class="pu">{</span> sku<span class="pu">:</span> <span class="st">"H-042"</span><span class="pu">,</span> qty<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> price<span class="pu">:</span> <span class="nm">49.99</span> <span class="pu">}</span>
+  <span class="pu">],</span>
+  total<span class="pu">:</span>      <span class="nm">109.97</span>
+<span class="pu">}</span></code></pre></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-header sql">🔗 Reference — One-to-many, update independently</div>
+        <div class="code-block"><pre><code><span class="cm">// Post has potentially thousands of comments
+// Comments can be queried independently
+// Avoid 16MB document limit</span>
+<span class="pu">{</span>
+  _id<span class="pu">:</span>      <span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">),</span>
+  title<span class="pu">:</span>    <span class="st">"My Post"</span><span class="pu">,</span>
+  authorId<span class="pu">:</span> <span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">),</span> <span class="cm">// ref to users</span>
+  tagIds<span class="pu">:</span>   <span class="pu">[</span><span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">)]</span>   <span class="cm">// ref to tags</span>
+  <span class="cm">// comments live in comments collection</span>
+  <span class="cm">// comments.postId = this._id</span>
+<span class="pu">}</span></code></pre></div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Schema Design Decision Tree</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// Embed when ALL of these are true:
+//  ✓ Data is always accessed together with the parent
+//  ✓ Array won't grow unboundedly (< a few hundred items)
+//  ✓ Document won't exceed 16MB
+//  ✓ Data is not needed independently
+//
+// Reference when ANY of these are true:
+//  ✗ The sub-document has its own lifecycle (CRUD independently)
+//  ✗ The array can grow to thousands of items
+//  ✗ Multiple parent documents reference the same child
+//  ✗ You need to query the sub-documents without the parent
+
+// ── Hybrid: partial embed for hot fields ──────────
+// Users collection — embed the 5 most recent orders
+// Full order lives in orders collection
+</span><span class="pu">{</span>
+  _id<span class="pu">:</span>   <span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">),</span>
+  name<span class="pu">:</span>  <span class="st">"Alice"</span><span class="pu">,</span>
+  email<span class="pu">:</span> <span class="st">"alice@example.com"</span><span class="pu">,</span>
+  recentOrders<span class="pu">:</span> <span class="pu">[</span>   <span class="cm">// denormalised snapshot — updated on order write</span>
+    <span class="pu">{</span> orderId<span class="pu">:</span> <span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">),</span> total<span class="pu">:</span> <span class="nm">109.97</span><span class="pu">,</span> date<span class="pu">:</span> <span class="st">"2026-06-01"</span> <span class="pu">}</span>
+  <span class="pu">]</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Always design schema for your query patterns ──
+// Ask: "What are the top 5 queries this collection serves?"
+// Then design the document structure to make those queries
+// require zero joins (lookups) and use indexes well.</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 03 CRUD & QUERIES -->
+  <div class="section" id="queries">
+    <div class="section-label">03 — Query Language</div>
+    <h2>CRUD & Query Operators</h2>
+    <p class="lead">MongoDB's query language is expressive and composable. Mastery means knowing all the comparison, logical, element, array, and update operators — and which to reach for when.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Comprehensive Query Operators</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> MongoClient, ObjectId <span class="pu">}</span> <span class="kw">from</span> <span class="st">'mongodb'</span>
+
+<span class="kw">const</span> client <span class="op">=</span> <span class="kw">await</span> <span class="fn">MongoClient</span><span class="pu">.</span><span class="fn">connect</span><span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>MONGO_URI<span class="pu">)</span>
+<span class="kw">const</span> db <span class="op">=</span> client<span class="pu">.</span><span class="fn">db</span><span class="pu">(</span><span class="st">'shop'</span><span class="pu">)</span>
+<span class="kw">const</span> products <span class="op">=</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'products'</span><span class="pu">)</span>
+
+<span class="cm">// ── Comparison operators ──────────────────────────</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">find</span><span class="pu">({</span>
+  price<span class="pu">:</span>  <span class="pu">{</span> <span class="op">$</span>gte<span class="pu">:</span> <span class="nm">10</span><span class="pu">,</span> <span class="op">$</span>lte<span class="pu">:</span> <span class="nm">100</span> <span class="pu">},</span>   <span class="cm">// range</span>
+  status<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>in<span class="pu">:</span> <span class="pu">[</span><span class="st">'active'</span><span class="pu">,</span> <span class="st">'featured'</span><span class="pu">]</span> <span class="pu">},</span>
+  sku<span class="pu">:</span>    <span class="pu">{</span> <span class="op">$</span>nin<span class="pu">:</span> <span class="pu">[</span><span class="st">'DEPRECATED'</span><span class="pu">]</span> <span class="pu">},</span>
+  stock<span class="pu">:</span>  <span class="pu">{</span> <span class="op">$</span>ne<span class="pu">:</span> <span class="nm">0</span> <span class="pu">},</span>
+<span class="pu">}).</span><span class="fn">toArray</span><span class="pu">()</span>
+
+<span class="cm">// ── Logical operators ─────────────────────────────</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">find</span><span class="pu">({</span>
+  <span class="op">$</span>or<span class="pu">:</span> <span class="pu">[</span>
+    <span class="pu">{</span> category<span class="pu">:</span> <span class="st">'electronics'</span> <span class="pu">},</span>
+    <span class="pu">{</span> tags<span class="pu">:</span> <span class="st">'featured'</span> <span class="pu">},</span>          <span class="cm">// matches if 'featured' in tags array</span>
+  <span class="pu">],</span>
+  <span class="op">$</span>and<span class="pu">:</span> <span class="pu">[</span>
+    <span class="pu">{</span> price<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>gt<span class="pu">:</span> <span class="nm">0</span> <span class="pu">}</span> <span class="pu">},</span>
+    <span class="pu">{</span> stock<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>gt<span class="pu">:</span> <span class="nm">0</span> <span class="pu">}</span> <span class="pu">},</span>
+  <span class="pu">]</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Element operators ─────────────────────────────</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">find</span><span class="pu">({</span>
+  discount<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>exists<span class="pu">:</span> <span class="kw">true</span> <span class="pu">},</span>    <span class="cm">// field must exist</span>
+  weight<span class="pu">:</span>   <span class="pu">{</span> <span class="op">$</span>type<span class="pu">:</span> <span class="st">'number'</span> <span class="pu">},</span> <span class="cm">// type guard</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Array operators ───────────────────────────────</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">find</span><span class="pu">({</span>
+  tags<span class="pu">:</span>        <span class="pu">{</span> <span class="op">$</span>all<span class="pu">:</span>      <span class="pu">[</span><span class="st">'waterproof'</span><span class="pu">,</span> <span class="st">'outdoor'</span><span class="pu">]</span> <span class="pu">},</span> <span class="cm">// both must exist</span>
+  images<span class="pu">:</span>      <span class="pu">{</span> <span class="op">$</span>size<span class="pu">:</span>     <span class="nm">3</span> <span class="pu">},</span>                          <span class="cm">// exactly 3 images</span>
+  <span class="st">'specs.dims'</span><span class="pu">:{</span> <span class="op">$</span>elemMatch<span class="pu">:</span> <span class="pu">{</span> val<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>gt<span class="pu">:</span> <span class="nm">10</span> <span class="pu">}</span> <span class="pu">}</span> <span class="pu">},</span>     <span class="cm">// at least one element matches</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Projection — retrieve only needed fields ──────</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">find</span><span class="pu">({},</span> <span class="pu">{</span>
+  projection<span class="pu">:</span> <span class="pu">{</span> name<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> price<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> _id<span class="pu">:</span> <span class="nm">0</span> <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Update operators — atomic mutations ──────────</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">updateOne</span><span class="pu">(</span>
+  <span class="pu">{</span> _id<span class="pu">:</span> <span class="kw">new</span> <span class="fn">ObjectId</span><span class="pu">(</span>id<span class="pu">)</span> <span class="pu">},</span>
+  <span class="pu">{</span>
+    <span class="op">$</span>set<span class="pu">:</span>   <span class="pu">{</span> status<span class="pu">:</span> <span class="st">'archived'</span><span class="pu">,</span> <span class="st">'meta.updatedAt'</span><span class="pu">:</span> <span class="kw">new</span> <span class="ty">Date</span><span class="pu">() },</span>
+    <span class="op">$</span>unset<span class="pu">:</span> <span class="pu">{</span> discount<span class="pu">:</span> <span class="st">''</span> <span class="pu">},</span>            <span class="cm">// remove field</span>
+    <span class="op">$</span>inc<span class="pu">:</span>   <span class="pu">{</span> viewCount<span class="pu">:</span> <span class="nm">1</span> <span class="pu">},</span>            <span class="cm">// atomic increment</span>
+    <span class="op">$</span>push<span class="pu">:</span>  <span class="pu">{</span> tags<span class="pu">:</span> <span class="st">'sale'</span> <span class="pu">},</span>           <span class="cm">// append to array</span>
+    <span class="op">$</span>addToSet<span class="pu">:</span> <span class="pu">{</span> categories<span class="pu">:</span> <span class="st">'clearance'</span> <span class="pu">},</span> <span class="cm">// push if not exists</span>
+    <span class="op">$</span>pull<span class="pu">:</span>  <span class="pu">{</span> tags<span class="pu">:</span> <span class="st">'new-arrival'</span> <span class="pu">},</span>   <span class="cm">// remove from array</span>
+  <span class="pu">}</span>
+<span class="pu">)</span>
+
+<span class="cm">// ── findOneAndUpdate — atomic read-modify ─────────</span>
+<span class="kw">const</span> updated <span class="op">=</span> <span class="kw">await</span> products<span class="pu">.</span><span class="fn">findOneAndUpdate</span><span class="pu">(</span>
+  <span class="pu">{</span> sku<span class="pu">:</span> <span class="st">'T-001'</span><span class="pu">,</span> stock<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>gte<span class="pu">:</span> <span class="nm">1</span> <span class="pu">}</span> <span class="pu">},</span>    <span class="cm">// filter + condition</span>
+  <span class="pu">{</span> <span class="op">$</span>inc<span class="pu">:</span> <span class="pu">{</span> stock<span class="pu">:</span> <span class="op">-</span><span class="nm">1</span> <span class="pu">}</span> <span class="pu">},</span>                 <span class="cm">// decrement atomically</span>
+  <span class="pu">{</span> returnDocument<span class="pu">:</span> <span class="st">'after'</span> <span class="pu">}</span>            <span class="cm">// return updated doc</span>
+<span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 04 AGGREGATION -->
+  <div class="section" id="aggregation">
+    <div class="section-label">04 — Data Processing</div>
+    <h2>The Aggregation Pipeline</h2>
+    <p class="lead">The aggregation pipeline is MongoDB's most powerful feature — a multi-stage data processing framework that can transform, group, join, reshape, and analyse data with sub-millisecond latency on properly indexed collections.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Aggregation Pipeline Mastery</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Stage reference ───────────────────────────────
+// $match     — filter documents (use EARLY, hits indexes)
+// $project   — reshape / add / remove fields
+// $group     — aggregate + accumulate ($sum, $avg, $push)
+// $sort      — sort the stream
+// $limit     — take N documents
+// $skip      — skip N documents (use with $sort for pagination)
+// $lookup    — left outer join to another collection
+// $unwind    — flatten an array into separate documents
+// $addFields — add computed fields without removing others
+// $replaceRoot— replace root with a sub-document
+// $facet     — multiple aggregations in parallel
+// $bucket    — range-based grouping</span>
+
+<span class="cm">// ── Real-world example: sales dashboard ──────────</span>
+<span class="kw">const</span> salesReport <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'orders'</span><span class="pu">).</span><span class="fn">aggregate</span><span class="pu">([</span>
+  <span class="cm">// Stage 1: filter — hits index on createdAt + status</span>
+  <span class="pu">{</span> <span class="op">$</span>match<span class="pu">:</span> <span class="pu">{</span>
+    createdAt<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>gte<span class="pu">:</span> <span class="kw">new</span> <span class="ty">Date</span><span class="pu">(</span><span class="st">'2026-01-01'</span><span class="pu">)</span> <span class="pu">},</span>
+    status<span class="pu">:</span>    <span class="pu">{</span> <span class="op">$</span>in<span class="pu">:</span> <span class="pu">[</span><span class="st">'paid'</span><span class="pu">,</span> <span class="st">'shipped'</span><span class="pu">]</span> <span class="pu">}</span>
+  <span class="pu">}},</span>
+
+  <span class="cm">// Stage 2: add computed fields</span>
+  <span class="pu">{</span> <span class="op">$</span>addFields<span class="pu">:</span> <span class="pu">{</span>
+    month<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>dateToString<span class="pu">:</span> <span class="pu">{</span> format<span class="pu">:</span> <span class="st">'%Y-%m'</span><span class="pu">,</span> date<span class="pu">:</span> <span class="st">'$createdAt'</span> <span class="pu">}</span> <span class="pu">},</span>
+    margin<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>subtract<span class="pu">:</span> <span class="pu">[</span><span class="st">'$total'</span><span class="pu">,</span> <span class="st">'$costPrice'</span><span class="pu">]</span> <span class="pu">}</span>
+  <span class="pu">}},</span>
+
+  <span class="cm">// Stage 3: group by month + category</span>
+  <span class="pu">{</span> <span class="op">$</span>group<span class="pu">:</span> <span class="pu">{</span>
+    _id<span class="pu">:</span>         <span class="pu">{</span> month<span class="pu">:</span> <span class="st">'$month'</span><span class="pu">,</span> category<span class="pu">:</span> <span class="st">'$category'</span> <span class="pu">},</span>
+    revenue<span class="pu">:</span>     <span class="pu">{</span> <span class="op">$</span>sum<span class="pu">:</span>   <span class="st">'$total'</span>   <span class="pu">},</span>
+    totalMargin<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>sum<span class="pu">:</span>   <span class="st">'$margin'</span>  <span class="pu">},</span>
+    orderCount<span class="pu">:</span>  <span class="pu">{</span> <span class="op">$</span>sum<span class="pu">:</span>   <span class="nm">1</span>          <span class="pu">},</span>
+    avgOrderVal<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>avg<span class="pu">:</span>   <span class="st">'$total'</span>   <span class="pu">},</span>
+    topSkus<span class="pu">:</span>     <span class="pu">{</span> <span class="op">$</span>addToSet<span class="pu">:</span> <span class="st">'$sku'</span>   <span class="pu">}</span>
+  <span class="pu">}},</span>
+
+  <span class="cm">// Stage 4: reshape output</span>
+  <span class="pu">{</span> <span class="op">$</span>project<span class="pu">:</span> <span class="pu">{</span>
+    month<span class="pu">:</span>      <span class="st">'$_id.month'</span><span class="pu">,</span>
+    category<span class="pu">:</span>   <span class="st">'$_id.category'</span><span class="pu">,</span>
+    revenue<span class="pu">:</span>    <span class="pu">{</span> <span class="op">$</span>round<span class="pu">:</span> <span class="pu">[</span><span class="st">'$revenue'</span><span class="pu">,</span> <span class="nm">2</span><span class="pu">]</span> <span class="pu">},</span>
+    marginPct<span class="pu">:</span>  <span class="pu">{</span> <span class="op">$</span>multiply<span class="pu">:</span> <span class="pu">[{</span> <span class="op">$</span>divide<span class="pu">:</span> <span class="pu">[</span><span class="st">'$totalMargin'</span><span class="pu">,</span> <span class="st">'$revenue'</span><span class="pu">]</span> <span class="pu">},</span> <span class="nm">100</span><span class="pu">]</span> <span class="pu">},</span>
+    orderCount<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> avgOrderVal<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> _id<span class="pu">:</span> <span class="nm">0</span>
+  <span class="pu">}},</span>
+
+  <span class="pu">{</span> <span class="op">$</span>sort<span class="pu">:</span> <span class="pu">{</span> month<span class="pu">:</span> <span class="op">-</span><span class="nm">1</span><span class="pu">,</span> revenue<span class="pu">:</span> <span class="op">-</span><span class="nm">1</span> <span class="pu">}</span> <span class="pu">}</span>
+<span class="pu">]).</span><span class="fn">toArray</span><span class="pu">()</span>
+
+<span class="cm">// ── $lookup — left join to another collection ─────</span>
+<span class="kw">const</span> ordersWithUsers <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'orders'</span><span class="pu">).</span><span class="fn">aggregate</span><span class="pu">([</span>
+  <span class="pu">{</span> <span class="op">$</span>match<span class="pu">:</span> <span class="pu">{</span> status<span class="pu">:</span> <span class="st">'paid'</span> <span class="pu">}</span> <span class="pu">},</span>
+  <span class="pu">{</span> <span class="op">$</span>lookup<span class="pu">:</span> <span class="pu">{</span>
+    from<span class="pu">:</span>         <span class="st">'users'</span><span class="pu">,</span>
+    localField<span class="pu">:</span>   <span class="st">'userId'</span><span class="pu">,</span>
+    foreignField<span class="pu">:</span> <span class="st">'_id'</span><span class="pu">,</span>
+    as<span class="pu">:</span>           <span class="st">'user'</span><span class="pu">,</span>
+    pipeline<span class="pu">:</span> <span class="pu">[</span>          <span class="cm">// pipeline lookup — project only needed fields</span>
+      <span class="pu">{</span> <span class="op">$</span>project<span class="pu">:</span> <span class="pu">{</span> name<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> email<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> tier<span class="pu">:</span> <span class="nm">1</span> <span class="pu">}</span> <span class="pu">}</span>
+    <span class="pu">]</span>
+  <span class="pu">}},</span>
+  <span class="pu">{</span> <span class="op">$</span>unwind<span class="pu">:</span> <span class="pu">{</span> path<span class="pu">:</span> <span class="st">'$user'</span><span class="pu">,</span> preserveNullAndEmptyArrays<span class="pu">:</span> <span class="kw">true</span> <span class="pu">}</span> <span class="pu">}</span>
+<span class="pu">]).</span><span class="fn">toArray</span><span class="pu">()</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 05 INDEXES -->
+  <div class="section" id="indexes">
+    <div class="section-label">05 — Query Optimisation</div>
+    <h2>Indexes & Query Optimisation</h2>
+    <p class="lead">Indexes are the single most impactful performance lever in MongoDB. A missing index on a 10M-document collection turns a 1ms query into a 10-second collection scan. Know every index type and when to apply it.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Index Types & Creation</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Single field ──────────────────────────────────</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">createIndex</span><span class="pu">({</span> price<span class="pu">:</span> <span class="nm">1</span> <span class="pu">})</span>           <span class="cm">// 1=asc, -1=desc</span>
+
+<span class="cm">// ── Compound — field order matters! ──────────────</span>
+<span class="cm">// Rule: Equality → Sort → Range (ESR rule)</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">createIndex</span><span class="pu">({</span>
+  category<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span>     <span class="cm">// Equality  — always first</span>
+  createdAt<span class="pu">:</span> <span class="op">-</span><span class="nm">1</span><span class="pu">,</span>   <span class="cm">// Sort      — second</span>
+  price<span class="pu">:</span>    <span class="nm">1</span>      <span class="cm">// Range     — last</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Unique constraint ─────────────────────────────</span>
+<span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'users'</span><span class="pu">).</span><span class="fn">createIndex</span><span class="pu">(</span>
+  <span class="pu">{</span> email<span class="pu">:</span> <span class="nm">1</span> <span class="pu">},</span>
+  <span class="pu">{</span> unique<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span> name<span class="pu">:</span> <span class="st">'idx_users_email_unique'</span> <span class="pu">}</span>
+<span class="pu">)</span>
+
+<span class="cm">// ── Text index — full-text search ────────────────</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">createIndex</span><span class="pu">(</span>
+  <span class="pu">{</span> name<span class="pu">:</span> <span class="st">'text'</span><span class="pu">,</span> description<span class="pu">:</span> <span class="st">'text'</span> <span class="pu">},</span>
+  <span class="pu">{</span> weights<span class="pu">:</span> <span class="pu">{</span> name<span class="pu">:</span> <span class="nm">10</span><span class="pu">,</span> description<span class="pu">:</span> <span class="nm">5</span> <span class="pu">},</span> name<span class="pu">:</span> <span class="st">'idx_text_search'</span> <span class="pu">}</span>
+<span class="pu">)</span>
+<span class="cm">// Query: { $text: { $search: "wireless headphones" } }</span>
+
+<span class="cm">// ── Sparse — only index docs where field exists ──</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">createIndex</span><span class="pu">(</span>
+  <span class="pu">{</span> discount<span class="pu">:</span> <span class="nm">1</span> <span class="pu">},</span>
+  <span class="pu">{</span> sparse<span class="pu">:</span> <span class="kw">true</span> <span class="pu">}</span>  <span class="cm">// skip docs without 'discount' field</span>
+<span class="pu">)</span>
+
+<span class="cm">// ── TTL — auto-expire documents ───────────────────</span>
+<span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'sessions'</span><span class="pu">).</span><span class="fn">createIndex</span><span class="pu">(</span>
+  <span class="pu">{</span> expiresAt<span class="pu">:</span> <span class="nm">1</span> <span class="pu">},</span>
+  <span class="pu">{</span> expireAfterSeconds<span class="pu">:</span> <span class="nm">0</span> <span class="pu">}</span>  <span class="cm">// expire at the expiresAt date value</span>
+<span class="pu">)</span>
+
+<span class="cm">// ── 2dsphere — geospatial ─────────────────────────</span>
+<span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'stores'</span><span class="pu">).</span><span class="fn">createIndex</span><span class="pu">({</span> location<span class="pu">:</span> <span class="st">'2dsphere'</span> <span class="pu">})</span>
+<span class="cm">// Query: { location: { $near: { $geometry: { type:'Point', coordinates:[lng,lat] }, $maxDistance: 5000 } } }</span>
+
+<span class="cm">// ── EXPLAIN — read the query plan ─────────────────</span>
+<span class="kw">const</span> plan <span class="op">=</span> <span class="kw">await</span> products
+  <span class="pu">.</span><span class="fn">find</span><span class="pu">({</span> category<span class="pu">:</span> <span class="st">'electronics'</span><span class="pu">,</span> price<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>lt<span class="pu">:</span> <span class="nm">500</span> <span class="pu">}</span> <span class="pu">})</span>
+  <span class="pu">.</span><span class="fn">explain</span><span class="pu">(</span><span class="st">'executionStats'</span><span class="pu">)</span>
+
+<span class="cm">// Look for:
+//   winningPlan.stage === 'IXSCAN'   → good (index used)
+//   winningPlan.stage === 'COLLSCAN' → bad (full scan)
+//   executionStats.totalDocsExamined ≈ nReturned → good (index is selective)</span></code></pre>
+    </div>
+
+    <div class="warn">
+      <div class="warn-label">⚠️ The ESR Rule</div>
+      For compound indexes, always order fields as: <strong>E</strong>quality fields first, <strong>S</strong>ort fields second, <strong>R</strong>ange fields last. A query filtering on <code>category</code> (equality), sorting by <code>createdAt</code>, and ranging on <code>price</code> needs the index in exactly that order to avoid an in-memory sort.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 06 TRANSACTIONS -->
+  <div class="section" id="transactions">
+    <div class="section-label">06 — ACID in MongoDB</div>
+    <h2>Transactions & ACID Guarantees</h2>
+    <p class="lead">MongoDB has supported multi-document ACID transactions since version 4.0. They work across collections, databases (within a replica set), and sharded clusters — but carry overhead that makes careful design the better first choice.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Multi-Document Transactions</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> MongoClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'mongodb'</span>
+
+<span class="kw">async function</span> <span class="fn">transferFunds</span><span class="pu">(</span>fromId, toId, amount<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> session <span class="op">=</span> client<span class="pu">.</span><span class="fn">startSession</span><span class="pu">()</span>
+
+  <span class="kw">try</span> <span class="pu">{</span>
+    <span class="kw">await</span> session<span class="pu">.</span><span class="fn">withTransaction</span><span class="pu">(</span><span class="kw">async</span> <span class="pu">()</span> <span class="op">=></span> <span class="pu">{</span>
+      <span class="kw">const</span> accounts <span class="op">=</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'accounts'</span><span class="pu">)</span>
+
+      <span class="cm">// Debit sender — fails if insufficient funds</span>
+      <span class="kw">const</span> from <span class="op">=</span> <span class="kw">await</span> accounts<span class="pu">.</span><span class="fn">findOneAndUpdate</span><span class="pu">(</span>
+        <span class="pu">{</span> _id<span class="pu">:</span> fromId<span class="pu">,</span> balance<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>gte<span class="pu">:</span> amount <span class="pu">}</span> <span class="pu">},</span>
+        <span class="pu">{</span> <span class="op">$</span>inc<span class="pu">:</span> <span class="pu">{</span> balance<span class="pu">:</span> <span class="op">-</span>amount <span class="pu">}</span> <span class="pu">},</span>
+        <span class="pu">{</span> session, returnDocument<span class="pu">:</span> <span class="st">'after'</span> <span class="pu">}</span>
+      <span class="pu">)</span>
+      <span class="kw">if</span> <span class="pu">(!</span>from<span class="pu">)</span> <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">'Insufficient funds'</span><span class="pu">)</span>
+
+      <span class="cm">// Credit receiver</span>
+      <span class="kw">await</span> accounts<span class="pu">.</span><span class="fn">updateOne</span><span class="pu">(</span>
+        <span class="pu">{</span> _id<span class="pu">:</span> toId <span class="pu">},</span>
+        <span class="pu">{</span> <span class="op">$</span>inc<span class="pu">:</span> <span class="pu">{</span> balance<span class="pu">:</span> amount <span class="pu">}</span> <span class="pu">},</span>
+        <span class="pu">{</span> session <span class="pu">}</span>
+      <span class="pu">)</span>
+
+      <span class="cm">// Log the transfer</span>
+      <span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'transfers'</span><span class="pu">).</span><span class="fn">insertOne</span><span class="pu">(</span>
+        <span class="pu">{</span> fromId<span class="pu">,</span> toId<span class="pu">,</span> amount<span class="pu">,</span> at<span class="pu">:</span> <span class="kw">new</span> <span class="ty">Date</span><span class="pu">() },</span>
+        <span class="pu">{</span> session <span class="pu">}</span>
+      <span class="pu">)</span>
+    <span class="pu">},</span> <span class="pu">{</span>
+      readConcern<span class="pu">:</span>  <span class="pu">{</span> level<span class="pu">:</span> <span class="st">'snapshot'</span> <span class="pu">},</span>  <span class="cm">// MVCC snapshot isolation</span>
+      writeConcern<span class="pu">:</span> <span class="pu">{</span> w<span class="pu">:</span> <span class="st">'majority'</span> <span class="pu">},</span>      <span class="cm">// durable on majority of nodes</span>
+    <span class="pu">})</span>
+  <span class="pu">}</span> <span class="kw">finally</span> <span class="pu">{</span>
+    <span class="kw">await</span> session<span class="pu">.</span><span class="fn">endSession</span><span class="pu">()</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">💡 Design away transactions first</div>
+      Transactions in MongoDB carry 2–3× the latency of a regular write because of the distributed coordination. Before reaching for a transaction, ask: <em>can I redesign the schema to make this a single atomic document update?</em> The <code>$set</code> + <code>$inc</code> + <code>$push</code> operators on a single document are always atomic without transactions.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 07 MONGOOSE -->
+  <div class="section" id="mongoose">
+    <div class="section-label">07 — ODM Layer</div>
+    <h2>Mongoose & ODM Patterns</h2>
+    <p class="lead">Mongoose adds schema validation, middleware hooks, virtuals, and a rich model API on top of the native driver. Used correctly it makes codebases dramatically more maintainable. Used naïvely it hides performance problems.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Production Mongoose Schema</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> mongoose <span class="kw">from</span> <span class="st">'mongoose'</span>
+<span class="kw">const</span> <span class="pu">{</span> Schema, model <span class="pu">}</span> <span class="op">=</span> mongoose
+
+<span class="kw">const</span> productSchema <span class="op">=</span> <span class="kw">new</span> <span class="fn">Schema</span><span class="pu">({</span>
+  name<span class="pu">:</span>     <span class="pu">{</span> type<span class="pu">:</span> String<span class="pu">,</span>  required<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span> trim<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span> maxlength<span class="pu">:</span> <span class="nm">200</span> <span class="pu">},</span>
+  slug<span class="pu">:</span>     <span class="pu">{</span> type<span class="pu">:</span> String<span class="pu">,</span>  unique<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span> lowercase<span class="pu">:</span> <span class="kw">true</span> <span class="pu">},</span>
+  price<span class="pu">:</span>    <span class="pu">{</span> type<span class="pu">:</span> Number<span class="pu">,</span>  required<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span> min<span class="pu">:</span> <span class="nm">0</span> <span class="pu">},</span>
+  status<span class="pu">:</span>   <span class="pu">{</span> type<span class="pu">:</span> String<span class="pu">,</span>  enum<span class="pu">:</span> <span class="pu">[</span><span class="st">'draft'</span><span class="pu">,</span><span class="st">'active'</span><span class="pu">,</span><span class="st">'archived'</span><span class="pu">],</span> default<span class="pu">:</span> <span class="st">'draft'</span> <span class="pu">},</span>
+  tags<span class="pu">:</span>     <span class="pu">[</span>String<span class="pu">],</span>
+  authorId<span class="pu">:</span> <span class="pu">{</span> type<span class="pu">:</span> Schema<span class="pu">.</span>Types<span class="pu">.</span>ObjectId<span class="pu">,</span> ref<span class="pu">:</span> <span class="st">'User'</span><span class="pu">,</span> required<span class="pu">:</span> <span class="kw">true</span> <span class="pu">},</span>
+  meta<span class="pu">:</span>     <span class="pu">{</span>
+    views<span class="pu">:</span>    <span class="pu">{</span> type<span class="pu">:</span> Number<span class="pu">,</span> default<span class="pu">:</span> <span class="nm">0</span> <span class="pu">},</span>
+    featured<span class="pu">:</span> <span class="pu">{</span> type<span class="pu">:</span> Boolean<span class="pu">,</span> default<span class="pu">:</span> <span class="kw">false</span> <span class="pu">},</span>
+  <span class="pu">}</span>
+<span class="pu">},</span> <span class="pu">{</span>
+  timestamps<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span>        <span class="cm">// auto createdAt + updatedAt</span>
+  toJSON<span class="pu">:</span> <span class="pu">{</span>
+    virtuals<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span>
+    transform<span class="pu">:</span> <span class="pu">(</span>_, ret<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span> <span class="kw">delete</span> ret<span class="pu">.</span>__v<span class="pu">;</span> <span class="kw">return</span> ret <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Virtual — computed field, not stored ──────────</span>
+productSchema<span class="pu">.</span><span class="fn">virtual</span><span class="pu">(</span><span class="st">'url'</span><span class="pu">).</span><span class="fn">get</span><span class="pu">(</span><span class="kw">function</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="st">`/products/${this.slug}`</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Pre-save hook — auto-generate slug ───────────</span>
+productSchema<span class="pu">.</span><span class="fn">pre</span><span class="pu">(</span><span class="st">'save'</span><span class="pu">,</span> <span class="kw">function</span><span class="pu">(</span>next<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span><span class="kw">this</span><span class="pu">.</span><span class="fn">isModified</span><span class="pu">(</span><span class="st">'name'</span><span class="pu">))</span>
+    <span class="kw">this</span><span class="pu">.</span>slug <span class="op">=</span> <span class="kw">this</span><span class="pu">.</span>name<span class="pu">.</span><span class="fn">toLowerCase</span><span class="pu">().</span><span class="fn">replace</span><span class="pu">(</span><span class="rx">/[^a-z0-9]+/g</span><span class="pu">,</span> <span class="st">'-'</span><span class="pu">)</span>
+  <span class="fn">next</span><span class="pu">()</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Post-delete hook — cascade clean-up ──────────</span>
+productSchema<span class="pu">.</span><span class="fn">post</span><span class="pu">(</span><span class="st">'findOneAndDelete'</span><span class="pu">,</span> <span class="kw">async</span> <span class="kw">function</span><span class="pu">(</span>doc<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>doc<span class="pu">)</span> <span class="kw">await</span> Review<span class="pu">.</span><span class="fn">deleteMany</span><span class="pu">({</span> productId<span class="pu">:</span> doc<span class="pu">.</span>_id <span class="pu">})</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Static method — reusable query builder ────────</span>
+productSchema<span class="pu">.</span><span class="fn">statics</span><span class="pu">.</span>findActive <span class="op">=</span> <span class="kw">function</span><span class="pu">(</span>filter <span class="op">=</span> <span class="pu">{})</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span><span class="fn">find</span><span class="pu">({</span> ...filter<span class="pu">,</span> status<span class="pu">:</span> <span class="st">'active'</span> <span class="pu">})</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Avoid N+1: lean() + populate only what you need</span>
+<span class="kw">const</span> products <span class="op">=</span> <span class="kw">await</span> Product
+  <span class="pu">.</span><span class="fn">find</span><span class="pu">({</span> status<span class="pu">:</span> <span class="st">'active'</span> <span class="pu">})</span>
+  <span class="pu">.</span><span class="fn">select</span><span class="pu">(</span><span class="st">'name price slug authorId'</span><span class="pu">)</span>     <span class="cm">// projection</span>
+  <span class="pu">.</span><span class="fn">populate</span><span class="pu">(</span><span class="st">'authorId'</span><span class="pu">,</span> <span class="st">'name avatar'</span><span class="pu">)</span>   <span class="cm">// only 2 fields from user</span>
+  <span class="pu">.</span><span class="fn">lean</span><span class="pu">()</span>                                  <span class="cm">// plain JS objects, 2-3× faster</span>
+  <span class="pu">.</span><span class="fn">limit</span><span class="pu">(</span><span class="nm">20</span><span class="pu">)</span>
+
+<span class="kw">export const</span> Product <span class="op">=</span> model<span class="pu">(</span><span class="st">'Product'</span><span class="pu">,</span> productSchema<span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 08 REDIS -->
+  <div class="section" id="redis">
+    <div class="section-label">08 — In-Memory Power</div>
+    <h2>Redis — Caching & Data Structures</h2>
+    <p class="lead">Redis is not just a cache — it is a multi-model data store with strings, hashes, lists, sorted sets, streams, pub/sub, and Lua scripting. Its O(1) complexity on most operations makes it the first line of defence against slow DB queries.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Redis Data Structures in Practice</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> Redis <span class="pu">}</span> <span class="kw">from</span> <span class="st">'ioredis'</span>
+
+<span class="kw">const</span> redis <span class="op">=</span> <span class="kw">new</span> <span class="fn">Redis</span><span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>REDIS_URL<span class="pu">)</span>
+
+<span class="cm">// ── Caching pattern with stale-while-revalidate ──</span>
+<span class="kw">async function</span> <span class="fn">cachedQuery</span><span class="pu">(</span>key, ttl, fetchFn<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> cached <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>key<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>cached<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">const</span> ttlLeft <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">ttl</span><span class="pu">(</span>key<span class="pu">)</span>
+    <span class="cm">// Revalidate in background when TTL < 20% remaining</span>
+    <span class="kw">if</span> <span class="pu">(</span>ttlLeft <span class="op"><</span> ttl <span class="op">*</span> <span class="nm">0.2</span><span class="pu">)</span>
+      <span class="fn">fetchFn</span><span class="pu">().</span><span class="fn">then</span><span class="pu">(</span>v <span class="op">=></span> redis<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>key<span class="pu">,</span> <span class="bi">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>v<span class="pu">),</span> <span class="st">'EX'</span><span class="pu">,</span> ttl<span class="pu">)).</span><span class="fn">catch</span><span class="pu">(</span>noop<span class="pu">)</span>
+    <span class="kw">return</span> <span class="bi">JSON</span><span class="pu">.</span><span class="fn">parse</span><span class="pu">(</span>cached<span class="pu">)</span>
+  <span class="pu">}</span>
+  <span class="kw">const</span> value <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetchFn</span><span class="pu">()</span>
+  <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>key<span class="pu">,</span> <span class="bi">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>value<span class="pu">),</span> <span class="st">'EX'</span><span class="pu">,</span> ttl<span class="pu">)</span>
+  <span class="kw">return</span> value
+<span class="pu">}</span>
+
+<span class="cm">// ── Hash — session store ──────────────────────────</span>
+<span class="kw">await</span> redis<span class="pu">.</span><span class="fn">hset</span><span class="pu">(</span><span class="st">`session:${sessionId}`</span><span class="pu">,</span> <span class="pu">{</span>
+  userId<span class="pu">:</span>   userId<span class="pu">,</span>
+  role<span class="pu">:</span>     <span class="st">'admin'</span><span class="pu">,</span>
+  ip<span class="pu">:</span>       req<span class="pu">.</span>ip<span class="pu">,</span>
+  loginAt<span class="pu">:</span>  <span class="ty">Date</span><span class="pu">.</span><span class="fn">now</span><span class="pu">(),</span>
+<span class="pu">})</span>
+<span class="kw">await</span> redis<span class="pu">.</span><span class="fn">expire</span><span class="pu">(</span><span class="st">`session:${sessionId}`</span><span class="pu">,</span> <span class="nm">86400</span><span class="pu">)</span>
+<span class="kw">const</span> session <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">hgetall</span><span class="pu">(</span><span class="st">`session:${sessionId}`</span><span class="pu">)</span>
+
+<span class="cm">// ── Sorted set — leaderboard ──────────────────────</span>
+<span class="kw">await</span> redis<span class="pu">.</span><span class="fn">zadd</span><span class="pu">(</span><span class="st">'leaderboard:weekly'</span><span class="pu">,</span> score<span class="pu">,</span> userId<span class="pu">)</span>
+<span class="kw">const</span> top10 <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">zrevrange</span><span class="pu">(</span><span class="st">'leaderboard:weekly'</span><span class="pu">,</span> <span class="nm">0</span><span class="pu">,</span> <span class="nm">9</span><span class="pu">,</span> <span class="st">'WITHSCORES'</span><span class="pu">)</span>
+<span class="kw">const</span> rank   <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">zrevrank</span><span class="pu">(</span><span class="st">'leaderboard:weekly'</span><span class="pu">,</span> userId<span class="pu">)</span>
+
+<span class="cm">// ── Atomic rate limiter with Lua ──────────────────</span>
+<span class="kw">const</span> rateLimitScript <span class="op">=</span> <span class="st">`
+local key   = KEYS[1]
+local limit = tonumber(ARGV[1])
+local ttl   = tonumber(ARGV[2])
+local count = redis.call('INCR', key)
+if count == 1 then redis.call('EXPIRE', key, ttl) end
+return count
+`</span>
+<span class="kw">const</span> count <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">eval</span><span class="pu">(</span>rateLimitScript<span class="pu">,</span> <span class="nm">1</span><span class="pu">,</span> <span class="st">`rl:${ip}`</span><span class="pu">,</span> <span class="nm">100</span><span class="pu">,</span> <span class="nm">60</span><span class="pu">)</span>
+<span class="kw">if</span> <span class="pu">(</span>count <span class="op">></span> <span class="nm">100</span><span class="pu">)</span> <span class="kw">throw</span> <span class="ty">Object</span><span class="pu">.</span><span class="fn">assign</span><span class="pu">(</span><span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">'Rate limited'</span><span class="pu">),</span> <span class="pu">{</span> status<span class="pu">:</span> <span class="nm">429</span> <span class="pu">})</span>
+
+<span class="cm">// ── Pub/Sub — real-time notifications ────────────</span>
+<span class="kw">const</span> publisher  <span class="op">=</span> <span class="kw">new</span> <span class="fn">Redis</span><span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>REDIS_URL<span class="pu">)</span>
+<span class="kw">const</span> subscriber <span class="op">=</span> <span class="kw">new</span> <span class="fn">Redis</span><span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>REDIS_URL<span class="pu">)</span>
+
+<span class="kw">await</span> subscriber<span class="pu">.</span><span class="fn">subscribe</span><span class="pu">(</span><span class="st">'order:created'</span><span class="pu">)</span>
+subscriber<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'message'</span><span class="pu">,</span> <span class="pu">(</span>channel<span class="pu">,</span> message<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">const</span> order <span class="op">=</span> <span class="bi">JSON</span><span class="pu">.</span><span class="fn">parse</span><span class="pu">(</span>message<span class="pu">)</span>
+  <span class="fn">sendNotification</span><span class="pu">(</span>order<span class="pu">.</span>userId<span class="pu">,</span> <span class="st">'Order confirmed!'</span><span class="pu">)</span>
+<span class="pu">})</span>
+<span class="kw">await</span> publisher<span class="pu">.</span><span class="fn">publish</span><span class="pu">(</span><span class="st">'order:created'</span><span class="pu">,</span> <span class="bi">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>order<span class="pu">))</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 09 ELASTICSEARCH -->
+  <div class="section" id="elasticsearch">
+    <div class="section-label">09 — Full-Text Search</div>
+    <h2>Elasticsearch & Full-Text Search</h2>
+    <p class="lead">Elasticsearch delivers the search experience MongoDB's text indexes can't — relevance scoring, autocomplete, fuzzy matching, faceted navigation, and sub-second full-text search across billions of documents.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Elasticsearch Search Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> Client <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@elastic/elasticsearch'</span>
+
+<span class="kw">const</span> es <span class="op">=</span> <span class="kw">new</span> <span class="fn">Client</span><span class="pu">({</span> node<span class="pu">:</span> process<span class="pu">.</span>env<span class="pu">.</span>ELASTICSEARCH_URL <span class="pu">})</span>
+
+<span class="cm">// ── Index mapping — define field types upfront ───</span>
+<span class="kw">await</span> es<span class="pu">.</span>indices<span class="pu">.</span><span class="fn">create</span><span class="pu">({</span>
+  index<span class="pu">:</span> <span class="st">'products'</span><span class="pu">,</span>
+  mappings<span class="pu">:</span> <span class="pu">{</span>
+    properties<span class="pu">:</span> <span class="pu">{</span>
+      name<span class="pu">:</span>        <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'text'</span><span class="pu">,</span>    analyzer<span class="pu">:</span> <span class="st">'english'</span>      <span class="pu">},</span>
+      name_raw<span class="pu">:</span>    <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'keyword'</span>                         <span class="pu">},</span> <span class="cm">// for sorting/exact</span>
+      description<span class="pu">:</span> <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'text'</span><span class="pu">,</span>    analyzer<span class="pu">:</span> <span class="st">'english'</span>      <span class="pu">},</span>
+      price<span class="pu">:</span>       <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'float'</span>                           <span class="pu">},</span>
+      category<span class="pu">:</span>    <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'keyword'</span>                         <span class="pu">},</span> <span class="cm">// facets</span>
+      tags<span class="pu">:</span>        <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'keyword'</span>                         <span class="pu">},</span>
+      location<span class="pu">:</span>    <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'geo_point'</span>                       <span class="pu">},</span>
+      suggest<span class="pu">:</span>     <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'completion'</span>                      <span class="pu">},</span> <span class="cm">// autocomplete</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Full-text search with facets ──────────────────</span>
+<span class="kw">const</span> <span class="pu">{</span> hits, aggregations <span class="pu">}</span> <span class="op">=</span> <span class="kw">await</span> es<span class="pu">.</span><span class="fn">search</span><span class="pu">({</span>
+  index<span class="pu">:</span> <span class="st">'products'</span><span class="pu">,</span>
+  query<span class="pu">:</span> <span class="pu">{</span>
+    bool<span class="pu">:</span> <span class="pu">{</span>
+      must<span class="pu">:</span> <span class="pu">[{</span>
+        multi_match<span class="pu">:</span> <span class="pu">{</span>
+          query<span class="pu">:</span>  userQuery<span class="pu">,</span>
+          fields<span class="pu">:</span> <span class="pu">[</span><span class="st">'name^3'</span><span class="pu">,</span> <span class="st">'description'</span><span class="pu">],</span>   <span class="cm">// boost name 3×</span>
+          fuzziness<span class="pu">:</span> <span class="st">'AUTO'</span><span class="pu">,</span>                     <span class="cm">// handle typos</span>
+        <span class="pu">}</span>
+      <span class="pu">}],</span>
+      filter<span class="pu">:</span> <span class="pu">[</span>
+        <span class="pu">{</span> term<span class="pu">:</span>  <span class="pu">{</span> category<span class="pu">:</span> selectedCategory <span class="pu">}</span> <span class="pu">},</span>
+        <span class="pu">{</span> range<span class="pu">:</span> <span class="pu">{</span> price<span class="pu">:</span> <span class="pu">{</span> gte<span class="pu">:</span> minPrice<span class="pu">,</span> lte<span class="pu">:</span> maxPrice <span class="pu">}</span> <span class="pu">}</span> <span class="pu">}</span>
+      <span class="pu">]</span>
+    <span class="pu">}</span>
+  <span class="pu">},</span>
+  aggs<span class="pu">:</span> <span class="pu">{</span>
+    categories<span class="pu">:</span> <span class="pu">{</span> terms<span class="pu">:</span>     <span class="pu">{</span> field<span class="pu">:</span> <span class="st">'category'</span><span class="pu">,</span> size<span class="pu">:</span> <span class="nm">20</span>      <span class="pu">}</span> <span class="pu">},</span>
+    priceRange<span class="pu">:</span>  <span class="pu">{</span> histogram<span class="pu">:</span> <span class="pu">{</span> field<span class="pu">:</span> <span class="st">'price'</span><span class="pu">,</span>    interval<span class="pu">:</span> <span class="nm">50</span> <span class="pu">}</span> <span class="pu">},</span>
+  <span class="pu">},</span>
+  highlight<span class="pu">:</span> <span class="pu">{</span> fields<span class="pu">:</span> <span class="pu">{</span> name<span class="pu">:</span> <span class="pu">{},</span> description<span class="pu">:</span> <span class="pu">{}</span> <span class="pu">}</span> <span class="pu">},</span>
+  from<span class="pu">:</span> page <span class="op">*</span> pageSize<span class="pu">,</span> size<span class="pu">:</span> pageSize<span class="pu">,</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Autocomplete with completion suggester ────────</span>
+<span class="kw">const</span> suggest <span class="op">=</span> <span class="kw">await</span> es<span class="pu">.</span><span class="fn">search</span><span class="pu">({</span>
+  index<span class="pu">:</span> <span class="st">'products'</span><span class="pu">,</span>
+  suggest<span class="pu">:</span> <span class="pu">{</span>
+    nameSuggest<span class="pu">:</span> <span class="pu">{</span>
+      prefix<span class="pu">:</span>     partialQuery<span class="pu">,</span>
+      completion<span class="pu">:</span> <span class="pu">{</span> field<span class="pu">:</span> <span class="st">'suggest'</span><span class="pu">,</span> size<span class="pu">:</span> <span class="nm">5</span><span class="pu">,</span> fuzzy<span class="pu">:</span> <span class="pu">{</span> fuzziness<span class="pu">:</span> <span class="nm">1</span> <span class="pu">}</span> <span class="pu">}</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">})</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 10 PATTERNS -->
+  <div class="section" id="patterns">
+    <div class="section-label">10 — Advanced Patterns</div>
+    <h2>Advanced Schema Patterns</h2>
+    <p class="lead">The MongoDB documentation identifies 12 common schema design patterns. These five are the ones every production MongoDB engineer needs to know deeply.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — The Bucket, Outlier & Computed Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── 1. BUCKET PATTERN — time-series data ─────────
+// Instead of one document per measurement (millions of docs),
+// bucket by time interval (thousands of docs)</span>
+<span class="pu">{</span>
+  sensor_id<span class="pu">:</span>  <span class="st">"sensor-042"</span><span class="pu">,</span>
+  hour<span class="pu">:</span>       <span class="kw">new</span> <span class="ty">Date</span><span class="pu">(</span><span class="st">"2026-06-07T14:00:00Z"</span><span class="pu">),</span>
+  count<span class="pu">:</span>      <span class="nm">60</span><span class="pu">,</span>            <span class="cm">// readings in this bucket</span>
+  min<span class="pu">:</span>        <span class="nm">18.2</span><span class="pu">,</span>
+  max<span class="pu">:</span>        <span class="nm">23.7</span><span class="pu">,</span>
+  sum<span class="pu">:</span>        <span class="nm">1247.4</span><span class="pu">,</span>        <span class="cm">// pre-aggregated for fast avg</span>
+  readings<span class="pu">:</span>  <span class="pu">[{</span> t<span class="pu">:</span> <span class="nm">0</span><span class="pu">,</span> v<span class="pu">:</span> <span class="nm">21.2</span> <span class="pu">},</span> <span class="pu">{</span> t<span class="pu">:</span> <span class="nm">60</span><span class="pu">,</span> v<span class="pu">:</span> <span class="nm">21.5</span> <span class="pu">}]</span>  <span class="cm">// offset seconds</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── 2. OUTLIER PATTERN — unbounded arrays ────────
+// Most posts have < 1000 likes. A few viral posts have millions.
+// Don't let outliers destroy your schema.</span>
+<span class="pu">{</span>
+  _id<span class="pu">:</span>        <span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">),</span>
+  content<span class="pu">:</span>   <span class="st">"..."</span><span class="pu">,</span>
+  likes<span class="pu">:</span>     <span class="pu">[</span><span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">)</span> <span class="cm">/* ... up to 1000 */</span><span class="pu">],</span>
+  likeCount<span class="pu">:</span> <span class="nm">2_400_000</span><span class="pu">,</span>      <span class="cm">// always accurate counter</span>
+  hasExtras<span class="pu">:</span> <span class="kw">true</span>             <span class="cm">// flag: more likes in overflow collection</span>
+<span class="pu">}</span>
+<span class="cm">// Overflow docs in 'post_likes' collection: { postId, likes: [...] }</span>
+
+<span class="cm">// ── 3. COMPUTED PATTERN — pre-aggregate hot reads ─
+// Recalculate on write; serve pre-computed value on read</span>
+<span class="kw">async function</span> <span class="fn">addReview</span><span class="pu">(</span>productId, rating<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'reviews'</span><span class="pu">).</span><span class="fn">insertOne</span><span class="pu">({</span> productId<span class="pu">,</span> rating <span class="pu">})</span>
+  <span class="cm">// Update pre-computed avg atomically</span>
+  <span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'products'</span><span class="pu">).</span><span class="fn">updateOne</span><span class="pu">(</span>
+    <span class="pu">{</span> _id<span class="pu">:</span> productId <span class="pu">},</span>
+    <span class="pu">{</span>
+      <span class="op">$</span>inc<span class="pu">:</span> <span class="pu">{</span> <span class="st">'rating.count'</span><span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> <span class="st">'rating.sum'</span><span class="pu">:</span> rating <span class="pu">},</span>
+      <span class="op">$</span>set<span class="pu">:</span> <span class="pu">{</span> <span class="st">'rating.avg'</span><span class="pu">:</span>
+        <span class="pu">{</span> <span class="op">$</span>round<span class="pu">:</span> <span class="pu">[{</span> <span class="op">$</span>divide<span class="pu">:</span>
+          <span class="pu">[{</span> <span class="op">$</span>add<span class="pu">:</span> <span class="pu">[</span><span class="st">'$$CURRENT.rating.sum'</span><span class="pu">,</span> rating<span class="pu">]</span> <span class="pu">},</span>
+           <span class="pu">{</span> <span class="op">$</span>add<span class="pu">:</span> <span class="pu">[</span><span class="st">'$$CURRENT.rating.count'</span><span class="pu">,</span> <span class="nm">1</span><span class="pu">]</span> <span class="pu">}</span>
+          <span class="pu">]</span>
+        <span class="pu">},</span> <span class="nm">1</span><span class="pu">]</span>
+      <span class="pu">}</span> <span class="pu">}</span>
+    <span class="pu">}</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── 4. TREE PATTERN — hierarchical data ──────────</span>
+<span class="cm">// Materialized paths: fast subtree queries</span>
+<span class="pu">[</span>
+  <span class="pu">{</span> _id<span class="pu">:</span> <span class="st">"root"</span><span class="pu">,</span>   path<span class="pu">:</span> <span class="st">","</span><span class="pu">,</span>                  name<span class="pu">:</span> <span class="st">"Electronics"</span>      <span class="pu">},</span>
+  <span class="pu">{</span> _id<span class="pu">:</span> <span class="st">"phones"</span><span class="pu">,</span> path<span class="pu">:</span> <span class="st">",root,"</span><span class="pu">,</span>            name<span class="pu">:</span> <span class="st">"Phones"</span>           <span class="pu">},</span>
+  <span class="pu">{</span> _id<span class="pu">:</span> <span class="st">"apple"</span><span class="pu">,</span>  path<span class="pu">:</span> <span class="st">",root,phones,"</span><span class="pu">,</span>     name<span class="pu">:</span> <span class="st">"Apple"</span>            <span class="pu">},</span>
+<span class="pu">]</span>
+<span class="cm">// Get all descendants: { path: /,root,/ } → regex match</span>
+<span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'categories'</span><span class="pu">).</span><span class="fn">find</span><span class="pu">({</span>
+  path<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>regex<span class="pu">:</span> <span class="st">`,root,`</span> <span class="pu">}</span>
+<span class="pu">}).</span><span class="fn">toArray</span><span class="pu">()</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 11 PERFORMANCE -->
+  <div class="section" id="performance">
+    <div class="section-label">11 — Tuning</div>
+    <h2>Performance Tuning</h2>
+    <p class="lead">MongoDB performance problems almost always fall into four categories: missing indexes, overfetching (retrieving more data than needed), write contention on hot documents, and unbounded collection scans in aggregations.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Performance Diagnostics & Fixes</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Find slow queries in the profiler ────────────</span>
+<span class="kw">await</span> db<span class="pu">.</span><span class="fn">setProfilingLevel</span><span class="pu">(</span><span class="nm">1</span><span class="pu">,</span> <span class="pu">{</span> slowms<span class="pu">:</span> <span class="nm">100</span> <span class="pu">})</span>  <span class="cm">// log queries > 100ms</span>
+<span class="kw">const</span> slowQueries <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'system.profile'</span><span class="pu">).</span><span class="fn">find</span><span class="pu">({</span>
+  millis<span class="pu">:</span>     <span class="pu">{</span> <span class="op">$</span>gt<span class="pu">:</span> <span class="nm">100</span> <span class="pu">},</span>
+  <span class="st">'planSummary'</span><span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>regex<span class="pu">:</span> <span class="st">'COLLSCAN'</span> <span class="pu">},</span>   <span class="cm">// full scans</span>
+<span class="pu">}).</span><span class="fn">sort</span><span class="pu">({</span> millis<span class="pu">:</span> <span class="op">-</span><span class="nm">1</span> <span class="pu">}).</span><span class="fn">limit</span><span class="pu">(</span><span class="nm">10</span><span class="pu">).</span><span class="fn">toArray</span><span class="pu">()</span>
+
+<span class="cm">// ── Check index usage ─────────────────────────────</span>
+<span class="kw">const</span> stats <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'products'</span><span class="pu">).</span><span class="fn">aggregate</span><span class="pu">([</span>
+  <span class="pu">{</span> <span class="op">$</span>indexStats<span class="pu">:</span> <span class="pu">{}</span> <span class="pu">}</span>
+<span class="pu">]).</span><span class="fn">toArray</span><span class="pu">()</span>
+<span class="cm">// Indexes with accesses.ops === 0 are unused — drop them!</span>
+
+<span class="cm">// ── Bulk writes — batch inserts/updates ──────────</span>
+<span class="kw">const</span> bulk <span class="op">=</span> products<span class="pu">.</span><span class="fn">initializeUnorderedBulkOp</span><span class="pu">()</span>
+<span class="kw">for</span> <span class="pu">(</span><span class="kw">const</span> p <span class="kw">of</span> productUpdates<span class="pu">)</span> <span class="pu">{</span>
+  bulk<span class="pu">.</span><span class="fn">find</span><span class="pu">({</span> sku<span class="pu">:</span> p<span class="pu">.</span>sku <span class="pu">}).</span><span class="fn">updateOne</span><span class="pu">({</span>
+    <span class="op">$</span>set<span class="pu">:</span> <span class="pu">{</span> price<span class="pu">:</span> p<span class="pu">.</span>price<span class="pu">,</span> stock<span class="pu">:</span> p<span class="pu">.</span>stock <span class="pu">}</span>
+  <span class="pu">})</span>
+<span class="pu">}</span>
+<span class="kw">await</span> bulk<span class="pu">.</span><span class="fn">execute</span><span class="pu">()</span>  <span class="cm">// single round-trip for all updates</span>
+
+<span class="cm">// ── Connection pooling ────────────────────────────</span>
+<span class="kw">const</span> client <span class="op">=</span> <span class="kw">new</span> <span class="fn">MongoClient</span><span class="pu">(</span>uri<span class="pu">,</span> <span class="pu">{</span>
+  maxPoolSize<span class="pu">:</span>      <span class="nm">50</span><span class="pu">,</span>      <span class="cm">// default: 100</span>
+  minPoolSize<span class="pu">:</span>      <span class="nm">5</span><span class="pu">,</span>       <span class="cm">// keep alive connections</span>
+  maxIdleTimeMS<span class="pu">:</span>    <span class="nm">30_000</span><span class="pu">,</span>
+  serverSelectionTimeoutMS<span class="pu">:</span> <span class="nm">3_000</span><span class="pu">,</span>
+  socketTimeoutMS<span class="pu">:</span>  <span class="nm">30_000</span><span class="pu">,</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Projection — ALWAYS specify in production ─────</span>
+<span class="cm">// Fetching 50 fields when you need 5 wastes bandwidth + memory</span>
+<span class="kw">await</span> products<span class="pu">.</span><span class="fn">find</span><span class="pu">({},</span> <span class="pu">{</span>
+  projection<span class="pu">:</span> <span class="pu">{</span> name<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> price<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> slug<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> _id<span class="pu">:</span> <span class="nm">1</span> <span class="pu">}</span>
+<span class="pu">}).</span><span class="fn">toArray</span><span class="pu">()</span></code></pre>
+    </div>
+
+    <table>
+      <tr><th>Symptom</th><th>Root Cause</th><th>Fix</th></tr>
+      <tr><td>Query &gt;100ms on small collection</td><td>COLLSCAN — missing index</td><td>Add compound index matching ESR rule</td></tr>
+      <tr><td>Aggregation slow on large collection</td><td><code>$match</code> not first, or after <code>$project</code></td><td>Always <code>$match</code> early to hit indexes</td></tr>
+      <tr><td>High write latency on one document</td><td>Hot document contention</td><td>Bucket pattern or atomic increment only</td></tr>
+      <tr><td>Memory error in aggregation</td><td>Exceeds 100MB allowance</td><td>Add <code>{ allowDiskUse: true }</code> + check stages</td></tr>
+      <tr><td>Slow <code>populate()</code> in Mongoose</td><td>N+1 round-trips</td><td>Use <code>$lookup</code> aggregation or batch refs</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════ 12 PRODUCTION -->
+  <div class="section" id="production">
+    <div class="section-label">12 — Operations</div>
+    <h2>Production Operations</h2>
+    <p class="lead">Running MongoDB in production means replica sets for availability, read preferences for scale, change streams for real-time events, and a disciplined backup and monitoring strategy.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Change Streams & Read Preferences</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Change streams — real-time CDC ────────────────
+// Listen to any insert/update/delete on a collection</span>
+<span class="kw">const</span> changeStream <span class="op">=</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'orders'</span><span class="pu">).</span><span class="fn">watch</span><span class="pu">([</span>
+  <span class="pu">{</span> <span class="op">$</span>match<span class="pu">:</span> <span class="pu">{</span> <span class="st">'operationType'</span><span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>in<span class="pu">:</span> <span class="pu">[</span><span class="st">'insert'</span><span class="pu">,</span> <span class="st">'update'</span><span class="pu">]</span> <span class="pu">}</span> <span class="pu">}</span> <span class="pu">},</span>
+  <span class="pu">{</span> <span class="op">$</span>match<span class="pu">:</span> <span class="pu">{</span> <span class="st">'fullDocument.status'</span><span class="pu">:</span> <span class="st">'paid'</span> <span class="pu">}</span> <span class="pu">}</span>
+<span class="pu">],</span> <span class="pu">{</span> fullDocument<span class="pu">:</span> <span class="st">'updateLookup'</span> <span class="pu">})</span>
+
+<span class="kw">for await</span> <span class="pu">(</span><span class="kw">const</span> change <span class="kw">of</span> changeStream<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">const</span> order <span class="op">=</span> change<span class="pu">.</span>fullDocument
+  <span class="kw">await</span> <span class="fn">fulfillOrder</span><span class="pu">(</span>order<span class="pu">)</span>
+  <span class="cm">// Store resume token — restart from here if process crashes</span>
+  <span class="kw">await</span> <span class="fn">saveResumeToken</span><span class="pu">(</span>change<span class="pu">.</span>_id<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// Resume after crash — no missed events</span>
+<span class="kw">const</span> resumeToken <span class="op">=</span> <span class="kw">await</span> <span class="fn">loadResumeToken</span><span class="pu">()</span>
+<span class="kw">const</span> stream <span class="op">=</span> collection<span class="pu">.</span><span class="fn">watch</span><span class="pu">([],</span> <span class="pu">{</span> resumeAfter<span class="pu">:</span> resumeToken <span class="pu">})</span>
+
+<span class="cm">// ── Read preferences — scale reads across replica ─</span>
+<span class="cm">// 'primary'          — always latest data (default)
+// 'primaryPreferred' — primary if available, else secondary
+// 'secondary'        — offload reads to secondaries
+// 'nearest'          — lowest latency node</span>
+
+<span class="kw">const</span> analyticsDb <span class="op">=</span> client<span class="pu">.</span><span class="fn">db</span><span class="pu">(</span><span class="st">'shop'</span><span class="pu">,</span> <span class="pu">{</span>
+  readPreference<span class="pu">:</span> <span class="st">'secondary'</span>  <span class="cm">// heavy aggregations — don't hit primary</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── Write concern — durability tuning ────────────</span>
+<span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'payments'</span><span class="pu">).</span><span class="fn">insertOne</span><span class="pu">(</span>doc<span class="pu">,</span> <span class="pu">{</span>
+  writeConcern<span class="pu">:</span> <span class="pu">{</span>
+    w<span class="pu">:</span>      <span class="st">'majority'</span><span class="pu">,</span>  <span class="cm">// durable on majority of replica nodes</span>
+    j<span class="pu">:</span>      <span class="kw">true</span><span class="pu">,</span>         <span class="cm">// wait for journal flush</span>
+    wtimeout<span class="pu">:</span> <span class="nm">5000</span>        <span class="cm">// fail if majority not acknowledged in 5s</span>
+  <span class="pu">}</span>
+<span class="pu">})</span></code></pre>
+    </div>
+
+    <div class="danger">
+      <div class="danger-label">🚨 Never run a standalone MongoDB in production</div>
+      A single-node MongoDB has no replication, no automatic failover, and no oplog. A replica set with at least three nodes (primary + 2 secondaries, or primary + secondary + arbiter) is the minimum for any production workload. Use MongoDB Atlas or a managed service to skip the ops burden.
+    </div>
+
+    <h3>Production Readiness Checklist</h3>
+    <ul class="phase-list">
+      <li><div class="phase-num">✅</div><div><strong>Replica set deployed</strong> — minimum 3 nodes. Write concern <code>majority</code> on critical writes. Automatic failover tested.</div></li>
+      <li><div class="phase-num">✅</div><div><strong>All queries use indexes</strong> — EXPLAIN run on every query in hot paths. No COLLSCAN in production profiles. Unused indexes identified and dropped.</div></li>
+      <li><div class="phase-num">✅</div><div><strong>Connection pooling configured</strong> — <code>maxPoolSize</code> set to <code>floor(DB_max_connections / app_instances)</code>. Idle timeout and server selection timeout set.</div></li>
+      <li><div class="phase-num">✅</div><div><strong>Schema validation enabled</strong> — <code>$jsonSchema</code> validator on all collections. Prevents garbage data at the DB layer, not just application layer.</div></li>
+      <li><div class="phase-num">✅</div><div><strong>Backups automated</strong> — daily <code>mongodump</code> or continuous Atlas backups. Point-in-time restore tested. Backup encryption enabled.</div></li>
+      <li><div class="phase-num">✅</div><div><strong>Slow query profiler active</strong> — <code>slowms: 100</code> in production. Alerts on new COLLSCAN patterns. Weekly index review scheduled.</div></li>
+      <li><div class="phase-num">✅</div><div><strong>Authentication & TLS enforced</strong> — SCRAM-SHA-256 auth. TLS on all connections. IP allowlist on Atlas. Principle of least privilege per application user.</div></li>
+      <li><div class="phase-num">✅</div><div><strong>TTL indexes on ephemeral data</strong> — sessions, tokens, rate-limit keys, soft-delete records all expire automatically.</div></li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  <strong>MongoDB & NoSQL Databases — Complete Guide</strong><br>
+  Part of the <a href="index.html">DevDive</a> series — Deep dives for serious developers.<br><br>
+  <span style="color:rgba(255,255,255,.3)">© 2026 DevDive · MongoDB 7 · Redis 7 · Elasticsearch 8 · June 2026</span>
+</footer>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre')
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    const orig = btn.textContent
+    btn.textContent = 'Copied!'
+    setTimeout(() => btn.textContent = orig, 2000)
+  })
+}
+</script>
+</body>
+</html>
