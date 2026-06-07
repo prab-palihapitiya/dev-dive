@@ -50,8 +50,12 @@
     display: flex; align-items: center; justify-content: space-between;
     height: 56px;
   }
-  .nav-logo { font-weight: 600; font-size: 15px; color: var(--text-primary); letter-spacing: -0.3px; }
-  .nav-logo span { color: var(--accent); }
+  .nav-left { display: flex; align-items: center; gap: 12px; }
+  .nav-back { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.15s; display: flex; align-items: center; gap: 5px; }
+  .nav-back:hover { color: var(--accent); }
+  .nav-pipe { color: var(--border); font-size: 18px; }
+  .nav-brand { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+  .nav-badge { font-size: 11px; font-weight: 600; padding: 2px 10px; background: var(--accent-light); color: var(--accent); border-radius: 100px; letter-spacing: 0.3px; }
   .nav-links { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
   .nav-links::-webkit-scrollbar { display: none; }
   .nav-links a {
@@ -60,7 +64,7 @@
     white-space: nowrap;
   }
   .nav-links a:hover { background: var(--tag-bg); color: var(--text-primary); }
-  .nav-read-time { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+  .nav-rt { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
 
   .hero {
     max-width: 780px; margin: 0 auto;
@@ -292,7 +296,12 @@
 <body>
 
 <nav>
-  <div class="nav-logo">Cyber<span>Security</span> Guide</div>
+  <div class="nav-left">
+    <a class="nav-back" href="index.html">← DevDive</a>
+    <span class="nav-pipe">|</span>
+    <span class="nav-brand">Cyber Security</span>
+    <span class="nav-badge">Complete Guide</span>
+  </div>
   <div class="nav-links">
     <a href="#authn">Auth</a>
     <a href="#owasp">OWASP</a>
@@ -307,7 +316,7 @@
     <a href="#crypto">Crypto</a>
     <a href="#supply">Supply Chain</a>
   </div>
-  <div class="nav-read-time">~40 min read</div>
+  <span class="nav-rt">~40 min read</span>
 </nav>
 
 <div class="hero">

@@ -1,341 +1,771 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Node.js: The Complete Developer's Guide</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #f7faf8;
-    --surface: #ffffff;
-    --text-primary: #1a1a1a;
-    --text-secondary: #6b6b6b;
-    --text-muted: #9a9a9a;
-    --accent: #16a34a;
-    --accent-light: #f0fdf4;
-    --accent-subtle: #dcfce7;
-    --border: #e0e8e2;
-    --code-bg: #0d1117;
-    --code-text: #e6edf3;
-    --tag-bg: #f0f4f1;
-    --tag-text: #555;
-    --tip-bg: #f0fdf4;
-    --tip-border: #16a34a;
-    --warn-bg: #fff7ed;
-    --warn-border: #ea580c;
-    --info-bg: #eff6ff;
-    --info-border: #2563eb;
-    --keyword: #ff7b72;
-    --string: #a5d6ff;
-    --number: #f0883e;
-    --type: #79c0ff;
-    --comment: #8b949e;
-    --func: #d2a8ff;
-    --operator: #c9d1d9;
-    --builtin: #ffa657;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Node.js: The Complete Developer's Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f7faf8;
+        --surface: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b6b6b;
+        --text-muted: #9a9a9a;
+        --accent: #16a34a;
+        --accent-light: #f0fdf4;
+        --accent-subtle: #dcfce7;
+        --border: #e0e8e2;
+        --code-bg: #0d1117;
+        --code-text: #e6edf3;
+        --tag-bg: #f0f4f1;
+        --tag-text: #555;
+        --tip-bg: #f0fdf4;
+        --tip-border: #16a34a;
+        --warn-bg: #fff7ed;
+        --warn-border: #ea580c;
+        --info-bg: #eff6ff;
+        --info-border: #2563eb;
+        --keyword: #ff7b72;
+        --string: #a5d6ff;
+        --number: #f0883e;
+        --type: #79c0ff;
+        --comment: #8b949e;
+        --func: #d2a8ff;
+        --operator: #c9d1d9;
+        --builtin: #ffa657;
+      }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-  body {
-    font-family: 'Outfit', sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
-    font-size: 17px;
-    line-height: 1.75;
-  }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.75;
+      }
 
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(247,250,248,0.93);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 56px;
-  }
-  .nav-logo { font-weight: 600; font-size: 15px; color: var(--text-primary); letter-spacing: -0.3px; }
-  .nav-logo span { color: var(--accent); }
-  .nav-links { display: flex; gap: 0; }
-  .nav-links a {
-    font-size: 13px; color: var(--text-secondary); text-decoration: none;
-    padding: 6px 10px; border-radius: 6px; transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .nav-links a:hover { background: var(--tag-bg); color: var(--text-primary); }
-  .nav-read-time { font-size: 13px; color: var(--text-muted); }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(247, 250, 248, 0.93);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover {
+        color: var(--accent);
+      }
+      .nav-pipe {
+        color: var(--border);
+        font-size: 18px;
+      }
+      .nav-brand {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: var(--accent-light);
+        color: var(--accent);
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 0;
+      }
+      .nav-links a {
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--tag-bg);
+        color: var(--text-primary);
+      }
+      .nav-rt {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
 
-  .hero {
-    max-width: 780px; margin: 0 auto;
-    padding: 64px 2rem 48px;
-  }
-  .hero-tag {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--accent-subtle); color: var(--accent);
-    font-size: 12px; font-weight: 500; padding: 4px 12px;
-    border-radius: 100px; margin-bottom: 24px; letter-spacing: 0.3px;
-  }
-  .hero h1 {
-    font-family: 'Lora', serif;
-    font-size: clamp(32px, 5vw, 50px);
-    font-weight: 600; line-height: 1.15;
-    letter-spacing: -0.5px; color: var(--text-primary);
-    margin-bottom: 20px;
-  }
-  .hero-sub {
-    font-size: 19px; color: var(--text-secondary);
-    font-weight: 300; line-height: 1.6; margin-bottom: 32px;
-  }
-  .hero-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .avatar {
-    width: 38px; height: 38px; border-radius: 50%;
-    background: linear-gradient(135deg, #16a34a, #14532d);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; color: white;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .meta-text { font-size: 14px; color: var(--text-secondary); }
-  .meta-text strong { color: var(--text-primary); }
-  .hero-divider { border: none; border-top: 1px solid var(--border); margin-top: 32px; }
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 2rem 48px;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        letter-spacing: 0.3px;
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(32px, 5vw, 50px);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #16a34a, #14532d);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: white;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .meta-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .meta-text strong {
+        color: var(--text-primary);
+      }
+      .hero-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin-top: 32px;
+      }
 
-  .toc-wrapper { max-width: 780px; margin: 0 auto; padding: 0 2rem 8px; }
-  .toc {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 24px 28px; margin-bottom: 40px;
-  }
-  .toc h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500; }
-  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
-  .toc a {
-    font-size: 14px; color: var(--text-secondary); text-decoration: none;
-    display: flex; align-items: center; gap: 8px; padding: 4px 0;
-    transition: color 0.15s;
-  }
-  .toc a:hover { color: var(--accent); }
-  .toc-num { font-size: 12px; color: var(--text-muted); font-weight: 500; min-width: 20px; }
+      .toc-wrapper {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 8px;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 40px;
+      }
+      .toc h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 24px;
+      }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+        transition: color 0.15s;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc-num {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+        min-width: 20px;
+      }
 
-  .content { max-width: 780px; margin: 0 auto; padding: 0 2rem 80px; }
+      .content {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 80px;
+      }
 
-  .section { margin-bottom: 72px; scroll-margin-top: 72px; }
-  .section-label {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--accent); font-weight: 600; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--accent-subtle); }
-  h2 {
-    font-family: 'Lora', serif;
-    font-size: clamp(22px, 3vw, 30px); font-weight: 600;
-    letter-spacing: -0.3px; margin-bottom: 16px; color: var(--text-primary);
-  }
-  h3 { font-size: 19px; font-weight: 600; margin: 32px 0 12px; color: var(--text-primary); }
-  p { margin-bottom: 18px; color: #2d2d2d; }
-  .lead { font-size: 19px; color: var(--text-secondary); font-weight: 300; margin-bottom: 24px; }
+      .section {
+        margin-bottom: 72px;
+        scroll-margin-top: 72px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--accent-subtle);
+      }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+      h3 {
+        font-size: 19px;
+        font-weight: 600;
+        margin: 32px 0 12px;
+        color: var(--text-primary);
+      }
+      p {
+        margin-bottom: 18px;
+        color: #2d2d2d;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        margin-bottom: 24px;
+      }
 
-  .code-block {
-    background: var(--code-bg); border-radius: 10px;
-    margin: 24px 0; overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.05);
-  }
-  .code-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 16px;
-    background: rgba(255,255,255,0.03);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-  }
-  .code-lang { font-size: 12px; color: #6e7681; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
-  .copy-btn {
-    font-size: 12px; color: #484f58; background: none; border: none;
-    cursor: pointer; padding: 2px 8px; border-radius: 4px;
-    font-family: 'Outfit', sans-serif; transition: all 0.15s;
-  }
-  .copy-btn:hover { background: rgba(255,255,255,0.07); color: #8b949e; }
-  pre {
-    padding: 20px; overflow-x: auto;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13.5px; line-height: 1.7; color: var(--code-text);
-  }
-  pre code { background: none; padding: 0; font-size: inherit; }
-  code {
-    font-family: 'JetBrains Mono', monospace; font-size: 13.5px;
-    background: #e8f5ec; color: #166534;
-    padding: 2px 6px; border-radius: 4px;
-  }
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 10px;
+        margin: 24px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-lang {
+        font-size: 12px;
+        color: #6e7681;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .copy-btn {
+        font-size: 12px;
+        color: #484f58;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #8b949e;
+      }
+      pre {
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--code-text);
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        background: #e8f5ec;
+        color: #166534;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
 
-  /* Syntax highlighting */
-  .kw  { color: #ff7b72; }
-  .ty  { color: #79c0ff; }
-  .st  { color: #a5d6ff; }
-  .nm  { color: #f0883e; }
-  .cm  { color: #8b949e; font-style: italic; }
-  .fn  { color: #d2a8ff; }
-  .op  { color: #c9d1d9; }
-  .pu  { color: #e6edf3; }
-  .bi  { color: #ffa657; }
-  .rx  { color: #7ee787; }
+      /* Syntax highlighting */
+      .kw {
+        color: #ff7b72;
+      }
+      .ty {
+        color: #79c0ff;
+      }
+      .st {
+        color: #a5d6ff;
+      }
+      .nm {
+        color: #f0883e;
+      }
+      .cm {
+        color: #8b949e;
+        font-style: italic;
+      }
+      .fn {
+        color: #d2a8ff;
+      }
+      .op {
+        color: #c9d1d9;
+      }
+      .pu {
+        color: #e6edf3;
+      }
+      .bi {
+        color: #ffa657;
+      }
+      .rx {
+        color: #7ee787;
+      }
 
-  .tip { background: var(--tip-bg); border-left: 3px solid var(--tip-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
-  .tip-label { font-size: 12px; font-weight: 600; color: #16a34a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .warn { background: var(--warn-bg); border-left: 3px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
-  .warn-label { font-size: 12px; font-weight: 600; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .info { background: var(--info-bg); border-left: 3px solid var(--info-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
-  .info-label { font-size: 12px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+      .tip {
+        background: var(--tip-bg);
+        border-left: 3px solid var(--tip-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .tip-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #16a34a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .warn {
+        background: var(--warn-bg);
+        border-left: 3px solid var(--warn-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .warn-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #ea580c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .info {
+        background: var(--info-bg);
+        border-left: 3px solid var(--info-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2563eb;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
 
-  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
-  .compare-card { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-  .compare-header { padding: 10px 16px; font-size: 13px; font-weight: 600; }
-  .compare-header.bad  { background: #fef2f2; color: #dc2626; }
-  .compare-header.good { background: #f0fdf4; color: #16a34a; }
-  .compare-card .code-block { border-radius: 0; margin: 0; border: none; }
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .compare-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .compare-header {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .compare-header.bad {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+      .compare-header.good {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .compare-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+      }
 
-  table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
-  th { background: var(--tag-bg); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
-  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg); }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      th {
+        background: var(--tag-bg);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg);
+      }
 
-  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; letter-spacing: 0.3px; vertical-align: middle; }
-  .badge-green  { background: #dcfce7; color: #15803d; }
-  .badge-amber  { background: #fef3c7; color: #b45309; }
-  .badge-blue   { background: #dbeafe; color: #1d4ed8; }
-  .badge-red    { background: #fee2e2; color: #b91c1c; }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+        vertical-align: middle;
+      }
+      .badge-green {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .badge-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-red {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
 
-  .pullquote {
-    font-family: 'Lora', serif; font-style: italic;
-    font-size: 22px; line-height: 1.5; color: var(--text-secondary);
-    border-left: 4px solid var(--accent);
-    padding: 12px 24px; margin: 36px 0;
-  }
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 12px 24px;
+        margin: 36px 0;
+      }
 
-  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
-  .concept-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 18px 20px;
-  }
-  .concept-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-  .concept-card p  { font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
-  .concept-icon { font-size: 22px; margin-bottom: 10px; }
+      .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+      }
+      .concept-card h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .concept-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .concept-icon {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
 
-  .phase-list { list-style: none; margin: 16px 0; }
-  .phase-list li {
-    display: flex; gap: 14px; align-items: flex-start;
-    padding: 12px 0; border-bottom: 1px solid var(--border);
-    font-size: 15px;
-  }
-  .phase-list li:last-child { border-bottom: none; }
-  .phase-num {
-    min-width: 28px; height: 28px; border-radius: 50%;
-    background: var(--accent-subtle); color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
-  }
+      .phase-list {
+        list-style: none;
+        margin: 16px 0;
+      }
+      .phase-list li {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+      }
+      .phase-list li:last-child {
+        border-bottom: none;
+      }
+      .phase-num {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
 
-  .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 56px 0;
+      }
 
-  footer {
-    background: #0f1a12; color: rgba(255,255,255,0.65);
-    text-align: center; padding: 40px 2rem; font-size: 14px;
-  }
-  footer strong { color: white; }
-  footer a { color: #4ade80; text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
+      footer {
+        background: #0f1a12;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: center;
+        padding: 40px 2rem;
+        font-size: 14px;
+      }
+      footer strong {
+        color: white;
+      }
+      footer a {
+        color: #4ade80;
+        text-decoration: none;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
 
-  @media (max-width: 640px) {
-    .toc-grid, .compare-grid { grid-template-columns: 1fr; }
-    .nav-links { display: none; }
-  }
-</style>
-</head>
-<body>
+      @media (max-width: 640px) {
+        .toc-grid,
+        .compare-grid {
+          grid-template-columns: 1fr;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">← DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">Node.js</span>
+        <span class="nav-badge">Complete Guide</span>
+      </div>
+      <div class="nav-links">
+        <a href="#architecture">Architecture</a>
+        <a href="#modules">Modules</a>
+        <a href="#streams">Streams</a>
+        <a href="#http">HTTP</a>
+        <a href="#async">Async</a>
+        <a href="#security">Security</a>
+        <a href="#production">Production</a>
+      </div>
+      <span class="nav-rt">~35 min read</span>
+    </nav>
 
-<nav>
-  <div class="nav-logo">Node<span>.js</span> Complete Guide</div>
-  <div class="nav-links">
-    <a href="#architecture">Architecture</a>
-    <a href="#modules">Modules</a>
-    <a href="#streams">Streams</a>
-    <a href="#http">HTTP</a>
-    <a href="#async">Async</a>
-    <a href="#security">Security</a>
-    <a href="#production">Production</a>
-  </div>
-  <div class="nav-read-time">~35 min read</div>
-</nav>
-
-<div class="hero">
-  <div class="hero-tag">&#9679; Complete Guide</div>
-  <h1>Node.js: The Complete Developer's Guide</h1>
-  <p class="hero-sub">Architecture, core modules, async patterns, streams, HTTP servers, databases, security, testing, clustering, and production deployment — everything you need to build and ship professional Node.js applications.</p>
-  <div class="hero-meta">
-    <div class="avatar">N</div>
-    <div class="meta-text">
-      <strong>Node.js Deep Dive</strong><br>
-      Covering Node.js 22 LTS and modern ecosystem — June 2026
+    <div class="hero">
+      <div class="hero-tag">&#9679; Complete Guide</div>
+      <h1>Node.js: The Complete Developer's Guide</h1>
+      <p class="hero-sub">
+        Architecture, core modules, async patterns, streams, HTTP servers,
+        databases, security, testing, clustering, and production deployment —
+        everything you need to build and ship professional Node.js applications.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">N</div>
+        <div class="meta-text">
+          <strong>Node.js Deep Dive</strong><br />
+          Covering Node.js 22 LTS and modern ecosystem — June 2026
+        </div>
+      </div>
+      <hr class="hero-divider" />
     </div>
-  </div>
-  <hr class="hero-divider">
-</div>
 
-<div class="toc-wrapper">
-  <div class="toc">
-    <h3>Table of Contents</h3>
-    <div class="toc-grid">
-      <a href="#architecture"><span class="toc-num">01</span> Architecture & the Event Loop</a>
-      <a href="#databases"><span class="toc-num">08</span> Databases & ORMs</a>
-      <a href="#modules"><span class="toc-num">02</span> Module System: CJS vs ESM</a>
-      <a href="#security"><span class="toc-num">09</span> Security Hardening</a>
-      <a href="#async"><span class="toc-num">03</span> Async Patterns & Error Handling</a>
-      <a href="#testing"><span class="toc-num">10</span> Testing Strategies</a>
-      <a href="#streams"><span class="toc-num">04</span> Streams & Buffers</a>
-      <a href="#clustering"><span class="toc-num">11</span> Clustering & Worker Threads</a>
-      <a href="#http"><span class="toc-num">05</span> HTTP Servers & Express</a>
-      <a href="#performance"><span class="toc-num">12</span> Performance & Profiling</a>
-      <a href="#core"><span class="toc-num">06</span> Core Modules Deep Dive</a>
-      <a href="#docker"><span class="toc-num">13</span> Docker & Deployment</a>
-      <a href="#patterns"><span class="toc-num">07</span> Design Patterns in Node.js</a>
-      <a href="#observability"><span class="toc-num">14</span> Observability & Logging</a>
-    </div>
-  </div>
-</div>
-
-<div class="content">
-
-  <!-- ═══════════════════════ 01 ARCHITECTURE -->
-  <div class="section" id="architecture">
-    <div class="section-label">01 — The Foundation</div>
-    <h2>Architecture & the Event Loop</h2>
-    <p class="lead">Node.js is a single-threaded, non-blocking runtime built on V8 and libuv. Understanding its event loop is non-negotiable for writing performant server-side code.</p>
-
-    <p>Unlike threaded servers (Apache, Java), Node.js uses a single thread with an asynchronous I/O model. When I/O happens (file reads, network calls, DB queries), Node delegates to libuv's thread pool and moves on — the callback fires when the operation completes. This is the secret to handling tens of thousands of concurrent connections on commodity hardware.</p>
-
-    <div class="concept-grid">
-      <div class="concept-card">
-        <div class="concept-icon">🔄</div>
-        <h4>Event Loop</h4>
-        <p>Single thread that continuously checks queues of callbacks to execute. Six distinct phases, each with its own FIFO queue.</p>
-      </div>
-      <div class="concept-card">
-        <div class="concept-icon">⚙️</div>
-        <h4>libuv Thread Pool</h4>
-        <p>4 threads by default (configurable with <code>UV_THREADPOOL_SIZE</code>) for CPU-bound I/O: file system, DNS, crypto.</p>
-      </div>
-      <div class="concept-card">
-        <div class="concept-icon">🔢</div>
-        <h4>V8 Engine</h4>
-        <p>Google's JavaScript engine. Compiles JS to machine code via JIT. Manages the heap, garbage collector, and JS execution.</p>
-      </div>
-      <div class="concept-card">
-        <div class="concept-icon">📡</div>
-        <h4>Non-blocking I/O</h4>
-        <p>Network and I/O operations are handled by the OS kernel directly, signaling Node via epoll/kqueue when data is ready.</p>
+    <div class="toc-wrapper">
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <div class="toc-grid">
+          <a href="#architecture"
+            ><span class="toc-num">01</span> Architecture & the Event Loop</a
+          >
+          <a href="#databases"
+            ><span class="toc-num">08</span> Databases & ORMs</a
+          >
+          <a href="#modules"
+            ><span class="toc-num">02</span> Module System: CJS vs ESM</a
+          >
+          <a href="#security"
+            ><span class="toc-num">09</span> Security Hardening</a
+          >
+          <a href="#async"
+            ><span class="toc-num">03</span> Async Patterns & Error Handling</a
+          >
+          <a href="#testing"
+            ><span class="toc-num">10</span> Testing Strategies</a
+          >
+          <a href="#streams"
+            ><span class="toc-num">04</span> Streams & Buffers</a
+          >
+          <a href="#clustering"
+            ><span class="toc-num">11</span> Clustering & Worker Threads</a
+          >
+          <a href="#http"
+            ><span class="toc-num">05</span> HTTP Servers & Express</a
+          >
+          <a href="#performance"
+            ><span class="toc-num">12</span> Performance & Profiling</a
+          >
+          <a href="#core"
+            ><span class="toc-num">06</span> Core Modules Deep Dive</a
+          >
+          <a href="#docker"
+            ><span class="toc-num">13</span> Docker & Deployment</a
+          >
+          <a href="#patterns"
+            ><span class="toc-num">07</span> Design Patterns in Node.js</a
+          >
+          <a href="#observability"
+            ><span class="toc-num">14</span> Observability & Logging</a
+          >
+        </div>
       </div>
     </div>
 
-    <h3>The Six Event Loop Phases</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Event Loop Phase Order</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// Event loop phases (simplified):
+    <div class="content">
+      <!-- ═══════════════════════ 01 ARCHITECTURE -->
+      <div class="section" id="architecture">
+        <div class="section-label">01 — The Foundation</div>
+        <h2>Architecture & the Event Loop</h2>
+        <p class="lead">
+          Node.js is a single-threaded, non-blocking runtime built on V8 and
+          libuv. Understanding its event loop is non-negotiable for writing
+          performant server-side code.
+        </p>
+
+        <p>
+          Unlike threaded servers (Apache, Java), Node.js uses a single thread
+          with an asynchronous I/O model. When I/O happens (file reads, network
+          calls, DB queries), Node delegates to libuv's thread pool and moves on
+          — the callback fires when the operation completes. This is the secret
+          to handling tens of thousands of concurrent connections on commodity
+          hardware.
+        </p>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🔄</div>
+            <h4>Event Loop</h4>
+            <p>
+              Single thread that continuously checks queues of callbacks to
+              execute. Six distinct phases, each with its own FIFO queue.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚙️</div>
+            <h4>libuv Thread Pool</h4>
+            <p>
+              4 threads by default (configurable with
+              <code>UV_THREADPOOL_SIZE</code>) for CPU-bound I/O: file system,
+              DNS, crypto.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔢</div>
+            <h4>V8 Engine</h4>
+            <p>
+              Google's JavaScript engine. Compiles JS to machine code via JIT.
+              Manages the heap, garbage collector, and JS execution.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📡</div>
+            <h4>Non-blocking I/O</h4>
+            <p>
+              Network and I/O operations are handled by the OS kernel directly,
+              signaling Node via epoll/kqueue when data is ready.
+            </p>
+          </div>
+        </div>
+
+        <h3>The Six Event Loop Phases</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Event Loop Phase Order</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// Event loop phases (simplified):
 //  1. timers        — setTimeout, setInterval callbacks
 //  2. pending I/O   — deferred I/O callbacks from previous iteration
 //  3. idle/prepare  — internal use only
@@ -371,26 +801,34 @@
   <span class="kw">const</span> sum <span class="op">=</span> <span class="kw">await</span> <span class="fn">runInWorker</span><span class="pu">(</span>heavyComputation<span class="pu">)</span>
   res<span class="pu">.</span><span class="fn">json</span><span class="pu">({</span> sum <span class="pu">})</span>
 <span class="pu">})</span></code></pre>
-    </div>
+        </div>
 
-    <div class="warn">
-      <div class="warn-label">⚠️ Event Loop Blocking</div>
-      Any synchronous operation over ~1–2ms will delay all other requests. JSON parsing of large payloads, complex regex on untrusted input, and synchronous crypto are the most common offenders. Use <code>--prof</code> and clinic.js to identify blockage.
-    </div>
-  </div>
+        <div class="warn">
+          <div class="warn-label">⚠️ Event Loop Blocking</div>
+          Any synchronous operation over ~1–2ms will delay all other requests.
+          JSON parsing of large payloads, complex regex on untrusted input, and
+          synchronous crypto are the most common offenders. Use
+          <code>--prof</code> and clinic.js to identify blockage.
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 02 MODULES -->
-  <div class="section" id="modules">
-    <div class="section-label">02 — Module System</div>
-    <h2>Module System: CommonJS vs ESM</h2>
-    <p class="lead">Node.js supports two module systems. CommonJS is the legacy default; ECMAScript Modules (ESM) is the modern standard. Understanding both — and how to interop — is essential.</p>
+      <!-- ═══════════════════════ 02 MODULES -->
+      <div class="section" id="modules">
+        <div class="section-label">02 — Module System</div>
+        <h2>Module System: CommonJS vs ESM</h2>
+        <p class="lead">
+          Node.js supports two module systems. CommonJS is the legacy default;
+          ECMAScript Modules (ESM) is the modern standard. Understanding both —
+          and how to interop — is essential.
+        </p>
 
-    <div class="compare-grid">
-      <div class="compare-card">
-        <div class="compare-header bad">CommonJS (CJS)</div>
-        <div class="code-block"><pre><code><span class="cm">// Synchronous, dynamic requires ok</span>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">CommonJS (CJS)</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Synchronous, dynamic requires ok</span>
 <span class="kw">const</span> path <span class="op">=</span> <span class="fn">require</span><span class="pu">(</span><span class="st">'path'</span><span class="pu">)</span>
 <span class="kw">const</span> <span class="pu">{</span> readFile <span class="pu">}</span> <span class="op">=</span> <span class="fn">require</span><span class="pu">(</span><span class="st">'fs'</span><span class="pu">)</span>
 
@@ -399,11 +837,13 @@
 
 module<span class="pu">.</span>exports <span class="op">=</span> <span class="pu">{</span> myFn <span class="pu">}</span>
 <span class="cm">// package.json: "type": "commonjs"
-// or .cjs extension</span></code></pre></div>
-      </div>
-      <div class="compare-card">
-        <div class="compare-header good">ESM (Modern)</div>
-        <div class="code-block"><pre><code><span class="cm">// Static, hoisted, tree-shakeable</span>
+// or .cjs extension</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">ESM (Modern)</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Static, hoisted, tree-shakeable</span>
 <span class="kw">import</span> path <span class="kw">from</span> <span class="st">'node:path'</span>
 <span class="kw">import</span> <span class="pu">{</span> readFile <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:fs/promises'</span>
 
@@ -413,13 +853,17 @@ module<span class="pu">.</span>exports <span class="op">=</span> <span class="pu
 <span class="kw">export</span> <span class="pu">{</span> myFn <span class="pu">}</span>
 <span class="kw">export</span> <span class="kw">default</span> myFn
 <span class="cm">// package.json: "type": "module"
-// or .mjs extension</span></code></pre></div>
-      </div>
-    </div>
+// or .mjs extension</span></code></pre>
+            </div>
+          </div>
+        </div>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Module Best Practices</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Always use 'node:' prefix for built-ins (Node 14.18+) ──</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Module Best Practices</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Always use 'node:' prefix for built-ins (Node 14.18+) ──</span>
 <span class="kw">import</span> fs   <span class="kw">from</span> <span class="st">'node:fs/promises'</span>   <span class="cm">// not 'fs'</span>
 <span class="kw">import</span> path <span class="kw">from</span> <span class="st">'node:path'</span>
 <span class="kw">import</span> http <span class="kw">from</span> <span class="st">'node:http'</span>
@@ -442,21 +886,28 @@ module<span class="pu">.</span>exports <span class="op">=</span> <span class="pu
 <span class="kw">import</span> <span class="pu">{</span> createRequire <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:module'</span>
 <span class="kw">const</span> require <span class="op">=</span> <span class="fn">createRequire</span><span class="pu">(</span><span class="kw">import</span><span class="pu">.</span>meta<span class="pu">.</span>url<span class="pu">)</span>
 <span class="kw">const</span> legacyLib <span class="op">=</span> <span class="fn">require</span><span class="pu">(</span><span class="st">'legacy-cjs-package'</span><span class="pu">)</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 03 ASYNC -->
-  <div class="section" id="async">
-    <div class="section-label">03 — Asynchronous Node.js</div>
-    <h2>Async Patterns & Robust Error Handling</h2>
-    <p class="lead">Node's single-threaded model means unhandled rejections and synchronous throws can crash your entire process. Structured async patterns are not optional — they are the job.</p>
+      <!-- ═══════════════════════ 03 ASYNC -->
+      <div class="section" id="async">
+        <div class="section-label">03 — Asynchronous Node.js</div>
+        <h2>Async Patterns & Robust Error Handling</h2>
+        <p class="lead">
+          Node's single-threaded model means unhandled rejections and
+          synchronous throws can crash your entire process. Structured async
+          patterns are not optional — they are the job.
+        </p>
 
-    <h3>Async/Await with Proper Error Handling</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Production Async Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Result-type pattern — no more try/catch soup ──</span>
+        <h3>Async/Await with Proper Error Handling</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Production Async Patterns</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Result-type pattern — no more try/catch soup ──</span>
 <span class="kw">async function</span> <span class="fn">safe</span><span class="pu">(</span>promise<span class="pu">)</span> <span class="pu">{</span>
   <span class="kw">try</span> <span class="pu">{</span>
     <span class="kw">return</span> <span class="pu">[</span><span class="kw">null</span>, <span class="kw">await</span> promise<span class="pu">]</span>
@@ -498,12 +949,15 @@ module<span class="pu">.</span>exports <span class="op">=</span> <span class="pu
   logger<span class="pu">.</span><span class="fn">fatal</span><span class="pu">({</span> err <span class="pu">},</span> <span class="st">'Uncaught exception — shutting down'</span><span class="pu">)</span>
   <span class="bi">process</span><span class="pu">.</span><span class="fn">exit</span><span class="pu">(</span><span class="nm">1</span><span class="pu">)</span>
 <span class="pu">})</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Async Iteration & Concurrency Control</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Concurrency Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Limit concurrency — avoid overwhelming DB/API ─</span>
+        <h3>Async Iteration & Concurrency Control</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Concurrency Patterns</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Limit concurrency — avoid overwhelming DB/API ─</span>
 <span class="kw">async function</span> <span class="fn">pLimit</span><span class="pu">(</span>tasks, concurrency<span class="pu">)</span> <span class="pu">{</span>
   <span class="kw">const</span> results <span class="op">=</span> <span class="pu">[]</span>
   <span class="kw">const</span> executing <span class="op">=</span> <span class="kw">new</span> <span class="ty">Set</span><span class="pu">()</span>
@@ -539,22 +993,34 @@ module<span class="pu">.</span>exports <span class="op">=</span> <span class="pu
 <span class="kw">for await</span> <span class="pu">(</span><span class="kw">const</span> item <span class="kw">of</span> <span class="fn">paginate</span><span class="pu">(</span><span class="st">'/api/products'</span><span class="pu">))</span> <span class="pu">{</span>
   <span class="kw">await</span> <span class="fn">processItem</span><span class="pu">(</span>item<span class="pu">)</span>  <span class="cm">// memory-efficient, lazy</span>
 <span class="pu">}</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 04 STREAMS -->
-  <div class="section" id="streams">
-    <div class="section-label">04 — Data in Motion</div>
-    <h2>Streams & Buffers</h2>
-    <p class="lead">Streams are Node's most powerful and underused primitive. They let you process gigabytes of data with constant memory usage by operating on chunks rather than loading everything at once.</p>
+      <!-- ═══════════════════════ 04 STREAMS -->
+      <div class="section" id="streams">
+        <div class="section-label">04 — Data in Motion</div>
+        <h2>Streams & Buffers</h2>
+        <p class="lead">
+          Streams are Node's most powerful and underused primitive. They let you
+          process gigabytes of data with constant memory usage by operating on
+          chunks rather than loading everything at once.
+        </p>
 
-    <p>There are four stream types: <strong>Readable</strong> (source), <strong>Writable</strong> (destination), <strong>Duplex</strong> (both), and <strong>Transform</strong> (duplex that modifies data). Every stream is an EventEmitter.</p>
+        <p>
+          There are four stream types: <strong>Readable</strong> (source),
+          <strong>Writable</strong> (destination),
+          <strong>Duplex</strong> (both), and <strong>Transform</strong> (duplex
+          that modifies data). Every stream is an EventEmitter.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Stream Fundamentals</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> createReadStream, createWriteStream <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:fs'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Stream Fundamentals</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> createReadStream, createWriteStream <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:fs'</span>
 <span class="kw">import</span> <span class="pu">{</span> createGzip <span class="pu">}</span>             <span class="kw">from</span> <span class="st">'node:zlib'</span>
 <span class="kw">import</span> <span class="pu">{</span> pipeline <span class="pu">}</span>               <span class="kw">from</span> <span class="st">'node:stream/promises'</span>
 <span class="kw">import</span> <span class="pu">{</span> Transform <span class="pu">}</span>              <span class="kw">from</span> <span class="st">'node:stream'</span>
@@ -595,12 +1061,15 @@ module<span class="pu">.</span>exports <span class="op">=</span> <span class="pu
   <span class="kw">new</span> <span class="fn">CSVToJSON</span><span class="pu">(),</span>
   <span class="fn">createWriteStream</span><span class="pu">(</span><span class="st">'output.jsonl'</span><span class="pu">)</span>
 <span class="pu">)</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Buffers — Understanding Binary Data</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Buffer Operations</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Buffer creation ───────────────────────────────</span>
+        <h3>Buffers — Understanding Binary Data</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Buffer Operations</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Buffer creation ───────────────────────────────</span>
 <span class="kw">const</span> buf1 <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span><span class="st">'hello world'</span>, <span class="st">'utf8'</span><span class="pu">)</span>
 <span class="kw">const</span> buf2 <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">alloc</span><span class="pu">(</span><span class="nm">16</span><span class="pu">)</span>          <span class="cm">// zero-filled, safe</span>
 <span class="kw">const</span> buf3 <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">allocUnsafe</span><span class="pu">(</span><span class="nm">16</span><span class="pu">)</span>    <span class="cm">// faster, not zeroed</span>
@@ -614,26 +1083,37 @@ buf1<span class="pu">.</span><span class="fn">toString</span><span class="pu">(<
 <span class="kw">const</span> a <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span>tokenFromUser<span class="pu">)</span>
 <span class="kw">const</span> b <span class="op">=</span> <span class="ty">Buffer</span><span class="pu">.</span><span class="fn">from</span><span class="pu">(</span>storedToken<span class="pu">)</span>
 <span class="kw">const</span> valid <span class="op">=</span> a<span class="pu">.</span>length <span class="op">===</span> b<span class="pu">.</span>length <span class="op">&&</span> <span class="fn">timingSafeEqual</span><span class="pu">(</span>a, b<span class="pu">)</span></code></pre>
-    </div>
+        </div>
 
-    <div class="tip">
-      <div class="tip-label">💡 Backpressure</div>
-      When a writable stream's internal buffer fills up, <code>write()</code> returns <code>false</code>. You must pause the readable until the writable emits <code>'drain'</code>. <code>pipeline()</code> handles this automatically — it's the main reason to always prefer it over manual piping.
-    </div>
-  </div>
+        <div class="tip">
+          <div class="tip-label">💡 Backpressure</div>
+          When a writable stream's internal buffer fills up,
+          <code>write()</code> returns <code>false</code>. You must pause the
+          readable until the writable emits <code>'drain'</code>.
+          <code>pipeline()</code> handles this automatically — it's the main
+          reason to always prefer it over manual piping.
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 05 HTTP -->
-  <div class="section" id="http">
-    <div class="section-label">05 — Building Servers</div>
-    <h2>HTTP Servers & Express</h2>
-    <p class="lead">Node's built-in <code>http</code> module is lean and powerful. Express adds routing and middleware. Understanding both makes you a better API developer at either layer.</p>
+      <!-- ═══════════════════════ 05 HTTP -->
+      <div class="section" id="http">
+        <div class="section-label">05 — Building Servers</div>
+        <h2>HTTP Servers & Express</h2>
+        <p class="lead">
+          Node's built-in <code>http</code> module is lean and powerful. Express
+          adds routing and middleware. Understanding both makes you a better API
+          developer at either layer.
+        </p>
 
-    <h3>Bare HTTP Server — The Foundation</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Native HTTP Server</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> http <span class="kw">from</span> <span class="st">'node:http'</span>
+        <h3>Bare HTTP Server — The Foundation</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Native HTTP Server</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> http <span class="kw">from</span> <span class="st">'node:http'</span>
 
 <span class="kw">const</span> server <span class="op">=</span> http<span class="pu">.</span><span class="fn">createServer</span><span class="pu">((</span>req, res<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
   <span class="cm">// Read body manually (req is a Readable stream)</span>
@@ -647,12 +1127,15 @@ buf1<span class="pu">.</span><span class="fn">toString</span><span class="pu">(<
 <span class="pu">})</span>
 
 server<span class="pu">.</span><span class="fn">listen</span><span class="pu">(</span><span class="nm">3000</span>, <span class="pu">()</span> <span class="op">=></span> <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">'Server on :3000'</span><span class="pu">))</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Express — Production API Structure</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Express Production Setup</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> express     <span class="kw">from</span> <span class="st">'express'</span>
+        <h3>Express — Production API Structure</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Express Production Setup</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> express     <span class="kw">from</span> <span class="st">'express'</span>
 <span class="kw">import</span> helmet      <span class="kw">from</span> <span class="st">'helmet'</span>
 <span class="kw">import</span> rateLimit   <span class="kw">from</span> <span class="st">'express-rate-limit'</span>
 <span class="kw">import</span> compression <span class="kw">from</span> <span class="st">'compression'</span>
@@ -693,20 +1176,27 @@ app<span class="pu">.</span><span class="fn">use</span><span class="pu">((</span
     error<span class="pu">:</span> status <span class="op"><</span> <span class="nm">500</span> <span class="op">?</span> err<span class="pu">.</span>message <span class="op">:</span> <span class="st">'Internal server error'</span>
   <span class="pu">})</span>
 <span class="pu">})</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 06 CORE MODULES -->
-  <div class="section" id="core">
-    <div class="section-label">06 — Built-In Power</div>
-    <h2>Core Modules Deep Dive</h2>
-    <p class="lead">Node ships an exceptionally rich standard library. Most third-party packages are wrappers around it. Knowing the core modules well reduces your dependency footprint significantly.</p>
+      <!-- ═══════════════════════ 06 CORE MODULES -->
+      <div class="section" id="core">
+        <div class="section-label">06 — Built-In Power</div>
+        <h2>Core Modules Deep Dive</h2>
+        <p class="lead">
+          Node ships an exceptionally rich standard library. Most third-party
+          packages are wrappers around it. Knowing the core modules well reduces
+          your dependency footprint significantly.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — fs, path, crypto, os</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> fs     <span class="kw">from</span> <span class="st">'node:fs/promises'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — fs, path, crypto, os</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> fs     <span class="kw">from</span> <span class="st">'node:fs/promises'</span>
 <span class="kw">import</span> path   <span class="kw">from</span> <span class="st">'node:path'</span>
 <span class="kw">import</span> os     <span class="kw">from</span> <span class="st">'node:os'</span>
 <span class="kw">import</span> crypto <span class="kw">from</span> <span class="st">'node:crypto'</span>
@@ -747,21 +1237,28 @@ os<span class="pu">.</span><span class="fn">cpus</span><span class="pu">().</spa
 os<span class="pu">.</span><span class="fn">freemem</span><span class="pu">()</span>       <span class="cm">// free RAM in bytes</span>
 os<span class="pu">.</span><span class="fn">totalmem</span><span class="pu">()</span>      <span class="cm">// total RAM in bytes</span>
 os<span class="pu">.</span><span class="fn">uptime</span><span class="pu">()</span>         <span class="cm">// seconds since last boot</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 07 PATTERNS -->
-  <div class="section" id="patterns">
-    <div class="section-label">07 — Architecture</div>
-    <h2>Design Patterns in Node.js</h2>
-    <p class="lead">Node's module system, EventEmitter, and async-first design lend themselves to patterns that feel different from classical OOP. These are the ones that matter most at scale.</p>
+      <!-- ═══════════════════════ 07 PATTERNS -->
+      <div class="section" id="patterns">
+        <div class="section-label">07 — Architecture</div>
+        <h2>Design Patterns in Node.js</h2>
+        <p class="lead">
+          Node's module system, EventEmitter, and async-first design lend
+          themselves to patterns that feel different from classical OOP. These
+          are the ones that matter most at scale.
+        </p>
 
-    <h3>Dependency Injection Container</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — DI & Service Layer</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Simple DI container ───────────────────────────</span>
+        <h3>Dependency Injection Container</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — DI & Service Layer</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Simple DI container ───────────────────────────</span>
 <span class="kw">class</span> <span class="ty">Container</span> <span class="pu">{</span>
   <span class="op">#</span>registry <span class="op">=</span> <span class="kw">new</span> <span class="ty">Map</span><span class="pu">()</span>
 
@@ -797,21 +1294,27 @@ os<span class="pu">.</span><span class="fn">uptime</span><span class="pu">()</sp
 orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'order.created'</span>, sendConfirmationEmail<span class="pu">)</span>
 orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'order.created'</span>, updateInventory<span class="pu">)</span>
 orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'order.created'</span>, notifyWarehouse<span class="pu">)</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 08 DATABASES -->
-  <div class="section" id="databases">
-    <div class="section-label">08 — Data Layer</div>
-    <h2>Databases & ORMs</h2>
-    <p class="lead">Node.js works well with every major database. Connection pooling and query efficiency are where most performance gains — and losses — live.</p>
+      <!-- ═══════════════════════ 08 DATABASES -->
+      <div class="section" id="databases">
+        <div class="section-label">08 — Data Layer</div>
+        <h2>Databases & ORMs</h2>
+        <p class="lead">
+          Node.js works well with every major database. Connection pooling and
+          query efficiency are where most performance gains — and losses — live.
+        </p>
 
-    <h3>Prisma — Type-Safe ORM</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Prisma ORM Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> PrismaClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@prisma/client'</span>
+        <h3>Prisma — Type-Safe ORM</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Prisma ORM Patterns</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> PrismaClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@prisma/client'</span>
 
 <span class="cm">// ── Single shared instance — critical for pooling ─</span>
 <span class="kw">const</span> prisma <span class="op">=</span> globalThis<span class="pu">.</span>prisma <span class="op">??=</span> <span class="kw">new</span> <span class="fn">PrismaClient</span><span class="pu">({</span>
@@ -846,26 +1349,38 @@ orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</spa
   <span class="st">FROM orders</span>
   <span class="st">GROUP BY 1 ORDER BY 1 DESC LIMIT 12</span>
 <span class="op">`</span></code></pre>
-    </div>
+        </div>
 
-    <div class="tip">
-      <div class="tip-label">💡 Connection Pool Sizing</div>
-      For PostgreSQL with Prisma, the default pool is <code>min: 2, max: 10</code>. In a clustered app with 4 workers, you'll have up to 40 connections. Most Postgres servers cap at 100. Set <code>connection_limit</code> to <code>Math.floor(100 / numWorkers)</code> and use PgBouncer in production.
-    </div>
-  </div>
+        <div class="tip">
+          <div class="tip-label">💡 Connection Pool Sizing</div>
+          For PostgreSQL with Prisma, the default pool is
+          <code>min: 2, max: 10</code>. In a clustered app with 4 workers,
+          you'll have up to 40 connections. Most Postgres servers cap at 100.
+          Set <code>connection_limit</code> to
+          <code>Math.floor(100 / numWorkers)</code> and use PgBouncer in
+          production.
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 09 SECURITY -->
-  <div class="section" id="security">
-    <div class="section-label">09 — Hardening</div>
-    <h2>Security Hardening</h2>
-    <p class="lead">Node.js apps face the same OWASP Top 10 threats as any web app — plus a few Node-specific pitfalls. Security is not a middleware you add at the end; it is woven through every decision.</p>
+      <!-- ═══════════════════════ 09 SECURITY -->
+      <div class="section" id="security">
+        <div class="section-label">09 — Hardening</div>
+        <h2>Security Hardening</h2>
+        <p class="lead">
+          Node.js apps face the same OWASP Top 10 threats as any web app — plus
+          a few Node-specific pitfalls. Security is not a middleware you add at
+          the end; it is woven through every decision.
+        </p>
 
-    <h3>JWT Authentication Done Right</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — JWT & Auth Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> jwt    <span class="kw">from</span> <span class="st">'jsonwebtoken'</span>
+        <h3>JWT Authentication Done Right</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — JWT & Auth Patterns</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> jwt    <span class="kw">from</span> <span class="st">'jsonwebtoken'</span>
 <span class="kw">import</span> bcrypt <span class="kw">from</span> <span class="st">'bcrypt'</span>
 
 <span class="cm">// ── Password hashing ──────────────────────────────</span>
@@ -899,12 +1414,15 @@ orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</spa
     res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">401</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="pu">:</span> <span class="st">'Invalid or expired token'</span> <span class="pu">})</span>
   <span class="pu">}</span>
 <span class="pu">}</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Input Validation & SQL Injection Prevention</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Validation with Zod</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> z <span class="pu">}</span> <span class="kw">from</span> <span class="st">'zod'</span>
+        <h3>Input Validation & SQL Injection Prevention</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Validation with Zod</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> z <span class="pu">}</span> <span class="kw">from</span> <span class="st">'zod'</span>
 
 <span class="kw">const</span> CreateUserSchema <span class="op">=</span> z<span class="pu">.</span><span class="fn">object</span><span class="pu">({</span>
   name<span class="pu">:</span>     z<span class="pu">.</span><span class="fn">string</span><span class="pu">().</span><span class="fn">min</span><span class="pu">(</span><span class="nm">2</span><span class="pu">).</span><span class="fn">max</span><span class="pu">(</span><span class="nm">100</span><span class="pu">),</span>
@@ -929,25 +1447,37 @@ orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</spa
   <span class="st">'SELECT * FROM users WHERE id = $1'</span><span class="pu">,</span>
   <span class="pu">[</span>req<span class="pu">.</span>query<span class="pu">.</span>id<span class="pu">]</span>
 <span class="pu">)</span></code></pre>
-    </div>
+        </div>
 
-    <div class="warn">
-      <div class="warn-label">⚠️ Prototype Pollution</div>
-      Merging user-controlled objects (like <code>req.body</code>) using naive spread or deep-merge utilities can pollute <code>Object.prototype</code>, affecting all objects globally. Always use <code>Object.create(null)</code> as merge targets, or libraries patched against this attack (e.g. <code>lodash 4.17.21+</code>).
-    </div>
-  </div>
+        <div class="warn">
+          <div class="warn-label">⚠️ Prototype Pollution</div>
+          Merging user-controlled objects (like <code>req.body</code>) using
+          naive spread or deep-merge utilities can pollute
+          <code>Object.prototype</code>, affecting all objects globally. Always
+          use <code>Object.create(null)</code> as merge targets, or libraries
+          patched against this attack (e.g. <code>lodash 4.17.21+</code>).
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 10 TESTING -->
-  <div class="section" id="testing">
-    <div class="section-label">10 — Quality Assurance</div>
-    <h2>Testing Strategies</h2>
-    <p class="lead">Node.js 18+ ships a built-in test runner. For serious test suites, Vitest and Jest remain dominant. The strategy matters more than the tool.</p>
+      <!-- ═══════════════════════ 10 TESTING -->
+      <div class="section" id="testing">
+        <div class="section-label">10 — Quality Assurance</div>
+        <h2>Testing Strategies</h2>
+        <p class="lead">
+          Node.js 18+ ships a built-in test runner. For serious test suites,
+          Vitest and Jest remain dominant. The strategy matters more than the
+          tool.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Vitest Unit & Integration Tests</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> describe, it, expect, vi, beforeEach <span class="pu">}</span> <span class="kw">from</span> <span class="st">'vitest'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Vitest Unit & Integration Tests</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> describe, it, expect, vi, beforeEach <span class="pu">}</span> <span class="kw">from</span> <span class="st">'vitest'</span>
 <span class="kw">import</span> <span class="pu">{</span> UserService <span class="pu">}</span>                          <span class="kw">from</span> <span class="st">'./user.service.js'</span>
 
 <span class="cm">// ── Unit test with mocked dependencies ───────────</span>
@@ -987,28 +1517,60 @@ orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</spa
   <span class="pu">})</span>
   expect<span class="pu">(</span>res<span class="pu">.</span>body<span class="pu">.</span>password<span class="pu">).</span><span class="fn">toBeUndefined</span><span class="pu">()</span>  <span class="cm">// never leak hashes</span>
 <span class="pu">})</span></code></pre>
-    </div>
+        </div>
 
-    <table>
-      <tr><th>Layer</th><th>Tool</th><th>Scope</th><th>Speed</th></tr>
-      <tr><td>Unit</td><td>Vitest</td><td>Single function/class</td><td class="badge badge-green">~ms</td></tr>
-      <tr><td>Integration</td><td>Supertest + Vitest</td><td>API endpoint</td><td class="badge badge-amber">~100ms</td></tr>
-      <tr><td>E2E</td><td>Playwright</td><td>Full browser flow</td><td class="badge badge-red">~10s</td></tr>
-      <tr><td>Load</td><td>k6 / autocannon</td><td>Throughput, latency</td><td class="badge badge-blue">Minutes</td></tr>
-    </table>
-  </div>
+        <table>
+          <tr>
+            <th>Layer</th>
+            <th>Tool</th>
+            <th>Scope</th>
+            <th>Speed</th>
+          </tr>
+          <tr>
+            <td>Unit</td>
+            <td>Vitest</td>
+            <td>Single function/class</td>
+            <td class="badge badge-green">~ms</td>
+          </tr>
+          <tr>
+            <td>Integration</td>
+            <td>Supertest + Vitest</td>
+            <td>API endpoint</td>
+            <td class="badge badge-amber">~100ms</td>
+          </tr>
+          <tr>
+            <td>E2E</td>
+            <td>Playwright</td>
+            <td>Full browser flow</td>
+            <td class="badge badge-red">~10s</td>
+          </tr>
+          <tr>
+            <td>Load</td>
+            <td>k6 / autocannon</td>
+            <td>Throughput, latency</td>
+            <td class="badge badge-blue">Minutes</td>
+          </tr>
+        </table>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 11 CLUSTERING -->
-  <div class="section" id="clustering">
-    <div class="section-label">11 — Scaling</div>
-    <h2>Clustering & Worker Threads</h2>
-    <p class="lead">A single Node.js process uses one CPU core. To use all cores: cluster spawns multiple processes (each with its own event loop), while worker threads share memory in the same process for CPU-intensive work.</p>
+      <!-- ═══════════════════════ 11 CLUSTERING -->
+      <div class="section" id="clustering">
+        <div class="section-label">11 — Scaling</div>
+        <h2>Clustering & Worker Threads</h2>
+        <p class="lead">
+          A single Node.js process uses one CPU core. To use all cores: cluster
+          spawns multiple processes (each with its own event loop), while worker
+          threads share memory in the same process for CPU-intensive work.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Cluster Module</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> cluster <span class="kw">from</span> <span class="st">'node:cluster'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Cluster Module</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> cluster <span class="kw">from</span> <span class="st">'node:cluster'</span>
 <span class="kw">import</span> os      <span class="kw">from</span> <span class="st">'node:os'</span>
 <span class="kw">import</span> <span class="pu">{</span> createServer <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:http'</span>
 
@@ -1027,12 +1589,15 @@ orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</spa
   <span class="kw">const</span> <span class="pu">{</span> app <span class="pu">}</span> <span class="op">=</span> <span class="kw">await</span> <span class="kw">import</span><span class="pu">(</span><span class="st">'./app.js'</span><span class="pu">)</span>
   app<span class="pu">.</span><span class="fn">listen</span><span class="pu">(</span><span class="nm">3000</span><span class="pu">)</span>
 <span class="pu">}</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Worker Threads for CPU-Bound Tasks</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Worker Thread Pool</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> Worker, isMainThread, parentPort, workerData <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:worker_threads'</span>
+        <h3>Worker Threads for CPU-Bound Tasks</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Worker Thread Pool</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> Worker, isMainThread, parentPort, workerData <span class="pu">}</span> <span class="kw">from</span> <span class="st">'node:worker_threads'</span>
 
 <span class="cm">// ── worker.js — the CPU-bound work ────────────────</span>
 <span class="kw">if</span> <span class="pu">(!</span>isMainThread<span class="pu">)</span> <span class="pu">{</span>
@@ -1056,20 +1621,27 @@ orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</spa
 <span class="kw">const</span> shared <span class="op">=</span> <span class="kw">new</span> <span class="ty">SharedArrayBuffer</span><span class="pu">(</span><span class="nm">4</span> <span class="op">*</span> <span class="nm">1024</span> <span class="op">*</span> <span class="nm">1024</span><span class="pu">)</span>  <span class="cm">// 4MB</span>
 <span class="kw">const</span> arr    <span class="op">=</span> <span class="kw">new</span> <span class="ty">Float64Array</span><span class="pu">(</span>shared<span class="pu">)</span>
 <span class="cm">// Both main thread and worker can read/write arr with zero copying</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 12 PERFORMANCE -->
-  <div class="section" id="performance">
-    <div class="section-label">12 — Going Fast</div>
-    <h2>Performance & Profiling</h2>
-    <p class="lead">Profile before optimising. The most common Node.js bottlenecks are I/O queue starvation, GC pressure from too many allocations, and JSON parsing of large payloads.</p>
+      <!-- ═══════════════════════ 12 PERFORMANCE -->
+      <div class="section" id="performance">
+        <div class="section-label">12 — Going Fast</div>
+        <h2>Performance & Profiling</h2>
+        <p class="lead">
+          Profile before optimising. The most common Node.js bottlenecks are I/O
+          queue starvation, GC pressure from too many allocations, and JSON
+          parsing of large payloads.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Performance Techniques</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Object pooling — reduce GC pressure ──────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Performance Techniques</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Object pooling — reduce GC pressure ──────────</span>
 <span class="kw">class</span> <span class="ty">ObjectPool</span> <span class="pu">{</span>
   <span class="op">#</span>pool <span class="op">=</span> <span class="pu">[]</span>
   <span class="op">#</span>create
@@ -1112,20 +1684,28 @@ orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</spa
     score<span class="pu">:</span> <span class="pu">{</span> type<span class="pu">:</span> <span class="st">'number'</span> <span class="pu">}</span>
   <span class="pu">}</span>
 <span class="pu">})</span>  <span class="cm">// 2-3× faster than JSON.stringify for known schemas</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 13 DOCKER -->
-  <div class="section" id="docker">
-    <div class="section-label">13 — Shipping to Production</div>
-    <h2>Docker & Deployment</h2>
-    <p class="lead">A well-crafted Dockerfile is the difference between a 1.2GB image and a 120MB one. Multi-stage builds and non-root users are non-negotiable for production.</p>
+      <!-- ═══════════════════════ 13 DOCKER -->
+      <div class="section" id="docker">
+        <div class="section-label">13 — Shipping to Production</div>
+        <h2>Docker & Deployment</h2>
+        <p class="lead">
+          A well-crafted Dockerfile is the difference between a 1.2GB image and
+          a 120MB one. Multi-stage builds and non-root users are non-negotiable
+          for production.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Dockerfile — Multi-Stage Production Build</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm"># ── Stage 1: install dependencies ────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >Dockerfile — Multi-Stage Production Build</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># ── Stage 1: install dependencies ────────────────</span>
 <span class="kw">FROM</span> <span class="ty">node:22-alpine</span> <span class="kw">AS</span> deps
 <span class="kw">WORKDIR</span> /app
 <span class="kw">COPY</span> package*.json ./
@@ -1149,12 +1729,15 @@ orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</spa
 
 <span class="cm"># Use exec form — receives signals, enables graceful shutdown</span>
 <span class="kw">CMD</span> ["node", "--max-old-space-size=512", "src/server.js"]</code></pre>
-    </div>
+        </div>
 
-    <h3>Graceful Shutdown</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Graceful Shutdown Handler</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Essential for Kubernetes rolling deploys ──────</span>
+        <h3>Graceful Shutdown</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Graceful Shutdown Handler</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Essential for Kubernetes rolling deploys ──────</span>
 <span class="kw">async function</span> <span class="fn">gracefulShutdown</span><span class="pu">(</span>signal<span class="pu">)</span> <span class="pu">{</span>
   logger<span class="pu">.</span><span class="fn">info</span><span class="pu">(</span><span class="st">`Received </span><span class="pu">${</span>signal<span class="pu">}</span><span class="st"> — starting graceful shutdown`</span><span class="pu">)</span>
 
@@ -1175,20 +1758,28 @@ orders<span class="pu">.</span><span class="fn">on</span><span class="pu">(</spa
 
 <span class="bi">process</span><span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'SIGTERM'</span><span class="pu">,</span> gracefulShutdown<span class="pu">)</span>
 <span class="bi">process</span><span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'SIGINT'</span><span class="pu">,</span>  gracefulShutdown<span class="pu">)</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══════════════════════ 14 OBSERVABILITY -->
-  <div class="section" id="observability">
-    <div class="section-label">14 — Production Visibility</div>
-    <h2>Observability & Logging</h2>
-    <p class="lead">You can't improve what you can't measure. The three pillars of observability — logs, metrics, traces — each answer a different question about your running system.</p>
+      <!-- ═══════════════════════ 14 OBSERVABILITY -->
+      <div class="section" id="observability">
+        <div class="section-label">14 — Production Visibility</div>
+        <h2>Observability & Logging</h2>
+        <p class="lead">
+          You can't improve what you can't measure. The three pillars of
+          observability — logs, metrics, traces — each answer a different
+          question about your running system.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Structured Logging with Pino</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> pino <span class="kw">from</span> <span class="st">'pino'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Structured Logging with Pino</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> pino <span class="kw">from</span> <span class="st">'pino'</span>
 
 <span class="cm">// ── Structured JSON logging (fastest Node.js logger)</span>
 <span class="kw">const</span> logger <span class="op">=</span> <span class="fn">pino</span><span class="pu">({</span>
@@ -1228,35 +1819,44 @@ app<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>
   res<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span><span class="st">'Content-Type'</span><span class="pu">,</span> promClient<span class="pu">.</span>register<span class="pu">.</span>contentType<span class="pu">)</span>
   res<span class="pu">.</span><span class="fn">end</span><span class="pu">(</span><span class="kw">await</span> promClient<span class="pu">.</span>register<span class="pu">.</span><span class="fn">metrics</span><span class="pu">())</span>
 <span class="pu">})</span></code></pre>
+        </div>
+
+        <div class="pullquote">
+          "A Node.js process in production that can't tell you its p99 latency,
+          active connections, and event loop lag is flying blind."
+        </div>
+
+        <div class="info">
+          <div class="info-label">ℹ️ What to Alert On</div>
+          The four golden signals for Node.js: <strong>Latency</strong> (p95
+          &gt;500ms), <strong>Traffic</strong> (requests/sec sudden drop or
+          spike), <strong>Errors</strong> (5xx rate &gt;1%), and
+          <strong>Saturation</strong> (event loop lag &gt;100ms, heap &gt;80%).
+          Instrument all four before your first production deployment.
+        </div>
+      </div>
     </div>
 
-    <div class="pullquote">
-      "A Node.js process in production that can't tell you its p99 latency, active connections, and event loop lag is flying blind."
-    </div>
+    <footer>
+      <strong>Node.js: The Complete Developer's Guide</strong><br />
+      Part of the <a href="index.html">DevDive</a> series — Deep dives for
+      serious developers.<br /><br />
+      <span style="color: rgba(255, 255, 255, 0.35)"
+        >© 2026 DevDive · Node.js 22 LTS · June 2026</span
+      >
+    </footer>
 
-    <div class="info">
-      <div class="info-label">ℹ️ What to Alert On</div>
-      The four golden signals for Node.js: <strong>Latency</strong> (p95 &gt;500ms), <strong>Traffic</strong> (requests/sec sudden drop or spike), <strong>Errors</strong> (5xx rate &gt;1%), and <strong>Saturation</strong> (event loop lag &gt;100ms, heap &gt;80%). Instrument all four before your first production deployment.
-    </div>
-  </div>
-
-</div>
-
-<footer>
-  <strong>Node.js: The Complete Developer's Guide</strong><br>
-  Part of the <a href="index.html">DevDive</a> series — Deep dives for serious developers.<br><br>
-  <span style="color:rgba(255,255,255,0.35)">© 2026 DevDive · Node.js 22 LTS · June 2026</span>
-</footer>
-
-<script>
-function copyCode(btn) {
-  const pre = btn.closest('.code-block').querySelector('pre')
-  navigator.clipboard.writeText(pre.innerText).then(() => {
-    const original = btn.textContent
-    btn.textContent = 'Copied!'
-    setTimeout(() => { btn.textContent = original }, 2000)
-  })
-}
-</script>
-</body>
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest(".code-block").querySelector("pre");
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+          const original = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => {
+            btn.textContent = original;
+          }, 2000);
+        });
+      }
+    </script>
+  </body>
 </html>
