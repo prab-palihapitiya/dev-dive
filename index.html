@@ -394,6 +394,9 @@
       .card[data-cat="ai"]:hover {
         border-color: #c4b5fd;
       }
+      .card[data-cat="cloud"]:hover {
+        border-color: #a5f3fc;
+      }
 
       .card-cover {
         height: 172px;
@@ -414,6 +417,9 @@
       }
       .card[data-cat="ai"] .card-cover {
         background: linear-gradient(140deg, #2e1065, #7c3aed 60%, #a78bfa);
+      }
+      .card[data-cat="cloud"] .card-cover {
+        background: linear-gradient(140deg, #082032, #0891b2 60%, #38bdf8);
       }
 
       .cover-bg-text {
@@ -574,6 +580,13 @@
       }
       .card[data-cat="ai"] .read-link:hover {
         background: #ede9fe;
+      }
+      .card[data-cat="cloud"] .read-link {
+        background: #ecfeff;
+        color: #0891b2;
+      }
+      .card[data-cat="cloud"] .read-link:hover {
+        background: #cffafe;
       }
       .card-rt {
         font-size: 12px;
@@ -906,6 +919,10 @@
           <span class="nav-cat-dot" style="background: var(--c-ai)"></span>AI
           Engineering
         </button>
+        <button class="nav-cat" onclick="filterCat(this, 'cloud')">
+          <span class="nav-cat-dot" style="background: var(--c-cloud)"></span
+          >Cloud
+        </button>
         <button class="nav-cat" onclick="filterCat(this, 'devops')">
           <span class="nav-cat-dot" style="background: var(--c-devops)"></span
           >DevOps
@@ -931,7 +948,7 @@
       </div>
 
       <div class="nav-right">
-        <span class="nav-count" id="article-count">7 articles</span>
+        <span class="nav-count" id="article-count">8 articles</span>
       </div>
     </nav>
 
@@ -1036,12 +1053,15 @@
           <div class="cat-ov-count">1 article</div>
         </div>
 
-        <div class="cat-overview-card">
+        <div
+          class="cat-overview-card"
+          data-cat="cloud"
+          onclick="filterCat(null, 'cloud')"
+          style="cursor: pointer; border-color: #a5f3fc"
+        >
           <div class="cat-ov-icon" style="background: #ecfeff">☁️</div>
           <div class="cat-ov-name">Cloud Computing</div>
-          <div class="cat-ov-count" style="color: #0891b2; font-weight: 600">
-            Coming soon
-          </div>
+          <div class="cat-ov-count">1 article</div>
         </div>
 
         <div
@@ -1106,7 +1126,7 @@
       <div class="section-title-row">
         <h2 class="section-title">Published Articles</h2>
         <span class="section-meta" id="filter-label"
-          >Showing all · 7 articles</span
+          >Showing all · 8 articles</span
         >
       </div>
 
@@ -1478,6 +1498,52 @@
             <span class="card-rt">~40 min read</span>
           </div>
         </a>
+
+        <!-- Cloud Engineering Card -->
+        <a class="card" data-cat="cloud" href="cloud-guide.html">
+          <div class="card-cover">
+            <div class="cover-bg-text">CLD</div>
+            <div class="cover-badge">
+              <span class="cover-badge-lang">☁️ Cloud</span>
+              <span class="cover-badge-sub">AWS · GCP · Azure</span>
+            </div>
+            <div class="cover-pills">
+              <span class="cover-pill">Kubernetes</span>
+              <span class="cover-pill">Terraform</span>
+              <span class="cover-pill">Serverless</span>
+              <span class="cover-pill">HA & DR</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-row">
+              <span class="cat-chip" style="background: #ecfeff; color: #0891b2"
+                >Cloud Computing</span
+              >
+              <span class="card-sections">14 sections</span>
+            </div>
+            <div class="card-title">Cloud Engineering: AWS vs GCP vs Azure</div>
+            <p class="card-desc">
+              VPCs, containers, Kubernetes, compute & load balancers, managed
+              databases, messaging, IAM & secrets, observability, CI/CD,
+              scalability patterns, high availability, cost optimisation, IaC
+              with Terraform, and serverless — compared across all three major
+              providers.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Kubernetes</span>
+              <span class="tag">Terraform</span>
+              <span class="tag">Serverless</span>
+              <span class="tag">CI/CD</span>
+              <span class="tag">HA & DR</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="read-link"
+              >Read Article <span class="arr">→</span></span
+            >
+            <span class="card-rt">~50 min read</span>
+          </div>
+        </a>
       </div>
 
       <!-- Empty state for filtered view -->
@@ -1517,32 +1583,6 @@
       </div>
 
       <div class="coming-grid">
-        <div class="coming-card">
-          <div class="coming-top">
-            <div
-              class="coming-icon"
-              style="background: #ecfeff; font-size: 22px"
-            >
-              ☁️
-            </div>
-            <span class="soon-badge">Coming soon</span>
-          </div>
-          <div class="coming-title">Cloud Computing</div>
-          <p class="coming-desc">
-            AWS, Azure, GCP architecture patterns, serverless, IAM, VPCs, cost
-            optimisation, and multi-cloud strategy.
-          </p>
-          <div class="coming-topics">
-            <span class="coming-topic">AWS</span>
-            <span class="coming-topic">Serverless</span>
-            <span class="coming-topic">IAM</span>
-            <span class="coming-topic">Terraform</span>
-          </div>
-          <button class="coming-notify" onclick="notify(this)">
-            🔔 Notify me
-          </button>
-        </div>
-
         <div class="coming-card">
           <div class="coming-top">
             <div
