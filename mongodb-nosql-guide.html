@@ -1,238 +1,902 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MongoDB & NoSQL Databases — The Complete Developer's Guide</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg:#f4faf7; --surface:#ffffff; --text-primary:#1a1a1a; --text-secondary:#6b6b6b;
-    --text-muted:#9a9a9a; --accent:#057a55; --accent-light:#ecfdf5; --accent-subtle:#d1fae5;
-    --border:#ddeee6; --code-bg:#0d1117; --code-text:#e6edf3; --tag-bg:#ebf7f1;
-    --tip-bg:#f0fdf4; --tip-border:#16a34a; --warn-bg:#fff7ed; --warn-border:#ea580c;
-    --danger-bg:#fff1f2; --danger-border:#dc2626; --info-bg:#eff6ff; --info-border:#2563eb;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.75}
-  nav{position:sticky;top:0;z-index:100;background:rgba(244,250,247,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
-  .nav-logo{font-weight:600;font-size:15px;letter-spacing:-0.3px}.nav-logo span{color:var(--accent)}
-  .nav-links{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}.nav-links::-webkit-scrollbar{display:none}
-  .nav-links a{font-size:12.5px;color:var(--text-secondary);text-decoration:none;padding:5px 9px;border-radius:6px;transition:all .15s;white-space:nowrap}
-  .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
-  .nav-read-time{font-size:13px;color:var(--text-muted);flex-shrink:0}
-  .hero{max-width:780px;margin:0 auto;padding:64px 2rem 48px}
-  .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;margin-bottom:24px;letter-spacing:.3px;text-transform:uppercase}
-  .hero h1{font-family:'Lora',serif;font-size:clamp(32px,5vw,50px);font-weight:600;line-height:1.12;letter-spacing:-.5px;margin-bottom:20px}
-  .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
-  .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-  .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#057a55,#064e3b);display:flex;align-items:center;justify-content:center;font-size:16px}
-  .meta-text{font-size:14px;color:var(--text-secondary)}.meta-text strong{color:var(--text-primary)}
-  .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
-  .db-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
-  .db-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;border:1px solid}
-  .pill-mongo{background:#edfdf5;color:#065f46;border-color:#a7f3d0}
-  .pill-redis{background:#fff1f2;color:#be123c;border-color:#fecdd3}
-  .pill-elastic{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
-  .pill-cassandra{background:#faf5ff;color:#6d28d9;border-color:#ddd6fe}
-  .toc-wrapper{max-width:780px;margin:0 auto;padding:0 2rem 8px}
-  .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:40px}
-  .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
-  .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
-  .toc a{font-size:14px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
-  .toc a:hover{color:var(--accent)}.toc-num{font-size:12px;color:var(--text-muted);font-weight:500;min-width:20px}
-  .content{max-width:780px;margin:0 auto;padding:0 2rem 80px}
-  .section{margin-bottom:72px;scroll-margin-top:72px}
-  .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-  .section-label::after{content:'';flex:1;height:1px;background:var(--accent-subtle)}
-  h2{font-family:'Lora',serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:16px}
-  h3{font-size:19px;font-weight:600;margin:32px 0 12px}
-  p{margin-bottom:18px;color:#2d2d2d}
-  .lead{font-size:19px;color:var(--text-secondary);font-weight:300;margin-bottom:24px}
-  .code-block{background:var(--code-bg);border-radius:10px;margin:24px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
-  .code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
-  .code-lang{font-size:12px;color:#6e7681;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
-  .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:'Outfit',sans-serif;transition:all .15s}
-  .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
-  pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:var(--code-text)}
-  pre code{background:none;padding:0;font-size:inherit}
-  code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#e6f4ee;color:#065f46;padding:2px 6px;border-radius:4px}
-  .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
-  .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
-  .pu{color:#e6edf3}.bi{color:#ffa657}.rx{color:#7ee787}.str2{color:#7ee787}
-  .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-  .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-  .danger{background:var(--danger-bg);border-left:3px solid var(--danger-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-  .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-  .tip-label{font-size:12px;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-  .warn-label{font-size:12px;font-weight:600;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-  .danger-label{font-size:12px;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-  .info-label{font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
-  .compare-card{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
-  .compare-header{padding:10px 16px;font-size:13px;font-weight:600}
-  .compare-header.bad{background:#fef2f2;color:#dc2626}.compare-header.good{background:#f0fdf4;color:#16a34a}
-  .compare-header.sql{background:#eff6ff;color:#1d4ed8}.compare-header.mongo{background:#f0fdf4;color:#057a55}
-  .compare-card .code-block{border-radius:0;margin:0;border:none}
-  table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px}
-  th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
-  td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
-  tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg)}
-  .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;letter-spacing:.3px;vertical-align:middle}
-  .badge-green{background:#dcfce7;color:#15803d}.badge-amber{background:#fef3c7;color:#b45309}
-  .badge-red{background:#fee2e2;color:#b91c1c}.badge-blue{background:#dbeafe;color:#1d4ed8}
-  .badge-violet{background:#ede9fe;color:#5b21b6}
-  .pullquote{font-family:'Lora',serif;font-style:italic;font-size:22px;line-height:1.5;color:var(--text-secondary);border-left:4px solid var(--accent);padding:12px 24px;margin:36px 0}
-  .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:24px 0}
-  .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
-  .concept-card h4{font-size:15px;font-weight:600;margin-bottom:6px;margin-top:0}
-  .concept-card p{font-size:14px;color:var(--text-secondary);margin:0;line-height:1.5}
-  .concept-icon{font-size:22px;margin-bottom:10px}
-  .phase-list{list-style:none;margin:16px 0}
-  .phase-list li{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border);font-size:15px}
-  .phase-list li:last-child{border-bottom:none}
-  .phase-num{min-width:28px;height:28px;border-radius:50%;background:var(--accent-subtle);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
-  .divider{border:none;border-top:1px solid var(--border);margin:56px 0}
-  footer{background:#052e16;color:rgba(255,255,255,.6);text-align:center;padding:40px 2rem;font-size:14px}
-  footer strong{color:white}footer a{color:#6ee7b7;text-decoration:none}
-  footer a:hover{text-decoration:underline}
-  @media(max-width:640px){.toc-grid,.compare-grid{grid-template-columns:1fr}.nav-links{display:none}}
-</style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MongoDB & NoSQL Databases — The Complete Developer's Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f4faf7;
+        --surface: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b6b6b;
+        --text-muted: #9a9a9a;
+        --accent: #057a55;
+        --accent-light: #ecfdf5;
+        --accent-subtle: #d1fae5;
+        --border: #ddeee6;
+        --code-bg: #0d1117;
+        --code-text: #e6edf3;
+        --tag-bg: #ebf7f1;
+        --tip-bg: #f0fdf4;
+        --tip-border: #16a34a;
+        --warn-bg: #fff7ed;
+        --warn-border: #ea580c;
+        --danger-bg: #fff1f2;
+        --danger-border: #dc2626;
+        --info-bg: #eff6ff;
+        --info-border: #2563eb;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.75;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(244, 250, 247, 0.94);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover {
+        color: var(--accent);
+      }
+      .nav-pipe {
+        color: var(--border);
+        font-size: 18px;
+      }
+      .nav-brand {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: var(--accent-light);
+        color: var(--accent);
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+      .nav-links a {
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 5px 9px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--tag-bg);
+        color: var(--text-primary);
+      }
+      .nav-rt {
+        font-size: 13px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 2rem 48px;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(32px, 5vw, 50px);
+        font-weight: 600;
+        line-height: 1.12;
+        letter-spacing: -0.5px;
+        margin-bottom: 20px;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #057a55, #064e3b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .meta-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .meta-text strong {
+        color: var(--text-primary);
+      }
+      .hero-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin-top: 32px;
+      }
+      .db-pills {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      .db-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 100px;
+        border: 1px solid;
+      }
+      .pill-mongo {
+        background: #edfdf5;
+        color: #065f46;
+        border-color: #a7f3d0;
+      }
+      .pill-redis {
+        background: #fff1f2;
+        color: #be123c;
+        border-color: #fecdd3;
+      }
+      .pill-elastic {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border-color: #bfdbfe;
+      }
+      .pill-cassandra {
+        background: #faf5ff;
+        color: #6d28d9;
+        border-color: #ddd6fe;
+      }
+      .toc-wrapper {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 8px;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 40px;
+      }
+      .toc h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 24px;
+      }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+        transition: color 0.15s;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc-num {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+        min-width: 20px;
+      }
+      .content {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 80px;
+      }
+      .section {
+        margin-bottom: 72px;
+        scroll-margin-top: 72px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--accent-subtle);
+      }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+      }
+      h3 {
+        font-size: 19px;
+        font-weight: 600;
+        margin: 32px 0 12px;
+      }
+      p {
+        margin-bottom: 18px;
+        color: #2d2d2d;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        margin-bottom: 24px;
+      }
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 10px;
+        margin: 24px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-lang {
+        font-size: 12px;
+        color: #6e7681;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .copy-btn {
+        font-size: 12px;
+        color: #484f58;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #8b949e;
+      }
+      pre {
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--code-text);
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        background: #e6f4ee;
+        color: #065f46;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .kw {
+        color: #ff7b72;
+      }
+      .ty {
+        color: #79c0ff;
+      }
+      .st {
+        color: #a5d6ff;
+      }
+      .nm {
+        color: #f0883e;
+      }
+      .cm {
+        color: #8b949e;
+        font-style: italic;
+      }
+      .fn {
+        color: #d2a8ff;
+      }
+      .op {
+        color: #c9d1d9;
+      }
+      .pu {
+        color: #e6edf3;
+      }
+      .bi {
+        color: #ffa657;
+      }
+      .rx {
+        color: #7ee787;
+      }
+      .str2 {
+        color: #7ee787;
+      }
+      .tip {
+        background: var(--tip-bg);
+        border-left: 3px solid var(--tip-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .warn {
+        background: var(--warn-bg);
+        border-left: 3px solid var(--warn-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .danger {
+        background: var(--danger-bg);
+        border-left: 3px solid var(--danger-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .info {
+        background: var(--info-bg);
+        border-left: 3px solid var(--info-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .tip-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #16a34a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .warn-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #ea580c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .danger-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #dc2626;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2563eb;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .compare-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .compare-header {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .compare-header.bad {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+      .compare-header.good {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .compare-header.sql {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+      .compare-header.mongo {
+        background: #f0fdf4;
+        color: #057a55;
+      }
+      .compare-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      th {
+        background: var(--tag-bg);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+        vertical-align: middle;
+      }
+      .badge-green {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .badge-red {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .badge-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-violet {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 12px 24px;
+        margin: 36px 0;
+      }
+      .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+      }
+      .concept-card h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        margin-top: 0;
+      }
+      .concept-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .concept-icon {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+      .phase-list {
+        list-style: none;
+        margin: 16px 0;
+      }
+      .phase-list li {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+      }
+      .phase-list li:last-child {
+        border-bottom: none;
+      }
+      .phase-num {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 56px 0;
+      }
+      footer {
+        background: #052e16;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+        padding: 40px 2rem;
+        font-size: 14px;
+      }
+      footer strong {
+        color: white;
+      }
+      footer a {
+        color: #6ee7b7;
+        text-decoration: none;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 640px) {
+        .toc-grid,
+        .compare-grid {
+          grid-template-columns: 1fr;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">← DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">MongoDB & NoSQL</span>
+        <span class="nav-badge">Complete Guide</span>
+      </div>
+      <div class="nav-links">
+        <a href="#nosql">NoSQL Landscape</a>
+        <a href="#modelling">Data Modelling</a>
+        <a href="#queries">CRUD & Queries</a>
+        <a href="#aggregation">Aggregation</a>
+        <a href="#indexes">Indexes</a>
+        <a href="#transactions">Transactions</a>
+        <a href="#mongoose">Mongoose & ODM</a>
+        <a href="#redis">Redis</a>
+        <a href="#elasticsearch">Elasticsearch</a>
+        <a href="#patterns">Patterns</a>
+        <a href="#performance">Performance</a>
+        <a href="#production">Production</a>
+      </div>
+      <span class="nav-rt">~40 min read</span>
+    </nav>
 
-<nav>
-  <div class="nav-logo">Mongo<span>DB</span> & NoSQL</div>
-  <div class="nav-links">
-    <a href="#nosql">NoSQL Landscape</a>
-    <a href="#modelling">Data Modelling</a>
-    <a href="#queries">CRUD & Queries</a>
-    <a href="#aggregation">Aggregation</a>
-    <a href="#indexes">Indexes</a>
-    <a href="#transactions">Transactions</a>
-    <a href="#mongoose">Mongoose & ODM</a>
-    <a href="#redis">Redis</a>
-    <a href="#elasticsearch">Elasticsearch</a>
-    <a href="#patterns">Patterns</a>
-    <a href="#performance">Performance</a>
-    <a href="#production">Production</a>
-  </div>
-  <div class="nav-read-time">~40 min read</div>
-</nav>
-
-<div class="hero">
-  <div class="hero-tag">🍃 Complete Guide</div>
-  <h1>MongoDB & NoSQL Databases</h1>
-  <p class="hero-sub">Data modelling, CRUD, the aggregation pipeline, indexes, transactions, Mongoose, schema design patterns, Redis caching, Elasticsearch, performance tuning, and production operations — everything a senior JavaScript engineer needs to master NoSQL.</p>
-  <div class="hero-meta">
-    <div class="avatar">🍃</div>
-    <div class="meta-text">
-      <strong>NoSQL Deep Dive — Senior JS Edition</strong><br>
-      MongoDB 7 · Redis 7 · Elasticsearch 8 · Node.js 22 — June 2026
+    <div class="hero">
+      <div class="hero-tag">🍃 Complete Guide</div>
+      <h1>MongoDB & NoSQL Databases</h1>
+      <p class="hero-sub">
+        Data modelling, CRUD, the aggregation pipeline, indexes, transactions,
+        Mongoose, schema design patterns, Redis caching, Elasticsearch,
+        performance tuning, and production operations — everything a senior
+        JavaScript engineer needs to master NoSQL.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">🍃</div>
+        <div class="meta-text">
+          <strong>NoSQL Deep Dive — Senior JS Edition</strong><br />
+          MongoDB 7 · Redis 7 · Elasticsearch 8 · Node.js 22 — June 2026
+        </div>
+      </div>
+      <div class="db-pills">
+        <span class="db-pill pill-mongo">🍃 MongoDB 7</span>
+        <span class="db-pill pill-redis">⚡ Redis 7</span>
+        <span class="db-pill pill-elastic">🔍 Elasticsearch 8</span>
+        <span class="db-pill pill-cassandra">💠 NoSQL Patterns</span>
+      </div>
+      <hr class="hero-divider" />
     </div>
-  </div>
-  <div class="db-pills">
-    <span class="db-pill pill-mongo">🍃 MongoDB 7</span>
-    <span class="db-pill pill-redis">⚡ Redis 7</span>
-    <span class="db-pill pill-elastic">🔍 Elasticsearch 8</span>
-    <span class="db-pill pill-cassandra">💠 NoSQL Patterns</span>
-  </div>
-  <hr class="hero-divider">
-</div>
 
-<div class="toc-wrapper">
-  <div class="toc">
-    <h3>Table of Contents</h3>
-    <div class="toc-grid">
-      <a href="#nosql"><span class="toc-num">01</span> The NoSQL Landscape</a>
-      <a href="#mongoose"><span class="toc-num">07</span> Mongoose & ODM Patterns</a>
-      <a href="#modelling"><span class="toc-num">02</span> Data Modelling & Schema Design</a>
-      <a href="#redis"><span class="toc-num">08</span> Redis — Caching & Data Structures</a>
-      <a href="#queries"><span class="toc-num">03</span> CRUD & Query Operators</a>
-      <a href="#elasticsearch"><span class="toc-num">09</span> Elasticsearch & Full-Text Search</a>
-      <a href="#aggregation"><span class="toc-num">04</span> The Aggregation Pipeline</a>
-      <a href="#patterns"><span class="toc-num">10</span> Advanced Schema Patterns</a>
-      <a href="#indexes"><span class="toc-num">05</span> Indexes & Query Optimisation</a>
-      <a href="#performance"><span class="toc-num">11</span> Performance Tuning</a>
-      <a href="#transactions"><span class="toc-num">06</span> Transactions & ACID</a>
-      <a href="#production"><span class="toc-num">12</span> Production Operations</a>
-    </div>
-  </div>
-</div>
-
-<div class="content">
-
-  <!-- ══════════════ 01 NOSQL LANDSCAPE -->
-  <div class="section" id="nosql">
-    <div class="section-label">01 — The Landscape</div>
-    <h2>The NoSQL Landscape</h2>
-    <p class="lead">NoSQL is not one thing — it is a family of database paradigms that trade relational consistency guarantees for flexibility, horizontal scale, or specialised performance. Choosing the right one requires understanding the trade-offs of each.</p>
-
-    <div class="concept-grid">
-      <div class="concept-card">
-        <div class="concept-icon">📄</div>
-        <h4>Document (MongoDB)</h4>
-        <p>Stores JSON-like documents. Rich query language, flexible schema, naturally maps to JavaScript objects. Best for product catalogues, user profiles, CMS.</p>
-      </div>
-      <div class="concept-card">
-        <div class="concept-icon">⚡</div>
-        <h4>Key-Value (Redis)</h4>
-        <p>Ultra-fast in-memory store with optional persistence. O(1) reads and writes. Best for caching, sessions, rate limiting, pub/sub, leaderboards.</p>
-      </div>
-      <div class="concept-card">
-        <div class="concept-icon">🔍</div>
-        <h4>Search (Elasticsearch)</h4>
-        <p>Inverted-index engine built on Lucene. Full-text search, faceting, geospatial queries. Best for log analytics, search boxes, observability.</p>
-      </div>
-      <div class="concept-card">
-        <div class="concept-icon">📊</div>
-        <h4>Wide-Column (Cassandra)</h4>
-        <p>Distributed, linear write scale. Query by partition key. Best for time-series, IoT data, activity feeds at massive scale.</p>
-      </div>
-      <div class="concept-card">
-        <div class="concept-icon">🕸️</div>
-        <h4>Graph (Neo4j)</h4>
-        <p>Native graph storage and traversal. Efficient for highly-connected data. Best for social networks, fraud detection, recommendation engines.</p>
-      </div>
-      <div class="concept-card">
-        <div class="concept-icon">🕐</div>
-        <h4>Time-Series (InfluxDB)</h4>
-        <p>Optimised for timestamped data ingestion and range queries. Best for metrics, monitoring, financial tick data, sensor streams.</p>
+    <div class="toc-wrapper">
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <div class="toc-grid">
+          <a href="#nosql"
+            ><span class="toc-num">01</span> The NoSQL Landscape</a
+          >
+          <a href="#mongoose"
+            ><span class="toc-num">07</span> Mongoose & ODM Patterns</a
+          >
+          <a href="#modelling"
+            ><span class="toc-num">02</span> Data Modelling & Schema Design</a
+          >
+          <a href="#redis"
+            ><span class="toc-num">08</span> Redis — Caching & Data
+            Structures</a
+          >
+          <a href="#queries"
+            ><span class="toc-num">03</span> CRUD & Query Operators</a
+          >
+          <a href="#elasticsearch"
+            ><span class="toc-num">09</span> Elasticsearch & Full-Text Search</a
+          >
+          <a href="#aggregation"
+            ><span class="toc-num">04</span> The Aggregation Pipeline</a
+          >
+          <a href="#patterns"
+            ><span class="toc-num">10</span> Advanced Schema Patterns</a
+          >
+          <a href="#indexes"
+            ><span class="toc-num">05</span> Indexes & Query Optimisation</a
+          >
+          <a href="#performance"
+            ><span class="toc-num">11</span> Performance Tuning</a
+          >
+          <a href="#transactions"
+            ><span class="toc-num">06</span> Transactions & ACID</a
+          >
+          <a href="#production"
+            ><span class="toc-num">12</span> Production Operations</a
+          >
+        </div>
       </div>
     </div>
 
-    <h3>The CAP Theorem in Practice</h3>
-    <p>Every distributed system must choose two of three guarantees when a network partition occurs. MongoDB prioritises CP (consistency + partition tolerance) with replica sets. Redis Cluster prioritises AP (availability + partition tolerance) by default.</p>
+    <div class="content">
+      <!-- ══════════════ 01 NOSQL LANDSCAPE -->
+      <div class="section" id="nosql">
+        <div class="section-label">01 — The Landscape</div>
+        <h2>The NoSQL Landscape</h2>
+        <p class="lead">
+          NoSQL is not one thing — it is a family of database paradigms that
+          trade relational consistency guarantees for flexibility, horizontal
+          scale, or specialised performance. Choosing the right one requires
+          understanding the trade-offs of each.
+        </p>
 
-    <table>
-      <tr><th>Database</th><th>CAP</th><th>Consistency Model</th><th>Best Use Case</th></tr>
-      <tr><td>MongoDB</td><td><span class="badge badge-green">CP</span></td><td>Tunable (eventual → strong)</td><td>General purpose, documents</td></tr>
-      <tr><td>Redis</td><td><span class="badge badge-amber">AP</span></td><td>Eventual (Cluster) / Strong (single)</td><td>Cache, sessions, pub/sub</td></tr>
-      <tr><td>Elasticsearch</td><td><span class="badge badge-amber">AP</span></td><td>Near-real-time (~1s)</td><td>Search, analytics, logs</td></tr>
-      <tr><td>Cassandra</td><td><span class="badge badge-amber">AP</span></td><td>Tunable (quorum)</td><td>High-write time-series</td></tr>
-      <tr><td>PostgreSQL</td><td><span class="badge badge-green">CP</span></td><td>ACID / Serializable</td><td>Financial, relational data</td></tr>
-    </table>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">📄</div>
+            <h4>Document (MongoDB)</h4>
+            <p>
+              Stores JSON-like documents. Rich query language, flexible schema,
+              naturally maps to JavaScript objects. Best for product catalogues,
+              user profiles, CMS.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚡</div>
+            <h4>Key-Value (Redis)</h4>
+            <p>
+              Ultra-fast in-memory store with optional persistence. O(1) reads
+              and writes. Best for caching, sessions, rate limiting, pub/sub,
+              leaderboards.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔍</div>
+            <h4>Search (Elasticsearch)</h4>
+            <p>
+              Inverted-index engine built on Lucene. Full-text search, faceting,
+              geospatial queries. Best for log analytics, search boxes,
+              observability.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📊</div>
+            <h4>Wide-Column (Cassandra)</h4>
+            <p>
+              Distributed, linear write scale. Query by partition key. Best for
+              time-series, IoT data, activity feeds at massive scale.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🕸️</div>
+            <h4>Graph (Neo4j)</h4>
+            <p>
+              Native graph storage and traversal. Efficient for highly-connected
+              data. Best for social networks, fraud detection, recommendation
+              engines.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🕐</div>
+            <h4>Time-Series (InfluxDB)</h4>
+            <p>
+              Optimised for timestamped data ingestion and range queries. Best
+              for metrics, monitoring, financial tick data, sensor streams.
+            </p>
+          </div>
+        </div>
 
-    <div class="info">
-      <div class="info-label">ℹ️ SQL vs NoSQL — Not Either/Or</div>
-      Modern production stacks frequently use both. PostgreSQL for financial transactions, MongoDB for product data, Redis for caching, and Elasticsearch for search is a completely normal architecture. Choose based on access patterns, not hype.
-    </div>
-  </div>
+        <h3>The CAP Theorem in Practice</h3>
+        <p>
+          Every distributed system must choose two of three guarantees when a
+          network partition occurs. MongoDB prioritises CP (consistency +
+          partition tolerance) with replica sets. Redis Cluster prioritises AP
+          (availability + partition tolerance) by default.
+        </p>
 
-  <hr class="divider">
+        <table>
+          <tr>
+            <th>Database</th>
+            <th>CAP</th>
+            <th>Consistency Model</th>
+            <th>Best Use Case</th>
+          </tr>
+          <tr>
+            <td>MongoDB</td>
+            <td><span class="badge badge-green">CP</span></td>
+            <td>Tunable (eventual → strong)</td>
+            <td>General purpose, documents</td>
+          </tr>
+          <tr>
+            <td>Redis</td>
+            <td><span class="badge badge-amber">AP</span></td>
+            <td>Eventual (Cluster) / Strong (single)</td>
+            <td>Cache, sessions, pub/sub</td>
+          </tr>
+          <tr>
+            <td>Elasticsearch</td>
+            <td><span class="badge badge-amber">AP</span></td>
+            <td>Near-real-time (~1s)</td>
+            <td>Search, analytics, logs</td>
+          </tr>
+          <tr>
+            <td>Cassandra</td>
+            <td><span class="badge badge-amber">AP</span></td>
+            <td>Tunable (quorum)</td>
+            <td>High-write time-series</td>
+          </tr>
+          <tr>
+            <td>PostgreSQL</td>
+            <td><span class="badge badge-green">CP</span></td>
+            <td>ACID / Serializable</td>
+            <td>Financial, relational data</td>
+          </tr>
+        </table>
 
-  <!-- ══════════════ 02 DATA MODELLING -->
-  <div class="section" id="modelling">
-    <div class="section-label">02 — Schema Design</div>
-    <h2>Data Modelling & Schema Design</h2>
-    <p class="lead">MongoDB is schema-flexible, not schema-free. Designing documents well — knowing when to embed vs reference, how to optimise for your read patterns, and how to handle relationships — is the skill that separates good from great MongoDB engineers.</p>
+        <div class="info">
+          <div class="info-label">ℹ️ SQL vs NoSQL — Not Either/Or</div>
+          Modern production stacks frequently use both. PostgreSQL for financial
+          transactions, MongoDB for product data, Redis for caching, and
+          Elasticsearch for search is a completely normal architecture. Choose
+          based on access patterns, not hype.
+        </div>
+      </div>
 
-    <h3>Embed vs Reference</h3>
-    <div class="compare-grid">
-      <div class="compare-card">
-        <div class="compare-header mongo">✅ Embed — One-to-few, read together</div>
-        <div class="code-block"><pre><code><span class="cm">// Always read order with its line items
+      <hr class="divider" />
+
+      <!-- ══════════════ 02 DATA MODELLING -->
+      <div class="section" id="modelling">
+        <div class="section-label">02 — Schema Design</div>
+        <h2>Data Modelling & Schema Design</h2>
+        <p class="lead">
+          MongoDB is schema-flexible, not schema-free. Designing documents well
+          — knowing when to embed vs reference, how to optimise for your read
+          patterns, and how to handle relationships — is the skill that
+          separates good from great MongoDB engineers.
+        </p>
+
+        <h3>Embed vs Reference</h3>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header mongo">
+              ✅ Embed — One-to-few, read together
+            </div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Always read order with its line items
 // Items won't grow unboundedly
 // No cross-document transactions needed</span>
 <span class="pu">{</span>
@@ -244,11 +908,15 @@
     <span class="pu">{</span> sku<span class="pu">:</span> <span class="st">"H-042"</span><span class="pu">,</span> qty<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> price<span class="pu">:</span> <span class="nm">49.99</span> <span class="pu">}</span>
   <span class="pu">],</span>
   total<span class="pu">:</span>      <span class="nm">109.97</span>
-<span class="pu">}</span></code></pre></div>
-      </div>
-      <div class="compare-card">
-        <div class="compare-header sql">🔗 Reference — One-to-many, update independently</div>
-        <div class="code-block"><pre><code><span class="cm">// Post has potentially thousands of comments
+<span class="pu">}</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header sql">
+              🔗 Reference — One-to-many, update independently
+            </div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Post has potentially thousands of comments
 // Comments can be queried independently
 // Avoid 16MB document limit</span>
 <span class="pu">{</span>
@@ -258,13 +926,18 @@
   tagIds<span class="pu">:</span>   <span class="pu">[</span><span class="ty">ObjectId</span><span class="pu">(</span><span class="st">"..."</span><span class="pu">)]</span>   <span class="cm">// ref to tags</span>
   <span class="cm">// comments live in comments collection</span>
   <span class="cm">// comments.postId = this._id</span>
-<span class="pu">}</span></code></pre></div>
-      </div>
-    </div>
+<span class="pu">}</span></code></pre>
+            </div>
+          </div>
+        </div>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Schema Design Decision Tree</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// Embed when ALL of these are true:
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Schema Design Decision Tree</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// Embed when ALL of these are true:
 //  ✓ Data is always accessed together with the parent
 //  ✓ Array won't grow unboundedly (< a few hundred items)
 //  ✓ Document won't exceed 16MB
@@ -292,20 +965,28 @@
 // Ask: "What are the top 5 queries this collection serves?"
 // Then design the document structure to make those queries
 // require zero joins (lookups) and use indexes well.</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 03 CRUD & QUERIES -->
-  <div class="section" id="queries">
-    <div class="section-label">03 — Query Language</div>
-    <h2>CRUD & Query Operators</h2>
-    <p class="lead">MongoDB's query language is expressive and composable. Mastery means knowing all the comparison, logical, element, array, and update operators — and which to reach for when.</p>
+      <!-- ══════════════ 03 CRUD & QUERIES -->
+      <div class="section" id="queries">
+        <div class="section-label">03 — Query Language</div>
+        <h2>CRUD & Query Operators</h2>
+        <p class="lead">
+          MongoDB's query language is expressive and composable. Mastery means
+          knowing all the comparison, logical, element, array, and update
+          operators — and which to reach for when.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Comprehensive Query Operators</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> MongoClient, ObjectId <span class="pu">}</span> <span class="kw">from</span> <span class="st">'mongodb'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Comprehensive Query Operators</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> MongoClient, ObjectId <span class="pu">}</span> <span class="kw">from</span> <span class="st">'mongodb'</span>
 
 <span class="kw">const</span> client <span class="op">=</span> <span class="kw">await</span> <span class="fn">MongoClient</span><span class="pu">.</span><span class="fn">connect</span><span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>MONGO_URI<span class="pu">)</span>
 <span class="kw">const</span> db <span class="op">=</span> client<span class="pu">.</span><span class="fn">db</span><span class="pu">(</span><span class="st">'shop'</span><span class="pu">)</span>
@@ -368,20 +1049,29 @@
   <span class="pu">{</span> <span class="op">$</span>inc<span class="pu">:</span> <span class="pu">{</span> stock<span class="pu">:</span> <span class="op">-</span><span class="nm">1</span> <span class="pu">}</span> <span class="pu">},</span>                 <span class="cm">// decrement atomically</span>
   <span class="pu">{</span> returnDocument<span class="pu">:</span> <span class="st">'after'</span> <span class="pu">}</span>            <span class="cm">// return updated doc</span>
 <span class="pu">)</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 04 AGGREGATION -->
-  <div class="section" id="aggregation">
-    <div class="section-label">04 — Data Processing</div>
-    <h2>The Aggregation Pipeline</h2>
-    <p class="lead">The aggregation pipeline is MongoDB's most powerful feature — a multi-stage data processing framework that can transform, group, join, reshape, and analyse data with sub-millisecond latency on properly indexed collections.</p>
+      <!-- ══════════════ 04 AGGREGATION -->
+      <div class="section" id="aggregation">
+        <div class="section-label">04 — Data Processing</div>
+        <h2>The Aggregation Pipeline</h2>
+        <p class="lead">
+          The aggregation pipeline is MongoDB's most powerful feature — a
+          multi-stage data processing framework that can transform, group, join,
+          reshape, and analyse data with sub-millisecond latency on properly
+          indexed collections.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Aggregation Pipeline Mastery</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Stage reference ───────────────────────────────
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Aggregation Pipeline Mastery</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Stage reference ───────────────────────────────
 // $match     — filter documents (use EARLY, hits indexes)
 // $project   — reshape / add / remove fields
 // $group     — aggregate + accumulate ($sum, $avg, $push)
@@ -445,20 +1135,27 @@
   <span class="pu">}},</span>
   <span class="pu">{</span> <span class="op">$</span>unwind<span class="pu">:</span> <span class="pu">{</span> path<span class="pu">:</span> <span class="st">'$user'</span><span class="pu">,</span> preserveNullAndEmptyArrays<span class="pu">:</span> <span class="kw">true</span> <span class="pu">}</span> <span class="pu">}</span>
 <span class="pu">]).</span><span class="fn">toArray</span><span class="pu">()</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 05 INDEXES -->
-  <div class="section" id="indexes">
-    <div class="section-label">05 — Query Optimisation</div>
-    <h2>Indexes & Query Optimisation</h2>
-    <p class="lead">Indexes are the single most impactful performance lever in MongoDB. A missing index on a 10M-document collection turns a 1ms query into a 10-second collection scan. Know every index type and when to apply it.</p>
+      <!-- ══════════════ 05 INDEXES -->
+      <div class="section" id="indexes">
+        <div class="section-label">05 — Query Optimisation</div>
+        <h2>Indexes & Query Optimisation</h2>
+        <p class="lead">
+          Indexes are the single most impactful performance lever in MongoDB. A
+          missing index on a 10M-document collection turns a 1ms query into a
+          10-second collection scan. Know every index type and when to apply it.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Index Types & Creation</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Single field ──────────────────────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript — Index Types & Creation</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Single field ──────────────────────────────────</span>
 <span class="kw">await</span> products<span class="pu">.</span><span class="fn">createIndex</span><span class="pu">({</span> price<span class="pu">:</span> <span class="nm">1</span> <span class="pu">})</span>           <span class="cm">// 1=asc, -1=desc</span>
 
 <span class="cm">// ── Compound — field order matters! ──────────────</span>
@@ -507,25 +1204,39 @@
 //   winningPlan.stage === 'IXSCAN'   → good (index used)
 //   winningPlan.stage === 'COLLSCAN' → bad (full scan)
 //   executionStats.totalDocsExamined ≈ nReturned → good (index is selective)</span></code></pre>
-    </div>
+        </div>
 
-    <div class="warn">
-      <div class="warn-label">⚠️ The ESR Rule</div>
-      For compound indexes, always order fields as: <strong>E</strong>quality fields first, <strong>S</strong>ort fields second, <strong>R</strong>ange fields last. A query filtering on <code>category</code> (equality), sorting by <code>createdAt</code>, and ranging on <code>price</code> needs the index in exactly that order to avoid an in-memory sort.
-    </div>
-  </div>
+        <div class="warn">
+          <div class="warn-label">⚠️ The ESR Rule</div>
+          For compound indexes, always order fields as:
+          <strong>E</strong>quality fields first, <strong>S</strong>ort fields
+          second, <strong>R</strong>ange fields last. A query filtering on
+          <code>category</code> (equality), sorting by <code>createdAt</code>,
+          and ranging on <code>price</code> needs the index in exactly that
+          order to avoid an in-memory sort.
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 06 TRANSACTIONS -->
-  <div class="section" id="transactions">
-    <div class="section-label">06 — ACID in MongoDB</div>
-    <h2>Transactions & ACID Guarantees</h2>
-    <p class="lead">MongoDB has supported multi-document ACID transactions since version 4.0. They work across collections, databases (within a replica set), and sharded clusters — but carry overhead that makes careful design the better first choice.</p>
+      <!-- ══════════════ 06 TRANSACTIONS -->
+      <div class="section" id="transactions">
+        <div class="section-label">06 — ACID in MongoDB</div>
+        <h2>Transactions & ACID Guarantees</h2>
+        <p class="lead">
+          MongoDB has supported multi-document ACID transactions since version
+          4.0. They work across collections, databases (within a replica set),
+          and sharded clusters — but carry overhead that makes careful design
+          the better first choice.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Multi-Document Transactions</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> MongoClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'mongodb'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Multi-Document Transactions</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> MongoClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'mongodb'</span>
 
 <span class="kw">async function</span> <span class="fn">transferFunds</span><span class="pu">(</span>fromId, toId, amount<span class="pu">)</span> <span class="pu">{</span>
   <span class="kw">const</span> session <span class="op">=</span> client<span class="pu">.</span><span class="fn">startSession</span><span class="pu">()</span>
@@ -562,25 +1273,43 @@
     <span class="kw">await</span> session<span class="pu">.</span><span class="fn">endSession</span><span class="pu">()</span>
   <span class="pu">}</span>
 <span class="pu">}</span></code></pre>
-    </div>
+        </div>
 
-    <div class="tip">
-      <div class="tip-label">💡 Design away transactions first</div>
-      Transactions in MongoDB carry 2–3× the latency of a regular write because of the distributed coordination. Before reaching for a transaction, ask: <em>can I redesign the schema to make this a single atomic document update?</em> The <code>$set</code> + <code>$inc</code> + <code>$push</code> operators on a single document are always atomic without transactions.
-    </div>
-  </div>
+        <div class="tip">
+          <div class="tip-label">💡 Design away transactions first</div>
+          Transactions in MongoDB carry 2–3× the latency of a regular write
+          because of the distributed coordination. Before reaching for a
+          transaction, ask:
+          <em
+            >can I redesign the schema to make this a single atomic document
+            update?</em
+          >
+          The <code>$set</code> + <code>$inc</code> +
+          <code>$push</code> operators on a single document are always atomic
+          without transactions.
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 07 MONGOOSE -->
-  <div class="section" id="mongoose">
-    <div class="section-label">07 — ODM Layer</div>
-    <h2>Mongoose & ODM Patterns</h2>
-    <p class="lead">Mongoose adds schema validation, middleware hooks, virtuals, and a rich model API on top of the native driver. Used correctly it makes codebases dramatically more maintainable. Used naïvely it hides performance problems.</p>
+      <!-- ══════════════ 07 MONGOOSE -->
+      <div class="section" id="mongoose">
+        <div class="section-label">07 — ODM Layer</div>
+        <h2>Mongoose & ODM Patterns</h2>
+        <p class="lead">
+          Mongoose adds schema validation, middleware hooks, virtuals, and a
+          rich model API on top of the native driver. Used correctly it makes
+          codebases dramatically more maintainable. Used naïvely it hides
+          performance problems.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Production Mongoose Schema</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> mongoose <span class="kw">from</span> <span class="st">'mongoose'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Production Mongoose Schema</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> mongoose <span class="kw">from</span> <span class="st">'mongoose'</span>
 <span class="kw">const</span> <span class="pu">{</span> Schema, model <span class="pu">}</span> <span class="op">=</span> mongoose
 
 <span class="kw">const</span> productSchema <span class="op">=</span> <span class="kw">new</span> <span class="fn">Schema</span><span class="pu">({</span>
@@ -633,20 +1362,29 @@ productSchema<span class="pu">.</span><span class="fn">statics</span><span class
   <span class="pu">.</span><span class="fn">limit</span><span class="pu">(</span><span class="nm">20</span><span class="pu">)</span>
 
 <span class="kw">export const</span> Product <span class="op">=</span> model<span class="pu">(</span><span class="st">'Product'</span><span class="pu">,</span> productSchema<span class="pu">)</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 08 REDIS -->
-  <div class="section" id="redis">
-    <div class="section-label">08 — In-Memory Power</div>
-    <h2>Redis — Caching & Data Structures</h2>
-    <p class="lead">Redis is not just a cache — it is a multi-model data store with strings, hashes, lists, sorted sets, streams, pub/sub, and Lua scripting. Its O(1) complexity on most operations makes it the first line of defence against slow DB queries.</p>
+      <!-- ══════════════ 08 REDIS -->
+      <div class="section" id="redis">
+        <div class="section-label">08 — In-Memory Power</div>
+        <h2>Redis — Caching & Data Structures</h2>
+        <p class="lead">
+          Redis is not just a cache — it is a multi-model data store with
+          strings, hashes, lists, sorted sets, streams, pub/sub, and Lua
+          scripting. Its O(1) complexity on most operations makes it the first
+          line of defence against slow DB queries.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Redis Data Structures in Practice</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> Redis <span class="pu">}</span> <span class="kw">from</span> <span class="st">'ioredis'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Redis Data Structures in Practice</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> Redis <span class="pu">}</span> <span class="kw">from</span> <span class="st">'ioredis'</span>
 
 <span class="kw">const</span> redis <span class="op">=</span> <span class="kw">new</span> <span class="fn">Redis</span><span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>REDIS_URL<span class="pu">)</span>
 
@@ -702,20 +1440,29 @@ subscriber<span class="pu">.</span><span class="fn">on</span><span class="pu">(<
   <span class="fn">sendNotification</span><span class="pu">(</span>order<span class="pu">.</span>userId<span class="pu">,</span> <span class="st">'Order confirmed!'</span><span class="pu">)</span>
 <span class="pu">})</span>
 <span class="kw">await</span> publisher<span class="pu">.</span><span class="fn">publish</span><span class="pu">(</span><span class="st">'order:created'</span><span class="pu">,</span> <span class="bi">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>order<span class="pu">))</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 09 ELASTICSEARCH -->
-  <div class="section" id="elasticsearch">
-    <div class="section-label">09 — Full-Text Search</div>
-    <h2>Elasticsearch & Full-Text Search</h2>
-    <p class="lead">Elasticsearch delivers the search experience MongoDB's text indexes can't — relevance scoring, autocomplete, fuzzy matching, faceted navigation, and sub-second full-text search across billions of documents.</p>
+      <!-- ══════════════ 09 ELASTICSEARCH -->
+      <div class="section" id="elasticsearch">
+        <div class="section-label">09 — Full-Text Search</div>
+        <h2>Elasticsearch & Full-Text Search</h2>
+        <p class="lead">
+          Elasticsearch delivers the search experience MongoDB's text indexes
+          can't — relevance scoring, autocomplete, fuzzy matching, faceted
+          navigation, and sub-second full-text search across billions of
+          documents.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Elasticsearch Search Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> Client <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@elastic/elasticsearch'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Elasticsearch Search Patterns</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> Client <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@elastic/elasticsearch'</span>
 
 <span class="kw">const</span> es <span class="op">=</span> <span class="kw">new</span> <span class="fn">Client</span><span class="pu">({</span> node<span class="pu">:</span> process<span class="pu">.</span>env<span class="pu">.</span>ELASTICSEARCH_URL <span class="pu">})</span>
 
@@ -772,20 +1519,28 @@ subscriber<span class="pu">.</span><span class="fn">on</span><span class="pu">(<
     <span class="pu">}</span>
   <span class="pu">}</span>
 <span class="pu">})</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 10 PATTERNS -->
-  <div class="section" id="patterns">
-    <div class="section-label">10 — Advanced Patterns</div>
-    <h2>Advanced Schema Patterns</h2>
-    <p class="lead">The MongoDB documentation identifies 12 common schema design patterns. These five are the ones every production MongoDB engineer needs to know deeply.</p>
+      <!-- ══════════════ 10 PATTERNS -->
+      <div class="section" id="patterns">
+        <div class="section-label">10 — Advanced Patterns</div>
+        <h2>Advanced Schema Patterns</h2>
+        <p class="lead">
+          The MongoDB documentation identifies 12 common schema design patterns.
+          These five are the ones every production MongoDB engineer needs to
+          know deeply.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — The Bucket, Outlier & Computed Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── 1. BUCKET PATTERN — time-series data ─────────
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — The Bucket, Outlier & Computed Patterns</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── 1. BUCKET PATTERN — time-series data ─────────
 // Instead of one document per measurement (millions of docs),
 // bucket by time interval (thousands of docs)</span>
 <span class="pu">{</span>
@@ -841,20 +1596,29 @@ subscriber<span class="pu">.</span><span class="fn">on</span><span class="pu">(<
 <span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'categories'</span><span class="pu">).</span><span class="fn">find</span><span class="pu">({</span>
   path<span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>regex<span class="pu">:</span> <span class="st">`,root,`</span> <span class="pu">}</span>
 <span class="pu">}).</span><span class="fn">toArray</span><span class="pu">()</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 11 PERFORMANCE -->
-  <div class="section" id="performance">
-    <div class="section-label">11 — Tuning</div>
-    <h2>Performance Tuning</h2>
-    <p class="lead">MongoDB performance problems almost always fall into four categories: missing indexes, overfetching (retrieving more data than needed), write contention on hot documents, and unbounded collection scans in aggregations.</p>
+      <!-- ══════════════ 11 PERFORMANCE -->
+      <div class="section" id="performance">
+        <div class="section-label">11 — Tuning</div>
+        <h2>Performance Tuning</h2>
+        <p class="lead">
+          MongoDB performance problems almost always fall into four categories:
+          missing indexes, overfetching (retrieving more data than needed),
+          write contention on hot documents, and unbounded collection scans in
+          aggregations.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Performance Diagnostics & Fixes</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Find slow queries in the profiler ────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Performance Diagnostics & Fixes</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Find slow queries in the profiler ────────────</span>
 <span class="kw">await</span> db<span class="pu">.</span><span class="fn">setProfilingLevel</span><span class="pu">(</span><span class="nm">1</span><span class="pu">,</span> <span class="pu">{</span> slowms<span class="pu">:</span> <span class="nm">100</span> <span class="pu">})</span>  <span class="cm">// log queries > 100ms</span>
 <span class="kw">const</span> slowQueries <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'system.profile'</span><span class="pu">).</span><span class="fn">find</span><span class="pu">({</span>
   millis<span class="pu">:</span>     <span class="pu">{</span> <span class="op">$</span>gt<span class="pu">:</span> <span class="nm">100</span> <span class="pu">},</span>
@@ -890,29 +1654,63 @@ subscriber<span class="pu">.</span><span class="fn">on</span><span class="pu">(<
 <span class="kw">await</span> products<span class="pu">.</span><span class="fn">find</span><span class="pu">({},</span> <span class="pu">{</span>
   projection<span class="pu">:</span> <span class="pu">{</span> name<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> price<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> slug<span class="pu">:</span> <span class="nm">1</span><span class="pu">,</span> _id<span class="pu">:</span> <span class="nm">1</span> <span class="pu">}</span>
 <span class="pu">}).</span><span class="fn">toArray</span><span class="pu">()</span></code></pre>
-    </div>
+        </div>
 
-    <table>
-      <tr><th>Symptom</th><th>Root Cause</th><th>Fix</th></tr>
-      <tr><td>Query &gt;100ms on small collection</td><td>COLLSCAN — missing index</td><td>Add compound index matching ESR rule</td></tr>
-      <tr><td>Aggregation slow on large collection</td><td><code>$match</code> not first, or after <code>$project</code></td><td>Always <code>$match</code> early to hit indexes</td></tr>
-      <tr><td>High write latency on one document</td><td>Hot document contention</td><td>Bucket pattern or atomic increment only</td></tr>
-      <tr><td>Memory error in aggregation</td><td>Exceeds 100MB allowance</td><td>Add <code>{ allowDiskUse: true }</code> + check stages</td></tr>
-      <tr><td>Slow <code>populate()</code> in Mongoose</td><td>N+1 round-trips</td><td>Use <code>$lookup</code> aggregation or batch refs</td></tr>
-    </table>
-  </div>
+        <table>
+          <tr>
+            <th>Symptom</th>
+            <th>Root Cause</th>
+            <th>Fix</th>
+          </tr>
+          <tr>
+            <td>Query &gt;100ms on small collection</td>
+            <td>COLLSCAN — missing index</td>
+            <td>Add compound index matching ESR rule</td>
+          </tr>
+          <tr>
+            <td>Aggregation slow on large collection</td>
+            <td>
+              <code>$match</code> not first, or after <code>$project</code>
+            </td>
+            <td>Always <code>$match</code> early to hit indexes</td>
+          </tr>
+          <tr>
+            <td>High write latency on one document</td>
+            <td>Hot document contention</td>
+            <td>Bucket pattern or atomic increment only</td>
+          </tr>
+          <tr>
+            <td>Memory error in aggregation</td>
+            <td>Exceeds 100MB allowance</td>
+            <td>Add <code>{ allowDiskUse: true }</code> + check stages</td>
+          </tr>
+          <tr>
+            <td>Slow <code>populate()</code> in Mongoose</td>
+            <td>N+1 round-trips</td>
+            <td>Use <code>$lookup</code> aggregation or batch refs</td>
+          </tr>
+        </table>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ══════════════ 12 PRODUCTION -->
-  <div class="section" id="production">
-    <div class="section-label">12 — Operations</div>
-    <h2>Production Operations</h2>
-    <p class="lead">Running MongoDB in production means replica sets for availability, read preferences for scale, change streams for real-time events, and a disciplined backup and monitoring strategy.</p>
+      <!-- ══════════════ 12 PRODUCTION -->
+      <div class="section" id="production">
+        <div class="section-label">12 — Operations</div>
+        <h2>Production Operations</h2>
+        <p class="lead">
+          Running MongoDB in production means replica sets for availability,
+          read preferences for scale, change streams for real-time events, and a
+          disciplined backup and monitoring strategy.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Change Streams & Read Preferences</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Change streams — real-time CDC ────────────────
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Change Streams & Read Preferences</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Change streams — real-time CDC ────────────────
 // Listen to any insert/update/delete on a collection</span>
 <span class="kw">const</span> changeStream <span class="op">=</span> db<span class="pu">.</span><span class="fn">collection</span><span class="pu">(</span><span class="st">'orders'</span><span class="pu">).</span><span class="fn">watch</span><span class="pu">([</span>
   <span class="pu">{</span> <span class="op">$</span>match<span class="pu">:</span> <span class="pu">{</span> <span class="st">'operationType'</span><span class="pu">:</span> <span class="pu">{</span> <span class="op">$</span>in<span class="pu">:</span> <span class="pu">[</span><span class="st">'insert'</span><span class="pu">,</span> <span class="st">'update'</span><span class="pu">]</span> <span class="pu">}</span> <span class="pu">}</span> <span class="pu">},</span>
@@ -948,43 +1746,108 @@ subscriber<span class="pu">.</span><span class="fn">on</span><span class="pu">(<
     wtimeout<span class="pu">:</span> <span class="nm">5000</span>        <span class="cm">// fail if majority not acknowledged in 5s</span>
   <span class="pu">}</span>
 <span class="pu">})</span></code></pre>
+        </div>
+
+        <div class="danger">
+          <div class="danger-label">
+            🚨 Never run a standalone MongoDB in production
+          </div>
+          A single-node MongoDB has no replication, no automatic failover, and
+          no oplog. A replica set with at least three nodes (primary + 2
+          secondaries, or primary + secondary + arbiter) is the minimum for any
+          production workload. Use MongoDB Atlas or a managed service to skip
+          the ops burden.
+        </div>
+
+        <h3>Production Readiness Checklist</h3>
+        <ul class="phase-list">
+          <li>
+            <div class="phase-num">✅</div>
+            <div>
+              <strong>Replica set deployed</strong> — minimum 3 nodes. Write
+              concern <code>majority</code> on critical writes. Automatic
+              failover tested.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">✅</div>
+            <div>
+              <strong>All queries use indexes</strong> — EXPLAIN run on every
+              query in hot paths. No COLLSCAN in production profiles. Unused
+              indexes identified and dropped.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">✅</div>
+            <div>
+              <strong>Connection pooling configured</strong> —
+              <code>maxPoolSize</code> set to
+              <code>floor(DB_max_connections / app_instances)</code>. Idle
+              timeout and server selection timeout set.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">✅</div>
+            <div>
+              <strong>Schema validation enabled</strong> —
+              <code>$jsonSchema</code> validator on all collections. Prevents
+              garbage data at the DB layer, not just application layer.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">✅</div>
+            <div>
+              <strong>Backups automated</strong> — daily
+              <code>mongodump</code> or continuous Atlas backups. Point-in-time
+              restore tested. Backup encryption enabled.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">✅</div>
+            <div>
+              <strong>Slow query profiler active</strong> —
+              <code>slowms: 100</code> in production. Alerts on new COLLSCAN
+              patterns. Weekly index review scheduled.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">✅</div>
+            <div>
+              <strong>Authentication & TLS enforced</strong> — SCRAM-SHA-256
+              auth. TLS on all connections. IP allowlist on Atlas. Principle of
+              least privilege per application user.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">✅</div>
+            <div>
+              <strong>TTL indexes on ephemeral data</strong> — sessions, tokens,
+              rate-limit keys, soft-delete records all expire automatically.
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
 
-    <div class="danger">
-      <div class="danger-label">🚨 Never run a standalone MongoDB in production</div>
-      A single-node MongoDB has no replication, no automatic failover, and no oplog. A replica set with at least three nodes (primary + 2 secondaries, or primary + secondary + arbiter) is the minimum for any production workload. Use MongoDB Atlas or a managed service to skip the ops burden.
-    </div>
+    <footer>
+      <strong>MongoDB & NoSQL Databases — Complete Guide</strong><br />
+      Part of the <a href="index.html">DevDive</a> series — Deep dives for
+      serious developers.<br /><br />
+      <span style="color: rgba(255, 255, 255, 0.3)"
+        >© 2026 DevDive · MongoDB 7 · Redis 7 · Elasticsearch 8 · June
+        2026</span
+      >
+    </footer>
 
-    <h3>Production Readiness Checklist</h3>
-    <ul class="phase-list">
-      <li><div class="phase-num">✅</div><div><strong>Replica set deployed</strong> — minimum 3 nodes. Write concern <code>majority</code> on critical writes. Automatic failover tested.</div></li>
-      <li><div class="phase-num">✅</div><div><strong>All queries use indexes</strong> — EXPLAIN run on every query in hot paths. No COLLSCAN in production profiles. Unused indexes identified and dropped.</div></li>
-      <li><div class="phase-num">✅</div><div><strong>Connection pooling configured</strong> — <code>maxPoolSize</code> set to <code>floor(DB_max_connections / app_instances)</code>. Idle timeout and server selection timeout set.</div></li>
-      <li><div class="phase-num">✅</div><div><strong>Schema validation enabled</strong> — <code>$jsonSchema</code> validator on all collections. Prevents garbage data at the DB layer, not just application layer.</div></li>
-      <li><div class="phase-num">✅</div><div><strong>Backups automated</strong> — daily <code>mongodump</code> or continuous Atlas backups. Point-in-time restore tested. Backup encryption enabled.</div></li>
-      <li><div class="phase-num">✅</div><div><strong>Slow query profiler active</strong> — <code>slowms: 100</code> in production. Alerts on new COLLSCAN patterns. Weekly index review scheduled.</div></li>
-      <li><div class="phase-num">✅</div><div><strong>Authentication & TLS enforced</strong> — SCRAM-SHA-256 auth. TLS on all connections. IP allowlist on Atlas. Principle of least privilege per application user.</div></li>
-      <li><div class="phase-num">✅</div><div><strong>TTL indexes on ephemeral data</strong> — sessions, tokens, rate-limit keys, soft-delete records all expire automatically.</div></li>
-    </ul>
-  </div>
-
-</div>
-
-<footer>
-  <strong>MongoDB & NoSQL Databases — Complete Guide</strong><br>
-  Part of the <a href="index.html">DevDive</a> series — Deep dives for serious developers.<br><br>
-  <span style="color:rgba(255,255,255,.3)">© 2026 DevDive · MongoDB 7 · Redis 7 · Elasticsearch 8 · June 2026</span>
-</footer>
-
-<script>
-function copyCode(btn) {
-  const pre = btn.closest('.code-block').querySelector('pre')
-  navigator.clipboard.writeText(pre.innerText).then(() => {
-    const orig = btn.textContent
-    btn.textContent = 'Copied!'
-    setTimeout(() => btn.textContent = orig, 2000)
-  })
-}
-</script>
-</body>
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest(".code-block").querySelector("pre");
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = orig), 2000);
+        });
+      }
+    </script>
+  </body>
 </html>

@@ -1,203 +1,919 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cloud Engineering — AWS vs GCP vs Azure: The Complete Guide</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg:#f4f9fc;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
-  --text-muted:#9a9a9a;--accent:#0891b2;--accent-light:#ecfeff;--accent-subtle:#cffafe;
-  --border:#d4edf4;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#e8f6fb;
-  --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
-  --danger-bg:#fff1f2;--danger-border:#dc2626;--info-bg:#eff6ff;--info-border:#2563eb;
-  --aws:#ff9900;--gcp:#4285f4;--azure:#0078d4;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.75}
-nav{position:sticky;top:0;z-index:100;background:rgba(244,249,252,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
-.nav-logo{font-weight:600;font-size:15px;letter-spacing:-0.3px}.nav-logo span{color:var(--accent)}
-.nav-links{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}.nav-links::-webkit-scrollbar{display:none}
-.nav-links a{font-size:12.5px;color:var(--text-secondary);text-decoration:none;padding:5px 9px;border-radius:6px;transition:all .15s;white-space:nowrap}
-.nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
-.nav-read-time{font-size:13px;color:var(--text-muted);flex-shrink:0}
-.hero{max-width:780px;margin:0 auto;padding:64px 2rem 48px}
-.hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;margin-bottom:24px;letter-spacing:.3px;text-transform:uppercase}
-.hero h1{font-family:'Lora',serif;font-size:clamp(32px,5vw,50px);font-weight:600;line-height:1.12;letter-spacing:-.5px;margin-bottom:20px}
-.hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
-.hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#164e63);display:flex;align-items:center;justify-content:center;font-size:16px}
-.meta-text{font-size:14px;color:var(--text-secondary)}.meta-text strong{color:var(--text-primary)}
-.hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
-.provider-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
-.pp{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 14px;border-radius:100px;border:1px solid}
-.pp-aws{background:#fff8ee;color:#b45309;border-color:#fde68a}
-.pp-gcp{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
-.pp-azure{background:#e0f2fe;color:#0369a1;border-color:#bae6fd}
-.toc-wrapper{max-width:780px;margin:0 auto;padding:0 2rem 8px}
-.toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:40px}
-.toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
-.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
-.toc a{font-size:14px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
-.toc a:hover{color:var(--accent)}.toc-num{font-size:12px;color:var(--text-muted);font-weight:500;min-width:20px}
-.content{max-width:780px;margin:0 auto;padding:0 2rem 80px}
-.section{margin-bottom:72px;scroll-margin-top:72px}
-.section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section-label::after{content:'';flex:1;height:1px;background:var(--accent-subtle)}
-h2{font-family:'Lora',serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:16px}
-h3{font-size:19px;font-weight:600;margin:32px 0 12px}
-p{margin-bottom:18px;color:#2d2d2d}.lead{font-size:19px;color:var(--text-secondary);font-weight:300;margin-bottom:24px}
-.code-block{background:var(--code-bg);border-radius:10px;margin:24px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
-.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
-.code-lang{font-size:12px;color:#6e7681;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
-.copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:'Outfit',sans-serif;transition:all .15s}
-.copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
-pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:var(--code-text)}
-pre code{background:none;padding:0;font-size:inherit}
-code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#e0f5fb;color:#0e7490;padding:2px 6px;border-radius:4px}
-.kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
-.cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
-.pu{color:#e6edf3}.bi{color:#ffa657}.str2{color:#7ee787}
-.tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-.danger{background:var(--danger-bg);border-left:3px solid var(--danger-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-.info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-.tip-label{font-size:12px;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.warn-label{font-size:12px;font-weight:600;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.danger-label{font-size:12px;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.info-label{font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-/* Provider comparison 3-col grid */
-.provider-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:24px 0}
-.provider-card{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
-.pc-head{padding:10px 14px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
-.pc-aws{background:#fff8ee;color:#b45309}.pc-gcp{background:#eff6ff;color:#1d4ed8}.pc-azure{background:#e0f2fe;color:#0369a1}
-.provider-card .code-block{border-radius:0;margin:0;border:none}
-.provider-card pre{padding:14px 16px;font-size:12.5px}
-/* compare 2-col */
-.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
-.compare-card{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
-.compare-header{padding:10px 16px;font-size:13px;font-weight:600}
-.compare-header.bad{background:#fef2f2;color:#dc2626}.compare-header.good{background:#f0fdf4;color:#16a34a}
-.compare-card .code-block{border-radius:0;margin:0;border:none}
-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px}
-th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
-td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
-tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg)}
-.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;letter-spacing:.3px;vertical-align:middle}
-.badge-green{background:#dcfce7;color:#15803d}.badge-amber{background:#fef3c7;color:#b45309}
-.badge-red{background:#fee2e2;color:#b91c1c}.badge-blue{background:#dbeafe;color:#1d4ed8}
-.badge-cyan{background:#cffafe;color:#0e7490}
-.pullquote{font-family:'Lora',serif;font-style:italic;font-size:22px;line-height:1.5;color:var(--text-secondary);border-left:4px solid var(--accent);padding:12px 24px;margin:36px 0}
-.concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0}
-.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
-.concept-card h4{font-size:15px;font-weight:600;margin-bottom:6px;margin-top:0}
-.concept-card p{font-size:14px;color:var(--text-secondary);margin:0;line-height:1.5}
-.concept-icon{font-size:22px;margin-bottom:10px}
-.phase-list{list-style:none;margin:16px 0}
-.phase-list li{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border);font-size:15px}
-.phase-list li:last-child{border-bottom:none}
-.phase-num{min-width:28px;height:28px;border-radius:50%;background:var(--accent-subtle);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
-.divider{border:none;border-top:1px solid var(--border);margin:56px 0}
-footer{background:#082032;color:rgba(255,255,255,.6);text-align:center;padding:40px 2rem;font-size:14px}
-footer strong{color:#fff}footer a{color:#67e8f9;text-decoration:none}footer a:hover{text-decoration:underline}
-@media(max-width:640px){.toc-grid,.compare-grid,.provider-grid{grid-template-columns:1fr}.nav-links{display:none}}
-</style>
-</head>
-<body>
-<nav>
-  <div class="nav-logo">Cloud<span>Engineering</span></div>
-  <div class="nav-links">
-    <a href="#networking">Networking</a>
-    <a href="#containers">Containers</a>
-    <a href="#kubernetes">Kubernetes</a>
-    <a href="#compute">Compute</a>
-    <a href="#databases">Databases</a>
-    <a href="#messaging">Messaging</a>
-    <a href="#iam">IAM</a>
-    <a href="#observability">Observability</a>
-    <a href="#cicd">CI/CD</a>
-    <a href="#scalability">Scalability</a>
-    <a href="#ha">HA & DR</a>
-    <a href="#cost">Cost</a>
-    <a href="#iac">IaC</a>
-    <a href="#serverless">Serverless</a>
-  </div>
-  <div class="nav-read-time">~50 min read</div>
-</nav>
-<div class="hero">
-  <div class="hero-tag">☁️ Complete Guide</div>
-  <h1>Cloud Engineering</h1>
-  <p class="hero-sub">VPCs, containers, Kubernetes, compute, managed databases, messaging, IAM, observability, CI/CD, scalability patterns, high availability, cost optimisation, infrastructure as code, and serverless — everything compared side-by-side across AWS, GCP, and Azure.</p>
-  <div class="hero-meta">
-    <div class="avatar">☁️</div>
-    <div class="meta-text">
-      <strong>Cloud Architecture Deep Dive — Provider Comparison Edition</strong><br>
-      AWS · Google Cloud · Microsoft Azure — June 2026
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cloud Engineering — AWS vs GCP vs Azure: The Complete Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f4f9fc;
+        --surface: #fff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b6b6b;
+        --text-muted: #9a9a9a;
+        --accent: #0891b2;
+        --accent-light: #ecfeff;
+        --accent-subtle: #cffafe;
+        --border: #d4edf4;
+        --code-bg: #0d1117;
+        --code-text: #e6edf3;
+        --tag-bg: #e8f6fb;
+        --tip-bg: #f0fdf4;
+        --tip-border: #16a34a;
+        --warn-bg: #fff7ed;
+        --warn-border: #ea580c;
+        --danger-bg: #fff1f2;
+        --danger-border: #dc2626;
+        --info-bg: #eff6ff;
+        --info-border: #2563eb;
+        --aws: #ff9900;
+        --gcp: #4285f4;
+        --azure: #0078d4;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.75;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(244, 249, 252, 0.94);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover {
+        color: var(--accent);
+      }
+      .nav-pipe {
+        color: var(--border);
+        font-size: 18px;
+      }
+      .nav-brand {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: var(--accent-light);
+        color: var(--accent);
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+      .nav-links a {
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 5px 9px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--tag-bg);
+        color: var(--text-primary);
+      }
+      .nav-rt {
+        font-size: 13px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 2rem 48px;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(32px, 5vw, 50px);
+        font-weight: 600;
+        line-height: 1.12;
+        letter-spacing: -0.5px;
+        margin-bottom: 20px;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0891b2, #164e63);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .meta-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .meta-text strong {
+        color: var(--text-primary);
+      }
+      .hero-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin-top: 32px;
+      }
+      .provider-pills {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      .pp {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px 14px;
+        border-radius: 100px;
+        border: 1px solid;
+      }
+      .pp-aws {
+        background: #fff8ee;
+        color: #b45309;
+        border-color: #fde68a;
+      }
+      .pp-gcp {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border-color: #bfdbfe;
+      }
+      .pp-azure {
+        background: #e0f2fe;
+        color: #0369a1;
+        border-color: #bae6fd;
+      }
+      .toc-wrapper {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 8px;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 40px;
+      }
+      .toc h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 24px;
+      }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+        transition: color 0.15s;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc-num {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+        min-width: 20px;
+      }
+      .content {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 80px;
+      }
+      .section {
+        margin-bottom: 72px;
+        scroll-margin-top: 72px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--accent-subtle);
+      }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+      }
+      h3 {
+        font-size: 19px;
+        font-weight: 600;
+        margin: 32px 0 12px;
+      }
+      p {
+        margin-bottom: 18px;
+        color: #2d2d2d;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        margin-bottom: 24px;
+      }
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 10px;
+        margin: 24px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-lang {
+        font-size: 12px;
+        color: #6e7681;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .copy-btn {
+        font-size: 12px;
+        color: #484f58;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #8b949e;
+      }
+      pre {
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--code-text);
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        background: #e0f5fb;
+        color: #0e7490;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .kw {
+        color: #ff7b72;
+      }
+      .ty {
+        color: #79c0ff;
+      }
+      .st {
+        color: #a5d6ff;
+      }
+      .nm {
+        color: #f0883e;
+      }
+      .cm {
+        color: #8b949e;
+        font-style: italic;
+      }
+      .fn {
+        color: #d2a8ff;
+      }
+      .op {
+        color: #c9d1d9;
+      }
+      .pu {
+        color: #e6edf3;
+      }
+      .bi {
+        color: #ffa657;
+      }
+      .str2 {
+        color: #7ee787;
+      }
+      .tip {
+        background: var(--tip-bg);
+        border-left: 3px solid var(--tip-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .warn {
+        background: var(--warn-bg);
+        border-left: 3px solid var(--warn-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .danger {
+        background: var(--danger-bg);
+        border-left: 3px solid var(--danger-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .info {
+        background: var(--info-bg);
+        border-left: 3px solid var(--info-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .tip-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #16a34a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .warn-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #ea580c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .danger-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #dc2626;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2563eb;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      /* Provider comparison 3-col grid */
+      .provider-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin: 24px 0;
+      }
+      .provider-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .pc-head {
+        padding: 10px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .pc-aws {
+        background: #fff8ee;
+        color: #b45309;
+      }
+      .pc-gcp {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+      .pc-azure {
+        background: #e0f2fe;
+        color: #0369a1;
+      }
+      .provider-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+      }
+      .provider-card pre {
+        padding: 14px 16px;
+        font-size: 12.5px;
+      }
+      /* compare 2-col */
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .compare-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .compare-header {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .compare-header.bad {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+      .compare-header.good {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .compare-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      th {
+        background: var(--tag-bg);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+        vertical-align: middle;
+      }
+      .badge-green {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .badge-red {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .badge-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-cyan {
+        background: #cffafe;
+        color: #0e7490;
+      }
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 12px 24px;
+        margin: 36px 0;
+      }
+      .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+      }
+      .concept-card h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        margin-top: 0;
+      }
+      .concept-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .concept-icon {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+      .phase-list {
+        list-style: none;
+        margin: 16px 0;
+      }
+      .phase-list li {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+      }
+      .phase-list li:last-child {
+        border-bottom: none;
+      }
+      .phase-num {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 56px 0;
+      }
+      footer {
+        background: #082032;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+        padding: 40px 2rem;
+        font-size: 14px;
+      }
+      footer strong {
+        color: #fff;
+      }
+      footer a {
+        color: #67e8f9;
+        text-decoration: none;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 640px) {
+        .toc-grid,
+        .compare-grid,
+        .provider-grid {
+          grid-template-columns: 1fr;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">← DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">Cloud Engineering</span>
+        <span class="nav-badge">Complete Guide</span>
+      </div>
+      <div class="nav-links">
+        <a href="#networking">Networking</a>
+        <a href="#containers">Containers</a>
+        <a href="#kubernetes">Kubernetes</a>
+        <a href="#compute">Compute</a>
+        <a href="#databases">Databases</a>
+        <a href="#messaging">Messaging</a>
+        <a href="#iam">IAM</a>
+        <a href="#observability">Observability</a>
+        <a href="#cicd">CI/CD</a>
+        <a href="#scalability">Scalability</a>
+        <a href="#ha">HA & DR</a>
+        <a href="#cost">Cost</a>
+        <a href="#iac">IaC</a>
+        <a href="#serverless">Serverless</a>
+      </div>
+      <span class="nav-rt">~50 min read</span>
+    </nav>
+    <div class="hero">
+      <div class="hero-tag">☁️ Complete Guide</div>
+      <h1>Cloud Engineering</h1>
+      <p class="hero-sub">
+        VPCs, containers, Kubernetes, compute, managed databases, messaging,
+        IAM, observability, CI/CD, scalability patterns, high availability, cost
+        optimisation, infrastructure as code, and serverless — everything
+        compared side-by-side across AWS, GCP, and Azure.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">☁️</div>
+        <div class="meta-text">
+          <strong
+            >Cloud Architecture Deep Dive — Provider Comparison Edition</strong
+          ><br />
+          AWS · Google Cloud · Microsoft Azure — June 2026
+        </div>
+      </div>
+      <div class="provider-pills">
+        <span class="pp pp-aws">▲ AWS</span>
+        <span class="pp pp-gcp">● Google Cloud</span>
+        <span class="pp pp-azure">■ Azure</span>
+      </div>
+      <hr class="hero-divider" />
     </div>
-  </div>
-  <div class="provider-pills">
-    <span class="pp pp-aws">▲ AWS</span>
-    <span class="pp pp-gcp">● Google Cloud</span>
-    <span class="pp pp-azure">■ Azure</span>
-  </div>
-  <hr class="hero-divider">
-</div>
-<div class="toc-wrapper">
-  <div class="toc">
-    <h3>Table of Contents</h3>
-    <div class="toc-grid">
-      <a href="#networking"><span class="toc-num">01</span> VPCs, Subnets & Firewalls</a>
-      <a href="#observability"><span class="toc-num">08</span> Monitoring & Observability</a>
-      <a href="#containers"><span class="toc-num">02</span> Docker & Containers</a>
-      <a href="#cicd"><span class="toc-num">09</span> CI/CD Pipelines</a>
-      <a href="#kubernetes"><span class="toc-num">03</span> Kubernetes Fundamentals</a>
-      <a href="#scalability"><span class="toc-num">10</span> Scalability Patterns</a>
-      <a href="#compute"><span class="toc-num">04</span> Compute & Load Balancers</a>
-      <a href="#ha"><span class="toc-num">11</span> High Availability & Disaster Recovery</a>
-      <a href="#databases"><span class="toc-num">05</span> Managed Databases & Caching</a>
-      <a href="#cost"><span class="toc-num">12</span> Cost Optimisation</a>
-      <a href="#messaging"><span class="toc-num">06</span> Message Queues & Event Streaming</a>
-      <a href="#iac"><span class="toc-num">13</span> Infrastructure as Code</a>
-      <a href="#iam"><span class="toc-num">07</span> IAM & Security</a>
-      <a href="#serverless"><span class="toc-num">14</span> Serverless & Edge</a>
+    <div class="toc-wrapper">
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <div class="toc-grid">
+          <a href="#networking"
+            ><span class="toc-num">01</span> VPCs, Subnets & Firewalls</a
+          >
+          <a href="#observability"
+            ><span class="toc-num">08</span> Monitoring & Observability</a
+          >
+          <a href="#containers"
+            ><span class="toc-num">02</span> Docker & Containers</a
+          >
+          <a href="#cicd"><span class="toc-num">09</span> CI/CD Pipelines</a>
+          <a href="#kubernetes"
+            ><span class="toc-num">03</span> Kubernetes Fundamentals</a
+          >
+          <a href="#scalability"
+            ><span class="toc-num">10</span> Scalability Patterns</a
+          >
+          <a href="#compute"
+            ><span class="toc-num">04</span> Compute & Load Balancers</a
+          >
+          <a href="#ha"
+            ><span class="toc-num">11</span> High Availability & Disaster
+            Recovery</a
+          >
+          <a href="#databases"
+            ><span class="toc-num">05</span> Managed Databases & Caching</a
+          >
+          <a href="#cost"><span class="toc-num">12</span> Cost Optimisation</a>
+          <a href="#messaging"
+            ><span class="toc-num">06</span> Message Queues & Event Streaming</a
+          >
+          <a href="#iac"
+            ><span class="toc-num">13</span> Infrastructure as Code</a
+          >
+          <a href="#iam"><span class="toc-num">07</span> IAM & Security</a>
+          <a href="#serverless"
+            ><span class="toc-num">14</span> Serverless & Edge</a
+          >
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<div class="content">
+    <div class="content">
+      <!-- ═══ 01 NETWORKING ═══ -->
+      <div class="section" id="networking">
+        <div class="section-label">01 — Network Foundation</div>
+        <h2>VPCs, Subnets & Firewalls</h2>
+        <p class="lead">
+          A Virtual Private Cloud is your isolated network slice inside the
+          cloud provider. Everything else — compute, databases, services — lives
+          inside it. Getting your network design right from the start prevents
+          painful re-architecture later.
+        </p>
 
-  <!-- ═══ 01 NETWORKING ═══ -->
-  <div class="section" id="networking">
-    <div class="section-label">01 — Network Foundation</div>
-    <h2>VPCs, Subnets & Firewalls</h2>
-    <p class="lead">A Virtual Private Cloud is your isolated network slice inside the cloud provider. Everything else — compute, databases, services — lives inside it. Getting your network design right from the start prevents painful re-architecture later.</p>
+        <h3>Core Concepts</h3>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🌐</div>
+            <h4>VPC / VNet</h4>
+            <p>
+              Logically isolated network. You define the CIDR block (e.g.
+              <code>10.0.0.0/16</code>), which gives you 65,536 IP addresses to
+              subnet.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📦</div>
+            <h4>Subnets</h4>
+            <p>
+              Sub-divisions of a VPC. <strong>Public subnets</strong> have a
+              route to the Internet Gateway.
+              <strong>Private subnets</strong> don't — they're for databases and
+              internal services.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🛡️</div>
+            <h4>Security Groups / NSGs</h4>
+            <p>
+              Stateful firewalls at the instance/resource level. Only specify
+              what traffic is <em>allowed</em>; everything else is denied by
+              default.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📋</div>
+            <h4>Network ACLs</h4>
+            <p>
+              Stateless subnet-level firewall. Evaluated in rule-number order.
+              Rarely needed beyond the default — Security Groups cover most use
+              cases.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔀</div>
+            <h4>Route Tables</h4>
+            <p>
+              Define where traffic is sent. Public subnet route table has
+              <code>0.0.0.0/0 → IGW</code>. Private subnet routes through a NAT
+              Gateway for outbound internet.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔗</div>
+            <h4>VPC Peering / Private Link</h4>
+            <p>
+              Connect two VPCs privately without traffic leaving the provider
+              backbone. Private Link exposes a service endpoint without full
+              peering.
+            </p>
+          </div>
+        </div>
 
-    <h3>Core Concepts</h3>
-    <div class="concept-grid">
-      <div class="concept-card"><div class="concept-icon">🌐</div><h4>VPC / VNet</h4><p>Logically isolated network. You define the CIDR block (e.g. <code>10.0.0.0/16</code>), which gives you 65,536 IP addresses to subnet.</p></div>
-      <div class="concept-card"><div class="concept-icon">📦</div><h4>Subnets</h4><p>Sub-divisions of a VPC. <strong>Public subnets</strong> have a route to the Internet Gateway. <strong>Private subnets</strong> don't — they're for databases and internal services.</p></div>
-      <div class="concept-card"><div class="concept-icon">🛡️</div><h4>Security Groups / NSGs</h4><p>Stateful firewalls at the instance/resource level. Only specify what traffic is <em>allowed</em>; everything else is denied by default.</p></div>
-      <div class="concept-card"><div class="concept-icon">📋</div><h4>Network ACLs</h4><p>Stateless subnet-level firewall. Evaluated in rule-number order. Rarely needed beyond the default — Security Groups cover most use cases.</p></div>
-      <div class="concept-card"><div class="concept-icon">🔀</div><h4>Route Tables</h4><p>Define where traffic is sent. Public subnet route table has <code>0.0.0.0/0 → IGW</code>. Private subnet routes through a NAT Gateway for outbound internet.</p></div>
-      <div class="concept-card"><div class="concept-icon">🔗</div><h4>VPC Peering / Private Link</h4><p>Connect two VPCs privately without traffic leaving the provider backbone. Private Link exposes a service endpoint without full peering.</p></div>
-    </div>
+        <h3>Provider Naming Reference</h3>
+        <table>
+          <tr>
+            <th>Concept</th>
+            <th>▲ AWS</th>
+            <th>● GCP</th>
+            <th>■ Azure</th>
+          </tr>
+          <tr>
+            <td>Virtual Network</td>
+            <td>VPC</td>
+            <td>VPC (global)</td>
+            <td>Virtual Network (VNet)</td>
+          </tr>
+          <tr>
+            <td>Subnet</td>
+            <td>Subnet (AZ-scoped)</td>
+            <td>Subnet (regional)</td>
+            <td>Subnet</td>
+          </tr>
+          <tr>
+            <td>Instance Firewall</td>
+            <td>Security Group</td>
+            <td>Firewall Rules (VPC-level)</td>
+            <td>Network Security Group</td>
+          </tr>
+          <tr>
+            <td>Internet Gateway</td>
+            <td>Internet Gateway</td>
+            <td>Default routes</td>
+            <td>Internet Gateway / Public IP</td>
+          </tr>
+          <tr>
+            <td>NAT for Private Subnet</td>
+            <td>NAT Gateway</td>
+            <td>Cloud NAT</td>
+            <td>NAT Gateway</td>
+          </tr>
+          <tr>
+            <td>Private Connectivity</td>
+            <td>VPC Peering / PrivateLink</td>
+            <td>VPC Peering / Private Service Connect</td>
+            <td>VNet Peering / Private Link</td>
+          </tr>
+          <tr>
+            <td>On-Prem Connection</td>
+            <td>Direct Connect / VPN</td>
+            <td>Cloud Interconnect / VPN</td>
+            <td>ExpressRoute / VPN Gateway</td>
+          </tr>
+        </table>
 
-    <h3>Provider Naming Reference</h3>
-    <table>
-      <tr><th>Concept</th><th>▲ AWS</th><th>● GCP</th><th>■ Azure</th></tr>
-      <tr><td>Virtual Network</td><td>VPC</td><td>VPC (global)</td><td>Virtual Network (VNet)</td></tr>
-      <tr><td>Subnet</td><td>Subnet (AZ-scoped)</td><td>Subnet (regional)</td><td>Subnet</td></tr>
-      <tr><td>Instance Firewall</td><td>Security Group</td><td>Firewall Rules (VPC-level)</td><td>Network Security Group</td></tr>
-      <tr><td>Internet Gateway</td><td>Internet Gateway</td><td>Default routes</td><td>Internet Gateway / Public IP</td></tr>
-      <tr><td>NAT for Private Subnet</td><td>NAT Gateway</td><td>Cloud NAT</td><td>NAT Gateway</td></tr>
-      <tr><td>Private Connectivity</td><td>VPC Peering / PrivateLink</td><td>VPC Peering / Private Service Connect</td><td>VNet Peering / Private Link</td></tr>
-      <tr><td>On-Prem Connection</td><td>Direct Connect / VPN</td><td>Cloud Interconnect / VPN</td><td>ExpressRoute / VPN Gateway</td></tr>
-    </table>
-
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Terraform — Production 3-Tier VPC</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm"># VPC with public, private-app, and private-data tiers across 3 AZs</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">Terraform — Production 3-Tier VPC</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># VPC with public, private-app, and private-data tiers across 3 AZs</span>
 <span class="kw">resource</span> <span class="st">"aws_vpc"</span> <span class="st">"main"</span> <span class="pu">{</span>
   cidr_block           <span class="op">=</span> <span class="st">"10.0.0.0/16"</span>
   enable_dns_hostnames <span class="op">=</span> <span class="kw">true</span>
@@ -248,21 +964,36 @@ footer strong{color:#fff}footer a{color:#67e8f9;text-decoration:none}footer a:ho
     security_groups <span class="op">=</span> <span class="pu">[</span>aws_security_group<span class="pu">.</span>web<span class="pu">.</span>id<span class="pu">]</span>   <span class="cm"># source is a SG, not CIDR</span>
   <span class="pu">}</span>
 <span class="pu">}</span></code></pre>
-    </div>
-    <div class="warn"><div class="warn-label">⚠️ GCP VPC is Global</div>GCP VPCs span all regions by default — subnets are regional but the VPC itself is global. This is unlike AWS/Azure where a VPC/VNet is region-scoped. In GCP you can have a single VPC with subnets in every region, simplifying multi-region networking significantly.</div>
-  </div>
+        </div>
+        <div class="warn">
+          <div class="warn-label">⚠️ GCP VPC is Global</div>
+          GCP VPCs span all regions by default — subnets are regional but the
+          VPC itself is global. This is unlike AWS/Azure where a VPC/VNet is
+          region-scoped. In GCP you can have a single VPC with subnets in every
+          region, simplifying multi-region networking significantly.
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 02 CONTAINERS ═══ -->
-  <div class="section" id="containers">
-    <div class="section-label">02 — Containerisation</div>
-    <h2>Docker & Containers</h2>
-    <p class="lead">Containers package your application and all its dependencies into a portable, reproducible unit. Every cloud provider runs containers natively — understanding Docker deeply is the prerequisite for everything from ECS to Kubernetes.</p>
+      <!-- ═══ 02 CONTAINERS ═══ -->
+      <div class="section" id="containers">
+        <div class="section-label">02 — Containerisation</div>
+        <h2>Docker & Containers</h2>
+        <p class="lead">
+          Containers package your application and all its dependencies into a
+          portable, reproducible unit. Every cloud provider runs containers
+          natively — understanding Docker deeply is the prerequisite for
+          everything from ECS to Kubernetes.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Dockerfile — Production Node.js Multi-Stage</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm"># Stage 1: install deps (cached layer)</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >Dockerfile — Production Node.js Multi-Stage</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># Stage 1: install deps (cached layer)</span>
 <span class="kw">FROM</span> node:22-alpine <span class="kw">AS</span> deps
 <span class="kw">WORKDIR</span> /app
 <span class="kw">COPY</span> package*.json ./
@@ -289,13 +1020,14 @@ footer strong{color:#fff}footer a{color:#67e8f9;text-decoration:none}footer a:ho
   <span class="kw">CMD</span> wget -qO- http://localhost:3000/health || exit 1
 <span class="kw">CMD</span> ["node", "dist/server.js"]
 <span class="cm"># Result: ~120MB image vs ~1.2GB if built in single stage</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Container Registries by Provider</h3>
-    <div class="provider-grid">
-      <div class="provider-card">
-        <div class="pc-head pc-aws">▲ AWS — ECR</div>
-        <div class="code-block"><pre><code><span class="cm"># Authenticate</span>
+        <h3>Container Registries by Provider</h3>
+        <div class="provider-grid">
+          <div class="provider-card">
+            <div class="pc-head pc-aws">▲ AWS — ECR</div>
+            <div class="code-block">
+              <pre><code><span class="cm"># Authenticate</span>
 aws ecr get-login-password --region eu-west-1 \
   | docker login --username AWS \
     --password-stdin \
@@ -305,11 +1037,13 @@ aws ecr get-login-password --region eu-west-1 \
 docker tag myapp:latest \
   123456.dkr.ecr.eu-west-1.amazonaws.com/myapp:latest
 docker push \
-  123456.dkr.ecr.eu-west-1.amazonaws.com/myapp:latest</code></pre></div>
-      </div>
-      <div class="provider-card">
-        <div class="pc-head pc-gcp">● GCP — Artifact Registry</div>
-        <div class="code-block"><pre><code><span class="cm"># Authenticate</span>
+  123456.dkr.ecr.eu-west-1.amazonaws.com/myapp:latest</code></pre>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="pc-head pc-gcp">● GCP — Artifact Registry</div>
+            <div class="code-block">
+              <pre><code><span class="cm"># Authenticate</span>
 gcloud auth configure-docker \
   europe-west1-docker.pkg.dev
 
@@ -319,11 +1053,13 @@ docker tag myapp:latest \
   my-project/my-repo/myapp:latest
 docker push \
   europe-west1-docker.pkg.dev/\
-  my-project/my-repo/myapp:latest</code></pre></div>
-      </div>
-      <div class="provider-card">
-        <div class="pc-head pc-azure">■ Azure — ACR</div>
-        <div class="code-block"><pre><code><span class="cm"># Authenticate</span>
+  my-project/my-repo/myapp:latest</code></pre>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="pc-head pc-azure">■ Azure — ACR</div>
+            <div class="code-block">
+              <pre><code><span class="cm"># Authenticate</span>
 az acr login --name myregistry
 
 <span class="cm"># Tag & push</span>
@@ -334,34 +1070,93 @@ docker push \
 
 <span class="cm"># Enable admin (dev only)</span>
 az acr update -n myregistry \
-  --admin-enabled true</code></pre></div>
+  --admin-enabled true</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">💡 Image Security</div>
+          Always scan images for CVEs before pushing to production. All three
+          providers offer built-in scanning: ECR Enhanced Scanning (Inspector),
+          GCP Artifact Analysis, Azure Defender for Container Registries. Enable
+          it in your registry settings and fail the CI pipeline if critical
+          vulnerabilities are found.
+        </div>
       </div>
-    </div>
 
-    <div class="tip"><div class="tip-label">💡 Image Security</div>Always scan images for CVEs before pushing to production. All three providers offer built-in scanning: ECR Enhanced Scanning (Inspector), GCP Artifact Analysis, Azure Defender for Container Registries. Enable it in your registry settings and fail the CI pipeline if critical vulnerabilities are found.</div>
-  </div>
+      <hr class="divider" />
 
-  <hr class="divider">
+      <!-- ═══ 03 KUBERNETES ═══ -->
+      <div class="section" id="kubernetes">
+        <div class="section-label">03 — Container Orchestration</div>
+        <h2>Kubernetes Fundamentals</h2>
+        <p class="lead">
+          Kubernetes has become the universal container orchestration standard.
+          Every major cloud offers a managed control plane — EKS, GKE, AKS — so
+          you write the same YAML and let them handle master node upgrades, etcd
+          backups, and control plane HA.
+        </p>
 
-  <!-- ═══ 03 KUBERNETES ═══ -->
-  <div class="section" id="kubernetes">
-    <div class="section-label">03 — Container Orchestration</div>
-    <h2>Kubernetes Fundamentals</h2>
-    <p class="lead">Kubernetes has become the universal container orchestration standard. Every major cloud offers a managed control plane — EKS, GKE, AKS — so you write the same YAML and let them handle master node upgrades, etcd backups, and control plane HA.</p>
+        <h3>Core Resource Types</h3>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">📦</div>
+            <h4>Pod</h4>
+            <p>
+              Smallest deployable unit. One or more containers sharing a network
+              namespace and volumes. Ephemeral — never manage directly.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔄</div>
+            <h4>Deployment</h4>
+            <p>
+              Manages a ReplicaSet. Declarative rolling updates, rollback. The
+              standard way to run stateless applications.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🗂️</div>
+            <h4>StatefulSet</h4>
+            <p>
+              Like Deployment but pods get stable network identities and
+              persistent volumes. Use for databases, Kafka, Redis clusters.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🌐</div>
+            <h4>Service</h4>
+            <p>
+              Stable virtual IP (ClusterIP) or external endpoint
+              (LoadBalancer/NodePort). Discovers pods via label selectors.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🚪</div>
+            <h4>Ingress</h4>
+            <p>
+              HTTP/HTTPS routing to Services. One load balancer → many services
+              via hostname and path rules. Replaces a fleet of ALBs.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚙️</div>
+            <h4>ConfigMap / Secret</h4>
+            <p>
+              Decouple config from images. ConfigMap for non-sensitive data.
+              Secret for credentials (base64-encoded, use External Secrets
+              Operator for real secrets management).
+            </p>
+          </div>
+        </div>
 
-    <h3>Core Resource Types</h3>
-    <div class="concept-grid">
-      <div class="concept-card"><div class="concept-icon">📦</div><h4>Pod</h4><p>Smallest deployable unit. One or more containers sharing a network namespace and volumes. Ephemeral — never manage directly.</p></div>
-      <div class="concept-card"><div class="concept-icon">🔄</div><h4>Deployment</h4><p>Manages a ReplicaSet. Declarative rolling updates, rollback. The standard way to run stateless applications.</p></div>
-      <div class="concept-card"><div class="concept-icon">🗂️</div><h4>StatefulSet</h4><p>Like Deployment but pods get stable network identities and persistent volumes. Use for databases, Kafka, Redis clusters.</p></div>
-      <div class="concept-card"><div class="concept-icon">🌐</div><h4>Service</h4><p>Stable virtual IP (ClusterIP) or external endpoint (LoadBalancer/NodePort). Discovers pods via label selectors.</p></div>
-      <div class="concept-card"><div class="concept-icon">🚪</div><h4>Ingress</h4><p>HTTP/HTTPS routing to Services. One load balancer → many services via hostname and path rules. Replaces a fleet of ALBs.</p></div>
-      <div class="concept-card"><div class="concept-icon">⚙️</div><h4>ConfigMap / Secret</h4><p>Decouple config from images. ConfigMap for non-sensitive data. Secret for credentials (base64-encoded, use External Secrets Operator for real secrets management).</p></div>
-    </div>
-
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">YAML — Production Deployment with HPA</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">apiVersion</span><span class="op">:</span> apps/v1
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">YAML — Production Deployment with HPA</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">apiVersion</span><span class="op">:</span> apps/v1
 <span class="kw">kind</span><span class="op">:</span> Deployment
 <span class="kw">metadata</span><span class="op">:</span>
   <span class="kw">name</span><span class="op">:</span> api-server
@@ -409,33 +1204,79 @@ az acr update -n myregistry \
   <span class="kw">metrics</span><span class="op">:</span>
   - <span class="kw">type</span><span class="op">:</span> Resource
     <span class="kw">resource</span><span class="op">:</span> <span class="pu">{</span> name<span class="op">:</span> cpu<span class="op">,</span> target<span class="op">:</span> <span class="pu">{</span> type<span class="op">:</span> Utilization<span class="op">,</span> averageUtilization<span class="op">:</span> <span class="nm">70</span> <span class="pu">}</span> <span class="pu">}</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Managed Kubernetes Comparison</h3>
-    <table>
-      <tr><th>Feature</th><th>▲ EKS</th><th>● GKE</th><th>■ AKS</th></tr>
-      <tr><td>Control Plane Cost</td><td>$0.10/hr (~$72/mo)</td><td>Free (Autopilot: per pod)</td><td>Free</td></tr>
-      <tr><td>Autopilot/Serverless Mode</td><td>Fargate profiles</td><td><span class="badge badge-green">GKE Autopilot</span> (best-in-class)</td><td>Virtual Nodes (ACI)</td></tr>
-      <tr><td>Node Autoscaling</td><td>Karpenter (excellent)</td><td>GKE Autopilot / NAP</td><td>Cluster Autoscaler</td></tr>
-      <tr><td>Secrets Integration</td><td>IRSA → Secrets Manager</td><td>Workload Identity → Secret Manager</td><td>AAD Pod Identity → Key Vault</td></tr>
-      <tr><td>Upgrade Experience</td><td>Manual, managed node groups</td><td><span class="badge badge-green">Auto-upgrade channels</span></td><td>Auto-upgrade</td></tr>
-      <tr><td>Windows Node Support</td><td>Yes</td><td>Yes</td><td><span class="badge badge-green">Best (Microsoft)</span></td></tr>
-    </table>
-  </div>
+        <h3>Managed Kubernetes Comparison</h3>
+        <table>
+          <tr>
+            <th>Feature</th>
+            <th>▲ EKS</th>
+            <th>● GKE</th>
+            <th>■ AKS</th>
+          </tr>
+          <tr>
+            <td>Control Plane Cost</td>
+            <td>$0.10/hr (~$72/mo)</td>
+            <td>Free (Autopilot: per pod)</td>
+            <td>Free</td>
+          </tr>
+          <tr>
+            <td>Autopilot/Serverless Mode</td>
+            <td>Fargate profiles</td>
+            <td>
+              <span class="badge badge-green">GKE Autopilot</span>
+              (best-in-class)
+            </td>
+            <td>Virtual Nodes (ACI)</td>
+          </tr>
+          <tr>
+            <td>Node Autoscaling</td>
+            <td>Karpenter (excellent)</td>
+            <td>GKE Autopilot / NAP</td>
+            <td>Cluster Autoscaler</td>
+          </tr>
+          <tr>
+            <td>Secrets Integration</td>
+            <td>IRSA → Secrets Manager</td>
+            <td>Workload Identity → Secret Manager</td>
+            <td>AAD Pod Identity → Key Vault</td>
+          </tr>
+          <tr>
+            <td>Upgrade Experience</td>
+            <td>Manual, managed node groups</td>
+            <td>
+              <span class="badge badge-green">Auto-upgrade channels</span>
+            </td>
+            <td>Auto-upgrade</td>
+          </tr>
+          <tr>
+            <td>Windows Node Support</td>
+            <td>Yes</td>
+            <td>Yes</td>
+            <td><span class="badge badge-green">Best (Microsoft)</span></td>
+          </tr>
+        </table>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 04 COMPUTE & LOAD BALANCERS ═══ -->
-  <div class="section" id="compute">
-    <div class="section-label">04 — Compute & Traffic Distribution</div>
-    <h2>Compute & Load Balancers</h2>
-    <p class="lead">Cloud compute spans virtual machines, managed container platforms, and fully serverless runtimes. Load balancers distribute traffic, terminate TLS, and enable zero-downtime deployments across all of them.</p>
+      <!-- ═══ 04 COMPUTE & LOAD BALANCERS ═══ -->
+      <div class="section" id="compute">
+        <div class="section-label">04 — Compute & Traffic Distribution</div>
+        <h2>Compute & Load Balancers</h2>
+        <p class="lead">
+          Cloud compute spans virtual machines, managed container platforms, and
+          fully serverless runtimes. Load balancers distribute traffic,
+          terminate TLS, and enable zero-downtime deployments across all of
+          them.
+        </p>
 
-    <h3>Managed Container Platforms (no Kubernetes needed)</h3>
-    <div class="provider-grid">
-      <div class="provider-card">
-        <div class="pc-head pc-aws">▲ AWS ECS / Fargate</div>
-        <div class="code-block"><pre><code><span class="cm"># ECS service with Fargate (serverless containers)</span>
+        <h3>Managed Container Platforms (no Kubernetes needed)</h3>
+        <div class="provider-grid">
+          <div class="provider-card">
+            <div class="pc-head pc-aws">▲ AWS ECS / Fargate</div>
+            <div class="code-block">
+              <pre><code><span class="cm"># ECS service with Fargate (serverless containers)</span>
 resource "aws_ecs_service" "api" {
   name            = "api"
   cluster         = aws_ecs_cluster.main.id
@@ -452,11 +1293,13 @@ resource "aws_ecs_service" "api" {
     container_name   = "api"
     container_port   = 3000
   }
-}</code></pre></div>
-      </div>
-      <div class="provider-card">
-        <div class="pc-head pc-gcp">● GCP Cloud Run</div>
-        <div class="code-block"><pre><code><span class="cm"># Cloud Run — fully managed, scales to zero</span>
+}</code></pre>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="pc-head pc-gcp">● GCP Cloud Run</div>
+            <div class="code-block">
+              <pre><code><span class="cm"># Cloud Run — fully managed, scales to zero</span>
 resource "google_cloud_run_service" "api" {
   name     = "api"
   location = "europe-west1"
@@ -475,11 +1318,13 @@ resource "google_cloud_run_service" "api" {
     percent         = 100
     latest_revision = true
   }
-}</code></pre></div>
-      </div>
-      <div class="provider-card">
-        <div class="pc-head pc-azure">■ Azure Container Apps</div>
-        <div class="code-block"><pre><code><span class="cm"># Azure Container Apps — scales to zero, KEDA built-in</span>
+}</code></pre>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="pc-head pc-azure">■ Azure Container Apps</div>
+            <div class="code-block">
+              <pre><code><span class="cm"># Azure Container Apps — scales to zero, KEDA built-in</span>
 resource "azurerm_container_app" "api" {
   name                         = "api"
   container_app_environment_id = azurerm_container_app_environment.env.id
@@ -495,22 +1340,57 @@ resource "azurerm_container_app" "api" {
     min_replicas = 1
     max_replicas = 10
   }
-}</code></pre></div>
-      </div>
-    </div>
+}</code></pre>
+            </div>
+          </div>
+        </div>
 
-    <h3>Load Balancer Types</h3>
-    <table>
-      <tr><th>Layer</th><th>▲ AWS</th><th>● GCP</th><th>■ Azure</th><th>Use Case</th></tr>
-      <tr><td>L7 HTTP/S</td><td>ALB</td><td>Cloud Load Balancing (HTTP)</td><td>Application Gateway</td><td>Web apps, path/host routing, WAF</td></tr>
-      <tr><td>L4 TCP/UDP</td><td>NLB</td><td>Network Load Balancing</td><td>Load Balancer (Standard)</td><td>High-throughput, TCP pass-through</td></tr>
-      <tr><td>Global Anycast</td><td>Global Accelerator</td><td><span class="badge badge-green">Global LB (built-in)</span></td><td>Front Door</td><td>Multi-region routing, DDoS protection</td></tr>
-      <tr><td>Internal</td><td>Internal ALB/NLB</td><td>Internal LB</td><td>Internal LB</td><td>Service-to-service within VPC</td></tr>
-    </table>
+        <h3>Load Balancer Types</h3>
+        <table>
+          <tr>
+            <th>Layer</th>
+            <th>▲ AWS</th>
+            <th>● GCP</th>
+            <th>■ Azure</th>
+            <th>Use Case</th>
+          </tr>
+          <tr>
+            <td>L7 HTTP/S</td>
+            <td>ALB</td>
+            <td>Cloud Load Balancing (HTTP)</td>
+            <td>Application Gateway</td>
+            <td>Web apps, path/host routing, WAF</td>
+          </tr>
+          <tr>
+            <td>L4 TCP/UDP</td>
+            <td>NLB</td>
+            <td>Network Load Balancing</td>
+            <td>Load Balancer (Standard)</td>
+            <td>High-throughput, TCP pass-through</td>
+          </tr>
+          <tr>
+            <td>Global Anycast</td>
+            <td>Global Accelerator</td>
+            <td><span class="badge badge-green">Global LB (built-in)</span></td>
+            <td>Front Door</td>
+            <td>Multi-region routing, DDoS protection</td>
+          </tr>
+          <tr>
+            <td>Internal</td>
+            <td>Internal ALB/NLB</td>
+            <td>Internal LB</td>
+            <td>Internal LB</td>
+            <td>Service-to-service within VPC</td>
+          </tr>
+        </table>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Terraform — AWS ALB with HTTPS, WAF & Redirect</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">resource</span> <span class="st">"aws_lb"</span> <span class="st">"main"</span> <span class="pu">{</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >Terraform — AWS ALB with HTTPS, WAF & Redirect</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">resource</span> <span class="st">"aws_lb"</span> <span class="st">"main"</span> <span class="pu">{</span>
   name               <span class="op">=</span> <span class="st">"prod-alb"</span>
   load_balancer_type <span class="op">=</span> <span class="st">"application"</span>
   subnets            <span class="op">=</span> aws_subnet<span class="pu">.</span>public<span class="pu">[*].</span>id
@@ -542,31 +1422,62 @@ resource "azurerm_container_app" "api" {
   vpc_id      <span class="op">=</span> aws_vpc<span class="pu">.</span>main<span class="pu">.</span>id
   health_check <span class="pu">{</span> path <span class="op">=</span> <span class="st">"/health"</span><span class="pu">;</span> healthy_threshold <span class="op">=</span> <span class="nm">2</span><span class="pu">;</span> interval <span class="op">=</span> <span class="nm">15</span> <span class="pu">}</span>
 <span class="pu">}</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 05 DATABASES & CACHING ═══ -->
-  <div class="section" id="databases">
-    <div class="section-label">05 — Data Layer</div>
-    <h2>Managed Databases & Caching</h2>
-    <p class="lead">Managed database services handle backups, patching, failover, and replication — letting you focus on your schema and queries. Every provider covers PostgreSQL, MySQL, Redis, and NoSQL, but the operational experience and pricing differ significantly.</p>
+      <!-- ═══ 05 DATABASES & CACHING ═══ -->
+      <div class="section" id="databases">
+        <div class="section-label">05 — Data Layer</div>
+        <h2>Managed Databases & Caching</h2>
+        <p class="lead">
+          Managed database services handle backups, patching, failover, and
+          replication — letting you focus on your schema and queries. Every
+          provider covers PostgreSQL, MySQL, Redis, and NoSQL, but the
+          operational experience and pricing differ significantly.
+        </p>
 
-    <h3>Relational Databases</h3>
-    <table>
-      <tr><th>Engine</th><th>▲ AWS</th><th>● GCP</th><th>■ Azure</th></tr>
-      <tr><td>PostgreSQL</td><td>RDS PostgreSQL / Aurora PG</td><td>Cloud SQL / AlloyDB</td><td>Azure Database for PostgreSQL</td></tr>
-      <tr><td>MySQL</td><td>RDS MySQL / Aurora MySQL</td><td>Cloud SQL MySQL</td><td>Azure Database for MySQL</td></tr>
-      <tr><td>SQL Server</td><td>RDS SQL Server</td><td>Cloud SQL SQL Server</td><td><span class="badge badge-green">Azure SQL (best)</span></td></tr>
-      <tr><td>Cloud-Native SQL</td><td>Aurora (5× PG performance)</td><td>Spanner (global, ACID)</td><td>Cosmos DB (multi-model)</td></tr>
-    </table>
+        <h3>Relational Databases</h3>
+        <table>
+          <tr>
+            <th>Engine</th>
+            <th>▲ AWS</th>
+            <th>● GCP</th>
+            <th>■ Azure</th>
+          </tr>
+          <tr>
+            <td>PostgreSQL</td>
+            <td>RDS PostgreSQL / Aurora PG</td>
+            <td>Cloud SQL / AlloyDB</td>
+            <td>Azure Database for PostgreSQL</td>
+          </tr>
+          <tr>
+            <td>MySQL</td>
+            <td>RDS MySQL / Aurora MySQL</td>
+            <td>Cloud SQL MySQL</td>
+            <td>Azure Database for MySQL</td>
+          </tr>
+          <tr>
+            <td>SQL Server</td>
+            <td>RDS SQL Server</td>
+            <td>Cloud SQL SQL Server</td>
+            <td><span class="badge badge-green">Azure SQL (best)</span></td>
+          </tr>
+          <tr>
+            <td>Cloud-Native SQL</td>
+            <td>Aurora (5× PG performance)</td>
+            <td>Spanner (global, ACID)</td>
+            <td>Cosmos DB (multi-model)</td>
+          </tr>
+        </table>
 
-    <h3>Redis Caching Services</h3>
-    <div class="provider-grid">
-      <div class="provider-card">
-        <div class="pc-head pc-aws">▲ ElastiCache / MemoryDB</div>
-        <div class="code-block"><pre><code><span class="cm"># ElastiCache Redis cluster (Multi-AZ)</span>
+        <h3>Redis Caching Services</h3>
+        <div class="provider-grid">
+          <div class="provider-card">
+            <div class="pc-head pc-aws">▲ ElastiCache / MemoryDB</div>
+            <div class="code-block">
+              <pre><code><span class="cm"># ElastiCache Redis cluster (Multi-AZ)</span>
 resource "aws_elasticache_replication_group" "redis" {
   replication_group_id = "prod-redis"
   description          = "Production cache"
@@ -579,11 +1490,13 @@ resource "aws_elasticache_replication_group" "redis" {
   auth_token          = var.redis_auth_token
   subnet_group_name   = aws_elasticache_subnet_group.redis.name
   security_group_ids  = [aws_security_group.redis.id]
-}</code></pre></div>
-      </div>
-      <div class="provider-card">
-        <div class="pc-head pc-gcp">● Memorystore for Redis</div>
-        <div class="code-block"><pre><code><span class="cm"># GCP Memorystore Redis</span>
+}</code></pre>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="pc-head pc-gcp">● Memorystore for Redis</div>
+            <div class="code-block">
+              <pre><code><span class="cm"># GCP Memorystore Redis</span>
 resource "google_redis_instance" "cache" {
   name           = "prod-cache"
   tier           = "STANDARD_HA"  # HA with replica
@@ -594,11 +1507,13 @@ resource "google_redis_instance" "cache" {
   transit_encryption_mode = "SERVER_AUTHENTICATION"
   # Private VPC — no public IP ever
   authorized_network = google_compute_network.vpc.id
-}</code></pre></div>
-      </div>
-      <div class="provider-card">
-        <div class="pc-head pc-azure">■ Azure Cache for Redis</div>
-        <div class="code-block"><pre><code><span class="cm"># Azure Cache for Redis</span>
+}</code></pre>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="pc-head pc-azure">■ Azure Cache for Redis</div>
+            <div class="code-block">
+              <pre><code><span class="cm"># Azure Cache for Redis</span>
 resource "azurerm_redis_cache" "cache" {
   name                = "prod-cache"
   location            = azurerm_resource_group.rg.location
@@ -611,30 +1526,70 @@ resource "azurerm_redis_cache" "cache" {
   redis_configuration {
     enable_authentication = true
   }
-}</code></pre></div>
+}</code></pre>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 06 MESSAGING ═══ -->
-  <div class="section" id="messaging">
-    <div class="section-label">06 — Async Communication</div>
-    <h2>Message Queues & Event Streaming</h2>
-    <p class="lead">Async messaging decouples producers from consumers, buffers traffic spikes, and enables reliable event-driven architectures. The choice between a queue, pub/sub topic, and event stream depends on your delivery semantics.</p>
+      <!-- ═══ 06 MESSAGING ═══ -->
+      <div class="section" id="messaging">
+        <div class="section-label">06 — Async Communication</div>
+        <h2>Message Queues & Event Streaming</h2>
+        <p class="lead">
+          Async messaging decouples producers from consumers, buffers traffic
+          spikes, and enables reliable event-driven architectures. The choice
+          between a queue, pub/sub topic, and event stream depends on your
+          delivery semantics.
+        </p>
 
-    <table>
-      <tr><th>Pattern</th><th>▲ AWS</th><th>● GCP</th><th>■ Azure</th><th>Best for</th></tr>
-      <tr><td>Queue (point-to-point)</td><td>SQS</td><td>Cloud Tasks</td><td>Service Bus Queues</td><td>Work queues, job offloading</td></tr>
-      <tr><td>Pub/Sub fanout</td><td>SNS → SQS</td><td>Pub/Sub</td><td>Service Bus Topics</td><td>Notifications, fanout events</td></tr>
-      <tr><td>Event streaming</td><td>Kinesis / MSK (Kafka)</td><td>Pub/Sub (streaming) / Dataflow</td><td>Event Hubs (Kafka-compatible)</td><td>High-throughput, replay, analytics</td></tr>
-      <tr><td>Event bus</td><td>EventBridge</td><td>Eventarc</td><td>Event Grid</td><td>Serverless event routing, SaaS integration</td></tr>
-    </table>
+        <table>
+          <tr>
+            <th>Pattern</th>
+            <th>▲ AWS</th>
+            <th>● GCP</th>
+            <th>■ Azure</th>
+            <th>Best for</th>
+          </tr>
+          <tr>
+            <td>Queue (point-to-point)</td>
+            <td>SQS</td>
+            <td>Cloud Tasks</td>
+            <td>Service Bus Queues</td>
+            <td>Work queues, job offloading</td>
+          </tr>
+          <tr>
+            <td>Pub/Sub fanout</td>
+            <td>SNS → SQS</td>
+            <td>Pub/Sub</td>
+            <td>Service Bus Topics</td>
+            <td>Notifications, fanout events</td>
+          </tr>
+          <tr>
+            <td>Event streaming</td>
+            <td>Kinesis / MSK (Kafka)</td>
+            <td>Pub/Sub (streaming) / Dataflow</td>
+            <td>Event Hubs (Kafka-compatible)</td>
+            <td>High-throughput, replay, analytics</td>
+          </tr>
+          <tr>
+            <td>Event bus</td>
+            <td>EventBridge</td>
+            <td>Eventarc</td>
+            <td>Event Grid</td>
+            <td>Serverless event routing, SaaS integration</td>
+          </tr>
+        </table>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — AWS SQS Consumer with Visibility Timeout</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> SQSClient, ReceiveMessageCommand, DeleteMessageCommand,
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — AWS SQS Consumer with Visibility Timeout</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> SQSClient, ReceiveMessageCommand, DeleteMessageCommand,
          ChangeMessageVisibilityCommand <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@aws-sdk/client-sqs'</span>
 
 <span class="kw">const</span> sqs <span class="op">=</span> <span class="kw">new</span> <span class="fn">SQSClient</span><span class="pu">({</span> region<span class="pu">:</span> <span class="st">'eu-west-1'</span> <span class="pu">})</span>
@@ -665,20 +1620,28 @@ resource "azurerm_redis_cache" "cache" {
     <span class="pu">}))</span>
   <span class="pu">}</span>
 <span class="pu">}</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 07 IAM & SECURITY ═══ -->
-  <div class="section" id="iam">
-    <div class="section-label">07 — Identity & Security</div>
-    <h2>IAM & Cloud Security</h2>
-    <p class="lead">Cloud IAM controls who can do what on which resource. Every permission not explicitly granted is denied. The blast radius of a misconfigured IAM role can be catastrophic — least privilege is not optional.</p>
+      <!-- ═══ 07 IAM & SECURITY ═══ -->
+      <div class="section" id="iam">
+        <div class="section-label">07 — Identity & Security</div>
+        <h2>IAM & Cloud Security</h2>
+        <p class="lead">
+          Cloud IAM controls who can do what on which resource. Every permission
+          not explicitly granted is denied. The blast radius of a misconfigured
+          IAM role can be catastrophic — least privilege is not optional.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Terraform — IRSA: Pod-level IAM Roles for EKS</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm"># IRSA: IAM Roles for Service Accounts — no long-lived credentials in pods</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >Terraform — IRSA: Pod-level IAM Roles for EKS</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># IRSA: IAM Roles for Service Accounts — no long-lived credentials in pods</span>
 <span class="kw">data</span> <span class="st">"aws_iam_policy_document"</span> <span class="st">"api_assume_role"</span> <span class="pu">{</span>
   statement <span class="pu">{</span>
     actions <span class="op">=</span> <span class="pu">[</span><span class="st">"sts:AssumeRoleWithWebIdentity"</span><span class="pu">]</span>
@@ -714,30 +1677,69 @@ resource "azurerm_redis_cache" "cache" {
     <span class="pu">]</span>
   <span class="pu">})</span>
 <span class="pu">}</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Secrets Management Comparison</h3>
-    <table>
-      <tr><th>Service</th><th>▲ AWS Secrets Manager</th><th>● GCP Secret Manager</th><th>■ Azure Key Vault</th></tr>
-      <tr><td>Auto-rotation</td><td><span class="badge badge-green">Built-in (Lambda)</span></td><td>Manual / custom</td><td>Built-in (for select services)</td></tr>
-      <tr><td>K8s Integration</td><td>External Secrets Operator / ASCP</td><td>External Secrets / Workload Identity</td><td>CSI Secrets Store Driver</td></tr>
-      <tr><td>Versioning</td><td>Yes (AWSCURRENT/AWSPREVIOUS)</td><td>Yes (version numbers)</td><td>Yes (versions)</td></tr>
-      <tr><td>Cost</td><td>$0.40/secret/mo + API calls</td><td>$0.06/10k access ops</td><td>$0.04/10k operations</td></tr>
-      <tr><td>Envelope Encryption</td><td>KMS integration</td><td>CMEK (Cloud KMS)</td><td>HSM-backed keys</td></tr>
-    </table>
-  </div>
+        <h3>Secrets Management Comparison</h3>
+        <table>
+          <tr>
+            <th>Service</th>
+            <th>▲ AWS Secrets Manager</th>
+            <th>● GCP Secret Manager</th>
+            <th>■ Azure Key Vault</th>
+          </tr>
+          <tr>
+            <td>Auto-rotation</td>
+            <td><span class="badge badge-green">Built-in (Lambda)</span></td>
+            <td>Manual / custom</td>
+            <td>Built-in (for select services)</td>
+          </tr>
+          <tr>
+            <td>K8s Integration</td>
+            <td>External Secrets Operator / ASCP</td>
+            <td>External Secrets / Workload Identity</td>
+            <td>CSI Secrets Store Driver</td>
+          </tr>
+          <tr>
+            <td>Versioning</td>
+            <td>Yes (AWSCURRENT/AWSPREVIOUS)</td>
+            <td>Yes (version numbers)</td>
+            <td>Yes (versions)</td>
+          </tr>
+          <tr>
+            <td>Cost</td>
+            <td>$0.40/secret/mo + API calls</td>
+            <td>$0.06/10k access ops</td>
+            <td>$0.04/10k operations</td>
+          </tr>
+          <tr>
+            <td>Envelope Encryption</td>
+            <td>KMS integration</td>
+            <td>CMEK (Cloud KMS)</td>
+            <td>HSM-backed keys</td>
+          </tr>
+        </table>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 08 OBSERVABILITY ═══ -->
-  <div class="section" id="observability">
-    <div class="section-label">08 — Visibility</div>
-    <h2>Monitoring & Observability</h2>
-    <p class="lead">Observability in the cloud is the three pillars — metrics, logs, and traces — plus alerting, dashboards, and anomaly detection. Every provider has native tooling, but OpenTelemetry lets you stay vendor-neutral.</p>
+      <!-- ═══ 08 OBSERVABILITY ═══ -->
+      <div class="section" id="observability">
+        <div class="section-label">08 — Visibility</div>
+        <h2>Monitoring & Observability</h2>
+        <p class="lead">
+          Observability in the cloud is the three pillars — metrics, logs, and
+          traces — plus alerting, dashboards, and anomaly detection. Every
+          provider has native tooling, but OpenTelemetry lets you stay
+          vendor-neutral.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — OpenTelemetry (vendor-neutral instrumentation)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> NodeSDK <span class="pu">}</span>             <span class="kw">from</span> <span class="st">'@opentelemetry/sdk-node'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — OpenTelemetry (vendor-neutral instrumentation)</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> NodeSDK <span class="pu">}</span>             <span class="kw">from</span> <span class="st">'@opentelemetry/sdk-node'</span>
 <span class="kw">import</span> <span class="pu">{</span> getNodeAutoInstrumentations <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@opentelemetry/auto-instrumentations-node'</span>
 <span class="kw">import</span> <span class="pu">{</span> OTLPTraceExporter <span class="pu">}</span>   <span class="kw">from</span> <span class="st">'@opentelemetry/exporter-trace-otlp-http'</span>
 <span class="kw">import</span> <span class="pu">{</span> OTLPMetricExporter <span class="pu">}</span>  <span class="kw">from</span> <span class="st">'@opentelemetry/exporter-metrics-otlp-http'</span>
@@ -775,30 +1777,74 @@ sdk<span class="pu">.</span><span class="fn">start</span><span class="pu">()</sp
     <span class="pu">}</span> <span class="kw">finally</span> <span class="pu">{</span> span<span class="pu">.</span><span class="fn">end</span><span class="pu">() }</span>
   <span class="pu">})</span>
 <span class="pu">}</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Native Observability Services</h3>
-    <table>
-      <tr><th>Pillar</th><th>▲ AWS</th><th>● GCP</th><th>■ Azure</th><th>OSS Alternative</th></tr>
-      <tr><td>Metrics</td><td>CloudWatch Metrics</td><td>Cloud Monitoring</td><td>Azure Monitor Metrics</td><td>Prometheus + Grafana</td></tr>
-      <tr><td>Logs</td><td>CloudWatch Logs / OpenSearch</td><td>Cloud Logging</td><td>Log Analytics (Sentinel)</td><td>Loki + Grafana</td></tr>
-      <tr><td>Traces</td><td>X-Ray</td><td>Cloud Trace</td><td>Application Insights</td><td>Jaeger / Tempo</td></tr>
-      <tr><td>Dashboards</td><td>CloudWatch Dashboards</td><td>Cloud Monitoring Dashboards</td><td>Azure Dashboards</td><td>Grafana</td></tr>
-      <tr><td>Alerting</td><td>CloudWatch Alarms → SNS</td><td>Cloud Alerting → PagerDuty</td><td>Azure Alerts → Action Groups</td><td>Alertmanager</td></tr>
-    </table>
-  </div>
+        <h3>Native Observability Services</h3>
+        <table>
+          <tr>
+            <th>Pillar</th>
+            <th>▲ AWS</th>
+            <th>● GCP</th>
+            <th>■ Azure</th>
+            <th>OSS Alternative</th>
+          </tr>
+          <tr>
+            <td>Metrics</td>
+            <td>CloudWatch Metrics</td>
+            <td>Cloud Monitoring</td>
+            <td>Azure Monitor Metrics</td>
+            <td>Prometheus + Grafana</td>
+          </tr>
+          <tr>
+            <td>Logs</td>
+            <td>CloudWatch Logs / OpenSearch</td>
+            <td>Cloud Logging</td>
+            <td>Log Analytics (Sentinel)</td>
+            <td>Loki + Grafana</td>
+          </tr>
+          <tr>
+            <td>Traces</td>
+            <td>X-Ray</td>
+            <td>Cloud Trace</td>
+            <td>Application Insights</td>
+            <td>Jaeger / Tempo</td>
+          </tr>
+          <tr>
+            <td>Dashboards</td>
+            <td>CloudWatch Dashboards</td>
+            <td>Cloud Monitoring Dashboards</td>
+            <td>Azure Dashboards</td>
+            <td>Grafana</td>
+          </tr>
+          <tr>
+            <td>Alerting</td>
+            <td>CloudWatch Alarms → SNS</td>
+            <td>Cloud Alerting → PagerDuty</td>
+            <td>Azure Alerts → Action Groups</td>
+            <td>Alertmanager</td>
+          </tr>
+        </table>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 09 CI/CD ═══ -->
-  <div class="section" id="cicd">
-    <div class="section-label">09 — Delivery Pipeline</div>
-    <h2>CI/CD Pipelines</h2>
-    <p class="lead">A mature CI/CD pipeline is the backbone of reliable software delivery — it automates testing, building, security scanning, and deployment so every merge to main can ship to production safely.</p>
+      <!-- ═══ 09 CI/CD ═══ -->
+      <div class="section" id="cicd">
+        <div class="section-label">09 — Delivery Pipeline</div>
+        <h2>CI/CD Pipelines</h2>
+        <p class="lead">
+          A mature CI/CD pipeline is the backbone of reliable software delivery
+          — it automates testing, building, security scanning, and deployment so
+          every merge to main can ship to production safely.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">YAML — GitHub Actions: Build → Scan → Push → Deploy to EKS</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">name</span><span class="op">:</span> Production Deploy
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >YAML — GitHub Actions: Build → Scan → Push → Deploy to EKS</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">name</span><span class="op">:</span> Production Deploy
 <span class="kw">on</span><span class="op">:</span>
   <span class="kw">push</span><span class="op">:</span> <span class="pu">{</span> branches<span class="op">:</span> [main] <span class="pu">}</span>
 
@@ -861,29 +1907,86 @@ sdk<span class="pu">.</span><span class="fn">start</span><span class="pu">()</sp
           api=$ECR_REPO:${{ needs.build-push.outputs.image-tag }} \
           -n production
         kubectl rollout status deployment/api-server -n production --timeout=5m</code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 10 SCALABILITY ═══ -->
-  <div class="section" id="scalability">
-    <div class="section-label">10 — Growth Patterns</div>
-    <h2>Scalability Patterns</h2>
-    <p class="lead">Scalability is the ability to handle growth — more users, more data, more requests — without proportional growth in cost or operational complexity. The patterns differ based on whether your bottleneck is compute, data, or network.</p>
+      <!-- ═══ 10 SCALABILITY ═══ -->
+      <div class="section" id="scalability">
+        <div class="section-label">10 — Growth Patterns</div>
+        <h2>Scalability Patterns</h2>
+        <p class="lead">
+          Scalability is the ability to handle growth — more users, more data,
+          more requests — without proportional growth in cost or operational
+          complexity. The patterns differ based on whether your bottleneck is
+          compute, data, or network.
+        </p>
 
-    <div class="concept-grid">
-      <div class="concept-card"><div class="concept-icon">↔️</div><h4>Horizontal Scaling</h4><p>Add more instances. Stateless services scale horizontally trivially. Use HPA in Kubernetes, Auto Scaling Groups in EC2, or min/max replicas in Cloud Run.</p></div>
-      <div class="concept-card"><div class="concept-icon">↕️</div><h4>Vertical Scaling</h4><p>Increase instance size (more CPU/RAM). Limited by max instance size. Use for databases and stateful services where horizontal is hard. Schedule downtime window.</p></div>
-      <div class="concept-card"><div class="concept-icon">🗂️</div><h4>Database Sharding</h4><p>Partition data across multiple DB instances by a shard key. Distributes write load. Complex to implement — prefer managed services (Aurora, Spanner) first.</p></div>
-      <div class="concept-card"><div class="concept-icon">📖</div><h4>Read Replicas</h4><p>Direct read traffic to replicas, writes to primary. Cheap horizontal read scale. Beware replication lag on replicas — not suitable for read-your-writes workloads.</p></div>
-      <div class="concept-card"><div class="concept-icon">💾</div><h4>Caching Layers</h4><p>Redis/Memcached in front of the database. Cache hot data at application, CDN, or database query result level. Reduces DB load by 80%+ on read-heavy workloads.</p></div>
-      <div class="concept-card"><div class="concept-icon">📡</div><h4>CDN & Edge</h4><p>Serve static assets and cached API responses from edge nodes close to users. CloudFront, Cloud CDN, Azure CDN. Reduces origin load and latency globally.</p></div>
-    </div>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">↔️</div>
+            <h4>Horizontal Scaling</h4>
+            <p>
+              Add more instances. Stateless services scale horizontally
+              trivially. Use HPA in Kubernetes, Auto Scaling Groups in EC2, or
+              min/max replicas in Cloud Run.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">↕️</div>
+            <h4>Vertical Scaling</h4>
+            <p>
+              Increase instance size (more CPU/RAM). Limited by max instance
+              size. Use for databases and stateful services where horizontal is
+              hard. Schedule downtime window.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🗂️</div>
+            <h4>Database Sharding</h4>
+            <p>
+              Partition data across multiple DB instances by a shard key.
+              Distributes write load. Complex to implement — prefer managed
+              services (Aurora, Spanner) first.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📖</div>
+            <h4>Read Replicas</h4>
+            <p>
+              Direct read traffic to replicas, writes to primary. Cheap
+              horizontal read scale. Beware replication lag on replicas — not
+              suitable for read-your-writes workloads.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">💾</div>
+            <h4>Caching Layers</h4>
+            <p>
+              Redis/Memcached in front of the database. Cache hot data at
+              application, CDN, or database query result level. Reduces DB load
+              by 80%+ on read-heavy workloads.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📡</div>
+            <h4>CDN & Edge</h4>
+            <p>
+              Serve static assets and cached API responses from edge nodes close
+              to users. CloudFront, Cloud CDN, Azure CDN. Reduces origin load
+              and latency globally.
+            </p>
+          </div>
+        </div>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Terraform — Auto Scaling Group with Target Tracking</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">resource</span> <span class="st">"aws_autoscaling_group"</span> <span class="st">"app"</span> <span class="pu">{</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >Terraform — Auto Scaling Group with Target Tracking</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">resource</span> <span class="st">"aws_autoscaling_group"</span> <span class="st">"app"</span> <span class="pu">{</span>
   name                = <span class="st">"app-asg"</span>
   min_size            = <span class="nm">2</span>
   max_size            = <span class="nm">20</span>
@@ -916,39 +2019,116 @@ sdk<span class="pu">.</span><span class="fn">start</span><span class="pu">()</sp
     target_value = <span class="nm">70.0</span>
   <span class="pu">}</span>
 <span class="pu">}</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 11 HA & DR ═══ -->
-  <div class="section" id="ha">
-    <div class="section-label">11 — Resilience</div>
-    <h2>High Availability & Disaster Recovery</h2>
-    <p class="lead">High Availability means the system stays up despite component failures. Disaster Recovery means you can recover when an entire region fails. They are different problems requiring different solutions.</p>
+      <!-- ═══ 11 HA & DR ═══ -->
+      <div class="section" id="ha">
+        <div class="section-label">11 — Resilience</div>
+        <h2>High Availability & Disaster Recovery</h2>
+        <p class="lead">
+          High Availability means the system stays up despite component
+          failures. Disaster Recovery means you can recover when an entire
+          region fails. They are different problems requiring different
+          solutions.
+        </p>
 
-    <div class="pullquote">"Plan for everything to fail. Design so individual failures don't become system failures."</div>
+        <div class="pullquote">
+          "Plan for everything to fail. Design so individual failures don't
+          become system failures."
+        </div>
 
-    <h3>HA Design Patterns</h3>
-    <ul class="phase-list">
-      <li><div class="phase-num">1</div><div><strong>Multi-AZ Deployment</strong> — Spread instances across ≥3 Availability Zones. AZs are physically separate data centres within a region. An AZ outage (rare but real) should cause zero downtime. All managed services (RDS Multi-AZ, ElastiCache with replicas, EKS with nodes across AZs) do this automatically.</div></li>
-      <li><div class="phase-num">2</div><div><strong>Health Checks & Auto-Healing</strong> — Load balancer health checks remove unhealthy instances from rotation. ASG/Kubernetes replaces them. Target: detect failure in &lt;30s, replace in &lt;5min. Test with Chaos Engineering (AWS Fault Injection Service, GCP Fault Injection).</div></li>
-      <li><div class="phase-num">3</div><div><strong>Circuit Breakers</strong> — Prevent cascade failures when a downstream service degrades. Open the circuit after N consecutive failures; probe again after a timeout. Libraries: <code>opossum</code> (Node.js), <code>resilience4j</code> (JVM). Service meshes (Istio, Linkerd) do this transparently.</div></li>
-      <li><div class="phase-num">4</div><div><strong>Database HA</strong> — RDS Multi-AZ uses synchronous replication with automatic failover (60–120s). Aurora has &lt;30s failover with Global Database for cross-region. GCP Cloud SQL HA and Azure Flexible Server work similarly.</div></li>
-    </ul>
+        <h3>HA Design Patterns</h3>
+        <ul class="phase-list">
+          <li>
+            <div class="phase-num">1</div>
+            <div>
+              <strong>Multi-AZ Deployment</strong> — Spread instances across ≥3
+              Availability Zones. AZs are physically separate data centres
+              within a region. An AZ outage (rare but real) should cause zero
+              downtime. All managed services (RDS Multi-AZ, ElastiCache with
+              replicas, EKS with nodes across AZs) do this automatically.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">2</div>
+            <div>
+              <strong>Health Checks & Auto-Healing</strong> — Load balancer
+              health checks remove unhealthy instances from rotation.
+              ASG/Kubernetes replaces them. Target: detect failure in &lt;30s,
+              replace in &lt;5min. Test with Chaos Engineering (AWS Fault
+              Injection Service, GCP Fault Injection).
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">3</div>
+            <div>
+              <strong>Circuit Breakers</strong> — Prevent cascade failures when
+              a downstream service degrades. Open the circuit after N
+              consecutive failures; probe again after a timeout. Libraries:
+              <code>opossum</code> (Node.js), <code>resilience4j</code> (JVM).
+              Service meshes (Istio, Linkerd) do this transparently.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">4</div>
+            <div>
+              <strong>Database HA</strong> — RDS Multi-AZ uses synchronous
+              replication with automatic failover (60–120s). Aurora has &lt;30s
+              failover with Global Database for cross-region. GCP Cloud SQL HA
+              and Azure Flexible Server work similarly.
+            </div>
+          </li>
+        </ul>
 
-    <h3>DR Strategies by RTO/RPO</h3>
-    <table>
-      <tr><th>Strategy</th><th>RTO</th><th>RPO</th><th>Cost</th><th>How</th></tr>
-      <tr><td>Backup & Restore</td><td>Hours</td><td>Hours</td><td class="badge badge-green">Low</td><td>S3 backups + Terraform to rebuild</td></tr>
-      <tr><td>Pilot Light</td><td>10–30 min</td><td>Minutes</td><td class="badge badge-amber">Medium</td><td>Minimal infra in DR region, scale on failover</td></tr>
-      <tr><td>Warm Standby</td><td>&lt;5 min</td><td>&lt;1 min</td><td class="badge badge-amber">Medium-High</td><td>Scaled-down running copy in DR region</td></tr>
-      <tr><td>Multi-Site Active/Active</td><td>Seconds</td><td>Near-zero</td><td class="badge badge-red">High</td><td>Full capacity in 2+ regions, DNS failover</td></tr>
-    </table>
+        <h3>DR Strategies by RTO/RPO</h3>
+        <table>
+          <tr>
+            <th>Strategy</th>
+            <th>RTO</th>
+            <th>RPO</th>
+            <th>Cost</th>
+            <th>How</th>
+          </tr>
+          <tr>
+            <td>Backup & Restore</td>
+            <td>Hours</td>
+            <td>Hours</td>
+            <td class="badge badge-green">Low</td>
+            <td>S3 backups + Terraform to rebuild</td>
+          </tr>
+          <tr>
+            <td>Pilot Light</td>
+            <td>10–30 min</td>
+            <td>Minutes</td>
+            <td class="badge badge-amber">Medium</td>
+            <td>Minimal infra in DR region, scale on failover</td>
+          </tr>
+          <tr>
+            <td>Warm Standby</td>
+            <td>&lt;5 min</td>
+            <td>&lt;1 min</td>
+            <td class="badge badge-amber">Medium-High</td>
+            <td>Scaled-down running copy in DR region</td>
+          </tr>
+          <tr>
+            <td>Multi-Site Active/Active</td>
+            <td>Seconds</td>
+            <td>Near-zero</td>
+            <td class="badge badge-red">High</td>
+            <td>Full capacity in 2+ regions, DNS failover</td>
+          </tr>
+        </table>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Circuit Breaker with opossum</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> CircuitBreaker <span class="kw">from</span> <span class="st">'opossum'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Circuit Breaker with opossum</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> CircuitBreaker <span class="kw">from</span> <span class="st">'opossum'</span>
 
 <span class="kw">const</span> breaker <span class="op">=</span> <span class="kw">new</span> <span class="fn">CircuitBreaker</span><span class="pu">(</span>callPaymentService<span class="pu">,</span> <span class="pu">{</span>
   timeout<span class="pu">:</span>              <span class="nm">3000</span><span class="pu">,</span>    <span class="cm">// call must complete within 3s</span>
@@ -967,46 +2147,132 @@ breaker<span class="pu">.</span><span class="fn">fallback</span><span class="pu"
 breaker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'open'</span><span class="pu">,</span>     <span class="pu">()</span> <span class="op">=></span> logger<span class="pu">.</span><span class="fn">warn</span><span class="pu">(</span><span class="st">'Payment circuit OPEN'</span><span class="pu">))</span>
 breaker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'halfOpen'</span><span class="pu">,</span> <span class="pu">()</span> <span class="op">=></span> logger<span class="pu">.</span><span class="fn">info</span><span class="pu">(</span><span class="st">'Payment circuit probing...'</span><span class="pu">))</span>
 breaker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'close'</span><span class="pu">,</span>    <span class="pu">()</span> <span class="op">=></span> logger<span class="pu">.</span><span class="fn">info</span><span class="pu">(</span><span class="st">'Payment circuit CLOSED — recovered'</span><span class="pu">))</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 12 COST ═══ -->
-  <div class="section" id="cost">
-    <div class="section-label">12 — Economics</div>
-    <h2>Cost Optimisation</h2>
-    <p class="lead">Cloud bills grow silently. The most effective cost reductions — Reserved Instances, Spot usage, right-sizing, and storage tiering — require intentional engineering decisions, not retroactive cleanup.</p>
+      <!-- ═══ 12 COST ═══ -->
+      <div class="section" id="cost">
+        <div class="section-label">12 — Economics</div>
+        <h2>Cost Optimisation</h2>
+        <p class="lead">
+          Cloud bills grow silently. The most effective cost reductions —
+          Reserved Instances, Spot usage, right-sizing, and storage tiering —
+          require intentional engineering decisions, not retroactive cleanup.
+        </p>
 
-    <div class="concept-grid">
-      <div class="concept-card"><div class="concept-icon">📋</div><h4>Reserved Capacity</h4><p>Commit 1–3 years for 30–72% off on-demand. AWS RIs / Savings Plans, GCP CUDs, Azure Reserved Instances. Use for baseline always-on capacity.</p></div>
-      <div class="concept-card"><div class="concept-icon">⚡</div><h4>Spot / Preemptible</h4><p>Up to 90% off for interruptible workloads. Batch jobs, CI runners, non-critical workers. Always build your app to handle graceful shutdown in 30s.</p></div>
-      <div class="concept-card"><div class="concept-icon">📏</div><h4>Right-Sizing</h4><p>Most instances are over-provisioned by 2–4×. Use CloudWatch/Cloud Monitoring to find p95 CPU/memory usage. Downsize instances that never exceed 30% CPU.</p></div>
-      <div class="concept-card"><div class="concept-icon">🗄️</div><h4>Storage Tiering</h4><p>S3 Intelligent-Tiering, GCS autoclass, Azure lifecycle policies automatically move infrequently accessed data to cheaper tiers. Can reduce storage costs 60–80%.</p></div>
-      <div class="concept-card"><div class="concept-icon">📡</div><h4>Data Transfer</h4><p>Egress is expensive (~$0.08/GB). Minimise cross-AZ traffic, use VPC endpoints for S3/DynamoDB (free), and CDN to serve content without hitting origin.</p></div>
-      <div class="concept-card"><div class="concept-icon">🔮</div><h4>Scale to Zero</h4><p>Serverless (Lambda, Cloud Run, Container Apps) has zero cost at zero traffic. Move batch jobs, APIs with variable traffic, and dev/staging environments to scale-to-zero.</p></div>
-    </div>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">📋</div>
+            <h4>Reserved Capacity</h4>
+            <p>
+              Commit 1–3 years for 30–72% off on-demand. AWS RIs / Savings
+              Plans, GCP CUDs, Azure Reserved Instances. Use for baseline
+              always-on capacity.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚡</div>
+            <h4>Spot / Preemptible</h4>
+            <p>
+              Up to 90% off for interruptible workloads. Batch jobs, CI runners,
+              non-critical workers. Always build your app to handle graceful
+              shutdown in 30s.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📏</div>
+            <h4>Right-Sizing</h4>
+            <p>
+              Most instances are over-provisioned by 2–4×. Use CloudWatch/Cloud
+              Monitoring to find p95 CPU/memory usage. Downsize instances that
+              never exceed 30% CPU.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🗄️</div>
+            <h4>Storage Tiering</h4>
+            <p>
+              S3 Intelligent-Tiering, GCS autoclass, Azure lifecycle policies
+              automatically move infrequently accessed data to cheaper tiers.
+              Can reduce storage costs 60–80%.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📡</div>
+            <h4>Data Transfer</h4>
+            <p>
+              Egress is expensive (~$0.08/GB). Minimise cross-AZ traffic, use
+              VPC endpoints for S3/DynamoDB (free), and CDN to serve content
+              without hitting origin.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔮</div>
+            <h4>Scale to Zero</h4>
+            <p>
+              Serverless (Lambda, Cloud Run, Container Apps) has zero cost at
+              zero traffic. Move batch jobs, APIs with variable traffic, and
+              dev/staging environments to scale-to-zero.
+            </p>
+          </div>
+        </div>
 
-    <table>
-      <tr><th>Service</th><th>▲ AWS</th><th>● GCP</th><th>■ Azure</th></tr>
-      <tr><td>Cost visibility</td><td>Cost Explorer + Budgets</td><td>Billing Reports + Budgets</td><td>Cost Management + Budgets</td></tr>
-      <tr><td>Commitment discounts</td><td>Savings Plans (flexible)</td><td>CUDs (resource-based)</td><td>Reserved Instances</td></tr>
-      <tr><td>Spot compute</td><td>EC2 Spot / Fargate Spot</td><td>Spot VMs (preemptible)</td><td>Azure Spot VMs</td></tr>
-      <tr><td>Auto-shutdown schedules</td><td>Instance Scheduler (SAM)</td><td>Cloud Scheduler + functions</td><td>Start/Stop VMs (automation)</td></tr>
-    </table>
-  </div>
+        <table>
+          <tr>
+            <th>Service</th>
+            <th>▲ AWS</th>
+            <th>● GCP</th>
+            <th>■ Azure</th>
+          </tr>
+          <tr>
+            <td>Cost visibility</td>
+            <td>Cost Explorer + Budgets</td>
+            <td>Billing Reports + Budgets</td>
+            <td>Cost Management + Budgets</td>
+          </tr>
+          <tr>
+            <td>Commitment discounts</td>
+            <td>Savings Plans (flexible)</td>
+            <td>CUDs (resource-based)</td>
+            <td>Reserved Instances</td>
+          </tr>
+          <tr>
+            <td>Spot compute</td>
+            <td>EC2 Spot / Fargate Spot</td>
+            <td>Spot VMs (preemptible)</td>
+            <td>Azure Spot VMs</td>
+          </tr>
+          <tr>
+            <td>Auto-shutdown schedules</td>
+            <td>Instance Scheduler (SAM)</td>
+            <td>Cloud Scheduler + functions</td>
+            <td>Start/Stop VMs (automation)</td>
+          </tr>
+        </table>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 13 IAC ═══ -->
-  <div class="section" id="iac">
-    <div class="section-label">13 — Infrastructure as Code</div>
-    <h2>Infrastructure as Code</h2>
-    <p class="lead">IaC makes your infrastructure reproducible, reviewable, and version-controlled. Every resource is defined in code, every change goes through PR review and CI, and every environment is identical. <em>Click-ops in the console is technical debt.</em></p>
+      <!-- ═══ 13 IAC ═══ -->
+      <div class="section" id="iac">
+        <div class="section-label">13 — Infrastructure as Code</div>
+        <h2>Infrastructure as Code</h2>
+        <p class="lead">
+          IaC makes your infrastructure reproducible, reviewable, and
+          version-controlled. Every resource is defined in code, every change
+          goes through PR review and CI, and every environment is identical.
+          <em>Click-ops in the console is technical debt.</em>
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Terraform — Module Structure & Remote State</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm"># Project layout
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >Terraform — Module Structure & Remote State</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># Project layout
 # infra/
 #   environments/
 #     prod/        ← environment-specific values
@@ -1050,30 +2316,74 @@ breaker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</sp
 
 <span class="cm"># Drift detection in CI — run on every PR</span>
 <span class="cm"># terraform plan -detailed-exitcode  →  exit 2 if drift found</span></code></pre>
-    </div>
+        </div>
 
-    <table>
-      <tr><th>Tool</th><th>Scope</th><th>Best for</th><th>Learning curve</th></tr>
-      <tr><td>Terraform / OpenTofu</td><td>Multi-cloud</td><td>Full infrastructure — any provider</td><td class="badge badge-amber">Medium</td></tr>
-      <tr><td>Pulumi</td><td>Multi-cloud</td><td>Teams who prefer TypeScript/Python over HCL</td><td class="badge badge-amber">Medium</td></tr>
-      <tr><td>AWS CDK</td><td>AWS only</td><td>AWS-native teams, TypeScript first-class</td><td class="badge badge-amber">Medium</td></tr>
-      <tr><td>Google Cloud Deployment Manager</td><td>GCP only</td><td>GCP native (Terraform preferred in practice)</td><td class="badge badge-green">Low</td></tr>
-      <tr><td>Azure Bicep</td><td>Azure only</td><td>Azure-native teams, ARM improvement</td><td class="badge badge-green">Low</td></tr>
-      <tr><td>Ansible</td><td>Config mgmt</td><td>OS config, app deployment, post-provision</td><td class="badge badge-green">Low</td></tr>
-    </table>
-  </div>
+        <table>
+          <tr>
+            <th>Tool</th>
+            <th>Scope</th>
+            <th>Best for</th>
+            <th>Learning curve</th>
+          </tr>
+          <tr>
+            <td>Terraform / OpenTofu</td>
+            <td>Multi-cloud</td>
+            <td>Full infrastructure — any provider</td>
+            <td class="badge badge-amber">Medium</td>
+          </tr>
+          <tr>
+            <td>Pulumi</td>
+            <td>Multi-cloud</td>
+            <td>Teams who prefer TypeScript/Python over HCL</td>
+            <td class="badge badge-amber">Medium</td>
+          </tr>
+          <tr>
+            <td>AWS CDK</td>
+            <td>AWS only</td>
+            <td>AWS-native teams, TypeScript first-class</td>
+            <td class="badge badge-amber">Medium</td>
+          </tr>
+          <tr>
+            <td>Google Cloud Deployment Manager</td>
+            <td>GCP only</td>
+            <td>GCP native (Terraform preferred in practice)</td>
+            <td class="badge badge-green">Low</td>
+          </tr>
+          <tr>
+            <td>Azure Bicep</td>
+            <td>Azure only</td>
+            <td>Azure-native teams, ARM improvement</td>
+            <td class="badge badge-green">Low</td>
+          </tr>
+          <tr>
+            <td>Ansible</td>
+            <td>Config mgmt</td>
+            <td>OS config, app deployment, post-provision</td>
+            <td class="badge badge-green">Low</td>
+          </tr>
+        </table>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 14 SERVERLESS ═══ -->
-  <div class="section" id="serverless">
-    <div class="section-label">14 — Event-Driven Compute</div>
-    <h2>Serverless & Edge</h2>
-    <p class="lead">Serverless eliminates server management — you deploy functions or containers, the cloud handles the rest: scaling, patching, HA, and billing per invocation. It is not the right choice for every workload, but for the right ones it dramatically reduces operational overhead.</p>
+      <!-- ═══ 14 SERVERLESS ═══ -->
+      <div class="section" id="serverless">
+        <div class="section-label">14 — Event-Driven Compute</div>
+        <h2>Serverless & Edge</h2>
+        <p class="lead">
+          Serverless eliminates server management — you deploy functions or
+          containers, the cloud handles the rest: scaling, patching, HA, and
+          billing per invocation. It is not the right choice for every workload,
+          but for the right ones it dramatically reduces operational overhead.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — AWS Lambda with TypeScript & Middy</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> middy          <span class="kw">from</span> <span class="st">'@middy/core'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — AWS Lambda with TypeScript & Middy</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> middy          <span class="kw">from</span> <span class="st">'@middy/core'</span>
 <span class="kw">import</span> httpJsonBodyParser <span class="kw">from</span> <span class="st">'@middy/http-json-body-parser'</span>
 <span class="kw">import</span> httpErrorHandler  <span class="kw">from</span> <span class="st">'@middy/http-error-handler'</span>
 <span class="kw">import</span> <span class="pu">{</span> z <span class="pu">}</span>           <span class="kw">from</span> <span class="st">'zod'</span>
@@ -1099,38 +2409,85 @@ breaker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</sp
 // 2. Initialise SDK clients outside handler (reused across invocations)
 // 3. Use Lambda SnapStart (Java) or Provisioned Concurrency for latency-sensitive
 // 4. arm64 (Graviton2) is 20% cheaper and 10% faster than x86</span></code></pre>
+        </div>
+
+        <h3>Serverless Comparison</h3>
+        <table>
+          <tr>
+            <th>Feature</th>
+            <th>▲ AWS Lambda</th>
+            <th>● GCP Cloud Functions / Run</th>
+            <th>■ Azure Functions</th>
+          </tr>
+          <tr>
+            <td>Max timeout</td>
+            <td>15 min</td>
+            <td>60 min (Cloud Run)</td>
+            <td>No timeout (Premium plan)</td>
+          </tr>
+          <tr>
+            <td>Max memory</td>
+            <td>10,240 MB</td>
+            <td>32 GB (Cloud Run)</td>
+            <td>14 GB (Premium)</td>
+          </tr>
+          <tr>
+            <td>Cold start (Node.js)</td>
+            <td>~150ms</td>
+            <td>~100ms (Cloud Run min-instances)</td>
+            <td>~200ms</td>
+          </tr>
+          <tr>
+            <td>VPC access</td>
+            <td>Lambda in VPC (with ENI)</td>
+            <td>VPC Connector / direct VPC egress</td>
+            <td>VNet Integration</td>
+          </tr>
+          <tr>
+            <td>Scale to zero</td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td>
+              <span class="badge badge-green">Yes (Consumption plan)</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Best unique feature</td>
+            <td>EventBridge integration ecosystem</td>
+            <td>Cloud Run (containers, not just functions)</td>
+            <td>Durable Functions (stateful workflows)</td>
+          </tr>
+        </table>
+
+        <div class="info">
+          <div class="info-label">ℹ️ Edge Computing</div>
+          All three providers offer edge compute for sub-5ms global latency: AWS
+          Lambda@Edge / CloudFront Functions, GCP Cloud Run on Google's edge,
+          and Azure CDN / Front Door rules. Use edge for authentication token
+          validation, A/B testing header injection, geo-routing, and
+          personalisation logic that runs before origin.
+        </div>
+      </div>
     </div>
 
-    <h3>Serverless Comparison</h3>
-    <table>
-      <tr><th>Feature</th><th>▲ AWS Lambda</th><th>● GCP Cloud Functions / Run</th><th>■ Azure Functions</th></tr>
-      <tr><td>Max timeout</td><td>15 min</td><td>60 min (Cloud Run)</td><td>No timeout (Premium plan)</td></tr>
-      <tr><td>Max memory</td><td>10,240 MB</td><td>32 GB (Cloud Run)</td><td>14 GB (Premium)</td></tr>
-      <tr><td>Cold start (Node.js)</td><td>~150ms</td><td>~100ms (Cloud Run min-instances)</td><td>~200ms</td></tr>
-      <tr><td>VPC access</td><td>Lambda in VPC (with ENI)</td><td>VPC Connector / direct VPC egress</td><td>VNet Integration</td></tr>
-      <tr><td>Scale to zero</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes (Consumption plan)</span></td></tr>
-      <tr><td>Best unique feature</td><td>EventBridge integration ecosystem</td><td>Cloud Run (containers, not just functions)</td><td>Durable Functions (stateful workflows)</td></tr>
-    </table>
-
-    <div class="info"><div class="info-label">ℹ️ Edge Computing</div>All three providers offer edge compute for sub-5ms global latency: AWS Lambda@Edge / CloudFront Functions, GCP Cloud Run on Google's edge, and Azure CDN / Front Door rules. Use edge for authentication token validation, A/B testing header injection, geo-routing, and personalisation logic that runs before origin.</div>
-  </div>
-
-</div>
-
-<footer>
-  <strong>Cloud Engineering — AWS vs GCP vs Azure Complete Guide</strong><br>
-  Part of the <a href="index.html">DevDive</a> series — Deep dives for serious developers.<br><br>
-  <span style="color:rgba(255,255,255,.3)">© 2026 DevDive · AWS · Google Cloud · Microsoft Azure · June 2026</span>
-</footer>
-<script>
-function copyCode(btn) {
-  const pre = btn.closest('.code-block').querySelector('pre')
-  navigator.clipboard.writeText(pre.innerText).then(() => {
-    const orig = btn.textContent
-    btn.textContent = 'Copied!'
-    setTimeout(() => btn.textContent = orig, 2000)
-  })
-}
-</script>
-</body>
+    <footer>
+      <strong>Cloud Engineering — AWS vs GCP vs Azure Complete Guide</strong
+      ><br />
+      Part of the <a href="index.html">DevDive</a> series — Deep dives for
+      serious developers.<br /><br />
+      <span style="color: rgba(255, 255, 255, 0.3)"
+        >© 2026 DevDive · AWS · Google Cloud · Microsoft Azure · June 2026</span
+      >
+    </footer>
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest(".code-block").querySelector("pre");
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = orig), 2000);
+        });
+      }
+    </script>
+  </body>
 </html>
