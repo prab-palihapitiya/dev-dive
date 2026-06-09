@@ -397,6 +397,9 @@
       .card[data-cat="cloud"]:hover {
         border-color: #a5f3fc;
       }
+      .card[data-cat="practices"]:hover {
+        border-color: #fcd34d;
+      }
 
       .card-cover {
         height: 172px;
@@ -420,6 +423,9 @@
       }
       .card[data-cat="cloud"] .card-cover {
         background: linear-gradient(140deg, #082032, #0891b2 60%, #38bdf8);
+      }
+      .card[data-cat="practices"] .card-cover {
+        background: linear-gradient(140deg, #451a03, #b45309 60%, #fbbf24);
       }
 
       .cover-bg-text {
@@ -587,6 +593,13 @@
       }
       .card[data-cat="cloud"] .read-link:hover {
         background: #cffafe;
+      }
+      .card[data-cat="practices"] .read-link {
+        background: #fffbeb;
+        color: #b45309;
+      }
+      .card[data-cat="practices"] .read-link:hover {
+        background: #fef3c7;
       }
       .card-rt {
         font-size: 12px;
@@ -923,6 +936,13 @@
           <span class="nav-cat-dot" style="background: var(--c-cloud)"></span
           >Cloud
         </button>
+        <button class="nav-cat" onclick="filterCat(this, 'practices')">
+          <span
+            class="nav-cat-dot"
+            style="background: var(--c-practices)"
+          ></span
+          >Best Practices
+        </button>
         <button class="nav-cat" onclick="filterCat(this, 'devops')">
           <span class="nav-cat-dot" style="background: var(--c-devops)"></span
           >DevOps
@@ -948,7 +968,7 @@
       </div>
 
       <div class="nav-right">
-        <span class="nav-count" id="article-count">8 articles</span>
+        <span class="nav-count" id="article-count">9 articles</span>
       </div>
     </nav>
 
@@ -1105,10 +1125,15 @@
           <div class="cat-ov-count">1 article</div>
         </div>
 
-        <div class="cat-overview-card">
+        <div
+          class="cat-overview-card"
+          data-cat="practices"
+          onclick="filterCat(null, 'practices')"
+          style="cursor: pointer; border-color: #fcd34d"
+        >
           <div class="cat-ov-icon" style="background: #fffbeb">📋</div>
           <div class="cat-ov-name">Best Practices</div>
-          <div class="cat-ov-count">Planned</div>
+          <div class="cat-ov-count">1 article</div>
         </div>
 
         <div class="cat-overview-card">
@@ -1126,7 +1151,7 @@
       <div class="section-title-row">
         <h2 class="section-title">Published Articles</h2>
         <span class="section-meta" id="filter-label"
-          >Showing all · 8 articles</span
+          >Showing all · 9 articles</span
         >
       </div>
 
@@ -1544,6 +1569,51 @@
             <span class="card-rt">~50 min read</span>
           </div>
         </a>
+
+        <!-- Best Practices Card -->
+        <a class="card" data-cat="practices" href="best-practices-guide.html">
+          <div class="card-cover">
+            <div class="cover-bg-text">BP</div>
+            <div class="cover-badge">
+              <span class="cover-badge-lang">📋 Best Practices</span>
+              <span class="cover-badge-sub">Engineering Craft</span>
+            </div>
+            <div class="cover-pills">
+              <span class="cover-pill">SOLID</span>
+              <span class="cover-pill">Clean Arch</span>
+              <span class="cover-pill">ADRs</span>
+              <span class="cover-pill">TDD</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-row">
+              <span class="cat-chip" style="background: #fffbeb; color: #b45309"
+                >Best Practices</span
+              >
+              <span class="card-sections">12 sections</span>
+            </div>
+            <div class="card-title">Engineering Best Practices</div>
+            <p class="card-desc">
+              Code review techniques, testing pyramid, SOLID principles,
+              refactoring patterns, API design, clean architecture, design
+              patterns (Factory, Strategy, Adapter), dependency management,
+              documentation, ADRs, and technical decision making.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Code Review</span>
+              <span class="tag">Testing</span>
+              <span class="tag">SOLID</span>
+              <span class="tag">Clean Arch</span>
+              <span class="tag">ADRs</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="read-link"
+              >Read Article <span class="arr">→</span></span
+            >
+            <span class="card-rt">~45 min read</span>
+          </div>
+        </a>
       </div>
 
       <!-- Empty state for filtered view -->
@@ -1629,32 +1699,6 @@
             <span class="coming-topic">FastAPI</span>
             <span class="coming-topic">Django</span>
             <span class="coming-topic">REST</span>
-          </div>
-          <button class="coming-notify" onclick="notify(this)">
-            🔔 Notify me
-          </button>
-        </div>
-
-        <div class="coming-card">
-          <div class="coming-top">
-            <div
-              class="coming-icon"
-              style="background: #fffbeb; font-size: 22px"
-            >
-              📋
-            </div>
-            <span class="soon-badge">Planned</span>
-          </div>
-          <div class="coming-title">Best Practices</div>
-          <p class="coming-desc">
-            Code review techniques, testing strategies, SOLID principles,
-            refactoring patterns, API design, and clean architecture.
-          </p>
-          <div class="coming-topics">
-            <span class="coming-topic">SOLID</span>
-            <span class="coming-topic">Testing</span>
-            <span class="coming-topic">Clean Code</span>
-            <span class="coming-topic">DRY</span>
           </div>
           <button class="coming-notify" onclick="notify(this)">
             🔔 Notify me
