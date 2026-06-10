@@ -1,0 +1,1996 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What a Senior Engineer Should Know About PHP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f6f8ff;
+        --surface: #fff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b6b6b;
+        --text-muted: #9a9a9a;
+        --accent: #4f46e5;
+        --accent-light: #eef2ff;
+        --accent-subtle: #e0e7ff;
+        --border: #dde3f5;
+        --code-bg: #0d1117;
+        --code-text: #e6edf3;
+        --tag-bg: #eef2ff;
+        --tip-bg: #f0fdf4;
+        --tip-border: #16a34a;
+        --warn-bg: #fff7ed;
+        --warn-border: #ea580c;
+        --danger-bg: #fff1f2;
+        --danger-border: #dc2626;
+        --info-bg: #eff6ff;
+        --info-border: #2563eb;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.75;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(246, 248, 255, 0.94);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover {
+        color: var(--accent);
+      }
+      .nav-pipe {
+        color: var(--border);
+        font-size: 18px;
+      }
+      .nav-brand {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: var(--accent-light);
+        color: var(--accent);
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+      .nav-links a {
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--tag-bg);
+        color: var(--text-primary);
+      }
+      .nav-rt {
+        font-size: 13px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 2rem 48px;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(32px, 5vw, 50px);
+        font-weight: 600;
+        line-height: 1.12;
+        letter-spacing: -0.5px;
+        margin-bottom: 20px;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4f46e5, #1e1b4b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .meta-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .meta-text strong {
+        color: var(--text-primary);
+      }
+      .hero-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin-top: 32px;
+      }
+      .toc-wrapper {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 8px;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 40px;
+      }
+      .toc h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 24px;
+      }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+        transition: color 0.15s;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc-num {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+        min-width: 20px;
+      }
+      .content {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 80px;
+      }
+      .section {
+        margin-bottom: 72px;
+        scroll-margin-top: 72px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--accent-subtle);
+      }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+      }
+      h3 {
+        font-size: 19px;
+        font-weight: 600;
+        margin: 32px 0 12px;
+      }
+      p {
+        margin-bottom: 18px;
+        color: #2d2d2d;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        margin-bottom: 24px;
+      }
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 10px;
+        margin: 24px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-lang {
+        font-size: 12px;
+        color: #6e7681;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .copy-btn {
+        font-size: 12px;
+        color: #484f58;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #8b949e;
+      }
+      pre {
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--code-text);
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        background: #e0e7ff;
+        color: #3730a3;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .kw {
+        color: #ff7b72;
+      }
+      .ty {
+        color: #79c0ff;
+      }
+      .st {
+        color: #a5d6ff;
+      }
+      .nm {
+        color: #f0883e;
+      }
+      .cm {
+        color: #8b949e;
+        font-style: italic;
+      }
+      .fn {
+        color: #d2a8ff;
+      }
+      .op {
+        color: #c9d1d9;
+      }
+      .pu {
+        color: #e6edf3;
+      }
+      .bi {
+        color: #ffa657;
+      }
+      .str2 {
+        color: #7ee787;
+      }
+      .at {
+        color: #ffa657;
+      }
+      .tip {
+        background: var(--tip-bg);
+        border-left: 3px solid var(--tip-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .warn {
+        background: var(--warn-bg);
+        border-left: 3px solid var(--warn-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .info {
+        background: var(--info-bg);
+        border-left: 3px solid var(--info-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .danger {
+        background: var(--danger-bg);
+        border-left: 3px solid var(--danger-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .tip-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #16a34a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .warn-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #ea580c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2563eb;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .danger-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #dc2626;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .compare-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .compare-header {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .compare-header.bad {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+      .compare-header.good {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .compare-header.before {
+        background: #f8f8f8;
+        color: #555;
+      }
+      .compare-header.after {
+        background: #eef2ff;
+        color: #4f46e5;
+      }
+      .compare-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      th {
+        background: var(--tag-bg);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+        vertical-align: middle;
+      }
+      .badge-green {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .badge-red {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .badge-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-indigo {
+        background: #e0e7ff;
+        color: #4338ca;
+      }
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 12px 24px;
+        margin: 36px 0;
+      }
+      .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+      }
+      .concept-card h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        margin-top: 0;
+      }
+      .concept-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .concept-icon {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+      .phase-list {
+        list-style: none;
+        margin: 16px 0;
+      }
+      .phase-list li {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+      }
+      .phase-list li:last-child {
+        border-bottom: none;
+      }
+      .phase-num {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 56px 0;
+      }
+      footer {
+        background: #0f0c29;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+        padding: 40px 2rem;
+        font-size: 14px;
+      }
+      footer strong {
+        color: #fff;
+      }
+      footer a {
+        color: #a5b4fc;
+        text-decoration: none;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 640px) {
+        .toc-grid,
+        .compare-grid {
+          grid-template-columns: 1fr;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">← DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">PHP</span>
+        <span class="nav-badge">Senior Guide</span>
+      </div>
+      <div class="nav-links">
+        <a href="#zend">Zend Engine</a>
+        <a href="#lifecycle">Request Lifecycle</a>
+        <a href="#fpm">PHP-FPM</a>
+        <a href="#opcache">OPcache</a>
+        <a href="#memory">Memory</a>
+        <a href="#composer">Composer & PSR</a>
+        <a href="#di">DI Containers</a>
+        <a href="#laravel">Laravel</a>
+        <a href="#symfony">Symfony</a>
+        <a href="#architecture">Clean Architecture</a>
+        <a href="#queues">Redis & Queues</a>
+        <a href="#octane">Octane & Swoole</a>
+      </div>
+      <span class="nav-rt">~40 min read</span>
+    </nav>
+    <div class="hero">
+      <div class="hero-tag">🐘 Senior Guide</div>
+      <h1>What a Senior Engineer Should Know About PHP</h1>
+      <p class="hero-sub">
+        The biggest misconception about PHP is that it's "just a scripting
+        language." Modern PHP is a mature application platform with a
+        sophisticated runtime, strong architectural patterns, and an ecosystem
+        that has evolved from simple page rendering into enterprise-grade
+        distributed systems.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">🐘</div>
+        <div class="meta-text">
+          <strong>PHP Deep Dive — Runtime to Architecture</strong><br />
+          PHP 8.3 · Laravel 11 · Symfony 7 · Octane — June 2026
+        </div>
+      </div>
+      <hr class="hero-divider" />
+    </div>
+    <div class="toc-wrapper">
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <div class="toc-grid">
+          <a href="#zend"
+            ><span class="toc-num">01</span> Zend Engine Architecture</a
+          >
+          <a href="#di"
+            ><span class="toc-num">07</span> Dependency Injection Containers</a
+          >
+          <a href="#lifecycle"
+            ><span class="toc-num">02</span> Request Lifecycle</a
+          >
+          <a href="#laravel"
+            ><span class="toc-num">08</span> Laravel Architecture</a
+          >
+          <a href="#fpm"><span class="toc-num">03</span> PHP-FPM</a>
+          <a href="#symfony"
+            ><span class="toc-num">09</span> Symfony Component Ecosystem</a
+          >
+          <a href="#opcache"><span class="toc-num">04</span> OPcache</a>
+          <a href="#architecture"
+            ><span class="toc-num">10</span> MVC & Clean Architecture</a
+          >
+          <a href="#memory"
+            ><span class="toc-num">05</span> Memory Management</a
+          >
+          <a href="#queues"
+            ><span class="toc-num">11</span> Redis, Queues & Event-Driven</a
+          >
+          <a href="#composer"
+            ><span class="toc-num">06</span> Composer & PSR Standards</a
+          >
+          <a href="#octane"
+            ><span class="toc-num">12</span> Octane, Swoole & High-Performance
+            PHP</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <!-- ═══ 01 ZEND ENGINE ═══ -->
+      <div class="section" id="zend">
+        <div class="section-label">01 — The Runtime</div>
+        <h2>Zend Engine Architecture</h2>
+        <p class="lead">
+          The Zend Engine is the core virtual machine powering PHP.
+          Understanding it demystifies PHP's execution model — from source text
+          to opcodes to output — and explains why certain patterns are fast,
+          others slow, and why the language behaves the way it does.
+        </p>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">📝</div>
+            <h4>Lexer (Tokeniser)</h4>
+            <p>
+              Scans raw PHP source into a flat stream of tokens — keywords,
+              variables, operators, strings. The first stage of compilation.
+              Handled by <code>ext/tokenizer</code>.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🌳</div>
+            <h4>Parser (AST Builder)</h4>
+            <p>
+              Consumes the token stream and produces an Abstract Syntax Tree.
+              Since PHP 7, the AST is an intermediate representation — the
+              parser no longer generates opcodes directly.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚙️</div>
+            <h4>Compiler</h4>
+            <p>
+              Walks the AST and emits Zend opcodes — a compact bytecode format.
+              This bytecode is what OPcache stores, skipping re-compilation on
+              subsequent requests.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🚀</div>
+            <h4>Zend VM</h4>
+            <p>
+              Executes the opcode stream. Register-based, with a sophisticated
+              dispatch mechanism. PHP 8 added JIT compilation here — hot code
+              paths compile to native machine code.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔧</div>
+            <h4>Extensions</h4>
+            <p>
+              PDO, cURL, Redis, OPcache — all implemented as C extensions hooked
+              into the engine. They expose functions and classes to userland
+              while operating at native speed.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🧹</div>
+            <h4>Garbage Collector</h4>
+            <p>
+              PHP uses reference counting with a cycle collector for circular
+              references. Every <code>zval</code> (Zend value container) carries
+              a refcount. When it hits zero, memory is freed immediately.
+            </p>
+          </div>
+        </div>
+
+        <h3>PHP 8 JIT — What It Actually Does</h3>
+        <p>
+          The Just-In-Time compiler in PHP 8 compiles hot opcode sequences
+          directly to native CPU instructions, bypassing the VM interpreter.
+          However, JIT in PHP 8.x primarily benefits CPU-bound workloads —
+          mathematical computations, image processing, data transformations.
+          Typical I/O-bound web applications see little improvement because the
+          bottleneck is database and network, not CPU instruction dispatch.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">INI — php.ini: JIT & Engine Tuning</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">; ── OPcache (required for JIT) ────────────────────────────────</span>
+opcache.enable=1
+opcache.enable_cli=1
+opcache.memory_consumption=256       <span class="cm">; MB — size to your codebase</span>
+opcache.interned_strings_buffer=16   <span class="cm">; MB — deduplicated string pool</span>
+opcache.max_accelerated_files=20000  <span class="cm">; number of PHP files to cache</span>
+opcache.validate_timestamps=0        <span class="cm">; prod: disable file-change checks</span>
+opcache.save_comments=1              <span class="cm">; needed for annotations/attributes</span>
+opcache.preload=/var/www/preload.php  <span class="cm">; warm up classes at FPM start</span>
+opcache.preload_user=www-data
+
+<span class="cm">; ── JIT ───────────────────────────────────────────────────────</span>
+opcache.jit=1255          <span class="cm">; tracing JIT — best for long-running processes</span>
+opcache.jit_buffer_size=128M
+
+<span class="cm">; JIT modes (opcache.jit):
+;  0    — disabled
+;  1205 — function-level JIT (conservative, good default)
+;  1235 — tracing JIT (aggressive, best for Octane/Swoole)
+;  1255 — tracing JIT + optimise all functions at startup</span>
+
+<span class="cm">; ── Memory ────────────────────────────────────────────────────</span>
+memory_limit=256M          <span class="cm">; per request; raise for CLI jobs</span>
+max_execution_time=30      <span class="cm">; seconds; 0 = unlimited for CLI</span>
+realpath_cache_size=4096K  <span class="cm">; cache stat() syscalls for file paths</span>
+realpath_cache_ttl=600</code></pre>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">💡 zval Internals</div>
+          Every PHP value is a <code>zval</code> — an 16-byte struct containing
+          a type tag and a union of the actual value. In PHP 7+ they are passed
+          by value on the C stack where possible, which is why PHP 7 was ~2×
+          faster than PHP 5 even without JIT: it eliminated heap allocation for
+          most scalar operations.
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 02 REQUEST LIFECYCLE ═══ -->
+      <div class="section" id="lifecycle">
+        <div class="section-label">02 — Execution Flow</div>
+        <h2>Request Lifecycle</h2>
+        <p class="lead">
+          Every PHP request follows a deterministic path from TCP connection to
+          response. Understanding this pipeline is essential for debugging,
+          profiling, and knowing which extensions run at which phase.
+        </p>
+
+        <ul class="phase-list">
+          <li>
+            <div class="phase-num">1</div>
+            <div>
+              <strong>SAPI Bootstrap (Server API)</strong> — PHP boots via its
+              SAPI layer: <code>php-fpm</code> for web, <code>cli</code> for
+              scripts, <code>embed</code> for libraries. FPM accepts a FastCGI
+              connection from Nginx and passes environment variables and stdin.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">2</div>
+            <div>
+              <strong>Engine Initialisation (<code>MINIT</code>)</strong> —
+              Module Initialisation. Runs once when PHP-FPM starts, not per
+              request. All extensions register their functions, classes, and INI
+              directives. OPcache warms its shared memory here.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">3</div>
+            <div>
+              <strong>Request Initialisation (<code>RINIT</code>)</strong> —
+              Per-request setup. Superglobals (<code>$_GET</code>,
+              <code>$_POST</code>, <code>$_SERVER</code>, <code>$_COOKIE</code>)
+              are populated. Extension-specific request state is initialised
+              (e.g. error handlers reset).
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">4</div>
+            <div>
+              <strong>Script Execution</strong> — The autoloader fires, routing
+              resolves, your application code runs. The Zend VM executes
+              opcodes. This is the only phase you control as an application
+              developer.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">5</div>
+            <div>
+              <strong>Request Shutdown (<code>RSHUTDOWN</code>)</strong> —
+              Registered shutdown functions run, output buffers flush,
+              destructors fire. Database connections close (unless persistent).
+              Per-request memory is freed by the GC.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">6</div>
+            <div>
+              <strong>Module Shutdown (<code>MSHUTDOWN</code>)</strong> — Runs
+              once when FPM stops. Extensions clean up global state. This is why
+              PHP-FPM is extremely fast to recycle workers — the expensive
+              initialisation happened at step 2.
+            </div>
+          </li>
+        </ul>
+
+        <div class="info">
+          <div class="info-label">ℹ️ The Shared-Nothing Model</div>
+          Traditional PHP (FPM) uses a shared-nothing architecture — every
+          request starts with a clean memory space. There is no global state
+          leaking between requests. This makes PHP apps extraordinarily easy to
+          reason about and scale horizontally. It is also why Octane's
+          long-running process model requires careful attention to static state
+          and singleton lifetimes.
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">PHP — Request Lifecycle Hooks</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Register shutdown function — runs at RSHUTDOWN ───────────</span>
+<span class="fn">register_shutdown_function</span><span class="pu">(</span><span class="kw">function</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="cm">// Runs even if the script exits via die() or a fatal error</span>
+    <span class="kw">$error</span> <span class="op">=</span> <span class="fn">error_get_last</span><span class="pu">();</span>
+    <span class="kw">if</span> <span class="pu">(</span><span class="kw">$error</span> <span class="op">&&</span> <span class="kw">$error</span><span class="pu">[</span><span class="st">'type'</span><span class="pu">]</span> <span class="op">===</span> <span class="bi">E_ERROR</span><span class="pu">)</span> <span class="pu">{</span>
+        <span class="fn">Logger</span><span class="pu">::</span><span class="fn">critical</span><span class="pu">(</span><span class="st">'Fatal error'</span><span class="pu">,</span> <span class="kw">$error</span><span class="pu">);</span>
+    <span class="pu">}</span>
+<span class="pu">});</span>
+
+<span class="cm">// ── Measuring phases with Xdebug / tideways ──────────────────</span>
+<span class="cm">// $_SERVER keys populated at RINIT:</span>
+<span class="kw">$requestStart</span>  <span class="op">=</span> <span class="kw">$_SERVER</span><span class="pu">[</span><span class="st">'REQUEST_TIME_FLOAT'</span><span class="pu">];</span>  <span class="cm">// microtime of RINIT</span>
+<span class="kw">$bootstrapTime</span> <span class="op">=</span> <span class="fn">microtime</span><span class="pu">(</span><span class="kw">true</span><span class="pu">)</span> <span class="op">-</span> <span class="kw">$requestStart</span><span class="pu">;</span> <span class="cm">// time to first line of app</span>
+
+<span class="cm">// ── Autoloader registration (Composer) ───────────────────────</span>
+<span class="cm">// Composer's generated autoloader is the first thing every app includes.</span>
+<span class="cm">// It lazy-loads classes on first use via spl_autoload_register().</span>
+<span class="fn">require_once</span> <span class="fn">__DIR__</span> <span class="op">.</span> <span class="st">'/vendor/autoload.php'</span><span class="pu">;</span>
+
+<span class="cm">// With OPcache preloading, the autoloader + all core classes are
+// already compiled in shared memory — require_once hits the cache.</span></code></pre>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 03 PHP-FPM ═══ -->
+      <div class="section" id="fpm">
+        <div class="section-label">03 — Process Management</div>
+        <h2>PHP-FPM</h2>
+        <p class="lead">
+          PHP-FPM (FastCGI Process Manager) is the de-facto standard SAPI for
+          production PHP. It manages a pool of worker processes, handles
+          graceful restarts, exposes a status endpoint, and implements
+          backpressure via configurable accept queues.
+        </p>
+
+        <h3>Process Pool Modes</h3>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">📌</div>
+            <h4>static</h4>
+            <p>
+              Fixed number of workers (<code>pm.max_children</code>).
+              Predictable memory usage. Best for high-traffic homogeneous
+              workloads where you know the steady-state load.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔄</div>
+            <h4>dynamic</h4>
+            <p>
+              Starts with <code>pm.start_servers</code>, scales between
+              <code>pm.min_spare_servers</code> and
+              <code>pm.max_children</code>. Default mode. Good for variable
+              traffic patterns.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">💤</div>
+            <h4>ondemand</h4>
+            <p>
+              Spawns workers only when requests arrive, kills idle ones. Zero
+              idle memory overhead. Suitable for low-traffic pools or staging
+              environments.
+            </p>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >INI — php-fpm.conf: Production Pool Configuration</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="pu">[www]</span>
+user  = www-data
+group = www-data
+
+<span class="cm">; FastCGI socket — Unix socket is faster than TCP for same-host Nginx</span>
+listen = /run/php/php8.3-fpm.sock
+listen.owner = www-data
+listen.group = www-data
+listen.mode  = 0660
+
+<span class="cm">; Process management — static for consistent high-load production</span>
+pm = static
+pm.max_children = 50          <span class="cm">; Formula: (RAM - OS overhead) / per-worker memory</span>
+                              <span class="cm">; e.g. (4096MB - 512MB) / 70MB ≈ 50 workers</span>
+
+<span class="cm">; Slow log — catch long-running requests</span>
+slowlog = /var/log/php-fpm-slow.log
+request_slowlog_timeout = 5s   <span class="cm">; log PHP stack trace if request > 5s</span>
+
+<span class="cm">; Prevent memory leaks accumulating over time</span>
+pm.max_requests = 500          <span class="cm">; recycle worker after N requests</span>
+
+<span class="cm">; Status and ping endpoints (enable in monitoring)</span>
+pm.status_path = /fpm-status
+ping.path       = /fpm-ping
+
+<span class="cm">; Environment — pass through necessary vars from Nginx fastcgi_params</span>
+env[APP_ENV]  = production
+env[LOG_LEVEL]= error
+
+<span class="cm">; Per-request limits override php.ini for this pool</span>
+php_admin_value[memory_limit]       = 256M
+php_admin_value[max_execution_time] = 30</code></pre>
+        </div>
+
+        <h3>Sizing Your Worker Pool</h3>
+        <p>
+          The fundamental formula is:
+          <strong>workers = (available RAM) ÷ (peak memory per worker)</strong>.
+          Measure actual peak memory with
+          <code>memory_get_peak_usage(true)</code> in production, add 20%
+          headroom, then divide. Over-provisioning workers doesn't add capacity
+          — it causes thrashing when workers compete for RAM and the OS starts
+          swapping.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >Bash — Diagnose FPM Worker Memory & Pool Health</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># Average memory per FPM worker (RSS in KB)</span>
+ps -ylC php-fpm8.3 | awk '{sum+=$8; n++} END {print "Avg:", sum/n/1024, "MB"}'
+
+<span class="cm"># FPM status page (requires pm.status_path configured)</span>
+curl -s http://127.0.0.1/fpm-status | grep -E "active|idle|queue"
+
+<span class="cm"># Output format:
+# pool:               www
+# active processes:   12
+# idle processes:     38
+# listen queue:       0       ← if > 0, you need more workers
+# max active:         18
+# slow requests:      3       ← check slowlog</span>
+
+<span class="cm"># Graceful reload (zero-downtime config reload)</span>
+systemctl reload php8.3-fpm</code></pre>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 04 OPCACHE ═══ -->
+      <div class="section" id="opcache">
+        <div class="section-label">04 — Compilation Cache</div>
+        <h2>OPcache</h2>
+        <p class="lead">
+          OPcache stores compiled PHP opcodes in shared memory, eliminating the
+          parse → compile cycle on every request. On a mature Laravel or Symfony
+          application, enabling OPcache typically reduces response time by 3–7×
+          and CPU usage proportionally. It is non-optional in production.
+        </p>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">💾</div>
+            <h4>Shared Memory Segment</h4>
+            <p>
+              A single shared memory region, accessible by all FPM workers
+              simultaneously with no copying. Set
+              <code>memory_consumption</code> large enough that your entire
+              codebase fits — check with <code>opcache_get_status()</code>.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔑</div>
+            <h4>Interned Strings Buffer</h4>
+            <p>
+              Deduplicates string literals across all cached files. A class name
+              like <code>"App\Models\User"</code> is stored once and shared. Set
+              <code>interned_strings_buffer</code> to at least 16MB for large
+              codebases.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🏎️</div>
+            <h4>Preloading (PHP 7.4+)</h4>
+            <p>
+              Load and compile specified files into shared memory at FPM
+              startup. Framework core classes (Laravel's Container, Illuminate
+              support) are available to all workers instantly, no autoloading at
+              all.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔁</div>
+            <h4>File Change Detection</h4>
+            <p>
+              In development, set <code>validate_timestamps=1</code> with
+              <code>revalidate_freq=0</code>. In production, disable with
+              <code>validate_timestamps=0</code> — PHP never hits the filesystem
+              to check for changes.
+            </p>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">PHP — OPcache Preload Script</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// preload.php — referenced by opcache.preload in php.ini
+// Runs once at FPM startup as the opcache.preload_user
+// Preloaded classes are available WITHOUT autoloading in any worker</span>
+<span class="kw">&lt;?php</span>
+<span class="fn">require_once</span> <span class="bi">__DIR__</span> <span class="op">.</span> <span class="st">'/vendor/autoload.php'</span><span class="pu">;</span>
+
+<span class="kw">$directory</span> <span class="op">=</span> <span class="kw">new</span> <span class="ty">RecursiveDirectoryIterator</span><span class="pu">(</span><span class="bi">__DIR__</span> <span class="op">.</span> <span class="st">'/vendor/laravel/framework/src'</span><span class="pu">);</span>
+<span class="kw">$iterator</span>  <span class="op">=</span> <span class="kw">new</span> <span class="ty">RecursiveIteratorIterator</span><span class="pu">(</span><span class="kw">$directory</span><span class="pu">);</span>
+
+<span class="kw">foreach</span> <span class="pu">(</span><span class="kw">$iterator</span> <span class="kw">as</span> <span class="kw">$file</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(</span><span class="kw">$file</span><span class="pu">-></span><span class="fn">getExtension</span><span class="pu">()</span> <span class="op">!==</span> <span class="st">'php'</span><span class="pu">)</span> <span class="kw">continue</span><span class="pu">;</span>
+    <span class="kw">try</span> <span class="pu">{</span>
+        <span class="fn">opcache_compile_file</span><span class="pu">(</span><span class="kw">$file</span><span class="pu">-></span><span class="fn">getRealPath</span><span class="pu">());</span>
+    <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">(</span><span class="ty">Throwable</span> <span class="kw">$e</span><span class="pu">)</span> <span class="pu">{</span> <span class="kw">continue</span><span class="pu">;</span> <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// Laravel ships its own preload generator:</span>
+<span class="cm">// php artisan optimize  → generates bootstrap/cache/packages.php
+// php artisan config:cache, route:cache, view:cache
+// These write serialised PHP arrays — no parse/compile on boot</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">PHP — Inspect OPcache Status</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">$status</span> <span class="op">=</span> <span class="fn">opcache_get_status</span><span class="pu">(</span><span class="kw">false</span><span class="pu">);</span>   <span class="cm">// false = skip per-script stats</span>
+<span class="kw">$config</span> <span class="op">=</span> <span class="fn">opcache_get_configuration</span><span class="pu">();</span>
+
+<span class="kw">$memUsed</span>  <span class="op">=</span> <span class="kw">$status</span><span class="pu">[</span><span class="st">'memory_usage'</span><span class="pu">][</span><span class="st">'used_memory'</span><span class="pu">];</span>
+<span class="kw">$memFree</span>  <span class="op">=</span> <span class="kw">$status</span><span class="pu">[</span><span class="st">'memory_usage'</span><span class="pu">][</span><span class="st">'free_memory'</span><span class="pu">];</span>
+<span class="kw">$hitRate</span>  <span class="op">=</span> <span class="kw">$status</span><span class="pu">[</span><span class="st">'opcache_statistics'</span><span class="pu">][</span><span class="st">'opcache_hit_rate'</span><span class="pu">];</span>  <span class="cm">// target: > 99%</span>
+<span class="kw">$numFiles</span> <span class="op">=</span> <span class="kw">$status</span><span class="pu">[</span><span class="st">'opcache_statistics'</span><span class="pu">][</span><span class="st">'num_cached_scripts'</span><span class="pu">];</span>
+
+<span class="cm">// If hit_rate < 98%: increase memory_consumption or max_accelerated_files
+// If used/total > 85%: memory_consumption is too small — cached scripts get evicted</span></code></pre>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 05 MEMORY ═══ -->
+      <div class="section" id="memory">
+        <div class="section-label">05 — Memory Model</div>
+        <h2>Memory Management</h2>
+        <p class="lead">
+          PHP's memory model is built on reference counting. Understanding it
+          prevents memory leaks, explains copy-on-write behaviour, and makes
+          large-data processing efficient.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >PHP — Reference Counting, COW & Circular References</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Copy-on-Write (COW) ───────────────────────────────────────
+// Arrays are NOT copied until one is modified.
+// Both $a and $b point to the same zval — refcount=2</span>
+<span class="kw">$a</span> <span class="op">=</span> <span class="pu">[</span><span class="nm">1</span><span class="pu">,</span> <span class="nm">2</span><span class="pu">,</span> <span class="nm">3</span><span class="pu">];</span>
+<span class="kw">$b</span> <span class="op">=</span> <span class="kw">$a</span><span class="pu">;</span>      <span class="cm">// no copy yet — COW</span>
+<span class="kw">$b</span><span class="pu">[]</span> <span class="op">=</span> <span class="nm">4</span><span class="pu">;</span>     <span class="cm">// NOW $b is copied (separated) — $a unchanged</span>
+
+<span class="cm">// ── Explicit references — bypass COW ─────────────────────────</span>
+<span class="kw">$c</span> <span class="op">=</span> <span class="pu">&</span><span class="kw">$a</span><span class="pu">;</span>     <span class="cm">// $c is an alias — both point to the same memory</span>
+<span class="kw">$c</span><span class="pu">[]</span> <span class="op">=</span> <span class="nm">99</span><span class="pu">;</span>   <span class="cm">// modifies $a too — they share the zval</span>
+
+<span class="cm">// ── Circular reference — GC cycle collector handles this ─────</span>
+<span class="kw">class</span> <span class="ty">Node</span> <span class="pu">{</span>
+    <span class="kw">public</span> <span class="kw">?Node</span> <span class="kw">$next</span> <span class="op">=</span> <span class="kw">null</span><span class="pu">;</span>
+<span class="pu">}</span>
+<span class="kw">$node</span>       <span class="op">=</span> <span class="kw">new</span> <span class="ty">Node</span><span class="pu">();</span>
+<span class="kw">$node->next</span> <span class="op">=</span> <span class="kw">$node</span><span class="pu">;</span>  <span class="cm">// circular — refcount never hits zero!</span>
+<span class="kw">unset</span><span class="pu">(</span><span class="kw">$node</span><span class="pu">);</span>          <span class="cm">// refcount = 1 (self-reference) — not freed yet</span>
+<span class="fn">gc_collect_cycles</span><span class="pu">();</span>  <span class="cm">// PHP's cycle collector frees it</span>
+
+<span class="cm">// ── Processing large datasets without memory explosion ────────</span>
+<span class="cm">// ❌ Loads entire file into memory at once — will exhaust memory_limit</span>
+<span class="kw">$data</span> <span class="op">=</span> <span class="fn">file_get_contents</span><span class="pu">(</span><span class="st">'huge.csv'</span><span class="pu">);</span>
+<span class="kw">$rows</span> <span class="op">=</span> <span class="fn">explode</span><span class="pu">(</span><span class="st">"\n"</span><span class="pu">,</span> <span class="kw">$data</span><span class="pu">);</span>
+
+<span class="cm">// ✅ Generator — lazy, one line at a time, constant memory</span>
+<span class="kw">function</span> <span class="fn">readCsvLines</span><span class="pu">(</span><span class="kw">string</span> <span class="kw">$path</span><span class="pu">)</span><span class="op">:</span> <span class="ty">Generator</span>
+<span class="pu">{</span>
+    <span class="kw">$handle</span> <span class="op">=</span> <span class="fn">fopen</span><span class="pu">(</span><span class="kw">$path</span><span class="pu">,</span> <span class="st">'r'</span><span class="pu">);</span>
+    <span class="kw">try</span> <span class="pu">{</span>
+        <span class="kw">while</span> <span class="pu">((</span><span class="kw">$line</span> <span class="op">=</span> <span class="fn">fgets</span><span class="pu">(</span><span class="kw">$handle</span><span class="pu">))</span> <span class="op">!==</span> <span class="kw">false</span><span class="pu">)</span> <span class="pu">{</span>
+            <span class="kw">yield</span> <span class="fn">str_getcsv</span><span class="pu">(</span><span class="fn">rtrim</span><span class="pu">(</span><span class="kw">$line</span><span class="pu">));</span>
+        <span class="pu">}</span>
+    <span class="pu">}</span> <span class="kw">finally</span> <span class="pu">{</span>
+        <span class="fn">fclose</span><span class="pu">(</span><span class="kw">$handle</span><span class="pu">);</span>
+    <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">foreach</span> <span class="pu">(</span><span class="fn">readCsvLines</span><span class="pu">(</span><span class="st">'10GB.csv'</span><span class="pu">)</span> <span class="kw">as</span> <span class="kw">$row</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="fn">processRow</span><span class="pu">(</span><span class="kw">$row</span><span class="pu">);</span>    <span class="cm">// ~4KB peak memory regardless of file size</span>
+<span class="pu">}</span></code></pre>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 06 COMPOSER & PSR ═══ -->
+      <div class="section" id="composer">
+        <div class="section-label">06 — Ecosystem Standards</div>
+        <h2>Composer & PSR Standards</h2>
+        <p class="lead">
+          Composer transformed PHP from a collection of incompatible libraries
+          into a coherent ecosystem. PSR standards (PHP Standards
+          Recommendations from the PHP-FIG) gave the ecosystem a common
+          vocabulary for interfaces, making components interoperable without
+          framework lock-in.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSON / Bash — Composer Mastery</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// composer.json — production-grade configuration</span>
+<span class="pu">{</span>
+    <span class="st">"name"</span><span class="op">:</span> <span class="st">"myorg/api"</span><span class="pu">,</span>
+    <span class="st">"require"</span><span class="op">:</span> <span class="pu">{</span>
+        <span class="st">"php"</span><span class="op">:</span>          <span class="st">"^8.3"</span><span class="pu">,</span>
+        <span class="st">"laravel/framework"</span><span class="op">:</span> <span class="st">"^11.0"</span>
+    <span class="pu">},</span>
+    <span class="st">"require-dev"</span><span class="op">:</span> <span class="pu">{</span>
+        <span class="st">"phpunit/phpunit"</span><span class="op">:</span>  <span class="st">"^11.0"</span><span class="pu">,</span>
+        <span class="st">"pestphp/pest"</span><span class="op">:</span>      <span class="st">"^3.0"</span><span class="pu">,</span>
+        <span class="st">"phpstan/phpstan"</span><span class="op">:</span>   <span class="st">"^1.11"</span>
+    <span class="pu">},</span>
+    <span class="st">"autoload"</span><span class="op">:</span> <span class="pu">{</span>
+        <span class="st">"psr-4"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"App\\"</span><span class="op">:</span> <span class="st">"src/"</span> <span class="pu">}</span>
+    <span class="pu">},</span>
+    <span class="st">"config"</span><span class="op">:</span> <span class="pu">{</span>
+        <span class="st">"optimize-autoloader"</span><span class="op">:</span>    <span class="kw">true</span><span class="pu">,</span>    <span class="cm">// classmap in prod, not file scan</span>
+        <span class="st">"preferred-install"</span><span class="op">:</span>      <span class="st">"dist"</span><span class="pu">,</span>  <span class="cm">// zip archives, not git clone</span>
+        <span class="st">"sort-packages"</span><span class="op">:</span>           <span class="kw">true</span>
+    <span class="pu">},</span>
+    <span class="st">"scripts"</span><span class="op">:</span> <span class="pu">{</span>
+        <span class="st">"post-install-cmd"</span><span class="op">:</span> <span class="pu">[</span><span class="st">"@php artisan optimize"</span><span class="pu">],</span>
+        <span class="st">"test"</span><span class="op">:</span>             <span class="pu">[</span><span class="st">"./vendor/bin/pest --parallel"</span><span class="pu">],</span>
+        <span class="st">"analyse"</span><span class="op">:</span>          <span class="pu">[</span><span class="st">"./vendor/bin/phpstan analyse --level=8"</span><span class="pu">]</span>
+    <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm"># Production install — no dev deps, optimised autoloader</span>
+composer install --no-dev --optimize-autoloader --no-interaction
+
+<span class="cm"># Audit dependencies for CVEs</span>
+composer audit</code></pre>
+        </div>
+
+        <h3>Key PSR Standards Every PHP Engineer Must Know</h3>
+        <table>
+          <tr>
+            <th>PSR</th>
+            <th>Title</th>
+            <th>What It Defines</th>
+            <th>Used By</th>
+          </tr>
+          <tr>
+            <td><span class="badge badge-indigo">PSR-4</span></td>
+            <td>Autoloading Standard</td>
+            <td>Namespace-to-filesystem mapping rules</td>
+            <td>Every modern PHP package</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-indigo">PSR-7</span></td>
+            <td>HTTP Message Interfaces</td>
+            <td>
+              <code>RequestInterface</code>, <code>ResponseInterface</code>,
+              immutable value objects
+            </td>
+            <td>Slim, Guzzle, Laminas</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-indigo">PSR-11</span></td>
+            <td>Container Interface</td>
+            <td>
+              <code>ContainerInterface</code> with <code>get()</code> and
+              <code>has()</code>
+            </td>
+            <td>Laravel, Symfony, PHP-DI</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-indigo">PSR-14</span></td>
+            <td>Event Dispatcher</td>
+            <td>
+              <code>EventDispatcherInterface</code>,
+              <code>ListenerProviderInterface</code>
+            </td>
+            <td>Symfony, Laravel Events</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-indigo">PSR-15</span></td>
+            <td>HTTP Handlers</td>
+            <td>
+              <code>RequestHandlerInterface</code>,
+              <code>MiddlewareInterface</code>
+            </td>
+            <td>Slim, Mezzio, middleware stacks</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-indigo">PSR-3</span></td>
+            <td>Logger Interface</td>
+            <td><code>LoggerInterface</code> with 8 severity levels</td>
+            <td>Monolog, all frameworks</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-indigo">PSR-6/16</span></td>
+            <td>Caching Interfaces</td>
+            <td>
+              <code>CacheItemPoolInterface</code> (PSR-6),
+              <code>CacheInterface</code> (PSR-16)
+            </td>
+            <td>Symfony Cache, Laravel Cache</td>
+          </tr>
+        </table>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 07 DI CONTAINERS ═══ -->
+      <div class="section" id="di">
+        <div class="section-label">07 — Inversion of Control</div>
+        <h2>Dependency Injection Containers</h2>
+        <p class="lead">
+          A DI container is an object graph factory. It reads constructor
+          type-hints via reflection, resolves the full dependency tree
+          automatically, and manages object lifetimes (singleton, transient,
+          scoped). Understanding what the container does — and what it costs —
+          makes you a more effective Laravel and Symfony developer.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >PHP — Manual DI vs Container Autowiring</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Without container — manual wiring ────────────────────────</span>
+<span class="kw">$logger</span>      <span class="op">=</span> <span class="kw">new</span> <span class="ty">PinoLogger</span><span class="pu">(</span><span class="ty">LogLevel</span><span class="pu">::</span><span class="bi">INFO</span><span class="pu">);</span>
+<span class="kw">$db</span>          <span class="op">=</span> <span class="kw">new</span> <span class="ty">DatabaseConnection</span><span class="pu">(</span><span class="fn">getenv</span><span class="pu">(</span><span class="st">'DATABASE_URL'</span><span class="pu">),</span> <span class="kw">$logger</span><span class="pu">);</span>
+<span class="kw">$userRepo</span>    <span class="op">=</span> <span class="kw">new</span> <span class="ty">UserRepository</span><span class="pu">(</span><span class="kw">$db</span><span class="pu">);</span>
+<span class="kw">$mailer</span>      <span class="op">=</span> <span class="kw">new</span> <span class="ty">SmtpMailer</span><span class="pu">(</span><span class="fn">getenv</span><span class="pu">(</span><span class="st">'SMTP_DSN'</span><span class="pu">));</span>
+<span class="kw">$userService</span> <span class="op">=</span> <span class="kw">new</span> <span class="ty">UserService</span><span class="pu">(</span><span class="kw">$userRepo</span><span class="pu">,</span> <span class="kw">$mailer</span><span class="pu">,</span> <span class="kw">$logger</span><span class="pu">);</span>
+
+<span class="cm">// ── With Laravel's container — autowired via reflection ───────</span>
+<span class="kw">class</span> <span class="ty">UserService</span>
+<span class="pu">{</span>
+    <span class="kw">public function</span> <span class="fn">__construct</span><span class="pu">(</span>
+        <span class="kw">private readonly</span> <span class="ty">UserRepository</span> <span class="kw">$users</span><span class="pu">,</span>
+        <span class="kw">private readonly</span> <span class="ty">MailerInterface</span> <span class="kw">$mailer</span><span class="pu">,</span>
+        <span class="kw">private readonly</span> <span class="ty">LoggerInterface</span>  <span class="kw">$logger</span><span class="pu">,</span>
+    <span class="pu">)</span> <span class="pu">{}</span>
+<span class="pu">}</span>
+<span class="cm">// Container reads type-hints, resolves the full tree, injects automatically</span>
+<span class="kw">$service</span> <span class="op">=</span> <span class="fn">app</span><span class="pu">(</span><span class="ty">UserService</span><span class="pu">::</span><span class="bi">class</span><span class="pu">);</span>
+
+<span class="cm">// ── Binding interfaces to implementations ─────────────────────</span>
+<span class="cm">// In a ServiceProvider:</span>
+<span class="kw">public function</span> <span class="fn">register</span><span class="pu">()</span><span class="op">:</span> <span class="ty">void</span>
+<span class="pu">{</span>
+    <span class="cm">// Singleton — one instance per container lifetime</span>
+    <span class="kw">$this</span><span class="pu">-></span><span class="fn">app</span><span class="pu">-></span><span class="fn">singleton</span><span class="pu">(</span><span class="ty">MailerInterface</span><span class="pu">::</span><span class="bi">class</span><span class="pu">,</span> <span class="ty">SmtpMailer</span><span class="pu">::</span><span class="bi">class</span><span class="pu">);</span>
+
+    <span class="cm">// Transient — new instance every time</span>
+    <span class="kw">$this</span><span class="pu">-></span><span class="fn">app</span><span class="pu">-></span><span class="fn">bind</span><span class="pu">(</span><span class="ty">ReportGeneratorInterface</span><span class="pu">::</span><span class="bi">class</span><span class="pu">,</span> <span class="ty">PdfReportGenerator</span><span class="pu">::</span><span class="bi">class</span><span class="pu">);</span>
+
+    <span class="cm">// Contextual binding — same interface, different impl per consumer</span>
+    <span class="kw">$this</span><span class="pu">-></span><span class="fn">app</span><span class="pu">-></span><span class="fn">when</span><span class="pu">(</span><span class="ty">PhotoController</span><span class="pu">::</span><span class="bi">class</span><span class="pu">)</span>
+              <span class="pu">-></span><span class="fn">needs</span><span class="pu">(</span><span class="ty">StorageInterface</span><span class="pu">::</span><span class="bi">class</span><span class="pu">)</span>
+              <span class="pu">-></span><span class="fn">give</span><span class="pu">(</span><span class="ty">S3Storage</span><span class="pu">::</span><span class="bi">class</span><span class="pu">);</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="warn">
+          <div class="warn-label">⚠️ Container Performance</div>
+          Reflection-based autowiring has overhead. Laravel mitigates this with
+          a compiled binding cache. In Octane (long-running process), the
+          container itself is reused across requests — avoid registering
+          closures that capture request-specific state as singletons. Use
+          <code>$this->app->scoped()</code> for per-request singletons in
+          Octane.
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 08 LARAVEL ═══ -->
+      <div class="section" id="laravel">
+        <div class="section-label">08 — Framework Architecture</div>
+        <h2>Laravel Architecture</h2>
+        <p class="lead">
+          Laravel is not just a collection of helpers — it is a cohesive
+          application framework built around a service container, service
+          providers, a request-response pipeline, and a set of first-party
+          packages that cover every common concern in web application
+          development.
+        </p>
+
+        <h3>The Boot Sequence</h3>
+        <ul class="phase-list">
+          <li>
+            <div class="phase-num">1</div>
+            <div>
+              <strong><code>public/index.php</code></strong> — Entry point.
+              Loads Composer autoloader, creates the Application instance, and
+              resolves the HTTP kernel from the container.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">2</div>
+            <div>
+              <strong>Application Bootstrap</strong> — The
+              <code>Application</code> class (extends the IoC Container) binds
+              the core framework abstractions: <code>ExceptionHandler</code>,
+              <code>Kernel</code>, <code>ConsoleKernel</code>.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">3</div>
+            <div>
+              <strong>HTTP Kernel Bootstrappers</strong> — Runs in order:
+              <code>LoadEnvironmentVariables</code>,
+              <code>LoadConfiguration</code>, <code>HandleExceptions</code>,
+              <code>RegisterFacades</code>, <code>RegisterProviders</code>,
+              <code>BootProviders</code>.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">4</div>
+            <div>
+              <strong>Service Provider Registration &amp; Boot</strong> — Every
+              ServiceProvider's <code>register()</code> runs first (all of
+              them), then every <code>boot()</code> runs. This two-phase ensures
+              all bindings exist before any boot logic tries to resolve them.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">5</div>
+            <div>
+              <strong>Middleware Pipeline</strong> — The request passes through
+              the global middleware stack, then route middleware groups, then
+              route-specific middleware. Implemented as a recursive closure
+              chain.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">6</div>
+            <div>
+              <strong>Route Dispatch → Controller → Response</strong> — The
+              router matches the request, the controller action is resolved from
+              the container (injecting its dependencies), the response object is
+              built and passed back through the middleware pipeline.
+            </div>
+          </li>
+        </ul>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">PHP — Laravel: Eloquent, Events & Jobs</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Eloquent: relationships & scopes ─────────────────────────</span>
+<span class="kw">class</span> <span class="ty">Order</span> <span class="kw">extends</span> <span class="ty">Model</span>
+<span class="pu">{</span>
+    <span class="kw">protected</span> <span class="kw">$casts</span> <span class="op">=</span> <span class="pu">[</span>
+        <span class="st">'metadata'</span>   <span class="op">=></span> <span class="st">'array'</span><span class="pu">,</span>
+        <span class="st">'placed_at'</span>  <span class="op">=></span> <span class="st">'immutable_datetime'</span><span class="pu">,</span>
+        <span class="st">'status'</span>     <span class="op">=></span> <span class="ty">OrderStatus</span><span class="pu">::</span><span class="bi">class</span><span class="pu">,</span>  <span class="cm">// backed enum cast</span>
+    <span class="pu">];</span>
+
+    <span class="kw">public function</span> <span class="fn">items</span><span class="pu">()</span><span class="op">:</span> <span class="ty">HasMany</span>
+    <span class="pu">{</span>
+        <span class="kw">return</span> <span class="kw">$this</span><span class="pu">-></span><span class="fn">hasMany</span><span class="pu">(</span><span class="ty">OrderItem</span><span class="pu">::</span><span class="bi">class</span><span class="pu">);</span>
+    <span class="pu">}</span>
+
+    <span class="kw">public function</span> <span class="fn">scopePaid</span><span class="pu">(</span><span class="ty">Builder</span> <span class="kw">$query</span><span class="pu">)</span><span class="op">:</span> <span class="ty">Builder</span>
+    <span class="pu">{</span>
+        <span class="kw">return</span> <span class="kw">$query</span><span class="pu">-></span><span class="fn">where</span><span class="pu">(</span><span class="st">'status'</span><span class="pu">,</span> <span class="ty">OrderStatus</span><span class="pu">::</span><span class="bi">Paid</span><span class="pu">);</span>
+    <span class="pu">}</span>
+
+    <span class="kw">protected static function</span> <span class="fn">booted</span><span class="pu">()</span><span class="op">:</span> <span class="ty">void</span>
+    <span class="pu">{</span>
+        <span class="kw">static</span><span class="pu">::</span><span class="fn">created</span><span class="pu">(</span><span class="kw">fn</span><span class="pu">(</span><span class="ty">Order</span> <span class="kw">$order</span><span class="pu">)</span> <span class="op">=></span>
+            <span class="ty">OrderPlaced</span><span class="pu">::</span><span class="fn">dispatch</span><span class="pu">(</span><span class="kw">$order</span><span class="pu">)</span>  <span class="cm">// fire domain event</span>
+        <span class="pu">);</span>
+    <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Job: async queue worker ───────────────────────────────────</span>
+<span class="kw">class</span> <span class="ty">SendOrderConfirmation</span> <span class="kw">implements</span> <span class="ty">ShouldQueue</span>
+<span class="pu">{</span>
+    <span class="kw">use</span> <span class="ty">Dispatchable</span><span class="pu">,</span> <span class="ty">InteractsWithQueue</span><span class="pu">,</span> <span class="ty">Queueable</span><span class="pu">;</span>
+
+    <span class="kw">public int</span>    <span class="kw">$tries</span>   <span class="op">=</span> <span class="nm">3</span><span class="pu">;</span>
+    <span class="kw">public int</span>    <span class="kw">$timeout</span> <span class="op">=</span> <span class="nm">30</span><span class="pu">;</span>
+    <span class="kw">public string</span> <span class="kw">$queue</span>   <span class="op">=</span> <span class="st">'notifications'</span><span class="pu">;</span>
+
+    <span class="kw">public function</span> <span class="fn">__construct</span><span class="pu">(</span><span class="kw">public readonly</span> <span class="ty">Order</span> <span class="kw">$order</span><span class="pu">)</span> <span class="pu">{}</span>
+
+    <span class="kw">public function</span> <span class="fn">handle</span><span class="pu">(</span><span class="ty">MailerInterface</span> <span class="kw">$mailer</span><span class="pu">)</span><span class="op">:</span> <span class="ty">void</span>
+    <span class="pu">{</span>
+        <span class="kw">$mailer</span><span class="pu">-></span><span class="fn">to</span><span class="pu">(</span><span class="kw">$this</span><span class="pu">-></span><span class="fn">order</span><span class="pu">-></span><span class="fn">user</span><span class="pu">)</span>
+               <span class="pu">-></span><span class="fn">send</span><span class="pu">(</span><span class="kw">new</span> <span class="ty">OrderConfirmationMail</span><span class="pu">(</span><span class="kw">$this</span><span class="pu">-></span><span class="fn">order</span><span class="pu">));</span>
+    <span class="pu">}</span>
+
+    <span class="kw">public function</span> <span class="fn">failed</span><span class="pu">(</span><span class="ty">Throwable</span> <span class="kw">$e</span><span class="pu">)</span><span class="op">:</span> <span class="ty">void</span>
+    <span class="pu">{</span>
+        <span class="ty">Log</span><span class="pu">::</span><span class="fn">error</span><span class="pu">(</span><span class="st">'Confirmation email failed'</span><span class="pu">,</span> <span class="pu">[</span>
+            <span class="st">'order_id'</span>  <span class="op">=></span> <span class="kw">$this</span><span class="pu">-></span><span class="fn">order</span><span class="pu">-></span><span class="fn">id</span><span class="pu">,</span>
+            <span class="st">'exception'</span> <span class="op">=></span> <span class="kw">$e</span><span class="pu">-></span><span class="fn">getMessage</span><span class="pu">(),</span>
+        <span class="pu">]);</span>
+    <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 09 SYMFONY ═══ -->
+      <div class="section" id="symfony">
+        <div class="section-label">09 — Component Ecosystem</div>
+        <h2>Symfony Component Ecosystem</h2>
+        <p class="lead">
+          Symfony is both a full-stack framework and a collection of standalone,
+          best-in-class PHP components. Laravel itself uses many of them under
+          the hood. Understanding these components makes you effective with the
+          entire PHP ecosystem, not just one framework.
+        </p>
+
+        <table>
+          <tr>
+            <th>Component</th>
+            <th>What It Does</th>
+            <th>Used By</th>
+          </tr>
+          <tr>
+            <td><code>symfony/console</code></td>
+            <td>CLI commands, progress bars, input/output formatting</td>
+            <td>Laravel Artisan, Composer itself</td>
+          </tr>
+          <tr>
+            <td><code>symfony/http-foundation</code></td>
+            <td>
+              OO
+              <code>Request</code
+              >/<code>Response</code>/<code>Cookie</code>/<code>Session</code>
+            </td>
+            <td>Laravel, Drupal, API Platform</td>
+          </tr>
+          <tr>
+            <td><code>symfony/routing</code></td>
+            <td>URL matching, route generation, attribute routing</td>
+            <td>Laravel (partially), Drupal</td>
+          </tr>
+          <tr>
+            <td><code>symfony/dependency-injection</code></td>
+            <td>Compiled DI container, autowiring, service decorators</td>
+            <td>Symfony, API Platform</td>
+          </tr>
+          <tr>
+            <td><code>symfony/event-dispatcher</code></td>
+            <td>PSR-14 compliant event system with priorities and listeners</td>
+            <td>Laravel Events (inspired), Doctrine</td>
+          </tr>
+          <tr>
+            <td><code>symfony/validator</code></td>
+            <td>Constraint-based validation with attribute annotations</td>
+            <td>API Platform, Symfony forms</td>
+          </tr>
+          <tr>
+            <td><code>symfony/cache</code></td>
+            <td>PSR-6/16 cache pools: Redis, Memcached, APCu, filesystem</td>
+            <td>Doctrine ORM cache, API Platform</td>
+          </tr>
+          <tr>
+            <td><code>symfony/messenger</code></td>
+            <td>Message bus, async transports (Redis, SQS, RabbitMQ), retry</td>
+            <td>Symfony apps, growing Laravel adoption</td>
+          </tr>
+          <tr>
+            <td><code>doctrine/orm</code></td>
+            <td>Full ORM with Unit of Work, entity mapping, migrations</td>
+            <td>Symfony, API Platform, Drupal 8+</td>
+          </tr>
+        </table>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >PHP — Symfony: Autowired Controller + Messenger</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">use</span> <span class="ty">Symfony\Component\HttpFoundation\JsonResponse</span><span class="pu">;</span>
+<span class="kw">use</span> <span class="ty">Symfony\Component\Messenger\MessageBusInterface</span><span class="pu">;</span>
+<span class="kw">use</span> <span class="ty">Symfony\Component\Routing\Attribute\Route</span><span class="pu">;</span>
+<span class="kw">use</span> <span class="ty">Symfony\Component\Validator\Validator\ValidatorInterface</span><span class="pu">;</span>
+
+<span class="cm">// Symfony compiles the DI container — no reflection at runtime</span>
+<span class="kw">class</span> <span class="ty">OrderController</span>
+<span class="pu">{</span>
+    <span class="kw">public function</span> <span class="fn">__construct</span><span class="pu">(</span>
+        <span class="kw">private readonly</span> <span class="ty">MessageBusInterface</span>  <span class="kw">$bus</span><span class="pu">,</span>
+        <span class="kw">private readonly</span> <span class="ty">ValidatorInterface</span>   <span class="kw">$validator</span><span class="pu">,</span>
+    <span class="pu">)</span> <span class="pu">{}</span>
+
+    <span class="at">#[Route('/orders', methods: ['POST'])]</span>
+    <span class="kw">public function</span> <span class="fn">create</span><span class="pu">(</span><span class="ty">PlaceOrderRequest</span> <span class="kw">$dto</span><span class="pu">)</span><span class="op">:</span> <span class="ty">JsonResponse</span>
+    <span class="pu">{</span>
+        <span class="kw">$violations</span> <span class="op">=</span> <span class="kw">$this</span><span class="pu">-></span><span class="fn">validator</span><span class="pu">-></span><span class="fn">validate</span><span class="pu">(</span><span class="kw">$dto</span><span class="pu">);</span>
+        <span class="kw">if</span> <span class="pu">(</span><span class="fn">count</span><span class="pu">(</span><span class="kw">$violations</span><span class="pu">)</span> <span class="op">></span> <span class="nm">0</span><span class="pu">)</span> <span class="pu">{</span>
+            <span class="kw">return</span> <span class="kw">new</span> <span class="ty">JsonResponse</span><span class="pu">([</span><span class="st">'errors'</span> <span class="op">=></span> <span class="kw">$violations</span><span class="pu">],</span> <span class="nm">422</span><span class="pu">);</span>
+        <span class="pu">}</span>
+        <span class="cm">// Dispatch async — handled by a worker process via Redis/SQS</span>
+        <span class="kw">$this</span><span class="pu">-></span><span class="fn">bus</span><span class="pu">-></span><span class="fn">dispatch</span><span class="pu">(</span><span class="kw">new</span> <span class="ty">PlaceOrderCommand</span><span class="pu">(</span><span class="kw">$dto</span><span class="pu">));</span>
+        <span class="kw">return</span> <span class="kw">new</span> <span class="ty">JsonResponse</span><span class="pu">([</span><span class="st">'status'</span> <span class="op">=></span> <span class="st">'accepted'</span><span class="pu">],</span> <span class="nm">202</span><span class="pu">);</span>
+    <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">💡 Symfony's Compiled Container</div>
+          Symfony's DI container generates PHP code at build time —
+          <code>var/cache/prod/App_KernelProdContainer.php</code>. This compiled
+          file has zero reflection at runtime. The container is a flat PHP class
+          with hardcoded <code>new</code> calls. This is why Symfony boot time
+          is extremely predictable regardless of service count.
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 10 CLEAN ARCHITECTURE ═══ -->
+      <div class="section" id="architecture">
+        <div class="section-label">10 — Structural Thinking</div>
+        <h2>MVC & Clean Architecture in PHP</h2>
+        <p class="lead">
+          MVC is a UI pattern, not an application architecture. In complex PHP
+          applications, controllers should be thin orchestrators — delegating to
+          a domain layer that has no knowledge of HTTP, Eloquent, or any
+          framework.
+        </p>
+
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header before">
+              ❌ Fat Controller (MVC anti-pattern)
+            </div>
+            <div class="code-block">
+              <pre><code><span class="kw">class</span> <span class="ty">OrderController</span> <span class="kw">extends</span> <span class="ty">Controller</span>
+<span class="pu">{</span>
+    <span class="kw">public function</span> <span class="fn">store</span><span class="pu">(</span><span class="ty">Request</span> <span class="kw">$request</span><span class="pu">)</span>
+    <span class="pu">{</span>
+        <span class="cm">// ❌ Validation in controller</span>
+        <span class="kw">$request</span><span class="pu">-></span><span class="fn">validate</span><span class="pu">([</span><span class="st">'items'</span> <span class="op">=></span> <span class="st">'required|array'</span><span class="pu">]);</span>
+        <span class="cm">// ❌ Business logic in controller</span>
+        <span class="kw">$discount</span> <span class="op">=</span> <span class="kw">auth</span><span class="pu">()-></span><span class="fn">user</span><span class="pu">()-></span><span class="fn">isPremium</span><span class="pu">()</span> <span class="op">?</span> <span class="nm">0.1</span> <span class="op">:</span> <span class="nm">0</span><span class="pu">;</span>
+        <span class="cm">// ❌ Database access in controller</span>
+        <span class="kw">$order</span> <span class="op">=</span> <span class="ty">Order</span><span class="pu">::</span><span class="fn">create</span><span class="pu">([</span><span class="kw">...</span><span class="pu">]);</span>
+        <span class="cm">// ❌ Side effects in controller</span>
+        <span class="fn">Mail</span><span class="pu">::</span><span class="fn">to</span><span class="pu">(</span><span class="kw">$order</span><span class="pu">-></span><span class="fn">email</span><span class="pu">)-></span><span class="fn">send</span><span class="pu">(</span><span class="kw">new</span> <span class="ty">Confirm</span><span class="pu">());</span>
+        <span class="kw">return</span> <span class="kw">response</span><span class="pu">()-></span><span class="fn">json</span><span class="pu">(</span><span class="kw">$order</span><span class="pu">);</span>
+    <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header after">
+              ✅ Thin Controller → Use Case
+            </div>
+            <div class="code-block">
+              <pre><code><span class="kw">class</span> <span class="ty">OrderController</span> <span class="kw">extends</span> <span class="ty">Controller</span>
+<span class="pu">{</span>
+    <span class="kw">public function</span> <span class="fn">__construct</span><span class="pu">(</span>
+        <span class="kw">private</span> <span class="ty">PlaceOrderUseCase</span> <span class="kw">$useCase</span>
+    <span class="pu">)</span> <span class="pu">{}</span>
+
+    <span class="kw">public function</span> <span class="fn">store</span><span class="pu">(</span><span class="ty">PlaceOrderRequest</span> <span class="kw">$request</span><span class="pu">)</span>
+    <span class="pu">{</span>
+        <span class="cm">// ✅ Controller: validate + delegate + respond</span>
+        <span class="kw">$order</span> <span class="op">=</span> <span class="kw">$this</span><span class="pu">-></span><span class="fn">useCase</span><span class="pu">-></span><span class="fn">execute</span><span class="pu">(</span>
+            <span class="kw">$request</span><span class="pu">-></span><span class="fn">toDto</span><span class="pu">()</span>
+        <span class="pu">);</span>
+        <span class="kw">return</span> <span class="ty">OrderResource</span><span class="pu">::</span><span class="fn">make</span><span class="pu">(</span><span class="kw">$order</span><span class="pu">)</span>
+            <span class="pu">-></span><span class="fn">response</span><span class="pu">()-></span><span class="fn">setStatusCode</span><span class="pu">(</span><span class="nm">201</span><span class="pu">);</span>
+    <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// PlaceOrderUseCase knows nothing about HTTP,
+// can be tested without the framework</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">PHP — Domain Entity With Value Objects</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// Value object — immutable, self-validating</span>
+<span class="kw">final readonly class</span> <span class="ty">Money</span>
+<span class="pu">{</span>
+    <span class="kw">public function</span> <span class="fn">__construct</span><span class="pu">(</span>
+        <span class="kw">public int</span>    <span class="kw">$amount</span><span class="pu">,</span>      <span class="cm">// in cents — never use floats for money</span>
+        <span class="kw">public string</span> <span class="kw">$currency</span><span class="pu">,</span>
+    <span class="pu">)</span> <span class="pu">{</span>
+        <span class="kw">if</span> <span class="pu">(</span><span class="kw">$amount</span> <span class="op"><</span> <span class="nm">0</span><span class="pu">)</span> <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">\DomainException</span><span class="pu">(</span><span class="st">'Amount cannot be negative'</span><span class="pu">);</span>
+    <span class="pu">}</span>
+
+    <span class="kw">public function</span> <span class="fn">add</span><span class="pu">(</span><span class="ty">Money</span> <span class="kw">$other</span><span class="pu">)</span><span class="op">:</span> <span class="ty">self</span>
+    <span class="pu">{</span>
+        <span class="kw">if</span> <span class="pu">(</span><span class="kw">$this</span><span class="pu">-></span><span class="fn">currency</span> <span class="op">!==</span> <span class="kw">$other</span><span class="pu">-></span><span class="fn">currency</span><span class="pu">)</span>
+            <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">\DomainException</span><span class="pu">(</span><span class="st">'Currency mismatch'</span><span class="pu">);</span>
+        <span class="kw">return</span> <span class="kw">new</span> <span class="ty">self</span><span class="pu">(</span><span class="kw">$this</span><span class="pu">-></span><span class="fn">amount</span> <span class="op">+</span> <span class="kw">$other</span><span class="pu">-></span><span class="fn">amount</span><span class="pu">,</span> <span class="kw">$this</span><span class="pu">-></span><span class="fn">currency</span><span class="pu">);</span>
+    <span class="pu">}</span>
+
+    <span class="kw">public function</span> <span class="fn">format</span><span class="pu">()</span><span class="op">:</span> <span class="ty">string</span>
+    <span class="pu">{</span>
+        <span class="kw">return</span> <span class="fn">number_format</span><span class="pu">(</span><span class="kw">$this</span><span class="pu">-></span><span class="fn">amount</span> <span class="op">/</span> <span class="nm">100</span><span class="pu">,</span> <span class="nm">2</span><span class="pu">)</span> <span class="op">.</span> <span class="st">' '</span> <span class="op">.</span> <span class="kw">$this</span><span class="pu">-></span><span class="fn">currency</span><span class="pu">;</span>
+    <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 11 REDIS & QUEUES ═══ -->
+      <div class="section" id="queues">
+        <div class="section-label">11 — Async & Event-Driven</div>
+        <h2>Redis, Queues & Event-Driven Systems</h2>
+        <p class="lead">
+          Modern PHP applications offload slow operations — emails, PDF
+          generation, third-party API calls — to background workers via queues.
+          Redis is the backbone: fast job storage, cache, pub/sub, and sorted
+          set leaderboards all in one.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >PHP — Laravel Horizon: Redis Queue Configuration</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// config/horizon.php — Horizon manages queue workers as a supervisor</span>
+<span class="st">'environments'</span> <span class="op">=></span> <span class="pu">[</span>
+    <span class="st">'production'</span> <span class="op">=></span> <span class="pu">[</span>
+        <span class="st">'supervisor-1'</span> <span class="op">=></span> <span class="pu">[</span>
+            <span class="st">'connection'</span>  <span class="op">=></span> <span class="st">'redis'</span><span class="pu">,</span>
+            <span class="st">'queue'</span>       <span class="op">=></span> <span class="pu">[</span><span class="st">'critical'</span><span class="pu">,</span> <span class="st">'default'</span><span class="pu">,</span> <span class="st">'notifications'</span><span class="pu">],</span>
+            <span class="st">'balance'</span>     <span class="op">=></span> <span class="st">'auto'</span><span class="pu">,</span>         <span class="cm">// auto-balance workers across queues</span>
+            <span class="st">'processes'</span>   <span class="op">=></span> <span class="nm">10</span><span class="pu">,</span>
+            <span class="st">'tries'</span>       <span class="op">=></span> <span class="nm">3</span><span class="pu">,</span>
+            <span class="st">'timeout'</span>     <span class="op">=></span> <span class="nm">60</span><span class="pu">,</span>
+            <span class="st">'maxProcesses'</span><span class="op">=></span> <span class="nm">20</span><span class="pu">,</span>             <span class="cm">// auto-scale up to 20</span>
+            <span class="st">'minProcesses'</span><span class="op">=></span> <span class="nm">2</span><span class="pu">,</span>              <span class="cm">// always keep 2 alive</span>
+        <span class="pu">],</span>
+    <span class="pu">],</span>
+<span class="pu">];</span>
+
+<span class="cm">// ── Redis caching with cache tags ────────────────────────────</span>
+<span class="cm">// Cache all products, tagged so we can flush just the product cache</span>
+<span class="ty">Cache</span><span class="pu">::</span><span class="fn">tags</span><span class="pu">([</span><span class="st">'products'</span><span class="pu">,</span> <span class="st">'catalogue'</span><span class="pu">])-></span><span class="fn">remember</span><span class="pu">(</span>
+    <span class="st">"product:{$id}"</span><span class="pu">,</span>
+    <span class="ty">now</span><span class="pu">()-></span><span class="fn">addHour</span><span class="pu">(),</span>
+    <span class="kw">fn</span><span class="pu">()</span> <span class="op">=></span> <span class="ty">Product</span><span class="pu">::</span><span class="fn">with</span><span class="pu">(</span><span class="st">'variants'</span><span class="pu">)-></span><span class="fn">findOrFail</span><span class="pu">(</span><span class="kw">$id</span><span class="pu">)</span>
+<span class="pu">);</span>
+
+<span class="cm">// Flush all product caches when catalogue updates</span>
+<span class="ty">Cache</span><span class="pu">::</span><span class="fn">tags</span><span class="pu">([</span><span class="st">'products'</span><span class="pu">])-></span><span class="fn">flush</span><span class="pu">();</span>
+
+<span class="cm">// ── Redis pub/sub for real-time notifications ─────────────────</span>
+<span class="cm">// Broadcasting: Laravel Echo on the frontend, Reverb (WebSocket) or Pusher</span>
+<span class="kw">class</span> <span class="ty">OrderStatusChanged</span> <span class="kw">implements</span> <span class="ty">ShouldBroadcast</span>
+<span class="pu">{</span>
+    <span class="kw">use</span> <span class="ty">Broadcastable</span><span class="pu">;</span>
+
+    <span class="kw">public function</span> <span class="fn">broadcastOn</span><span class="pu">()</span><span class="op">:</span> <span class="ty">Channel</span>
+    <span class="pu">{</span>
+        <span class="kw">return</span> <span class="kw">new</span> <span class="ty">PrivateChannel</span><span class="pu">(</span><span class="st">"orders.{$this->order->id}"</span><span class="pu">);</span>
+    <span class="pu">}</span>
+
+    <span class="kw">public function</span> <span class="fn">broadcastWith</span><span class="pu">()</span><span class="op">:</span> <span class="ty">array</span>
+    <span class="pu">{</span>
+        <span class="kw">return</span> <span class="pu">[</span><span class="st">'status'</span> <span class="op">=></span> <span class="kw">$this</span><span class="pu">-></span><span class="fn">order</span><span class="pu">-></span><span class="fn">status</span><span class="pu">-></span><span class="fn">label</span><span class="pu">(),</span>
+                <span class="st">'updated_at'</span> <span class="op">=></span> <span class="ty">now</span><span class="pu">()-></span><span class="fn">toISOString</span><span class="pu">()];</span>
+    <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 12 OCTANE & SWOOLE ═══ -->
+      <div class="section" id="octane">
+        <div class="section-label">12 — High-Performance PHP</div>
+        <h2>Octane, Swoole & Modern High-Performance PHP</h2>
+        <p class="lead">
+          Laravel Octane fundamentally changes PHP's execution model by keeping
+          the application booted in memory across requests. Combined with Swoole
+          or RoadRunner, it delivers Node.js-level concurrency with PHP's
+          developer experience — easily handling tens of thousands of requests
+          per second.
+        </p>
+
+        <div class="pullquote">
+          "Octane doesn't make PHP faster by magic. It makes PHP faster by
+          eliminating the work PHP was doing on every single request: booting
+          the framework."
+        </div>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🚀</div>
+            <h4>Swoole</h4>
+            <p>
+              C extension that replaces PHP-FPM with an event-loop server.
+              Coroutines, async I/O, connection pooling — all within a single
+              long-running PHP process. Truly async PHP.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🛤️</div>
+            <h4>RoadRunner</h4>
+            <p>
+              Go-based application server. PHP workers communicate via gRPC. No
+              C extensions needed — runs anywhere. More portable than Swoole,
+              slightly less feature-rich.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔄</div>
+            <h4>FrankenPHP</h4>
+            <p>
+              Embed PHP into a Go web server (Cadence-based). Worker mode for
+              persistent processes. Built-in TLS, HTTP/3, and file watching. The
+              newest and fastest-growing option.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚡</div>
+            <h4>Connection Pooling</h4>
+            <p>
+              Octane + Swoole keeps DB connections open across requests. Massive
+              win — no TCP handshake per request. Requires careful management of
+              connection state.
+            </p>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >PHP — Octane: State Management & Concurrency</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── The critical difference: request lifecycle in Octane ──────
+//
+// PHP-FPM: new process (or worker reset) for EVERY request
+//          Global state, singletons, static vars all reset automatically
+//
+// Octane: application stays booted, ONE process handles MANY requests
+//         You MUST reset request-specific state between requests</span>
+
+<span class="cm">// ── Register listeners in AppServiceProvider ─────────────────</span>
+<span class="kw">use</span> <span class="ty">Laravel\Octane\Facades\Octane</span><span class="pu">;</span>
+<span class="kw">use</span> <span class="ty">Laravel\Octane\Events\RequestReceived</span><span class="pu">;</span>
+<span class="kw">use</span> <span class="ty">Laravel\Octane\Events\RequestTerminated</span><span class="pu">;</span>
+
+<span class="kw">Octane</span><span class="pu">::</span><span class="fn">listen</span><span class="pu">(</span><span class="ty">RequestReceived</span><span class="pu">::</span><span class="bi">class</span><span class="pu">,</span> <span class="kw">function</span> <span class="pu">(</span><span class="ty">RequestReceived</span> <span class="kw">$event</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="cm">// Reset per-request state at the start of each request</span>
+    <span class="ty">RequestContext</span><span class="pu">::</span><span class="fn">clear</span><span class="pu">();</span>
+    <span class="ty">DB</span><span class="pu">::</span><span class="fn">reconnect</span><span class="pu">();</span>   <span class="cm">// reconnect if connection was dropped</span>
+<span class="pu">});</span>
+
+<span class="kw">Octane</span><span class="pu">::</span><span class="fn">listen</span><span class="pu">(</span><span class="ty">RequestTerminated</span><span class="pu">::</span><span class="bi">class</span><span class="pu">,</span> <span class="kw">function</span> <span class="pu">()</span> <span class="pu">{</span>
+    <span class="ty">DB</span><span class="pu">::</span><span class="fn">purge</span><span class="pu">();</span>      <span class="cm">// release connections back to pool</span>
+<span class="pu">});</span>
+
+<span class="cm">// ── Swoole coroutines — true concurrency within one worker ────</span>
+<span class="cm">// Octane::concurrently() runs tasks in parallel coroutines</span>
+<span class="kw">use</span> <span class="ty">Laravel\Octane\Facades\Octane</span><span class="pu">;</span>
+
+<span class="kw">[$users, $products, $stats]</span> <span class="op">=</span> <span class="ty">Octane</span><span class="pu">::</span><span class="fn">concurrently</span><span class="pu">([</span>
+    <span class="kw">fn</span><span class="pu">()</span> <span class="op">=></span> <span class="ty">User</span><span class="pu">::</span><span class="fn">active</span><span class="pu">()-></span><span class="fn">count</span><span class="pu">(),</span>
+    <span class="kw">fn</span><span class="pu">()</span> <span class="op">=></span> <span class="ty">Product</span><span class="pu">::</span><span class="fn">featured</span><span class="pu">()-></span><span class="fn">get</span><span class="pu">(),</span>
+    <span class="kw">fn</span><span class="pu">()</span> <span class="op">=></span> <span class="ty">OrderStats</span><span class="pu">::</span><span class="fn">today</span><span class="pu">(),</span>
+<span class="pu">]);</span>
+<span class="cm">// All three DB queries execute simultaneously — total time = slowest query</span>
+<span class="cm">// vs sequential: sum of all query times</span>
+
+<span class="cm">// ── Common Octane pitfalls ────────────────────────────────────</span>
+<span class="cm">// ❌ Static properties accumulate across requests</span>
+<span class="kw">class</span> <span class="ty">RequestLogger</span> <span class="pu">{</span>
+    <span class="kw">private static</span> <span class="kw">array</span> <span class="kw">$log</span> <span class="op">=</span> <span class="pu">[];</span>    <span class="cm">// grows forever in Octane!</span>
+    <span class="kw">public static function</span> <span class="fn">add</span><span class="pu">(</span><span class="kw">string</span> <span class="kw">$msg</span><span class="pu">)</span><span class="op">:</span> <span class="ty">void</span> <span class="pu">{</span>
+        <span class="kw">self</span><span class="pu">::</span><span class="kw">$log</span><span class="pu">[]</span> <span class="op">=</span> <span class="kw">$msg</span><span class="pu">;</span>            <span class="cm">// ← MEMORY LEAK</span>
+    <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="cm">// ✅ Use $app->scoped() for per-request singletons in Octane
+// ✅ Register RequestReceived listener to reset static state
+// ✅ Run `php artisan octane:check` to scan for memory leak patterns</span></code></pre>
+        </div>
+
+        <h3>Performance Benchmarks: Traditional PHP vs Octane</h3>
+        <table>
+          <tr>
+            <th>Scenario</th>
+            <th>PHP-FPM</th>
+            <th>Octane + Swoole</th>
+            <th>Improvement</th>
+          </tr>
+          <tr>
+            <td>Simple JSON response</td>
+            <td>~2,000 req/s</td>
+            <td>~30,000 req/s</td>
+            <td class="badge badge-green">15×</td>
+          </tr>
+          <tr>
+            <td>Laravel with 1 DB query</td>
+            <td>~800 req/s</td>
+            <td>~8,000 req/s</td>
+            <td class="badge badge-green">10×</td>
+          </tr>
+          <tr>
+            <td>Laravel hello world</td>
+            <td>~3,000 req/s</td>
+            <td>~40,000 req/s</td>
+            <td class="badge badge-green">13×</td>
+          </tr>
+          <tr>
+            <td>Memory per worker</td>
+            <td>~70MB (reset each req)</td>
+            <td>~100MB (persistent)</td>
+            <td>~1.4× more RAM</td>
+          </tr>
+        </table>
+
+        <div class="danger">
+          <div class="danger-label">🚨 Octane is Not PHP-FPM</div>
+          Octane eliminates the shared-nothing model. Memory leaks, static state
+          pollution, and non-thread-safe code that worked fine in FPM (because
+          the process recycled) will silently corrupt responses or grow memory
+          without bound. Always test your application with
+          <code>php artisan octane:check</code> and load-test with realistic
+          traffic before deploying.
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <strong>What a Senior Engineer Should Know About PHP</strong><br />
+      Part of the <a href="index.html">DevDive</a> series — Deep dives for
+      serious developers.<br /><br />
+      <span style="color: rgba(255, 255, 255, 0.3)"
+        >© 2026 DevDive · PHP 8.3 · Laravel 11 · Symfony 7 · Octane — June
+        2026</span
+      >
+    </footer>
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest(".code-block").querySelector("pre");
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = orig), 2000);
+        });
+      }
+    </script>
+  </body>
+</html>
