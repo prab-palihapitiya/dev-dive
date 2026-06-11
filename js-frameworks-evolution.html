@@ -1,0 +1,2294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      The Evolution of JavaScript Frameworks — Twenty Years of Frontend
+      Architecture
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fafafa;
+        --surface: #fff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b6b6b;
+        --text-muted: #9a9a9a;
+        --accent: #0f766e;
+        --accent-light: #f0fdfa;
+        --accent-subtle: #ccfbf1;
+        --border: #d1ece8;
+        --code-bg: #0d1117;
+        --code-text: #e6edf3;
+        --tag-bg: #f0fdfa;
+        --tip-bg: #f0fdf4;
+        --tip-border: #16a34a;
+        --warn-bg: #fff7ed;
+        --warn-border: #ea580c;
+        --info-bg: #eff6ff;
+        --info-border: #2563eb;
+        --era-bg: #f8fffe;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.75;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(250, 250, 250, 0.94);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover {
+        color: var(--accent);
+      }
+      .nav-pipe {
+        color: var(--border);
+        font-size: 18px;
+      }
+      .nav-brand {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: var(--accent-light);
+        color: var(--accent);
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+      .nav-links a {
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--tag-bg);
+        color: var(--text-primary);
+      }
+      .nav-rt {
+        font-size: 13px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 2rem 48px;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(30px, 5vw, 48px);
+        font-weight: 600;
+        line-height: 1.12;
+        letter-spacing: -0.5px;
+        margin-bottom: 20px;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0f766e, #134e4a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .meta-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .meta-text strong {
+        color: var(--text-primary);
+      }
+      .hero-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin-top: 32px;
+      }
+      .toc-wrapper {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 8px;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 40px;
+      }
+      .toc h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 24px;
+      }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+        transition: color 0.15s;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc-num {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+        min-width: 20px;
+      }
+      .content {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 80px;
+      }
+      .section {
+        margin-bottom: 72px;
+        scroll-margin-top: 72px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--accent-subtle);
+      }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+      }
+      h3 {
+        font-size: 19px;
+        font-weight: 600;
+        margin: 32px 0 12px;
+      }
+      p {
+        margin-bottom: 18px;
+        color: #2d2d2d;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        margin-bottom: 24px;
+      }
+      .era-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 3px 12px;
+        border-radius: 100px;
+        margin-bottom: 12px;
+        letter-spacing: 0.3px;
+      }
+      .era-dark {
+        background: #1f2937;
+        color: #9ca3af;
+      }
+      .era-rise {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .era-angular {
+        background: #fce7f3;
+        color: #9d174d;
+      }
+      .era-react {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+      .era-comp {
+        background: #ede9fe;
+        color: #4c1d95;
+      }
+      .era-vue {
+        background: #dcfce7;
+        color: #14532d;
+      }
+      .era-ng2 {
+        background: #e0f2fe;
+        color: #075985;
+      }
+      .era-state {
+        background: #fdf4ff;
+        color: #7e22ce;
+      }
+      .era-ssr {
+        background: #fff7ed;
+        color: #9a3412;
+      }
+      .era-svelte {
+        background: #fef9c3;
+        color: #713f12;
+      }
+      .era-rsc {
+        background: #f0fdf4;
+        color: #14532d;
+      }
+      .era-spectrum {
+        background: #f5f3ff;
+        color: #4c1d95;
+      }
+      .era-meta {
+        background: #ecfdf5;
+        color: #065f46;
+      }
+      .era-future {
+        background: #0f172a;
+        color: #94a3b8;
+      }
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 10px;
+        margin: 24px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-lang {
+        font-size: 12px;
+        color: #6e7681;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .copy-btn {
+        font-size: 12px;
+        color: #484f58;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #8b949e;
+      }
+      pre {
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--code-text);
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        background: #ccfbf1;
+        color: #0f766e;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .kw {
+        color: #ff7b72;
+      }
+      .ty {
+        color: #79c0ff;
+      }
+      .st {
+        color: #a5d6ff;
+      }
+      .nm {
+        color: #f0883e;
+      }
+      .cm {
+        color: #8b949e;
+        font-style: italic;
+      }
+      .fn {
+        color: #d2a8ff;
+      }
+      .op {
+        color: #c9d1d9;
+      }
+      .pu {
+        color: #e6edf3;
+      }
+      .bi {
+        color: #ffa657;
+      }
+      .str2 {
+        color: #7ee787;
+      }
+      .at {
+        color: #ffa657;
+      }
+      .tip {
+        background: var(--tip-bg);
+        border-left: 3px solid var(--tip-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .warn {
+        background: var(--warn-bg);
+        border-left: 3px solid var(--warn-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .info {
+        background: var(--info-bg);
+        border-left: 3px solid var(--info-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .tip-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #16a34a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .warn-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #ea580c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2563eb;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .compare-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .compare-header {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .compare-header.bad {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+      .compare-header.good {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .compare-header.old {
+        background: #f3f4f6;
+        color: #374151;
+      }
+      .compare-header.new {
+        background: #f0fdfa;
+        color: #0f766e;
+      }
+      .compare-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      th {
+        background: var(--tag-bg);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+        vertical-align: middle;
+      }
+      .badge-green {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .badge-red {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .badge-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-teal {
+        background: #ccfbf1;
+        color: #0f766e;
+      }
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 12px 24px;
+        margin: 36px 0;
+      }
+      .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+      }
+      .concept-card h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        margin-top: 0;
+      }
+      .concept-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .concept-icon {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+      .timeline {
+        position: relative;
+        margin: 32px 0;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 14px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--accent-subtle);
+      }
+      .tl-item {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 28px;
+        position: relative;
+      }
+      .tl-dot {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+        z-index: 1;
+      }
+      .tl-body {
+        flex: 1;
+        padding-top: 4px;
+      }
+      .tl-year {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .tl-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .tl-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+      .tradeoff-table td:first-child {
+        font-weight: 600;
+      }
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 56px 0;
+      }
+      footer {
+        background: #042f2e;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+        padding: 40px 2rem;
+        font-size: 14px;
+      }
+      footer strong {
+        color: #fff;
+      }
+      footer a {
+        color: #5eead4;
+        text-decoration: none;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 640px) {
+        .toc-grid,
+        .compare-grid {
+          grid-template-columns: 1fr;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">← DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">JavaScript Frameworks</span>
+        <span class="nav-badge">History</span>
+      </div>
+      <div class="nav-links">
+        <a href="#dark-ages">Dark Ages</a>
+        <a href="#mvc">MVC Era</a>
+        <a href="#angularjs">AngularJS</a>
+        <a href="#react">React</a>
+        <a href="#components">Components</a>
+        <a href="#vue">Vue</a>
+        <a href="#angular">Angular</a>
+        <a href="#state">State Wars</a>
+        <a href="#ssr">SSR</a>
+        <a href="#svelte">Svelte</a>
+        <a href="#rsc">RSC</a>
+        <a href="#spectrum">Rendering</a>
+        <a href="#meta">Meta-Frameworks</a>
+        <a href="#tradeoffs">Trade-offs</a>
+        <a href="#selection">Selection</a>
+        <a href="#future">Future</a>
+        <a href="#lessons">Lessons</a>
+      </div>
+      <span class="nav-rt">~55 min read</span>
+    </nav>
+    <div class="hero">
+      <div class="hero-tag">📜 Deep History</div>
+      <h1>The Evolution of JavaScript Frameworks</h1>
+      <p class="hero-sub">
+        Twenty years of frontend architecture — from vanilla DOM manipulation
+        and jQuery through the React revolution, the state management wars, SSR
+        renaissance, compiler-driven frameworks, and the emerging future of
+        server-first component architectures.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">⚡</div>
+        <div class="meta-text">
+          <strong
+            >Frontend Architecture — Complete Historical & Technical
+            Analysis</strong
+          ><br />
+          2005–2026 · jQuery → React → RSC → Islands — June 2026
+        </div>
+      </div>
+      <hr class="hero-divider" />
+    </div>
+    <div class="toc-wrapper">
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <div class="toc-grid">
+          <a href="#dark-ages"
+            ><span class="toc-num">01</span> The Dark Ages — Vanilla JS &amp;
+            jQuery</a
+          >
+          <a href="#ssr"><span class="toc-num">09</span> The SSR Renaissance</a>
+          <a href="#mvc"
+            ><span class="toc-num">02</span> The Rise of MVC Frameworks</a
+          >
+          <a href="#svelte"
+            ><span class="toc-num">10</span> Svelte's Compiler Revolution</a
+          >
+          <a href="#angularjs"
+            ><span class="toc-num">03</span> AngularJS &amp; Two-Way Binding</a
+          >
+          <a href="#rsc"
+            ><span class="toc-num">11</span> React Server Components</a
+          >
+          <a href="#react"
+            ><span class="toc-num">04</span> React &amp; the Virtual DOM
+            Revolution</a
+          >
+          <a href="#spectrum"
+            ><span class="toc-num">12</span> The Modern Rendering Spectrum</a
+          >
+          <a href="#components"
+            ><span class="toc-num">05</span> Component Architecture Changed
+            Everything</a
+          >
+          <a href="#meta"
+            ><span class="toc-num">13</span> The Meta-Framework Era</a
+          >
+          <a href="#vue"><span class="toc-num">06</span> Vue's Middle Ground</a>
+          <a href="#tradeoffs"
+            ><span class="toc-num">14</span> Architectural Trade-off Analysis</a
+          >
+          <a href="#angular"
+            ><span class="toc-num">07</span> Angular's Enterprise Evolution</a
+          >
+          <a href="#selection"
+            ><span class="toc-num">15</span> Framework Selection Strategies</a
+          >
+          <a href="#state"
+            ><span class="toc-num">08</span> The State Management Wars</a
+          >
+          <a href="#future"
+            ><span class="toc-num">16</span> The Future of Frontend
+            Architecture</a
+          >
+          <a href="#lessons" style="grid-column: 1/-1"
+            ><span class="toc-num">17</span> Lessons from Twenty Years of
+            Frontend Evolution</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <!-- ═══ 01 DARK AGES ═══ -->
+      <div class="section" id="dark-ages">
+        <div class="era-badge era-dark">⚫ 2005–2009 · The Dark Ages</div>
+        <div class="section-label">01 — Before Frameworks</div>
+        <h2>The Dark Ages — Vanilla JavaScript &amp; jQuery</h2>
+        <p class="lead">
+          Before frameworks, the web was a collection of documents. JavaScript
+          was a scripting language for adding interactivity to static HTML pages
+          — not a platform for building applications. The gap between what
+          developers needed and what the browser provided was enormous.
+        </p>
+
+        <h3>The Web Before Frameworks</h3>
+        <p>
+          In the early 2000s, web development meant PHP or ASP generating HTML
+          on the server, with JavaScript used sparingly for form validation and
+          image rollovers. The browser was a document viewer with scriptability
+          bolted on. Cross-browser compatibility was a nightmare — Internet
+          Explorer 6 had 95% market share and its own completely different DOM
+          API from every other browser.
+        </p>
+        <p>
+          Developers wrote functions like <code>getElement()</code> that tried
+          <code>document.getElementById</code>, then <code>document.all</code>,
+          then gave up. Every project duplicated the same 200 lines of
+          compatibility shims. AJAX (popularised by Google Maps in 2005) changed
+          expectations dramatically — suddenly pages could update without a full
+          reload — but writing it cross-browser required understanding four
+          different XMLHttpRequest implementations.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — DOM-Centric Programming, 2005 Style</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// The reality of cross-browser JavaScript in 2005</span>
+<span class="kw">function</span> <span class="fn">getElement</span><span class="pu">(</span>id<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>document<span class="pu">.</span><span class="fn">getElementById</span><span class="pu">)</span>    <span class="kw">return</span> document<span class="pu">.</span><span class="fn">getElementById</span><span class="pu">(</span>id<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>document<span class="pu">.</span>all<span class="pu">)</span>               <span class="kw">return</span> document<span class="pu">.</span>all<span class="pu">[</span>id<span class="pu">]</span>
+  <span class="kw">if</span> <span class="pu">(</span>document<span class="pu">.</span>layers<span class="pu">)</span>            <span class="kw">return</span> document<span class="pu">.</span>layers<span class="pu">[</span>id<span class="pu">]</span>
+<span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">addEvent</span><span class="pu">(</span>el, type, fn<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>el<span class="pu">.</span>addEventListener<span class="pu">)</span>        el<span class="pu">.</span><span class="fn">addEventListener</span><span class="pu">(</span>type, fn, <span class="kw">false</span><span class="pu">)</span>  <span class="cm">// W3C</span>
+  <span class="kw">else if</span> <span class="pu">(</span>el<span class="pu">.</span>attachEvent<span class="pu">)</span>         el<span class="pu">.</span><span class="fn">attachEvent</span><span class="pu">(</span><span class="st">'on'</span> <span class="op">+</span> type, fn<span class="pu">)</span>     <span class="cm">// IE</span>
+  <span class="kw">else</span>                             el<span class="pu">[</span><span class="st">'on'</span> <span class="op">+</span> type<span class="pu">]</span> <span class="op">=</span> fn                <span class="cm">// legacy</span>
+<span class="pu">}</span>
+
+<span class="cm">// AJAX: the XMLHttpRequest saga</span>
+<span class="kw">function</span> <span class="fn">createXHR</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>window<span class="pu">.</span>XMLHttpRequest<span class="pu">)</span>       <span class="kw">return</span> <span class="kw">new</span> XMLHttpRequest<span class="pu">()</span>
+  <span class="kw">try</span> <span class="pu">{</span> <span class="kw">return</span> <span class="kw">new</span> <span class="fn">ActiveXObject</span><span class="pu">(</span><span class="st">'Msxml2.XMLHTTP'</span><span class="pu">)</span> <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">(</span>e<span class="pu">)</span> <span class="pu">{}</span>
+  <span class="kw">try</span> <span class="pu">{</span> <span class="kw">return</span> <span class="kw">new</span> <span class="fn">ActiveXObject</span><span class="pu">(</span><span class="st">'Microsoft.XMLHTTP'</span><span class="pu">)</span> <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">(</span>e<span class="pu">)</span> <span class="pu">{}</span>
+<span class="pu">}</span>
+<span class="cm">// This was every project. Every. Single. One.</span></code></pre>
+        </div>
+
+        <h3>Why jQuery Became Dominant</h3>
+        <p>
+          John Resig released jQuery 1.0 in August 2006 with a radical
+          proposition: <em>write once, work everywhere</em>. Its CSS selector
+          API mapped directly onto how designers thought about pages. Its
+          chaining syntax was readable. It normalised events, animations, and
+          AJAX across every browser. Within two years it was on the majority of
+          websites on the internet.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — jQuery's Radical Simplicity (2006)</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// Before jQuery: 30 lines to do this cross-browser
+// After jQuery: one line</span>
+<span class="kw">$</span><span class="pu">(</span><span class="st">'.submit-btn'</span><span class="pu">).</span><span class="fn">on</span><span class="pu">(</span><span class="st">'click'</span><span class="pu">,</span> <span class="kw">function</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">$</span><span class="pu">(</span><span class="st">'#loading'</span><span class="pu">).</span><span class="fn">show</span><span class="pu">()</span>
+  <span class="kw">$</span><span class="pu">.</span><span class="fn">ajax</span><span class="pu">({</span>
+    url<span class="pu">:</span> <span class="st">'/api/submit'</span><span class="pu">,</span>
+    method<span class="pu">:</span> <span class="st">'POST'</span><span class="pu">,</span>
+    data<span class="pu">:</span> <span class="kw">$</span><span class="pu">(</span><span class="st">'form'</span><span class="pu">).</span><span class="fn">serialize</span><span class="pu">(),</span>
+    success<span class="pu">:</span> <span class="kw">function</span><span class="pu">(</span>response<span class="pu">)</span> <span class="pu">{</span>
+      <span class="kw">$</span><span class="pu">(</span><span class="st">'#result'</span><span class="pu">).</span><span class="fn">html</span><span class="pu">(</span>response<span class="pu">).</span><span class="fn">fadeIn</span><span class="pu">()</span>
+      <span class="kw">$</span><span class="pu">(</span><span class="st">'#loading'</span><span class="pu">).</span><span class="fn">hide</span><span class="pu">()</span>
+    <span class="pu">}</span>
+  <span class="pu">})</span>
+<span class="pu">})</span>
+
+<span class="cm">// jQuery's genius: the DOM *is* the application state.
+// Find elements. Modify them. jQuery was the perfect library
+// for pages that needed scripting.
+// It was the wrong tool for applications that needed architecture.</span></code></pre>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">💡 jQuery's Legacy</div>
+          jQuery's influence is understated. Its CSS selector syntax became the
+          browser's native <code>querySelector</code>. Its AJAX API influenced
+          the Fetch API. Its plugin architecture was the first widely-used
+          example of open-source frontend extensibility. jQuery didn't fail — it
+          succeeded so completely that the browser absorbed its ideas.
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 02 MVC ERA ═══ -->
+      <div class="section" id="mvc">
+        <div class="era-badge era-rise">🌅 2010–2012 · The Rise of MVC</div>
+        <div class="section-label">02 — Server Patterns Meet the Browser</div>
+        <h2>The Rise of MVC Frameworks</h2>
+        <p class="lead">
+          As web applications grew more complex — Gmail, Google Maps, early
+          Twitter — the jQuery model of finding-and-mutating DOM nodes broke
+          down. Developers who understood Rails and Django tried to bring those
+          server-side patterns into the browser.
+        </p>
+
+        <p>
+          <strong>Backbone.js</strong> (2010) was the first widely-adopted
+          answer. Jeremy Ashkenas gave developers Models (data with events),
+          Collections (arrays of models), and Views (DOM management tied to
+          models). It imposed minimal structure and made few assumptions — which
+          was both its strength and its weakness.
+        </p>
+
+        <p>
+          <strong>Knockout.js</strong> (2010) introduced observable-based data
+          binding to the browser. Decorate your HTML with
+          <code>data-bind</code> attributes; when the underlying JavaScript
+          observable changed, the DOM updated automatically. It was a revelation
+          for data-heavy UIs like dashboards.
+        </p>
+
+        <p>
+          <strong>Ember.js</strong> (2011) went further — it was an opinionated,
+          convention-over-configuration framework with routing, a data layer
+          (Ember Data), and strong opinions about application structure. It bet
+          heavily on the MVC pattern and URLs as the source of truth.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Backbone.js: The First Attempt at Frontend
+              Architecture</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// Backbone: Models with events + Views that re-render on change</span>
+<span class="kw">const</span> Todo <span class="op">=</span> Backbone<span class="pu">.</span>Model<span class="pu">.</span><span class="fn">extend</span><span class="pu">({</span>
+  defaults<span class="pu">:</span> <span class="pu">{</span> title<span class="pu">:</span> <span class="st">''</span><span class="pu">,</span> done<span class="pu">:</span> <span class="kw">false</span> <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="kw">const</span> TodoView <span class="op">=</span> Backbone<span class="pu">.</span>View<span class="pu">.</span><span class="fn">extend</span><span class="pu">({</span>
+  tagName<span class="pu">:</span> <span class="st">'li'</span><span class="pu">,</span>
+  events<span class="pu">:</span> <span class="pu">{</span> <span class="st">'click .toggle'</span><span class="pu">:</span> <span class="st">'toggleDone'</span> <span class="pu">},</span>
+  <span class="fn">initialize</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="fn">listenTo</span><span class="pu">(</span><span class="kw">this</span><span class="pu">.</span>model<span class="pu">,</span> <span class="st">'change'</span><span class="pu">,</span> <span class="kw">this</span><span class="pu">.</span>render<span class="pu">)</span>  <span class="cm">// model → view sync</span>
+  <span class="pu">},</span>
+  <span class="fn">render</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="kw">$el</span><span class="pu">.</span><span class="fn">html</span><span class="pu">(</span><span class="kw">this</span><span class="pu">.</span><span class="fn">template</span><span class="pu">(</span><span class="kw">this</span><span class="pu">.</span>model<span class="pu">.</span><span class="fn">toJSON</span><span class="pu">()))</span>
+    <span class="kw">return</span> <span class="kw">this</span>
+  <span class="pu">},</span>
+  <span class="fn">toggleDone</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span>model<span class="pu">.</span><span class="fn">save</span><span class="pu">({</span> done<span class="pu">:</span> <span class="op">!</span><span class="kw">this</span><span class="pu">.</span>model<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'done'</span><span class="pu">)</span> <span class="pu">})</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>
+<span class="cm">// The problem: as apps grew, views multiplied.
+// Who owned which part of the DOM? Who could modify what?
+// Nothing prevented two views from independently updating the same element.</span></code></pre>
+        </div>
+
+        <p>
+          These frameworks exposed a fundamental tension: the server-side MVC
+          pattern assumes a request-response cycle where the server renders a
+          complete, consistent view. The browser has no such clear lifecycle.
+          State is continuous. Multiple events fire simultaneously. The same
+          piece of data drives multiple UI elements. The patterns didn't map
+          cleanly.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 03 ANGULARJS ═══ -->
+      <div class="section" id="angularjs">
+        <div class="era-badge era-angular">
+          🌸 2012–2016 · The Two-Way Binding Era
+        </div>
+        <div class="section-label">03 — Automatic Synchronisation</div>
+        <h2>AngularJS &amp; the Two-Way Binding Era</h2>
+        <p class="lead">
+          AngularJS (2010, Google) was the first framework that felt like it was
+          built for building applications rather than augmenting documents. Its
+          HTML-first approach and automatic two-way binding felt like magic —
+          until you understood what it was actually doing.
+        </p>
+
+        <h3>The Digest Cycle</h3>
+        <p>
+          AngularJS's core innovation was dirty-checking. The framework
+          maintained a list of watchers — bindings between scope properties and
+          DOM nodes. On any significant event, it ran the <em>digest cycle</em>:
+          iterating through all watchers, comparing current values to previous
+          values, and updating the DOM where they differed. It repeated this
+          until no more changes were detected (stability).
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — AngularJS: Two-Way Binding &amp; the Digest
+              Cycle</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// AngularJS: HTML becomes declarative data binding</span>
+<span class="cm">// &lt;input ng-model="user.name"&gt;
+// &lt;p&gt;Hello, {{user.name}}!&lt;/p&gt;
+// When the input changes, $scope.user.name updates.
+// When $scope.user.name changes in code, the input updates.
+// Automatic. Bi-directional. No event handlers written by hand.</span>
+
+angular<span class="pu">.</span><span class="fn">module</span><span class="pu">(</span><span class="st">'app'</span><span class="pu">).</span><span class="fn">controller</span><span class="pu">(</span><span class="st">'UserCtrl'</span><span class="pu">,</span> <span class="kw">function</span><span class="pu">(</span><span class="kw">$scope</span><span class="pu">,</span> <span class="kw">$http</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">$scope</span><span class="pu">.</span>users <span class="op">=</span> <span class="pu">[]</span>
+
+  <span class="kw">$scope</span><span class="pu">.</span><span class="fn">loadUsers</span> <span class="op">=</span> <span class="kw">function</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="kw">$http</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'/api/users'</span><span class="pu">).</span><span class="fn">then</span><span class="pu">(</span><span class="kw">function</span><span class="pu">(</span>res<span class="pu">)</span> <span class="pu">{</span>
+      <span class="kw">$scope</span><span class="pu">.</span>users <span class="op">=</span> res<span class="pu">.</span>data       <span class="cm">// assign → digest detects → DOM updates</span>
+    <span class="pu">})</span>
+  <span class="pu">}</span>
+
+  <span class="cm">// $watch: explicit observation of scope properties</span>
+  <span class="kw">$scope</span><span class="pu">.</span><span class="kw">$watch</span><span class="pu">(</span><span class="st">'searchTerm'</span><span class="pu">,</span> <span class="kw">function</span><span class="pu">(</span>newVal<span class="pu">,</span> oldVal<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(</span>newVal <span class="op">!==</span> oldVal<span class="pu">)</span> <span class="kw">$scope</span><span class="pu">.</span><span class="fn">search</span><span class="pu">(</span>newVal<span class="pu">)</span>
+  <span class="pu">})</span>
+<span class="pu">})</span>
+
+<span class="cm">// The scalability problem:
+// Each ng-repeat item + each binding adds a watcher.
+// 2,000 watchers → digest cycle takes 50ms → UI feels sluggish.
+// "AngularJS best practice": keep watchers below 2,000.
+// Real applications have 10,000+.</span></code></pre>
+        </div>
+
+        <h3>The Scalability Challenges of Two-Way Binding</h3>
+        <p>
+          AngularJS was transformative for medium-complexity applications. For
+          large, data-dense UIs — trading dashboards, analytics platforms,
+          real-time feeds — the digest cycle became a performance ceiling. The
+          framework could not know <em>what</em> changed, only that
+          <em>something</em> might have, so it checked everything. The solution
+          (one-time bindings, <code>$scope.$apply</code> discipline, manual
+          watch removal) required deep framework knowledge and undermined the
+          "it just works" promise.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 04 REACT ═══ -->
+      <div class="section" id="react">
+        <div class="era-badge era-react">
+          ⚛️ 2013–2016 · The React Revolution
+        </div>
+        <div class="section-label">04 — Unidirectional Flow</div>
+        <h2>React &amp; the Virtual DOM Revolution</h2>
+        <p class="lead">
+          React's 2013 release was controversial. Mixing HTML into JavaScript?
+          Throwing away the DOM on every render? It contradicted every
+          established frontend best practice. It was also fundamentally correct
+          about what was wrong with every approach before it.
+        </p>
+
+        <div class="pullquote">
+          "React is the V in MVC." — The most underselling product description
+          in software history.
+        </div>
+
+        <h3>Declarative UI — Describe What, Not How</h3>
+        <p>
+          The critical insight in React was shifting from
+          <em>imperative</em> DOM manipulation (find this element, change this
+          attribute, add this class) to <em>declarative</em> UI description:
+          given this data, this is what the UI should look like. The framework's
+          job was to figure out the minimal DOM changes required to make that
+          description real.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — The Paradigm Shift: Imperative vs Declarative</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Imperative (jQuery/Backbone): describe the transitions ────</span>
+<span class="kw">function</span> <span class="fn">setUserLoading</span><span class="pu">(</span>loading<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>loading<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">$</span><span class="pu">(</span><span class="st">'#spinner'</span><span class="pu">).</span><span class="fn">show</span><span class="pu">()</span>
+    <span class="kw">$</span><span class="pu">(</span><span class="st">'#user-list'</span><span class="pu">).</span><span class="fn">hide</span><span class="pu">()</span>
+    <span class="kw">$</span><span class="pu">(</span><span class="st">'#error'</span><span class="pu">).</span><span class="fn">hide</span><span class="pu">()</span>
+  <span class="pu">}</span> <span class="kw">else</span> <span class="pu">{</span>
+    <span class="kw">$</span><span class="pu">(</span><span class="st">'#spinner'</span><span class="pu">).</span><span class="fn">hide</span><span class="pu">()</span>
+    <span class="kw">$</span><span class="pu">(</span><span class="st">'#user-list'</span><span class="pu">).</span><span class="fn">show</span><span class="pu">()</span>
+  <span class="pu">}</span>
+  <span class="cm">// Bug-prone: what if #error was visible and loading goes true then false?</span>
+  <span class="cm">// You must track every possible state transition manually.</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Declarative (React): describe the outcome ─────────────────</span>
+<span class="kw">function</span> <span class="fn">UserSection</span><span class="pu">({</span> loading, users, error <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>loading<span class="pu">)</span> <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">Spinner</span> <span class="pu">/&gt;</span>
+  <span class="kw">if</span> <span class="pu">(</span>error<span class="pu">)</span>   <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">ErrorMessage</span> error<span class="pu">={</span>error<span class="pu">}</span> <span class="pu">/&gt;</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">UserList</span> users<span class="pu">={</span>users<span class="pu">}</span> <span class="pu">/&gt;</span>
+<span class="pu">}</span>
+<span class="cm">// Given ANY combination of loading/error/users, the output is always correct.
+// No transition management. No state mutation bugs.
+// This is why React fundamentally changed frontend engineering.</span>
+
+<span class="cm">// ── Unidirectional data flow ───────────────────────────────────</span>
+<span class="cm">// Data flows DOWN (parent → child via props)
+// Events flow UP (child → parent via callback props)
+// NEVER sideways. This makes dataflow debuggable.</span>
+<span class="kw">function</span> <span class="fn">Parent</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>count, setCount<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">Child</span> count<span class="pu">={</span>count<span class="pu">}</span> onIncrement<span class="pu">={()</span> <span class="op">=></span> <span class="fn">setCount</span><span class="pu">(</span>c <span class="op">=></span> c <span class="op">+</span> <span class="nm">1</span><span class="pu">)}</span> <span class="pu">/&gt;</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <p>
+          The Virtual DOM was React's implementation detail, not its idea. A
+          lightweight JavaScript representation of the DOM tree allowed React to
+          compute diffs cheaply in JavaScript memory rather than expensively in
+          real DOM operations. But the deeper innovation was making rendering a
+          pure function of state — and that insight outlasted the virtual DOM
+          implementation itself.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 05 COMPONENTS ═══ -->
+      <div class="section" id="components">
+        <div class="era-badge era-comp">
+          🧩 2014–2017 · Component Architecture
+        </div>
+        <div class="section-label">05 — The New Unit of Abstraction</div>
+        <h2>Component Architecture Changed Everything</h2>
+        <p class="lead">
+          React's component model — small, composable, self-contained UI units —
+          turned out to be the most durable idea in the history of frontend
+          development. It changed how teams organised code, how design systems
+          were built, and how we think about UI abstraction.
+        </p>
+
+        <h3>Composition Over Inheritance</h3>
+        <p>
+          Object-oriented UI inheritance (class hierarchies, widget toolkits)
+          had failed on the web repeatedly. A <code>ButtonBase</code> →
+          <code>Button</code> → <code>IconButton</code> →
+          <code>LoadingIconButton</code> hierarchy becomes unmaintainable as
+          requirements diverge. Component composition — wrapping one component
+          in another, passing components as props — solved the same problems
+          with less coupling.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Composition Patterns That Became Industry
+              Standard</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Compound components — related components sharing state ─────</span>
+<span class="kw">function</span> <span class="fn">Tabs</span><span class="pu">({</span> children <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>active, setActive<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="pu">&lt;</span><span class="ty">TabsContext</span><span class="pu">.</span><span class="ty">Provider</span> value<span class="pu">={{</span> active<span class="pu">,</span> setActive <span class="pu">}}&gt;</span>
+      <span class="pu">{</span>children<span class="pu">}</span>
+    <span class="pu">&lt;/</span><span class="ty">TabsContext</span><span class="pu">.</span><span class="ty">Provider</span><span class="pu">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+<span class="cm">// Usage is readable, flexible, no prop drilling:</span>
+<span class="pu">&lt;</span><span class="ty">Tabs</span><span class="pu">&gt;</span>
+  <span class="pu">&lt;</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">List</span><span class="pu">&gt;</span>
+    <span class="pu">&lt;</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">Tab</span><span class="pu">&gt;</span>Overview<span class="pu">&lt;/</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">Tab</span><span class="pu">&gt;</span>
+    <span class="pu">&lt;</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">Tab</span><span class="pu">&gt;</span>Settings<span class="pu">&lt;/</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">Tab</span><span class="pu">&gt;</span>
+  <span class="pu">&lt;/</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">List</span><span class="pu">&gt;</span>
+  <span class="pu">&lt;</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">Panel</span><span class="pu">&gt;</span>Overview content<span class="pu">&lt;/</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">Panel</span><span class="pu">&gt;</span>
+  <span class="pu">&lt;</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">Panel</span><span class="pu">&gt;</span>Settings content<span class="pu">&lt;/</span><span class="ty">Tabs</span><span class="pu">.</span><span class="ty">Panel</span><span class="pu">&gt;</span>
+<span class="pu">&lt;/</span><span class="ty">Tabs</span><span class="pu">&gt;</span>
+
+<span class="cm">// ── Render props — sharing stateful logic ──────────────────────</span>
+<span class="kw">function</span> <span class="fn">MouseTracker</span><span class="pu">({</span> render <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>pos, setPos<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">({</span> x<span class="pu">:</span> <span class="nm">0</span><span class="pu">,</span> y<span class="pu">:</span> <span class="nm">0</span> <span class="pu">})</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">div</span> onMouseMove<span class="pu">={</span>e <span class="op">=></span> <span class="fn">setPos</span><span class="pu">({</span> x<span class="pu">:</span> e<span class="pu">.</span>clientX<span class="pu">,</span> y<span class="pu">:</span> e<span class="pu">.</span>clientY <span class="pu">})}&gt;{</span><span class="fn">render</span><span class="pu">(</span>pos<span class="pu">)}&lt;/</span><span class="ty">div</span><span class="pu">&gt;</span>
+<span class="pu">}</span>
+<span class="cm">// Hooks (2019) replaced render props with a cleaner API,
+// but the underlying idea of composable stateful logic survived.</span>
+
+<span class="cm">// ── Hooks: the final form of component logic sharing ──────────</span>
+<span class="kw">function</span> <span class="fn">useMouse</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>pos, setPos<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">({</span> x<span class="pu">:</span> <span class="nm">0</span><span class="pu">,</span> y<span class="pu">:</span> <span class="nm">0</span> <span class="pu">})</span>
+  <span class="fn">useEffect</span><span class="pu">(()</span> <span class="op">=></span> <span class="pu">{</span>
+    <span class="kw">const</span> <span class="fn">handler</span> <span class="op">=</span> <span class="pu">(</span>e<span class="pu">)</span> <span class="op">=></span> <span class="fn">setPos</span><span class="pu">({</span> x<span class="pu">:</span> e<span class="pu">.</span>clientX<span class="pu">,</span> y<span class="pu">:</span> e<span class="pu">.</span>clientY <span class="pu">})</span>
+    window<span class="pu">.</span><span class="fn">addEventListener</span><span class="pu">(</span><span class="st">'mousemove'</span><span class="pu">,</span> handler<span class="pu">)</span>
+    <span class="kw">return</span> <span class="pu">()</span> <span class="op">=></span> window<span class="pu">.</span><span class="fn">removeEventListener</span><span class="pu">(</span><span class="st">'mousemove'</span><span class="pu">,</span> handler<span class="pu">)</span>
+  <span class="pu">},</span> <span class="pu">[])</span>
+  <span class="kw">return</span> pos
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <p>
+          Component-driven development also changed tooling. Storybook (2016)
+          let teams build and test components in isolation. Design systems — a
+          single source of truth for UI components used across products — became
+          the standard deliverable of frontend platform teams at every major
+          technology company.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 06 VUE ═══ -->
+      <div class="section" id="vue">
+        <div class="era-badge era-vue">💚 2014–Present · The Middle Ground</div>
+        <div class="section-label">06 — Progressive Adoption</div>
+        <h2>Vue's Middle Ground</h2>
+        <p class="lead">
+          Evan You released Vue.js in 2014 after working on AngularJS at Google.
+          His goal was to extract the parts he liked about Angular and build
+          something lighter. Vue became the framework that proved you didn't
+          have to choose between simplicity and power.
+        </p>
+
+        <p>
+          Vue's <strong>progressive adoption</strong> model was its defining
+          characteristic. You could drop a <code>&lt;script&gt;</code> tag into
+          an existing page and start using Vue for just that widget. Or you
+          could build an entire SPA with Vue CLI, Vue Router, and Vuex. The same
+          framework scaled from a jQuery replacement to a full application
+          platform.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Vue 3: Composition API &amp; the Proxy Reactivity
+              System</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// Vue 3 Composition API — close to React Hooks but with automatic tracking</span>
+<span class="kw">import</span> <span class="pu">{</span> ref, computed, watch, onMounted <span class="pu">}</span> <span class="kw">from</span> <span class="st">'vue'</span>
+
+<span class="kw">export default</span> <span class="pu">{</span>
+  <span class="fn">setup</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="kw">const</span> count <span class="op">=</span> <span class="fn">ref</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>                          <span class="cm">// reactive primitive</span>
+    <span class="kw">const</span> double <span class="op">=</span> <span class="fn">computed</span><span class="pu">(()</span> <span class="op">=></span> count<span class="pu">.</span>value <span class="op">*</span> <span class="nm">2</span><span class="pu">)</span>  <span class="cm">// auto-tracked derived state</span>
+
+    <span class="cm">// Vue 3 uses ES6 Proxy — no explicit dependency declaration needed.
+    // The computed fn runs; Vue intercepts every .value access;
+    // it knows exactly which refs the computed depends on.</span>
+
+    <span class="fn">watch</span><span class="pu">(</span>count<span class="pu">,</span> <span class="pu">(</span>newVal, oldVal<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+      <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">`Count changed: </span><span class="pu">${</span>oldVal<span class="pu">}</span><span class="st"> → </span><span class="pu">${</span>newVal<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+    <span class="pu">})</span>
+
+    <span class="kw">return</span> <span class="pu">{</span> count<span class="pu">,</span> double <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// &lt;script setup&gt; — even more concise (Vue 3.2+)</span>
+<span class="cm">// &lt;script setup lang="ts"&gt;</span>
+<span class="kw">const</span> count <span class="op">=</span> <span class="fn">ref</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+<span class="kw">const</span> double <span class="op">=</span> <span class="fn">computed</span><span class="pu">(()</span> <span class="op">=></span> count<span class="pu">.</span>value <span class="op">*</span> <span class="nm">2</span><span class="pu">)</span>
+<span class="cm">// Automatically exported to template. No return statement. No boilerplate.</span></code></pre>
+        </div>
+
+        <p>
+          Vue's <strong>single-file components</strong> (<code>.vue</code> files
+          with <code>&lt;template&gt;</code>, <code>&lt;script&gt;</code>,
+          <code>&lt;style&gt;</code>) kept related code co-located without the
+          JSX controversy. For many developers coming from traditional web
+          development, it was the most approachable path to modern component
+          architecture.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 07 ANGULAR ═══ -->
+      <div class="section" id="angular">
+        <div class="era-badge era-ng2">
+          🔷 2016–Present · Enterprise Evolution
+        </div>
+        <div class="section-label">07 — TypeScript-First Architecture</div>
+        <h2>Angular's Enterprise Evolution</h2>
+        <p class="lead">
+          Angular 2 (2016) was not an upgrade of AngularJS — it was a complete
+          rewrite. It bet entirely on TypeScript when TypeScript was still
+          controversial, introduced a DI system more sophisticated than most
+          backend frameworks, and set a high floor for application structure
+          that made it particularly suited to large enterprise teams.
+        </p>
+
+        <p>
+          Angular's <strong>opinionation</strong> is its defining feature. There
+          is an Angular Way to do routing, forms, HTTP, state management,
+          testing, internationalization, and server-side rendering. A developer
+          joining any Angular project will find familiar patterns. This
+          predictability is enormously valuable at enterprise scale where team
+          turnover and codebase longevity are primary concerns.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Angular: DI, Services &amp; Standalone
+              Components</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// Angular's DI is hierarchical — injectors form a tree matching the component tree.
+// Services can be scoped to the root, a module, or a component.</span>
+<span class="at">@Injectable</span><span class="pu">({</span> providedIn<span class="pu">:</span> <span class="st">'root'</span> <span class="pu">})</span>  <span class="cm">// singleton across the app</span>
+<span class="kw">export class</span> <span class="ty">UserService</span> <span class="pu">{</span>
+  <span class="kw">constructor</span><span class="pu">(</span><span class="kw">private</span> http<span class="pu">:</span> <span class="ty">HttpClient</span><span class="pu">)</span> <span class="pu">{}</span>
+
+  <span class="fn">getUsers</span><span class="pu">()</span><span class="op">:</span> <span class="ty">Observable</span><span class="pu">&lt;</span><span class="ty">User</span><span class="pu">[]&gt;</span> <span class="pu">{</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>http<span class="pu">.</span><span class="fn">get</span><span class="pu">&lt;</span><span class="ty">User</span><span class="pu">[]&gt;(</span><span class="st">'/api/users'</span><span class="pu">).</span><span class="fn">pipe</span><span class="pu">(</span>
+      <span class="fn">retry</span><span class="pu">(</span><span class="nm">3</span><span class="pu">),</span>
+      <span class="fn">catchError</span><span class="pu">(</span><span class="kw">this</span><span class="pu">.</span><span class="fn">handleError</span><span class="pu">)</span>
+    <span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// Standalone components (Angular 14+) — removed NgModule boilerplate</span>
+<span class="at">@Component</span><span class="pu">({</span>
+  selector<span class="pu">:</span>    <span class="st">'app-user-list'</span><span class="pu">,</span>
+  standalone<span class="pu">:</span>  <span class="kw">true</span><span class="pu">,</span>
+  imports<span class="pu">:</span>     <span class="pu">[</span><span class="ty">CommonModule</span><span class="pu">,</span> <span class="ty">UserCardComponent</span><span class="pu">],</span>
+  template<span class="pu">:</span> <span class="st">`
+    &lt;app-user-card
+      *ngFor="let user of users$ | async"
+      [user]="user"
+    /&gt;
+  `</span>
+<span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">UserListComponent</span> <span class="pu">{</span>
+  users<span class="kw">$</span> <span class="op">=</span> <span class="fn">inject</span><span class="pu">(</span><span class="ty">UserService</span><span class="pu">).</span><span class="fn">getUsers</span><span class="pu">()</span>  <span class="cm">// Angular 14+ inject() function</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <p>
+          Angular's adoption of <strong>Signals</strong> (Angular 16–17) marked
+          its most significant reactivity evolution — moving from
+          RxJS-everywhere to a fine-grained reactive primitive that brings it
+          architecturally closer to Vue's reactivity model and SolidJS, while
+          retaining backwards compatibility with its RxJS-based ecosystem.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 08 STATE WARS ═══ -->
+      <div class="section" id="state">
+        <div class="era-badge era-state">
+          ⚔️ 2015–Present · The State Management Wars
+        </div>
+        <div class="section-label">08 — Centralised State Architecture</div>
+        <h2>The State Management Wars</h2>
+        <p class="lead">
+          React's unidirectional data flow solved local component state
+          elegantly. It did not solve shared state — data needed by multiple
+          disconnected components. The ecosystem's answer was a decade of
+          competing solutions, each embodying a different philosophy about where
+          data should live and how it should change.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — State Management Evolution: Redux → Zustand</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── REDUX (2015): explicit, predictable, verbose ───────────────
+// Inspired by Elm's architecture. Single source of truth.
+// Pure functions (reducers). Time-travel debugging.
+// Beautiful in theory. Exhausting in practice for simple cases.</span>
+
+<span class="cm">// Action type constants (often in a separate file)</span>
+<span class="kw">const</span> INCREMENT <span class="op">=</span> <span class="st">'counter/increment'</span>
+
+<span class="cm">// Reducer — pure function: (state, action) → state</span>
+<span class="kw">function</span> <span class="fn">counterReducer</span><span class="pu">(</span>state <span class="op">=</span> <span class="pu">{</span> value<span class="pu">:</span> <span class="nm">0</span> <span class="pu">},</span> action<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">switch</span> <span class="pu">(</span>action<span class="pu">.</span>type<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">case</span> <span class="bi">INCREMENT</span><span class="pu">:</span> <span class="kw">return</span> <span class="pu">{</span> value<span class="pu">:</span> state<span class="pu">.</span>value <span class="op">+</span> <span class="nm">1</span> <span class="pu">}</span>
+    <span class="kw">default</span><span class="pu">:</span>       <span class="kw">return</span> state
+  <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="cm">// Also: action creators, selectors, connect(), mapStateToProps...
+// 5 files for a counter. Developers fled.</span>
+
+<span class="cm">// ── REDUX TOOLKIT (2019): Redux without the ceremony ──────────</span>
+<span class="kw">const</span> counterSlice <span class="op">=</span> <span class="fn">createSlice</span><span class="pu">({</span>
+  name<span class="pu">:</span> <span class="st">'counter'</span><span class="pu">,</span>
+  initialState<span class="pu">:</span> <span class="pu">{</span> value<span class="pu">:</span> <span class="nm">0</span> <span class="pu">},</span>
+  reducers<span class="pu">:</span> <span class="pu">{</span>
+    increment<span class="pu">:</span> state <span class="op">=></span> <span class="pu">{</span> state<span class="pu">.</span>value <span class="op">+=</span> <span class="nm">1</span> <span class="pu">}</span>  <span class="cm">// Immer under the hood</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="cm">// ── ZUSTAND (2019): minimal global state ──────────────────────</span>
+<span class="kw">const</span> useStore <span class="op">=</span> <span class="fn">create</span><span class="pu">((</span>set<span class="pu">)</span> <span class="op">=></span> <span class="pu">({</span>
+  count<span class="pu">:</span>     <span class="nm">0</span><span class="pu">,</span>
+  increment<span class="pu">:</span> <span class="pu">()</span> <span class="op">=></span> <span class="fn">set</span><span class="pu">(</span>state <span class="op">=></span> <span class="pu">({</span> count<span class="pu">:</span> state<span class="pu">.</span>count <span class="op">+</span> <span class="nm">1</span> <span class="pu">})),</span>
+  fetchUsers<span class="pu">:</span> <span class="kw">async</span> <span class="pu">()</span> <span class="op">=></span> <span class="pu">{</span>
+    <span class="kw">const</span> users <span class="op">=</span> <span class="kw">await</span> <span class="fn">api</span><span class="pu">.</span><span class="fn">getUsers</span><span class="pu">()</span>
+    <span class="fn">set</span><span class="pu">({</span> users <span class="pu">})</span>
+  <span class="pu">}</span>
+<span class="pu">}))</span>
+
+<span class="cm">// ── TAN STACK QUERY / SWR (2019–2020): server state is different ─
+// The revelation: most "state management" problems are really
+// data-fetching problems. Caching, refetching, sync — not Redux concerns.</span>
+<span class="kw">const</span> <span class="pu">{</span> data, isLoading, error <span class="pu">}</span> <span class="op">=</span> <span class="fn">useQuery</span><span class="pu">({</span>
+  queryKey<span class="pu">:</span>  <span class="pu">[</span><span class="st">'users'</span><span class="pu">],</span>
+  queryFn<span class="pu">:</span>   api<span class="pu">.</span>getUsers<span class="pu">,</span>
+  staleTime<span class="pu">:</span> <span class="nm">5</span> <span class="op">*</span> <span class="nm">60</span> <span class="op">*</span> <span class="nm">1000</span><span class="pu">,</span>
+<span class="pu">})</span></code></pre>
+        </div>
+
+        <p>
+          The most important lesson from the state wars:
+          <strong
+            >server state and client state are fundamentally different
+            problems</strong
+          >. Redux tried to manage both with the same abstractions. TanStack
+          Query's separation of concerns — server state handled by
+          query/mutation hooks, UI state handled by local state or lightweight
+          stores like Zustand — became the dominant modern pattern.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 09 SSR ═══ -->
+      <div class="section" id="ssr">
+        <div class="era-badge era-ssr">
+          🌐 2016–Present · The SSR Renaissance
+        </div>
+        <div class="section-label">09 — Back to the Server</div>
+        <h2>The SSR Renaissance</h2>
+        <p class="lead">
+          Client-side rendering promised rich applications with native-app-like
+          experiences. By 2016, the bills were coming due: blank screens on slow
+          networks, catastrophic SEO, and Time-to-Interactive measured in
+          seconds. The industry began rediscovering what PHP developers had
+          always known: servers are good at rendering HTML.
+        </p>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🔍</div>
+            <h4>The SEO Problem</h4>
+            <p>
+              Search crawlers in 2013–2016 executed JavaScript inconsistently. A
+              React SPA served a blank
+              <code>&lt;div id="root"&gt;&lt;/div&gt;</code>. Google eventually
+              improved JS rendering, but the uncertainty was costly for content
+              sites.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📱</div>
+            <h4>The Performance Problem</h4>
+            <p>
+              3G mobile users waited 8–12 seconds for a React SPA to paint.
+              First Contentful Paint required: download HTML → download JS →
+              parse JS → execute React → fetch data → render. Every step was a
+              round-trip.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔋</div>
+            <h4>The Battery Problem</h4>
+            <p>
+              Client-side rendering pushed all computation to the device.
+              Low-end Android phones spending 4 seconds parsing and executing a
+              500KB JS bundle to show a product list that a server could have
+              sent in 50ms of HTML.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">💧</div>
+            <h4>Hydration Cost</h4>
+            <p>
+              SSR solved the first paint problem but introduced hydration:
+              re-attaching React to server-rendered HTML required executing all
+              the same component code client-side. Sending the same data twice,
+              doing the same work twice.
+            </p>
+          </div>
+        </div>
+
+        <p>
+          Next.js (2016) became the definitive answer by making SSR the
+          <em>default</em> rather than the exception. Its model — React
+          components that could run on the server, with getServerSideProps and
+          getStaticProps for data fetching — made SSR accessible without the
+          complexity of setting up a Node.js rendering server from scratch.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 10 SVELTE ═══ -->
+      <div class="section" id="svelte">
+        <div class="era-badge era-svelte">
+          🔥 2016–Present · The Compiler Revolution
+        </div>
+        <div class="section-label">10 — Eliminating the Framework Runtime</div>
+        <h2>Svelte's Compiler Revolution</h2>
+        <p class="lead">
+          Rich Harris released Svelte in 2016 with an idea that was either
+          obvious or radical depending on your perspective: frameworks are
+          compilers, not runtime libraries. Move all the framework work to build
+          time. Ship no virtual DOM. Ship no reactivity runtime. Ship surgically
+          precise, plain JavaScript that directly updates the DOM.
+        </p>
+
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header old">⚛️ React: Runtime Reactivity</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// React ships ~45KB (gzipped) of runtime.
+// Every component call is a function call.
+// Reconciler diffs virtual DOM on every render.
+// Works beautifully. Has overhead you always pay.</span>
+<span class="kw">function</span> <span class="fn">Counter</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>n, setN<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="pu">&lt;</span><span class="ty">button</span> onClick<span class="pu">={()</span> <span class="op">=></span> <span class="fn">setN</span><span class="pu">(</span>n <span class="op">+</span> <span class="nm">1</span><span class="pu">)}&gt;</span>
+      Count: <span class="pu">{</span>n<span class="pu">}</span>
+    <span class="pu">&lt;/</span><span class="ty">button</span><span class="pu">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header new">
+              🔥 Svelte: Compile-Time Reactivity
+            </div>
+            <div class="code-block">
+              <pre><code><span class="cm">&lt;!-- Svelte source — looks like HTML --&gt;</span>
+<span class="pu">&lt;</span><span class="kw">script</span><span class="pu">&gt;</span>
+  <span class="kw">let</span> n <span class="op">=</span> <span class="nm">0</span>
+<span class="pu">&lt;/</span><span class="kw">script</span><span class="pu">&gt;</span>
+<span class="pu">&lt;</span><span class="ty">button</span> on<span class="pu">:</span>click<span class="pu">={()</span> <span class="op">=></span> n<span class="op">++</span><span class="pu">}&gt;</span>
+  Count: <span class="pu">{</span>n<span class="pu">}</span>
+<span class="pu">&lt;/</span><span class="ty">button</span><span class="pu">&gt;</span>
+
+<span class="cm">// Svelte compiles this to:
+// document.createTextNode(n)
+// button.addEventListener('click', () => {
+//   n++
+//   set_data(t, n) // direct DOM update
+// })
+// Zero virtual DOM. Zero runtime reactivity.
+// The component IS the output.</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          Svelte 5 (2024) introduced Runes — a new reactivity primitive that
+          addressed Svelte 4's ambiguity around reactivity in shared modules
+          (not just components). The <code>$state</code>, <code>$derived</code>,
+          and <code>$effect</code> runes are explicit signal-like primitives,
+          aligning Svelte with the signals model adopted by Solid, Vue 3, and
+          Angular.
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 11 RSC ═══ -->
+      <div class="section" id="rsc">
+        <div class="era-badge era-rsc">⚛️ 2022–Present · Server Components</div>
+        <div class="section-label">11 — Rethinking Rendering</div>
+        <h2>React Server Components</h2>
+        <p class="lead">
+          React Server Components (RSC), stabilised in React 19 and shipped in
+          Next.js App Router, represent the most fundamental rethinking of
+          React's architecture since Hooks. They challenge the assumption that
+          React is a client-side library that optionally renders on the server.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — RSC: Server vs Client Components</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Server Component (default in Next.js App Router) ──────────
+// Runs ONLY on the server. Never sent to the client.
+// Can directly access databases, file systems, secrets.
+// Zero JavaScript bundle impact.</span>
+<span class="kw">async function</span> <span class="fn">ProductPage</span><span class="pu">({</span> id <span class="pu">})</span> <span class="pu">{</span>
+  <span class="cm">// Direct DB access — no API route needed</span>
+  <span class="kw">const</span> product <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>products<span class="pu">.</span><span class="fn">findById</span><span class="pu">(</span>id<span class="pu">)</span>
+  <span class="kw">const</span> reviews  <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>reviews<span class="pu">.</span><span class="fn">findByProduct</span><span class="pu">(</span>id<span class="pu">)</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="pu">&lt;</span><span class="ty">article</span><span class="pu">&gt;</span>
+      <span class="pu">&lt;</span><span class="ty">h1</span><span class="pu">&gt;{</span>product<span class="pu">.</span>name<span class="pu">}&lt;/</span><span class="ty">h1</span><span class="pu">&gt;</span>
+      <span class="cm">{/* Server component — no client JS */}</span>
+      <span class="pu">&lt;</span><span class="ty">ReviewList</span> reviews<span class="pu">={</span>reviews<span class="pu">}</span> <span class="pu">/&gt;</span>
+      <span class="cm">{/* Client component — has interactivity */}</span>
+      <span class="pu">&lt;</span><span class="ty">AddToCart</span> productId<span class="pu">={</span>product<span class="pu">.</span>id<span class="pu">}</span> <span class="pu">/&gt;</span>
+    <span class="pu">&lt;/</span><span class="ty">article</span><span class="pu">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Client Component — explicit opt-in ────────────────────────</span>
+<span class="st">'use client'</span>  <span class="cm">// directive: this runs in the browser</span>
+
+<span class="kw">function</span> <span class="fn">AddToCart</span><span class="pu">({</span> productId <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>added, setAdded<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="kw">false</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="pu">&lt;</span><span class="ty">button</span> onClick<span class="pu">={</span><span class="kw">async</span> <span class="pu">()</span> <span class="op">=></span> <span class="pu">{</span>
+      <span class="kw">await</span> <span class="fn">addToCart</span><span class="pu">(</span>productId<span class="pu">)</span>
+      <span class="fn">setAdded</span><span class="pu">(</span><span class="kw">true</span><span class="pu">)</span>
+    <span class="pu">}}&gt;</span>
+      <span class="pu">{</span>added <span class="op">?</span> <span class="st">'Added!'</span> <span class="op">:</span> <span class="st">'Add to Cart'</span><span class="pu">}</span>
+    <span class="pu">&lt;/</span><span class="ty">button</span><span class="pu">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// The mental model shift:
+// Before RSC: React is client-side. SSR is an add-on.
+// After RSC:  Components can be server-only, client-only, or both.
+//             Server is the default. Client is opt-in.
+//             Islands of interactivity in a sea of static HTML.</span></code></pre>
+        </div>
+
+        <p>
+          RSC's most consequential innovation is eliminating the API layer for
+          data fetching within the same application. A server component can read
+          directly from the database — no REST endpoint, no serialisation, no
+          client-side fetch. The network boundary is no longer "client requests
+          server"; it is "where in your component tree does server-side code end
+          and client-side code begin."
+        </p>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 12 RENDERING SPECTRUM ═══ -->
+      <div class="section" id="spectrum">
+        <div class="era-badge era-spectrum">
+          🌈 2020–Present · The Rendering Spectrum
+        </div>
+        <div class="section-label">12 — Modes of Rendering</div>
+        <h2>The Modern Rendering Spectrum</h2>
+        <p class="lead">
+          Modern frameworks support a spectrum of rendering strategies within
+          the same application. Understanding each mode — its performance
+          characteristics, caching model, and appropriate use cases — is a core
+          senior frontend skill.
+        </p>
+
+        <table>
+          <tr>
+            <th>Mode</th>
+            <th>Where</th>
+            <th>When</th>
+            <th>Trade-offs</th>
+            <th>Best for</th>
+          </tr>
+          <tr>
+            <td><span class="badge badge-blue">CSR</span></td>
+            <td>Browser</td>
+            <td>On user interaction</td>
+            <td>Slow TTFB, fast subsequent nav</td>
+            <td>Dashboards, SaaS apps</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">SSR</span></td>
+            <td>Server</td>
+            <td>Per request</td>
+            <td>Fast FCP, server load</td>
+            <td>Personalised pages</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-teal">SSG</span></td>
+            <td>Build time</td>
+            <td>At deploy</td>
+            <td>Fastest TTFB, stale data risk</td>
+            <td>Marketing, blogs, docs</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-amber">ISR</span></td>
+            <td>Build + CDN</td>
+            <td>Background revalidation</td>
+            <td>Near-static speed + fresh data</td>
+            <td>Product pages, news</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-teal">Streaming</span></td>
+            <td>Server</td>
+            <td>Progressive chunks</td>
+            <td>Fast TTFB, complex error handling</td>
+            <td>Data-heavy pages</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">Partial Hydration</span></td>
+            <td>Both</td>
+            <td>Per island</td>
+            <td>Minimal JS shipped</td>
+            <td>Content + interactivity mix</td>
+          </tr>
+        </table>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Next.js: Multiple Rendering Modes in One App</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── SSG: built at deploy time, served from CDN ────────────────</span>
+<span class="kw">export async function</span> <span class="fn">generateStaticParams</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> posts <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>posts<span class="pu">.</span><span class="fn">findAll</span><span class="pu">()</span>
+  <span class="kw">return</span> posts<span class="pu">.</span><span class="fn">map</span><span class="pu">(</span>p <span class="op">=></span> <span class="pu">({</span> slug<span class="pu">:</span> p<span class="pu">.</span>slug <span class="pu">}))</span>
+<span class="pu">}</span>
+<span class="kw">async function</span> <span class="fn">BlogPost</span><span class="pu">({</span> params <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">const</span> post <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>posts<span class="pu">.</span><span class="fn">findBySlug</span><span class="pu">(</span>params<span class="pu">.</span>slug<span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">article</span><span class="pu">&gt;{</span>post<span class="pu">.</span>content<span class="pu">}&lt;/</span><span class="ty">article</span><span class="pu">&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── ISR: revalidate in background every N seconds ─────────────</span>
+<span class="kw">async function</span> <span class="fn">ProductPage</span><span class="pu">({</span> params <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">const</span> product <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span><span class="st">`/api/products/</span><span class="pu">${</span>params<span class="pu">.</span>id<span class="pu">}</span><span class="st">`</span><span class="pu">,</span> <span class="pu">{</span>
+    next<span class="pu">:</span> <span class="pu">{</span> revalidate<span class="pu">:</span> <span class="nm">60</span> <span class="pu">}</span>   <span class="cm">// ISR: cache 60s, then regenerate</span>
+  <span class="pu">}).</span><span class="fn">then</span><span class="pu">(</span>r <span class="op">=></span> r<span class="pu">.</span><span class="fn">json</span><span class="pu">())</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">ProductDetail</span> product<span class="pu">={</span>product<span class="pu">}</span> <span class="pu">/&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Streaming: Suspense boundaries for progressive loading ─────</span>
+<span class="kw">async function</span> <span class="fn">DashboardPage</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="pu">&lt;</span><span class="ty">div</span><span class="pu">&gt;</span>
+      <span class="pu">&lt;</span><span class="ty">h1</span><span class="pu">&gt;</span>Dashboard<span class="pu">&lt;/</span><span class="ty">h1</span><span class="pu">&gt;</span>           <span class="cm">{/* renders immediately */}</span>
+      <span class="pu">&lt;</span><span class="ty">Suspense</span> fallback<span class="pu">={&lt;</span><span class="ty">Skeleton</span> <span class="pu">/&gt;}&gt;</span>
+        <span class="pu">&lt;</span><span class="ty">RecentOrders</span> <span class="pu">/&gt;</span>          <span class="cm">{/* streams when ready */}</span>
+      <span class="pu">&lt;/</span><span class="ty">Suspense</span><span class="pu">&gt;</span>
+      <span class="pu">&lt;</span><span class="ty">Suspense</span> fallback<span class="pu">={&lt;</span><span class="ty">Skeleton</span> <span class="pu">/&gt;}&gt;</span>
+        <span class="pu">&lt;</span><span class="ty">Analytics</span> <span class="pu">/&gt;</span>             <span class="cm">{/* streams independently */}</span>
+      <span class="pu">&lt;/</span><span class="ty">Suspense</span><span class="pu">&gt;</span>
+    <span class="pu">&lt;/</span><span class="ty">div</span><span class="pu">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 13 META-FRAMEWORKS ═══ -->
+      <div class="section" id="meta">
+        <div class="era-badge era-meta">
+          🏗️ 2016–Present · The Meta-Framework Era
+        </div>
+        <div class="section-label">13 — Full-Stack Frontend</div>
+        <h2>The Meta-Framework Era</h2>
+        <p class="lead">
+          A meta-framework takes a UI library and adds everything needed for
+          production: routing, data fetching, rendering strategies, build
+          tooling, deployment targets. They are the reason "what framework
+          should I use?" has largely been replaced by "what meta-framework
+          should I use?"
+        </p>
+
+        <table>
+          <tr>
+            <th>Meta-Framework</th>
+            <th>Built on</th>
+            <th>Rendering model</th>
+            <th>Distinctive feature</th>
+          </tr>
+          <tr>
+            <td><strong>Next.js</strong></td>
+            <td>React</td>
+            <td>CSR, SSR, SSG, ISR, Streaming, RSC</td>
+            <td>App Router + RSC; largest ecosystem</td>
+          </tr>
+          <tr>
+            <td><strong>Nuxt 3</strong></td>
+            <td>Vue 3</td>
+            <td>CSR, SSR, SSG, hybrid</td>
+            <td>Auto-imports; Nitro server engine</td>
+          </tr>
+          <tr>
+            <td><strong>SvelteKit</strong></td>
+            <td>Svelte 5</td>
+            <td>CSR, SSR, SSG, streaming</td>
+            <td>Progressive enhancement; file-based routing</td>
+          </tr>
+          <tr>
+            <td><strong>Remix / React Router 7</strong></td>
+            <td>React</td>
+            <td>SSR-first; CSR opt-in</td>
+            <td>Web standards (forms, fetch); nested routing</td>
+          </tr>
+          <tr>
+            <td><strong>Astro</strong></td>
+            <td>Any (islands)</td>
+            <td>SSG-first; optional hydration</td>
+            <td>Zero JS by default; framework-agnostic islands</td>
+          </tr>
+          <tr>
+            <td><strong>TanStack Start</strong></td>
+            <td>React</td>
+            <td>SSR, SSG, streaming</td>
+            <td>Type-safe routing; TanStack ecosystem</td>
+          </tr>
+        </table>
+
+        <div class="tip">
+          <div class="tip-label">💡 Astro's Islands Architecture</div>
+          Astro's core insight is that most content sites are 90% static HTML
+          that doesn't need JavaScript at all. Its islands architecture ships
+          zero JS by default and only hydrates the specific interactive
+          components ("islands") that need it. A blog post with a comment form
+          ships HTML + CSS + a small island for the comment form. No hydration
+          cost for the article text.
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 14 TRADEOFFS ═══ -->
+      <div class="section" id="tradeoffs">
+        <div class="section-label">14 — Decision Framework</div>
+        <h2>Architectural Trade-off Analysis</h2>
+        <p class="lead">
+          Every framework choice is a set of trade-offs. The right answer
+          depends on your team, your product, your scale, and your time horizon.
+          Here is a rigorous analysis of the dimensions that actually matter.
+        </p>
+
+        <table class="tradeoff-table">
+          <tr>
+            <th>Dimension</th>
+            <th>React</th>
+            <th>Vue 3</th>
+            <th>Angular</th>
+            <th>Svelte 5</th>
+          </tr>
+          <tr>
+            <td>Performance ceiling</td>
+            <td>High (RSC, streaming)</td>
+            <td>High (Proxy reactivity)</td>
+            <td>High (Signals, OnPush)</td>
+            <td>Highest (no runtime)</td>
+          </tr>
+          <tr>
+            <td>Learning curve</td>
+            <td>
+              <span class="badge badge-amber">Medium</span> (Hooks mental model)
+            </td>
+            <td><span class="badge badge-green">Low-medium</span></td>
+            <td>
+              <span class="badge badge-red">High</span> (RxJS, DI, decorators)
+            </td>
+            <td><span class="badge badge-green">Low</span> (Runes)</td>
+          </tr>
+          <tr>
+            <td>Ecosystem maturity</td>
+            <td><span class="badge badge-green">Largest by far</span></td>
+            <td><span class="badge badge-amber">Strong, smaller</span></td>
+            <td><span class="badge badge-amber">Enterprise-focused</span></td>
+            <td><span class="badge badge-amber">Growing fast</span></td>
+          </tr>
+          <tr>
+            <td>TypeScript DX</td>
+            <td>Good (JSX)</td>
+            <td>Good (Volar)</td>
+            <td><span class="badge badge-green">Excellent (built-in)</span></td>
+            <td>Good</td>
+          </tr>
+          <tr>
+            <td>Opinionation</td>
+            <td>Low (choose your stack)</td>
+            <td>Medium (conventions exist)</td>
+            <td>
+              <span class="badge badge-green">High (one way to do it)</span>
+            </td>
+            <td>Medium</td>
+          </tr>
+          <tr>
+            <td>Bundle size (Hello World)</td>
+            <td>~45KB</td>
+            <td>~34KB</td>
+            <td>~130KB</td>
+            <td><span class="badge badge-green">~3KB</span></td>
+          </tr>
+          <tr>
+            <td>Hiring pool</td>
+            <td><span class="badge badge-green">Largest</span></td>
+            <td>Large</td>
+            <td>Medium (enterprise heavy)</td>
+            <td>Small but growing</td>
+          </tr>
+          <tr>
+            <td>Long-term stability</td>
+            <td>Meta-backed, stable API</td>
+            <td>Strong, Evan You leading</td>
+            <td>Google-backed, breaking changes</td>
+            <td>Smaller team, rapid iteration</td>
+          </tr>
+        </table>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 15 SELECTION ═══ -->
+      <div class="section" id="selection">
+        <div class="section-label">15 — Choosing Wisely</div>
+        <h2>Framework Selection Strategies</h2>
+        <p class="lead">
+          Framework selection is not a technical problem — it is an engineering
+          management problem. The best framework is the one your team will be
+          most productive with, can hire for, and can maintain over the
+          product's lifetime.
+        </p>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🚀</div>
+            <h4>Startups</h4>
+            <p>
+              <strong>Next.js + React.</strong> Largest hiring pool. Excellent
+              for SEO and performance. RSC reduces backend API burden. Vercel
+              deployment removes ops overhead. Most third-party integrations
+              target React first.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🏢</div>
+            <h4>Enterprise Systems</h4>
+            <p>
+              <strong>Angular.</strong> Strong TypeScript-first culture.
+              Enforced architecture conventions reduce team variance. Dependency
+              injection makes large codebases testable. Built-in i18n, forms,
+              and accessibility tooling.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔧</div>
+            <h4>Internal Tools</h4>
+            <p>
+              <strong>React + Vite or Vue + Vite.</strong> No SEO requirements.
+              CSR is fine. Focus on DX and iteration speed. Avoid heavyweight
+              meta-frameworks — plain Vite is sufficient for dashboards and
+              admin panels.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📰</div>
+            <h4>Content-Heavy Sites</h4>
+            <p>
+              <strong>Astro.</strong> Maximum performance through minimal JS.
+              Islands for interactive elements. Bring your favourite UI
+              framework for those islands. Content collections for structured
+              content management.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚡</div>
+            <h4>Real-Time Applications</h4>
+            <p>
+              <strong>SvelteKit or React.</strong> Svelte's fine-grained
+              reactivity handles frequent updates efficiently. React with
+              TanStack Query handles optimistic updates and cache invalidation
+              well. Avoid Angular for latency-sensitive UIs.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🌍</div>
+            <h4>International / High Scale</h4>
+            <p>
+              <strong>Next.js with Edge Runtime.</strong> Deploy to Vercel Edge
+              or Cloudflare Workers. Render at the edge closest to each user.
+              Combine with CDN caching for sub-100ms global TTFB on static and
+              personalised pages.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 16 FUTURE ═══ -->
+      <div class="section" id="future">
+        <div class="era-badge era-future">🔭 2025–Beyond · The Horizon</div>
+        <div class="section-label">16 — What Comes Next</div>
+        <h2>The Future of Frontend Architecture</h2>
+        <p class="lead">
+          Several converging trends are reshaping frontend architecture
+          simultaneously. The patterns that will dominate in 2028 are already
+          visible in early adopter projects today.
+        </p>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">⚛️</div>
+            <h4>Server Components Everywhere</h4>
+            <p>
+              RSC will spread beyond React. The server-first component model —
+              with explicit client islands — is architecturally superior for
+              most applications. Expect Vue, Svelte, and others to adopt
+              analogous patterns.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🌊</div>
+            <h4>Edge Rendering</h4>
+            <p>
+              Application logic moving to the edge (Cloudflare Workers, Vercel
+              Edge, Fastly). Personalised server-rendered HTML from a location
+              20ms from every user on earth. Eliminates the SSR latency tradeoff
+              entirely.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🏝️</div>
+            <h4>Islands Architecture Maturation</h4>
+            <p>
+              Astro proved the model. Expect fine-grained hydration control —
+              hydrate on viewport, on interaction, on idle — to become standard
+              across frameworks, not a special Astro feature.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🤖</div>
+            <h4>AI-Assisted UI Development</h4>
+            <p>
+              LLMs are already generating production-quality component code. The
+              highest-leverage use: generating tests, migrating between
+              framework versions, translating design tokens to component
+              implementations, and writing accessibility attributes.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚙️</div>
+            <h4>Compiler-Driven Frameworks</h4>
+            <p>
+              Svelte, Solid, Qwik, and Angular Signals represent a convergence
+              toward fine-grained, compiler-optimised reactivity. The virtual
+              DOM's era is ending — surgical DOM updates driven by explicit
+              signals is the performance model of the next decade.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📦</div>
+            <h4>Module Federation 2.0</h4>
+            <p>
+              Micro-frontend architecture with runtime module federation —
+              loading separately deployed UI modules at runtime — is maturing.
+              Rspack and Module Federation 2.0 make the pattern
+              production-viable for large organisations with multiple teams.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 17 LESSONS ═══ -->
+      <div class="section" id="lessons">
+        <div class="section-label">17 — Pattern Recognition</div>
+        <h2>Lessons from Twenty Years of Frontend Evolution</h2>
+        <p class="lead">
+          Every framework cycle teaches the same lessons. The engineers who
+          recognise them make better architectural decisions, waste less time on
+          hype cycles, and build systems that outlast the frameworks they're
+          built on.
+        </p>
+
+        <h3>Patterns That Survived</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot">✓</div>
+            <div class="tl-body">
+              <div class="tl-year">SINCE 2006</div>
+              <div class="tl-title">Declarative UI description</div>
+              <div class="tl-desc">
+                jQuery was imperative. Everything that succeeded it has been
+                declarative. React made it mainstream, but the principle
+                predates it. Describing <em>what</em> the UI should be rather
+                than <em>how</em> to get there is structurally sound.
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot">✓</div>
+            <div class="tl-body">
+              <div class="tl-year">SINCE 2014</div>
+              <div class="tl-title">Component-based composition</div>
+              <div class="tl-desc">
+                Web Components, React, Vue, Angular, Svelte — every modern
+                approach uses components. The unit of UI is a composable,
+                self-contained module. This pattern will outlast every current
+                framework.
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot">✓</div>
+            <div class="tl-body">
+              <div class="tl-year">SINCE 2013</div>
+              <div class="tl-title">Unidirectional data flow</div>
+              <div class="tl-desc">
+                Two-way binding (AngularJS, Knockout) lost. Unidirectional flow
+                (React, Elm, Redux) won. Predictable data flow makes large
+                applications debuggable. This is now the universal default.
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot">✓</div>
+            <div class="tl-body">
+              <div class="tl-year">SINCE 2016</div>
+              <div class="tl-title">File-system routing</div>
+              <div class="tl-desc">
+                Next.js introduced file-system routing. Every subsequent
+                meta-framework adopted it. The convention is now so universal
+                that frameworks adding manual router configuration are fighting
+                convention.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Patterns That Failed</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot" style="background: #dc2626">✗</div>
+            <div class="tl-body">
+              <div class="tl-year">FAILED: 2010–2014</div>
+              <div class="tl-title">Unbounded two-way binding</div>
+              <div class="tl-desc">
+                AngularJS and Knockout proved that automatic two-way data
+                binding doesn't scale. The simplicity gain at small scale is
+                outweighed by the debugging and performance cost at large scale.
+                React's unidirectional model won decisively.
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background: #dc2626">✗</div>
+            <div class="tl-body">
+              <div class="tl-year">FAILED: 2015–2019</div>
+              <div class="tl-title">Redux for all state</div>
+              <div class="tl-desc">
+                Centralising server state, UI state, and form state in a single
+                Redux store created ceremony without benefit. The revelation:
+                server state and client state are different problems. TanStack
+                Query, SWR, and Zustand each solved a specific slice better than
+                Redux solved everything.
+              </div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background: #dc2626">✗</div>
+            <div class="tl-body">
+              <div class="tl-year">FAILED: 2014–2020</div>
+              <div class="tl-title">
+                Full client-side rendering for everything
+              </div>
+              <div class="tl-desc">
+                The SPA model — render everything in JavaScript in the browser —
+                failed content sites, SEO-dependent products, and low-powered
+                devices. SSR, SSG, and streaming represent the correction.
+                Client-side rendering is still appropriate for authenticated
+                applications; it is not appropriate as the default.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>How to Evaluate Future Frameworks</h3>
+        <p>
+          Every new framework will be presented as solving all the problems of
+          every existing framework. Apply this filter before committing:
+        </p>
+
+        <ul class="phase-list" style="margin-top: 0">
+          <li>
+            <div class="phase-num">1</div>
+            <div>
+              <strong
+                >What problem does it solve, and how painful is that problem
+                today?</strong
+              >
+              Svelte's compiler model solved bundle size and runtime overhead —
+              genuinely painful at scale. Not every framework solves a real
+              problem.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">2</div>
+            <div>
+              <strong>What does it trade away to solve that problem?</strong>
+              Every optimisation has a cost. RSC gives you zero-cost server data
+              access in exchange for a more complex mental model. Svelte gives
+              you minimal runtime in exchange for a custom compile step.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">3</div>
+            <div>
+              <strong>Who is building production systems with it?</strong>
+              GitHub stars and Hacker News enthusiasm are not production
+              validation. Find companies with similar scale and domain using it
+              in production and study their experience.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">4</div>
+            <div>
+              <strong>What does the migration path look like?</strong> You will
+              eventually need to migrate off any framework. Frameworks with
+              stable, widely-implemented primitives (components, modules, fetch)
+              are easier to migrate from. Frameworks with deep proprietary
+              abstractions lock you in.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">5</div>
+            <div>
+              <strong>Does it make your team faster or slower today?</strong> A
+              framework that will pay off in three years but costs you two
+              sprints of productivity now may not be the right choice for your
+              current stage. Developer experience compounds.
+            </div>
+          </li>
+        </ul>
+
+        <div class="pullquote">
+          "The best frontend engineers are not the ones who know the most
+          frameworks. They are the ones who understand why each framework
+          exists, what problems it solved, and what it traded away to solve
+          them."
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <strong>The Evolution of JavaScript Frameworks</strong><br />
+      Part of the <a href="index.html">DevDive</a> series — Deep dives for
+      serious developers.<br /><br />
+      <span style="color: rgba(255, 255, 255, 0.3)"
+        >© 2026 DevDive · 2005–2026 · Frontend Architecture History — June
+        2026</span
+      >
+    </footer>
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest(".code-block").querySelector("pre");
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = orig), 2000);
+        });
+      }
+    </script>
+  </body>
+</html>
