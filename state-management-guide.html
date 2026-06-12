@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Evolution of Global State Management — From Shared Variables to Modern State Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f7f8fc;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
+  --text-muted:#9a9a9a;--accent:#0369a1;--accent-light:#f0f9ff;--accent-subtle:#e0f2fe;
+  --border:#c7dff0;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#f0f9ff;
+  --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
+  --info-bg:#eff6ff;--info-border:#2563eb;--danger-bg:#fff1f2;--danger-border:#dc2626;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.75}
+nav{position:sticky;top:0;z-index:100;background:rgba(247,248,252,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;transition:color 0.15s;display:flex;align-items:center;gap:5px}
+.nav-back:hover{color:var(--accent)}
+.nav-pipe{color:var(--border);font-size:18px}
+.nav-brand{font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-0.3px}
+.nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:100px;letter-spacing:0.3px}
+.nav-links{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{font-size:12.5px;color:var(--text-secondary);text-decoration:none;padding:5px 9px;border-radius:6px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
+.nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+.hero{max-width:780px;margin:0 auto;padding:64px 2rem 48px}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;margin-bottom:24px;letter-spacing:.3px;text-transform:uppercase}
+.hero h1{font-family:'Lora',serif;font-size:clamp(30px,5vw,48px);font-weight:600;line-height:1.12;letter-spacing:-.5px;margin-bottom:20px}
+.hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+.hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0369a1,#0c4a6e);display:flex;align-items:center;justify-content:center;font-size:16px}
+.meta-text{font-size:14px;color:var(--text-secondary)}.meta-text strong{color:var(--text-primary)}
+.hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+.toc-wrapper{max-width:780px;margin:0 auto;padding:0 2rem 8px}
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:40px}
+.toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+.toc a{font-size:14px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
+.toc a:hover{color:var(--accent)}.toc-num{font-size:12px;color:var(--text-muted);font-weight:500;min-width:20px}
+.content{max-width:780px;margin:0 auto;padding:0 2rem 80px}
+.section{margin-bottom:72px;scroll-margin-top:72px}
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--accent-subtle)}
+h2{font-family:'Lora',serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:16px}
+h3{font-size:19px;font-weight:600;margin:32px 0 12px}
+p{margin-bottom:18px;color:#2d2d2d}.lead{font-size:19px;color:var(--text-secondary);font-weight:300;margin-bottom:24px}
+.code-block{background:var(--code-bg);border-radius:10px;margin:24px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+.code-lang{font-size:12px;color:#6e7681;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
+.copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:'Outfit',sans-serif;transition:all .15s}
+.copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:var(--code-text)}
+pre code{background:none;padding:0;font-size:inherit}
+code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#e0f2fe;color:#0369a1;padding:2px 6px;border-radius:4px}
+.kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+.cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+.pu{color:#e6edf3}.bi{color:#ffa657}.str2{color:#7ee787}.at{color:#ffa657}
+.tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+.info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+.danger{background:var(--danger-bg);border-left:3px solid var(--danger-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+.tip-label{font-size:12px;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warn-label{font-size:12px;font-weight:600;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.info-label{font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.danger-label{font-size:12px;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+.compare-card{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.compare-header{padding:10px 16px;font-size:13px;font-weight:600}
+.compare-header.bad{background:#fef2f2;color:#dc2626}
+.compare-header.good{background:#f0fdf4;color:#16a34a}
+.compare-header.old{background:#f3f4f6;color:#374151}
+.compare-header.new{background:#f0f9ff;color:#0369a1}
+.compare-card .code-block{border-radius:0;margin:0;border:none}
+table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px}
+th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg)}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;letter-spacing:.3px;vertical-align:middle}
+.badge-green{background:#dcfce7;color:#15803d}
+.badge-amber{background:#fef3c7;color:#b45309}
+.badge-red{background:#fee2e2;color:#b91c1c}
+.badge-blue{background:#dbeafe;color:#1d4ed8}
+.badge-sky{background:#e0f2fe;color:#0369a1}
+.pullquote{font-family:'Lora',serif;font-style:italic;font-size:22px;line-height:1.5;color:var(--text-secondary);border-left:4px solid var(--accent);padding:12px 24px;margin:36px 0}
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0}
+.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.concept-card h4{font-size:15px;font-weight:600;margin-bottom:6px;margin-top:0}
+.concept-card p{font-size:14px;color:var(--text-secondary);margin:0;line-height:1.5}
+.concept-icon{font-size:22px;margin-bottom:10px}
+/* State classification cards */
+.state-class-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:24px 0}
+.state-card{border-radius:10px;padding:18px 20px;border:1px solid}
+.sc-local{background:#fafafa;border-color:#e5e7eb}
+.sc-global{background:#f0f9ff;border-color:#bae6fd}
+.sc-server{background:#f0fdf4;border-color:#bbf7d0}
+.sc-title{font-size:14px;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.sc-local .sc-title{color:#374151}
+.sc-global .sc-title{color:#0369a1}
+.sc-server .sc-title{color:#15803d}
+.sc-item{font-size:13px;color:var(--text-secondary);padding:3px 0;display:flex;align-items:center;gap:6px}
+.sc-item::before{content:'·';font-weight:700}
+/* Evolution timeline */
+.evo-flow{display:flex;flex-direction:column;gap:0;margin:28px 0;position:relative}
+.evo-flow::before{content:'';position:absolute;left:20px;top:24px;bottom:24px;width:2px;background:linear-gradient(to bottom,#0369a1,#38bdf8)}
+.evo-item{display:flex;gap:18px;align-items:flex-start;margin-bottom:4px}
+.evo-dot{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;z-index:1;letter-spacing:.3px}
+.evo-body{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:8px}
+.evo-year{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.5px;margin-bottom:3px}
+.evo-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.evo-desc{font-size:14px;color:var(--text-secondary);line-height:1.5;margin:0}
+.evo-arrow{text-align:center;font-size:18px;color:var(--accent);margin:-2px 0;padding-left:20px;opacity:.5}
+/* Principle cards */
+.principle{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:14px 0}
+.principle-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.principle-title{font-size:16px;font-weight:600;margin-bottom:6px}
+.principle-desc{font-size:14px;color:var(--text-secondary);margin:0;line-height:1.6}
+.divider{border:none;border-top:1px solid var(--border);margin:56px 0}
+footer{background:#0c1929;color:rgba(255,255,255,.6);text-align:center;padding:40px 2rem;font-size:14px}
+footer strong{color:#fff}footer a{color:#38bdf8;text-decoration:none}footer a:hover{text-decoration:underline}
+@media(max-width:640px){.toc-grid,.compare-grid,.state-class-grid{grid-template-columns:1fr}.nav-links{display:none}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="index.html">← DevDive</a>
+    <span class="nav-pipe">|</span>
+    <span class="nav-brand">State Management</span>
+    <span class="nav-badge">Deep Dive</span>
+  </div>
+  <div class="nav-links">
+    <a href="#fundamentals">Fundamentals</a>
+    <a href="#early">Early Architecture</a>
+    <a href="#mvc">MVC</a>
+    <a href="#twoway">Two-Way Binding</a>
+    <a href="#react-state">React's Revolution</a>
+    <a href="#communication">Communication</a>
+    <a href="#global">Global State</a>
+    <a href="#redux">Redux</a>
+    <a href="#immutability">Immutability</a>
+    <a href="#reactive">Reactive Stores</a>
+    <a href="#context">Context API</a>
+    <a href="#classification">Classification</a>
+    <a href="#server-state">Server State</a>
+    <a href="#modern-stores">Modern Stores</a>
+    <a href="#vue-state">Vue State</a>
+    <a href="#meta">Meta-Frameworks</a>
+    <a href="#rsc">Server Components</a>
+    <a href="#tradeoffs">Trade-offs</a>
+    <a href="#distributed">Distributed Concepts</a>
+    <a href="#principles">Design Principles</a>
+  </div>
+  <span class="nav-rt">~50 min read</span>
+</nav>
+<div class="hero">
+  <div class="hero-tag">🗄️ Deep Dive</div>
+  <h1>The Evolution of Global State Management</h1>
+  <p class="hero-sub">From shared variables to modern state architecture — a comprehensive journey through every major paradigm in frontend state management, the ideas behind each tool, why they emerged, what they solved, and what they traded away.</p>
+  <div class="hero-meta">
+    <div class="avatar">🗄️</div>
+    <div class="meta-text">
+      <strong>State Architecture — Complete Technical &amp; Historical Analysis</strong><br>
+      DOM State → MVC → Flux → Redux → Signals → Server State — June 2026
+    </div>
+  </div>
+  <hr class="hero-divider">
+</div>
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <div class="toc-grid">
+      <a href="#fundamentals"><span class="toc-num">01</span> Fundamentals of State Management</a>
+      <a href="#reactive"><span class="toc-num">11</span> Reactive State Management</a>
+      <a href="#early"><span class="toc-num">02</span> Early Frontend Architecture</a>
+      <a href="#context"><span class="toc-num">12</span> React Context API</a>
+      <a href="#mvc"><span class="toc-num">03</span> MVC Architecture</a>
+      <a href="#classification"><span class="toc-num">13</span> State Classification</a>
+      <a href="#twoway"><span class="toc-num">04</span> Two-Way Data Binding</a>
+      <a href="#server-state"><span class="toc-num">14</span> Server State Management</a>
+      <a href="#react-state"><span class="toc-num">05</span> React's State Revolution</a>
+      <a href="#modern-stores"><span class="toc-num">15</span> Modern Lightweight Stores</a>
+      <a href="#communication"><span class="toc-num">06</span> Component Communication</a>
+      <a href="#vue-state"><span class="toc-num">16</span> Vue State Evolution</a>
+      <a href="#global"><span class="toc-num">07</span> Global State Concepts</a>
+      <a href="#meta"><span class="toc-num">17</span> Meta-Framework State</a>
+      <a href="#redux"><span class="toc-num">08</span> Redux Architecture</a>
+      <a href="#rsc"><span class="toc-num">18</span> React Server Components</a>
+      <a href="#immutability"><span class="toc-num">09</span> State Immutability</a>
+      <a href="#tradeoffs"><span class="toc-num">19</span> Trade-off Analysis</a>
+      <a href="#enterprise"><span class="toc-num">10</span> Enterprise State Management</a>
+      <a href="#distributed"><span class="toc-num">20</span> Distributed State Concepts</a>
+      <a href="#principles" style="grid-column:1/-1"><span class="toc-num">21</span> State Management Design Principles</a>
+    </div>
+  </div>
+</div>
+<div class="content">
+
+  <!-- ═══ 01 FUNDAMENTALS ═══ -->
+  <div class="section" id="fundamentals">
+    <div class="section-label">01 — The Foundation</div>
+    <h2>Fundamentals of State Management</h2>
+    <p class="lead">State is any data that changes over time and influences what the user sees. Understanding what state <em>is</em> — and what it is not — is the prerequisite for every sound architectural decision in frontend engineering.</p>
+
+    <h3>What Is State?</h3>
+    <p>State is the data that your application holds in memory at any given moment. A login status is state. A list of fetched products is state. Whether a modal is open is state. The text typed into a form field is state. Anything that, when it changes, could require the UI to update — that is state.</p>
+
+    <p>What is <em>not</em> state: static configuration, pure functions, constants, and computed values that can be derived from other state. One of the most common sources of state complexity is storing derived values as state instead of computing them. If you store both a list of todos and a <code>completedCount</code>, you have two sources of truth that can drift out of sync. Store the list; compute the count.</p>
+
+    <div class="concept-grid">
+      <div class="concept-card"><div class="concept-icon">🖼️</div><h4>UI State</h4><p>Controls visual appearance and interaction: modal visibility, selected tab, sidebar open/closed, loading spinners, hover state. Short-lived. Rarely leaves a single component.</p></div>
+      <div class="concept-card"><div class="concept-icon">🌐</div><h4>Application State</h4><p>Shared data driving multiple parts of the application: authenticated user, shopping cart, notification list, theme. Lives longer, accessed from many places.</p></div>
+      <div class="concept-card"><div class="concept-icon">🗄️</div><h4>Server State</h4><p>Data that lives on a remote server and is fetched, cached, and synchronised: users, orders, products, reports. Has a lifecycle — loading, stale, error — that pure client state does not.</p></div>
+      <div class="concept-card"><div class="concept-icon">📍</div><h4>URL State</h4><p>State encoded in the URL: current page, applied filters, search query, selected item ID. Shareable, bookmarkable. Often overlooked as a state location, leading to unnecessary global state.</p></div>
+    </div>
+
+    <h3>The Source of Truth Problem</h3>
+    <p>The most fundamental principle in state management is: <strong>each piece of state should have exactly one owner</strong>. When the same data lives in two places — a Redux store and a local component state, or a React hook and a URL parameter — they will eventually diverge. Every synchronisation bug in frontend history comes from state with two sources of truth.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — State Synchronisation Problem</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ❌ Two sources of truth — they will drift</span>
+<span class="kw">const</span> <span class="pu">[</span>user, setUser<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span>store<span class="pu">.</span><span class="fn">getUser</span><span class="pu">())</span>  <span class="cm">// local copy</span>
+<span class="kw">const</span> storeUser <span class="op">=</span> <span class="fn">useSelector</span><span class="pu">(</span>state <span class="op">=></span> state<span class="pu">.</span>user<span class="pu">)</span>  <span class="cm">// store copy</span>
+<span class="cm">// Update one → the other lags. Bug inevitable.</span>
+
+<span class="cm">// ✅ Single source of truth — derive, don't duplicate</span>
+<span class="kw">const</span> user <span class="op">=</span> <span class="fn">useSelector</span><span class="pu">(</span>state <span class="op">=></span> state<span class="pu">.</span>user<span class="pu">)</span>  <span class="cm">// one owner: the store</span>
+
+<span class="cm">// ✅ Derive — never store what you can compute</span>
+<span class="kw">const</span> todos <span class="op">=</span> <span class="fn">useSelector</span><span class="pu">(</span>state <span class="op">=></span> state<span class="pu">.</span>todos<span class="pu">)</span>
+<span class="kw">const</span> completedCount <span class="op">=</span> <span class="fn">useMemo</span><span class="pu">(</span>
+  <span class="pu">()</span> <span class="op">=></span> todos<span class="pu">.</span><span class="fn">filter</span><span class="pu">(</span>t <span class="op">=></span> t<span class="pu">.</span>done<span class="pu">).</span>length<span class="pu">,</span>
+  <span class="pu">[</span>todos<span class="pu">]</span>
+<span class="pu">)</span>
+<span class="cm">// completedCount can never disagree with todos — it IS derived from todos.</span></code></pre>
+    </div>
+
+    <h3>State Lifecycle</h3>
+    <p>State has a lifecycle: it is <strong>created</strong> (initialised), <strong>read</strong> (rendered), <strong>updated</strong> (mutated via actions or setters), and <strong>destroyed</strong> (cleared when a component unmounts or a session ends). Managing this lifecycle correctly — especially destruction — prevents memory leaks, stale data, and security issues where one user's data bleeds into another's session.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 02 EARLY ARCHITECTURE ═══ -->
+  <div class="section" id="early">
+    <div class="section-label">02 — The DOM Era</div>
+    <h2>Early Frontend Architecture</h2>
+    <p class="lead">Before state management existed as a concept, the DOM <em>was</em> the state. The value in an input field was state. Whether a div had a class was state. Reading state meant querying the DOM; updating state meant mutating it directly. This worked until applications grew complex enough that the DOM could no longer be trusted as a reliable source of truth.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — The DOM as State, circa 2008</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// "State" was scattered across DOM nodes.
+// To know if the user was logged in, you queried the DOM.</span>
+<span class="kw">function</span> <span class="fn">isLoggedIn</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">return</span> document<span class="pu">.</span><span class="fn">getElementById</span><span class="pu">(</span><span class="st">'logout-btn'</span><span class="pu">)</span> <span class="op">!==</span> <span class="kw">null</span>
+  <span class="cm">// Depends on UI rendering. Fragile. Completely wrong.</span>
+<span class="pu">}</span>
+
+<span class="cm">// jQuery-era: state was a mix of DOM attributes, CSS classes,
+// and JavaScript variables scattered across dozens of event handlers.</span>
+<span class="kw">var</span> cartCount <span class="op">=</span> <span class="nm">0</span>  <span class="cm">// global variable — the "state"</span>
+
+<span class="kw">$</span><span class="pu">(</span><span class="st">'.add-to-cart'</span><span class="pu">).</span><span class="fn">on</span><span class="pu">(</span><span class="st">'click'</span><span class="pu">,</span> <span class="kw">function</span><span class="pu">()</span> <span class="pu">{</span>
+  cartCount<span class="op">++</span>
+  <span class="kw">$</span><span class="pu">(</span><span class="st">'#cart-badge'</span><span class="pu">).</span><span class="fn">text</span><span class="pu">(</span>cartCount<span class="pu">)</span>   <span class="cm">// update DOM to match variable</span>
+  <span class="kw">$</span><span class="pu">(</span><span class="st">'#cart-empty-msg'</span><span class="pu">).</span><span class="fn">hide</span><span class="pu">()</span>        <span class="cm">// update related DOM</span>
+  <span class="kw">$</span><span class="pu">(</span><span class="st">'#checkout-btn'</span><span class="pu">).</span><span class="fn">show</span><span class="pu">()</span>         <span class="cm">// update another related DOM</span>
+  <span class="cm">// What if one of these fails? State (variable) and UI (DOM) drift.</span>
+<span class="pu">})</span>
+
+<span class="cm">// The fundamental problem: state lived in JavaScript variables,
+// but the UI lived in the DOM. Keeping them in sync was entirely
+// manual and entirely the developer's responsibility.
+// Bugs accumulated as applications grew.</span></code></pre>
+    </div>
+
+    <p>The jQuery era produced an entire class of bugs that are essentially invisible in modern applications: the variable says X but the DOM shows Y. A developer updated the JavaScript state but forgot to update one DOM element. Another developer updated a DOM element directly without going through the JavaScript state. The two drifted apart, and the application showed stale or inconsistent data to the user.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 03 MVC ═══ -->
+  <div class="section" id="mvc">
+    <div class="section-label">03 — Separation of Concerns</div>
+    <h2>MVC Architecture</h2>
+    <p class="lead">Model-View-Controller gave state a formal home: the Model. By separating <em>what the data is</em> from <em>how it is displayed</em> and <em>how user interactions change it</em>, MVC frameworks reduced the class of state/DOM drift bugs that plagued the jQuery era.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Backbone.js: Models as State Containers</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// Model: owns the state, emits events when it changes</span>
+<span class="kw">const</span> Cart <span class="op">=</span> Backbone<span class="pu">.</span>Model<span class="pu">.</span><span class="fn">extend</span><span class="pu">({</span>
+  defaults<span class="pu">:</span> <span class="pu">{</span> items<span class="pu">:</span> <span class="pu">[],</span> total<span class="pu">:</span> <span class="nm">0</span> <span class="pu">},</span>
+
+  <span class="fn">addItem</span><span class="pu">(</span>product<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">const</span> items <span class="op">=</span> <span class="pu">[...</span><span class="kw">this</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'items'</span><span class="pu">),</span> product<span class="pu">]</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="fn">set</span><span class="pu">({</span>
+      items<span class="pu">,</span>
+      total<span class="pu">:</span> items<span class="pu">.</span><span class="fn">reduce</span><span class="pu">((</span>sum<span class="pu">,</span> i<span class="pu">)</span> <span class="op">=></span> sum <span class="op">+</span> i<span class="pu">.</span>price<span class="pu">,</span> <span class="nm">0</span><span class="pu">)</span>
+    <span class="pu">})</span>
+    <span class="cm">// 'change' event fires automatically — any listening View re-renders</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="cm">// View: listens to Model events, re-renders on change</span>
+<span class="kw">const</span> CartView <span class="op">=</span> Backbone<span class="pu">.</span>View<span class="pu">.</span><span class="fn">extend</span><span class="pu">({</span>
+  <span class="fn">initialize</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="fn">listenTo</span><span class="pu">(</span><span class="kw">this</span><span class="pu">.</span>model<span class="pu">,</span> <span class="st">'change'</span><span class="pu">,</span> <span class="kw">this</span><span class="pu">.</span>render<span class="pu">)</span>
+  <span class="pu">},</span>
+  <span class="fn">render</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="kw">$el</span><span class="pu">.</span><span class="fn">html</span><span class="pu">(</span><span class="kw">this</span><span class="pu">.</span><span class="fn">template</span><span class="pu">(</span><span class="kw">this</span><span class="pu">.</span>model<span class="pu">.</span><span class="fn">toJSON</span><span class="pu">()))</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="cm">// Progress: state now lives in a dedicated Model, not scattered in the DOM.
+// Problem: multiple Views can modify the same Model.
+// Who changed it? When? Why? Tracing state changes is hard.
+// This leads to tangled event chains in large apps.</span></code></pre>
+    </div>
+
+    <p>MVC was a genuine improvement over jQuery-era state management. State had a formal home (the Model), and the UI was responsible only for rendering and forwarding interactions. But client-side MVC exposed a new class of problems: in a sufficiently complex application, multiple Models could modify each other, Views could trigger Model changes that triggered other View updates, and tracing the flow of a state change required following a web of event listeners.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 04 TWO-WAY BINDING ═══ -->
+  <div class="section" id="twoway">
+    <div class="section-label">04 — Automatic Synchronisation</div>
+    <h2>Two-Way Data Binding</h2>
+    <p class="lead">AngularJS's two-way data binding eliminated the manual synchronisation code between model and view. Change the model, the UI updates. Change the UI, the model updates. It felt like magic — and like most magic, understanding what was happening beneath the surface revealed the cost.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — AngularJS Digest Cycle: Automatic But Expensive</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// The digest cycle: how AngularJS knew what changed</span>
+<span class="cm">// Every binding creates a "watcher" — a function that returns the current value.</span>
+<span class="cm">// On every digest cycle, Angular runs ALL watchers.</span>
+<span class="cm">// If a value changed since last cycle → update the DOM.
+// If a watcher's change caused another change → run the cycle again.
+// Repeat until stable (max 10 iterations → "infinite digest" error).</span>
+
+<span class="cm">// Example: ng-model="user.name" creates TWO watchers:
+//   1. $scope.user.name → input.value  (model to DOM)
+//   2. input.value → $scope.user.name  (DOM to model)
+
+// Performance: every watcher runs on every digest.
+// 2,000 watchers is the practical ceiling before sluggishness.
+// A list of 100 items with 5 bindings each = 500 watchers immediately.</span>
+
+<span class="cm">// Angular had to expose $scope.$apply() for code outside Angular's awareness:</span>
+setTimeout<span class="pu">(()</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">$scope</span><span class="pu">.</span><span class="kw">$apply</span><span class="pu">(()</span> <span class="op">=></span> <span class="pu">{</span>   <span class="cm">// manually trigger digest cycle</span>
+    <span class="kw">$scope</span><span class="pu">.</span>message <span class="op">=</span> <span class="st">'Updated'</span>
+  <span class="pu">})</span>
+<span class="pu">},</span> <span class="nm">1000</span><span class="pu">)</span>
+<span class="cm">// Forgetting $scope.$apply was one of the most common AngularJS bugs.</span>
+
+<span class="cm">// Mitigation attempts:
+// - One-time bindings (::value) — watcher removed after first render
+// - track by in ng-repeat — avoid recreating DOM nodes
+// - Manual $scope.$digest() on specific subtrees
+// All of these required deep framework knowledge and undermined the "automatic" promise.</span></code></pre>
+    </div>
+
+    <p>Two-way binding's legacy is important: it proved that developers want <em>automatic</em> synchronisation between data and UI. The cost — unbounded change propagation, performance ceilings, debugging complexity — is what motivated every subsequent approach. React, Vue, and Svelte each found different ways to preserve the benefit (automatic UI updates) while eliminating the cost.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 05 REACT STATE ═══ -->
+  <div class="section" id="react-state">
+    <div class="section-label">05 — The Paradigm Shift</div>
+    <h2>React's State Revolution</h2>
+    <p class="lead">React didn't just change how state was managed — it changed the fundamental mental model of what rendering was. Instead of describing transitions (do X to get from state A to state B), React described outcomes (given state B, the UI looks like this). This shift made state bugs an order of magnitude easier to reason about.</p>
+
+    <div class="pullquote">UI = f(state). Given the same state, the same UI is always produced. Every time. Without exception.</div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — React's State Model: Immutable, Declarative, Predictable</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// React's key insight: rendering is a pure function of state.
+// State → deterministic UI. No side effects. No DOM queries.</span>
+
+<span class="cm">// Local state: useState hook</span>
+<span class="kw">function</span> <span class="fn">CartBadge</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>count, setCount<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">span</span><span class="pu">&gt;{</span>count<span class="pu">}&lt;/</span><span class="ty">span</span><span class="pu">&gt;</span>
+  <span class="cm">// React guarantees: if count is 3, the span shows 3. Always.</span>
+<span class="pu">}</span>
+
+<span class="cm">// State updates are scheduled, not immediate.
+// React batches multiple setState calls into one re-render.</span>
+<span class="kw">function</span> <span class="fn">handleBulkUpdate</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="fn">setA</span><span class="pu">(</span><span class="nm">1</span><span class="pu">)</span>   <span class="cm">// batched</span>
+  <span class="fn">setB</span><span class="pu">(</span><span class="nm">2</span><span class="pu">)</span>   <span class="cm">// batched</span>
+  <span class="fn">setC</span><span class="pu">(</span><span class="nm">3</span><span class="pu">)</span>   <span class="cm">// batched → ONE re-render, not three</span>
+<span class="pu">}</span>
+
+<span class="cm">// Functional updates: always use the previous state, never the closure value</span>
+<span class="kw">const</span> <span class="fn">increment</span> <span class="op">=</span> <span class="pu">()</span> <span class="op">=></span> <span class="fn">setCount</span><span class="pu">(</span>prev <span class="op">=></span> prev <span class="op">+</span> <span class="nm">1</span><span class="pu">)</span>
+<span class="cm">// ❌ setCount(count + 1) — stale closure in async callbacks
+// ✅ setCount(prev => prev + 1) — always gets current state</span>
+
+<span class="cm">// useReducer: for state with complex transition logic</span>
+<span class="kw">const</span> <span class="fn">cartReducer</span> <span class="op">=</span> <span class="pu">(</span>state, action<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">switch</span> <span class="pu">(</span>action<span class="pu">.</span>type<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">case</span> <span class="st">'ADD'</span><span class="pu">:</span>    <span class="kw">return</span> <span class="pu">{</span> items<span class="pu">:</span> <span class="pu">[...</span>state<span class="pu">.</span>items<span class="pu">,</span> action<span class="pu">.</span>item<span class="pu">]</span> <span class="pu">}</span>
+    <span class="kw">case</span> <span class="st">'REMOVE'</span><span class="pu">:</span> <span class="kw">return</span> <span class="pu">{</span> items<span class="pu">:</span> state<span class="pu">.</span>items<span class="pu">.</span><span class="fn">filter</span><span class="pu">(</span>i <span class="op">=></span> i<span class="pu">.</span>id <span class="op">!==</span> action<span class="pu">.</span>id<span class="pu">)</span> <span class="pu">}</span>
+    <span class="kw">case</span> <span class="st">'CLEAR'</span><span class="pu">:</span>  <span class="kw">return</span> <span class="pu">{</span> items<span class="pu">:</span> <span class="pu">[]</span> <span class="pu">}</span>
+    <span class="kw">default</span><span class="pu">:</span>      <span class="kw">return</span> state
+  <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="kw">const</span> <span class="pu">[</span>cart, dispatch<span class="pu">]</span> <span class="op">=</span> <span class="fn">useReducer</span><span class="pu">(</span>cartReducer<span class="pu">,</span> <span class="pu">{</span> items<span class="pu">:</span> <span class="pu">[]</span> <span class="pu">})</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 06 COMMUNICATION ═══ -->
+  <div class="section" id="communication">
+    <div class="section-label">06 — Data Flow Patterns</div>
+    <h2>Component Communication</h2>
+    <p class="lead">React's unidirectional data flow is elegant for isolated components. As applications grow and unrelated components need the same data, the patterns for sharing state become the primary source of architectural complexity.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — State Lifting &amp; the Prop Drilling Problem</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── State Lifting: the correct first approach ─────────────────
+// When two siblings need the same state, lift it to their common ancestor.</span>
+<span class="kw">function</span> <span class="fn">FilteredList</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>query, setQuery<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="st">''</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="pu">&lt;</span><span class="ty">div</span><span class="pu">&gt;</span>
+      <span class="pu">&lt;</span><span class="ty">SearchInput</span> query<span class="pu">={</span>query<span class="pu">}</span> onChange<span class="pu">={</span>setQuery<span class="pu">}</span> <span class="pu">/&gt;</span>
+      <span class="pu">&lt;</span><span class="ty">ResultList</span> query<span class="pu">={</span>query<span class="pu">}</span> <span class="pu">/&gt;</span>
+    <span class="pu">&lt;/</span><span class="ty">div</span><span class="pu">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+<span class="cm">// ✅ Correct. One owner. Props carry state down, callbacks carry events up.
+
+// ── Prop Drilling: when lifting state too high ─────────────────</span>
+<span class="kw">function</span> <span class="fn">App</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>user, setUser<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">Layout</span> user<span class="pu">={</span>user<span class="pu">}</span> <span class="pu">/&gt;</span>
+<span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">Layout</span><span class="pu">({</span> user <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">Sidebar</span> user<span class="pu">={</span>user<span class="pu">}</span> <span class="pu">/&gt;</span>  <span class="cm">// Layout doesn't USE user — just passes it</span>
+<span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">Sidebar</span><span class="pu">({</span> user <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">UserAvatar</span> user<span class="pu">={</span>user<span class="pu">}</span> <span class="pu">/&gt;</span>  <span class="cm">// Sidebar doesn't USE user — just passes it</span>
+<span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">UserAvatar</span><span class="pu">({</span> user <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">img</span> src<span class="pu">={</span>user<span class="pu">?.</span>avatar<span class="pu">}</span> <span class="pu">/&gt;</span>  <span class="cm">// only UserAvatar needs user</span>
+<span class="pu">}</span>
+<span class="cm">// ❌ Prop drilling: user passes through Layout and Sidebar even though
+// neither uses it. Adding a new prop means updating 3 components.
+// This is what global state solutions exist to solve.</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 07 GLOBAL STATE ═══ -->
+  <div class="section" id="global">
+    <div class="section-label">07 — Application-Wide Data</div>
+    <h2>Global State Concepts</h2>
+    <p class="lead">Global state is data that multiple components across the component tree need access to without the overhead of prop drilling. The problem is not accessing global state — it is managing its mutations, preventing stale reads, and keeping components in sync when it changes.</p>
+
+    <div class="concept-grid">
+      <div class="concept-card"><div class="concept-icon">🔐</div><h4>Authentication</h4><p>Current user identity, roles, permissions. Every protected route, every conditional UI element, every API call depends on it. Classic global state.</p></div>
+      <div class="concept-card"><div class="concept-icon">🎨</div><h4>Theme</h4><p>Light/dark mode, accent colour, font size preferences. Used by every component that renders. Classic global state with simple structure — often a good Context candidate.</p></div>
+      <div class="concept-card"><div class="concept-icon">🛒</div><h4>Shopping Cart</h4><p>Accessed from product pages, cart drawer, checkout, header badge. Mutated from anywhere. Complex state with business rules — typically warrants a dedicated store.</p></div>
+      <div class="concept-card"><div class="concept-icon">🔔</div><h4>Notifications</h4><p>Pushed from multiple sources: API responses, WebSocket events, scheduled reminders. Consumed by a toast system. Global, append-only with read/dismiss transitions.</p></div>
+    </div>
+
+    <div class="info"><div class="info-label">ℹ️ The Global State Trap</div>The most common mistake in state architecture is making state global when it should be local. Before reaching for a global store, ask: <em>how many components actually need this?</em> If the answer is two adjacent siblings, lift state to their parent. URL state (React Router's <code>useSearchParams</code>) often eliminates the need for global state for filtering, pagination, and selection entirely.</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 08 REDUX ═══ -->
+  <div class="section" id="redux">
+    <div class="section-label">08 — Flux to Redux</div>
+    <h2>Redux Architecture</h2>
+    <p class="lead">Redux (2015) was Dan Abramov and Andrew Clark's implementation of Facebook's Flux architecture, distilled into three principles: single source of truth, read-only state, and pure functions as reducers. It gave the ecosystem predictable state management at the cost of significant ceremony.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Redux: Flux Architecture Implemented</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// Redux's three principles in code:
+// 1. Single source of truth — one store for the whole app
+// 2. State is read-only — only actions can trigger changes
+// 3. Changes via pure functions — reducers: (state, action) → state</span>
+
+<span class="cm">// ── Classic Redux (2015–2018): maximum explicitness ───────────</span>
+<span class="cm">// Action types</span>
+<span class="kw">const</span> ADD_TO_CART    <span class="op">=</span> <span class="st">'cart/ADD_TO_CART'</span>
+<span class="kw">const</span> REMOVE_FROM_CART <span class="op">=</span> <span class="st">'cart/REMOVE_FROM_CART'</span>
+
+<span class="cm">// Action creators</span>
+<span class="kw">const</span> <span class="fn">addToCart</span>    <span class="op">=</span> <span class="pu">(</span>item<span class="pu">)</span> <span class="op">=></span> <span class="pu">({</span> type<span class="pu">:</span> ADD_TO_CART<span class="pu">,</span>    payload<span class="pu">:</span> item <span class="pu">})</span>
+<span class="kw">const</span> <span class="fn">removeFromCart</span> <span class="op">=</span> <span class="pu">(</span>id<span class="pu">)</span>   <span class="op">=></span> <span class="pu">({</span> type<span class="pu">:</span> REMOVE_FROM_CART<span class="pu">,</span> payload<span class="pu">:</span> id <span class="pu">})</span>
+
+<span class="cm">// Reducer — pure function, no side effects, no mutations</span>
+<span class="kw">function</span> <span class="fn">cartReducer</span><span class="pu">(</span>state <span class="op">=</span> <span class="pu">{</span> items<span class="pu">:</span> <span class="pu">[]</span> <span class="pu">},</span> action<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">switch</span> <span class="pu">(</span>action<span class="pu">.</span>type<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">case</span> ADD_TO_CART<span class="pu">:</span>
+      <span class="kw">return</span> <span class="pu">{</span> ...state<span class="pu">,</span> items<span class="pu">:</span> <span class="pu">[...</span>state<span class="pu">.</span>items<span class="pu">,</span> action<span class="pu">.</span>payload<span class="pu">]</span> <span class="pu">}</span>
+    <span class="kw">case</span> REMOVE_FROM_CART<span class="pu">:</span>
+      <span class="kw">return</span> <span class="pu">{</span> ...state<span class="pu">,</span> items<span class="pu">:</span> state<span class="pu">.</span>items<span class="pu">.</span><span class="fn">filter</span><span class="pu">(</span>i <span class="op">=></span> i<span class="pu">.</span>id <span class="op">!==</span> action<span class="pu">.</span>payload<span class="pu">)</span> <span class="pu">}</span>
+    <span class="kw">default</span><span class="pu">:</span>
+      <span class="kw">return</span> state
+  <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="cm">// Selectors</span>
+<span class="kw">const</span> <span class="fn">selectCartItems</span> <span class="op">=</span> state <span class="op">=></span> state<span class="pu">.</span>cart<span class="pu">.</span>items
+<span class="kw">const</span> <span class="fn">selectCartTotal</span> <span class="op">=</span> <span class="fn">createSelector</span><span class="pu">(</span>selectCartItems<span class="pu">,</span>
+  items <span class="op">=></span> items<span class="pu">.</span><span class="fn">reduce</span><span class="pu">((</span>s<span class="pu">,</span> i<span class="pu">)</span> <span class="op">=></span> s <span class="op">+</span> i<span class="pu">.</span>price<span class="pu">,</span> <span class="nm">0</span><span class="pu">)</span>
+<span class="pu">)</span>
+
+<span class="cm">// ── Redux Toolkit (2019): same principles, far less boilerplate ─</span>
+<span class="kw">const</span> cartSlice <span class="op">=</span> <span class="fn">createSlice</span><span class="pu">({</span>
+  name<span class="pu">:</span> <span class="st">'cart'</span><span class="pu">,</span>
+  initialState<span class="pu">:</span> <span class="pu">{</span> items<span class="pu">:</span> <span class="pu">[]</span> <span class="pu">},</span>
+  reducers<span class="pu">:</span> <span class="pu">{</span>
+    addItem<span class="pu">:</span>    <span class="pu">(</span>state<span class="pu">,</span> action<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span> state<span class="pu">.</span>items<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>action<span class="pu">.</span>payload<span class="pu">)</span> <span class="pu">},</span>     <span class="cm">// Immer!</span>
+    removeItem<span class="pu">:</span> <span class="pu">(</span>state<span class="pu">,</span> action<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+      state<span class="pu">.</span>items <span class="op">=</span> state<span class="pu">.</span>items<span class="pu">.</span><span class="fn">filter</span><span class="pu">(</span>i <span class="op">=></span> i<span class="pu">.</span>id <span class="op">!==</span> action<span class="pu">.</span>payload<span class="pu">)</span>
+    <span class="pu">},</span>
+  <span class="pu">},</span>
+<span class="pu">})</span>
+<span class="cm">// Time travel: Redux DevTools replays actions to any past state.
+// Invaluable for debugging complex state transitions.</span></code></pre>
+    </div>
+
+    <p>Redux's key contribution beyond the architecture was the <strong>DevTools experience</strong>: every state change was an inspectable, replayable action. You could travel back in time to any previous application state, replay a user's exact sequence of actions to reproduce a bug, and export/import state for testing. No other state manager matched this debuggability for years.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 09 IMMUTABILITY ═══ -->
+  <div class="section" id="immutability">
+    <div class="section-label">09 — Functional Foundations</div>
+    <h2>State Immutability</h2>
+    <p class="lead">Immutability is the requirement that state is never mutated in place — every update produces a new object. This constraint sounds like a limitation but is actually the key that enables efficient change detection, time-travel debugging, and predictable rendering.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Why Immutability Enables Everything</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Mutable update: change detection is expensive ─────────────</span>
+<span class="kw">const</span> prevState <span class="op">=</span> <span class="pu">{</span> user<span class="pu">:</span> <span class="pu">{</span> name<span class="pu">:</span> <span class="st">'Alice'</span> <span class="pu">}</span> <span class="pu">}</span>
+prevState<span class="pu">.</span>user<span class="pu">.</span>name <span class="op">=</span> <span class="st">'Bob'</span>  <span class="cm">// mutation in place</span>
+<span class="cm">// prevState === prevState (same reference)
+// To know what changed, you must deep-compare the ENTIRE tree.
+// O(n) where n is the total number of properties. Slow.</span>
+
+<span class="cm">// ── Immutable update: change detection is O(1) ────────────────</span>
+<span class="kw">const</span> prevState2 <span class="op">=</span> <span class="pu">{</span> user<span class="pu">:</span> <span class="pu">{</span> name<span class="pu">:</span> <span class="st">'Alice'</span> <span class="pu">}</span> <span class="pu">}</span>
+<span class="kw">const</span> nextState  <span class="op">=</span> <span class="pu">{</span> ...prevState2<span class="pu">,</span> user<span class="pu">:</span> <span class="pu">{</span> name<span class="pu">:</span> <span class="st">'Bob'</span> <span class="pu">}</span> <span class="pu">}</span>
+<span class="cm">// prevState2 !== nextState (different reference) → changed!
+// prevState2.user !== nextState.user → user changed!
+// Reference equality check is O(1). React.memo, useSelector,
+// PureComponent all depend on this.</span>
+
+<span class="cm">// ── Structural sharing: immutable ≠ full copies ───────────────</span>
+<span class="cm">// Immer (used by Redux Toolkit) uses Proxy to let you write
+// mutating syntax while producing immutable output.</span>
+<span class="kw">import</span> <span class="pu">{</span> produce <span class="pu">}</span> <span class="kw">from</span> <span class="st">'immer'</span>
+
+<span class="kw">const</span> nextCart <span class="op">=</span> <span class="fn">produce</span><span class="pu">(</span>cart<span class="pu">,</span> draft <span class="op">=></span> <span class="pu">{</span>
+  draft<span class="pu">.</span>items<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>newItem<span class="pu">)</span>      <span class="cm">// looks like mutation</span>
+  draft<span class="pu">.</span>total <span class="op">+=</span> newItem<span class="pu">.</span>price  <span class="cm">// looks like mutation</span>
+<span class="pu">})</span>
+<span class="cm">// Immer internally applies the draft mutations to produce a NEW object.
+// Unchanged subtrees are structurally shared (same reference).
+// You get mutable syntax with immutable semantics.</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 10 ENTERPRISE ═══ -->
+  <div class="section" id="enterprise">
+    <div class="section-label">10 — Scale Concerns</div>
+    <h2>Enterprise State Management</h2>
+    <p class="lead">At enterprise scale — hundreds of developers, thousands of components, multi-year codebases — state management is primarily a governance and auditability problem, not a performance problem. The question shifts from "how do we make state updates fast?" to "how do we make state changes traceable, reviewable, and safe?"</p>
+
+    <div class="concept-grid">
+      <div class="concept-card"><div class="concept-icon">📋</div><h4>Auditability</h4><p>Every state change should have a traceable cause. Redux's action log is the canonical answer. You can replay any user's session and see exactly what happened and in what order.</p></div>
+      <div class="concept-card"><div class="concept-icon">🔒</div><h4>Predictability</h4><p>Given the same sequence of actions, the store always reaches the same state. Pure reducers guarantee this. It makes testing trivial: test the reducer, not the UI.</p></div>
+      <div class="concept-card"><div class="concept-icon">👥</div><h4>Team Coordination</h4><p>Multiple teams touching the same state. Namespaced slices, clearly owned actions, and documented state shape prevent the "who changed the cart state?" debugging sessions.</p></div>
+      <div class="concept-card"><div class="concept-icon">🧪</div><h4>Testability</h4><p>A Redux reducer is the easiest code to test in a frontend application. Pure function: given this state and this action, assert this output. No DOM, no framework, no mocking.</p></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Enterprise Patterns: Typed Actions &amp; RTK Query</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── RTK Query: server state management built into Redux ────────</span>
+<span class="kw">const</span> api <span class="op">=</span> <span class="fn">createApi</span><span class="pu">({</span>
+  reducerPath<span class="pu">:</span> <span class="st">'api'</span><span class="pu">,</span>
+  baseQuery<span class="pu">:</span>   <span class="fn">fetchBaseQuery</span><span class="pu">({</span> baseUrl<span class="pu">:</span> <span class="st">'/api'</span> <span class="pu">}),</span>
+  endpoints<span class="pu">:</span> build <span class="op">=></span> <span class="pu">({</span>
+    getUsers<span class="pu">:</span> build<span class="pu">.</span><span class="fn">query</span><span class="pu">&lt;</span><span class="ty">User</span><span class="pu">[], void&gt;({</span>
+      query<span class="pu">:</span> <span class="pu">()</span> <span class="op">=></span> <span class="st">'/users'</span><span class="pu">,</span>
+      providesTags<span class="pu">:</span> <span class="pu">[</span><span class="st">'User'</span><span class="pu">],</span>                       <span class="cm">// for cache invalidation</span>
+    <span class="pu">}),</span>
+    createUser<span class="pu">:</span> build<span class="pu">.</span><span class="fn">mutation</span><span class="pu">&lt;</span><span class="ty">User</span><span class="pu">,</span> <span class="ty">CreateUserDto</span><span class="pu">&gt;({</span>
+      query<span class="pu">:</span> body <span class="op">=></span> <span class="pu">({</span> url<span class="pu">:</span> <span class="st">'/users'</span><span class="pu">,</span> method<span class="pu">:</span> <span class="st">'POST'</span><span class="pu">,</span> body <span class="pu">}),</span>
+      invalidatesTags<span class="pu">:</span> <span class="pu">[</span><span class="st">'User'</span><span class="pu">],</span>                    <span class="cm">// auto re-fetches getUsers</span>
+    <span class="pu">}),</span>
+  <span class="pu">}),</span>
+<span class="pu">})</span>
+<span class="cm">// RTK Query generates hooks, manages loading/error states,
+// handles caching, deduplicates concurrent requests, and
+// automatically refetches stale data — all within Redux.</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 11 REACTIVE STORES ═══ -->
+  <div class="section" id="reactive">
+    <div class="section-label">11 — Observable State</div>
+    <h2>Reactive State Management</h2>
+    <p class="lead">Where Redux made state changes explicit and traceable, MobX made them automatic and invisible. Observable state, computed values, and reactions — the same concepts from AngularJS's digest cycle, reimagined with fine-grained precision using ES5 proxies and later ES6 Proxies.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — MobX &amp; Signals: Fine-Grained Reactivity</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── MobX: observable state with automatic dependency tracking ──</span>
+<span class="kw">import</span> <span class="pu">{</span> makeAutoObservable, computed, reaction <span class="pu">}</span> <span class="kw">from</span> <span class="st">'mobx'</span>
+
+<span class="kw">class</span> <span class="ty">CartStore</span> <span class="pu">{</span>
+  items <span class="op">=</span> <span class="pu">[]</span>
+
+  <span class="kw">constructor</span><span class="pu">()</span> <span class="pu">{</span>
+    <span class="fn">makeAutoObservable</span><span class="pu">(</span><span class="kw">this</span><span class="pu">)</span>  <span class="cm">// makes all properties observable</span>
+  <span class="pu">}</span>
+
+  <span class="kw">get</span> <span class="fn">total</span><span class="pu">()</span> <span class="pu">{</span>  <span class="cm">// computed — re-runs only when items changes</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>items<span class="pu">.</span><span class="fn">reduce</span><span class="pu">((</span>s<span class="pu">,</span> i<span class="pu">)</span> <span class="op">=></span> s <span class="op">+</span> i<span class="pu">.</span>price<span class="pu">,</span> <span class="nm">0</span><span class="pu">)</span>
+  <span class="pu">}</span>
+
+  <span class="fn">addItem</span><span class="pu">(</span>item<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">this</span><span class="pu">.</span>items<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>item<span class="pu">)</span>  <span class="cm">// direct mutation — MobX intercepts via Proxy</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="cm">// MobX tracks which observables each reaction/component accessed.
+// Only components that accessed cart.total re-render when total changes.
+// This is fine-grained reactivity — surgical, automatic, precise.</span>
+
+<span class="cm">// ── Signals: MobX's ideas, framework-native ───────────────────</span>
+<span class="cm">// Preact Signals / SolidJS / Angular Signals / Vue refs</span>
+<span class="kw">import</span> <span class="pu">{</span> signal, computed, effect <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@preact/signals-react'</span>
+
+<span class="kw">const</span> items <span class="op">=</span> <span class="fn">signal</span><span class="pu">([</span><span class="pu">])</span>
+<span class="kw">const</span> total <span class="op">=</span> <span class="fn">computed</span><span class="pu">(()</span> <span class="op">=></span>
+  items<span class="pu">.</span>value<span class="pu">.</span><span class="fn">reduce</span><span class="pu">((</span>s<span class="pu">,</span> i<span class="pu">)</span> <span class="op">=></span> s <span class="op">+</span> i<span class="pu">.</span>price<span class="pu">,</span> <span class="nm">0</span><span class="pu">)</span>  <span class="cm">// auto-tracked</span>
+<span class="pu">)</span>
+
+<span class="fn">effect</span><span class="pu">(()</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">`Total: </span><span class="pu">${</span>total<span class="pu">.</span>value<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>  <span class="cm">// re-runs only when total changes</span>
+<span class="pu">})</span>
+<span class="cm">// Signals are the performance ceiling of reactivity:
+// the smallest possible unit re-renders when the smallest possible state changes.</span></code></pre>
+    </div>
+
+    <p>Signals represent the convergence of the entire frontend ecosystem's thinking on reactivity. Angular adopted Signals in v16. Vue's <code>ref()</code> is a signal. Svelte Runes are signals. SolidJS is built entirely on signals. The concept — a primitive value that notifies subscribers when it changes and tracks its own dependents — has proven to be the most efficient and composable reactivity primitive.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 12 CONTEXT ═══ -->
+  <div class="section" id="context">
+    <div class="section-label">12 — React's Built-In Solution</div>
+    <h2>React Context API</h2>
+    <p class="lead">React Context (introduced properly in React 16.3) solved prop drilling without an external library. It provides dependency injection for React components — a value placed in a Provider is accessible to any descendant Consumer, however deep. Understanding its limitations is as important as understanding its use cases.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Context: Correct Use &amp; The Re-Render Problem</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Correct use: infrequently-changing global values ──────────</span>
+<span class="kw">const</span> ThemeContext <span class="op">=</span> <span class="fn">createContext</span><span class="pu">({</span> mode<span class="pu">:</span> <span class="st">'light'</span> <span class="pu">})</span>
+
+<span class="kw">function</span> <span class="fn">App</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>theme, setTheme<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">({</span> mode<span class="pu">:</span> <span class="st">'light'</span> <span class="pu">})</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="pu">&lt;</span><span class="ty">ThemeContext</span><span class="pu">.</span><span class="ty">Provider</span> value<span class="pu">={</span>theme<span class="pu">}&gt;</span>
+      <span class="pu">&lt;</span><span class="ty">AppContent</span> <span class="pu">/&gt;</span>
+    <span class="pu">&lt;/</span><span class="ty">ThemeContext</span><span class="pu">.</span><span class="ty">Provider</span><span class="pu">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+<span class="cm">// ✅ Theme changes rarely — the re-render cost is acceptable.
+
+// ── The re-render problem: why Context ≠ state manager ────────</span>
+<span class="kw">const</span> CartContext <span class="op">=</span> <span class="fn">createContext</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+
+<span class="kw">function</span> <span class="fn">CartProvider</span><span class="pu">({</span> children <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>cart, setCart<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">({</span> items<span class="pu">:</span> <span class="pu">[],</span> user<span class="pu">:</span> <span class="kw">null</span><span class="pu">,</span> total<span class="pu">:</span> <span class="nm">0</span> <span class="pu">})</span>
+  <span class="cm">// ❌ EVERY consumer re-renders on ANY cart change.
+  // A component only reading cart.user re-renders when cart.items changes.
+  // Context has no subscription granularity.
+  // For frequently-changing objects, this tanks performance.</span>
+
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">CartContext</span><span class="pu">.</span><span class="ty">Provider</span> value<span class="pu">={{</span> cart<span class="pu">,</span> setCart <span class="pu">}}&gt;{</span>children<span class="pu">}&lt;/</span><span class="ty">CartContext</span><span class="pu">.</span><span class="ty">Provider</span><span class="pu">&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Splitting context by update frequency ─────────────────────</span>
+<span class="cm">// Solution: separate rarely-changing from frequently-changing state</span>
+<span class="kw">const</span> CartItemsContext <span class="op">=</span> <span class="fn">createContext</span><span class="pu">(</span><span class="pu">[])</span>       <span class="cm">// changes often</span>
+<span class="kw">const</span> CartActionsContext <span class="op">=</span> <span class="fn">createContext</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>  <span class="cm">// stable reference (useCallback)</span>
+<span class="cm">// Components that only need actions don't re-render on items changes.</span></code></pre>
+    </div>
+
+    <div class="warn"><div class="warn-label">⚠️ Context Is Not a State Manager</div>Context is a dependency injection mechanism, not a state management solution. It solves <em>where</em> state is accessible but not <em>how</em> it is managed. Pairing Context with <code>useReducer</code> approximates Redux without the DevTools. For high-frequency updates, always prefer Zustand, Jotai, or Redux over Context — the re-render behaviour will become a performance problem at scale.</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 13 CLASSIFICATION ═══ -->
+  <div class="section" id="classification">
+    <div class="section-label">13 — The Most Important Insight</div>
+    <h2>State Classification</h2>
+    <p class="lead">The single most impactful insight in a decade of state management evolution: <strong>not all state is the same</strong>. Local UI state, global client state, and server state are fundamentally different problems that require fundamentally different solutions. Using the same tool for all three is the source of most state management complexity.</p>
+
+    <div class="state-class-grid">
+      <div class="state-card sc-local">
+        <div class="sc-title">🖼️ Local UI State</div>
+        <div class="sc-item">Modal open/closed</div>
+        <div class="sc-item">Selected tab index</div>
+        <div class="sc-item">Form field value</div>
+        <div class="sc-item">Accordion expanded</div>
+        <div class="sc-item">Hover state</div>
+        <div class="sc-item">Scroll position</div>
+        <div style="margin-top:10px;font-size:13px;color:#6b6b6b"><strong>Owner:</strong> The component<br><strong>Tool:</strong> useState / useReducer</div>
+      </div>
+      <div class="state-card sc-global">
+        <div class="sc-title">🌐 Global Client State</div>
+        <div class="sc-item">Authenticated user</div>
+        <div class="sc-item">Theme preference</div>
+        <div class="sc-item">Shopping cart</div>
+        <div class="sc-item">Notifications</div>
+        <div class="sc-item">User permissions</div>
+        <div class="sc-item">Feature flags</div>
+        <div style="margin-top:10px;font-size:13px;color:#6b6b6b"><strong>Owner:</strong> Client store<br><strong>Tool:</strong> Zustand / Redux / Pinia</div>
+      </div>
+      <div class="state-card sc-server">
+        <div class="sc-title">🗄️ Server State</div>
+        <div class="sc-item">Users list</div>
+        <div class="sc-item">Orders &amp; products</div>
+        <div class="sc-item">Reports &amp; analytics</div>
+        <div class="sc-item">Search results</div>
+        <div class="sc-item">Paginated feeds</div>
+        <div class="sc-item">Real-time data</div>
+        <div style="margin-top:10px;font-size:13px;color:#6b6b6b"><strong>Owner:</strong> Server (cached client-side)<br><strong>Tool:</strong> TanStack Query / SWR</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — State Classification in Practice</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Before classification: everything in Redux ────────────────</span>
+<span class="cm">// Redux store circa 2017: a massive object holding everything</span>
+<span class="pu">{</span>
+  auth<span class="pu">:</span>         <span class="pu">{</span> user<span class="pu">:</span> <span class="kw">null</span><span class="pu">,</span> token<span class="pu">:</span> <span class="kw">null</span> <span class="pu">},</span>          <span class="cm">// global client ✓</span>
+  users<span class="pu">:</span>        <span class="pu">{</span> loading<span class="pu">:</span> <span class="kw">false</span><span class="pu">,</span> data<span class="pu">:</span> <span class="pu">[],</span> error<span class="pu">:</span> <span class="kw">null</span> <span class="pu">},</span>  <span class="cm">// server state ✗</span>
+  orders<span class="pu">:</span>       <span class="pu">{</span> loading<span class="pu">:</span> <span class="kw">false</span><span class="pu">,</span> data<span class="pu">:</span> <span class="pu">[],</span> error<span class="pu">:</span> <span class="kw">null</span> <span class="pu">},</span>  <span class="cm">// server state ✗</span>
+  modalOpen<span class="pu">:</span>    <span class="kw">false</span><span class="pu">,</span>                                  <span class="cm">// local UI state ✗</span>
+  selectedTab<span class="pu">:</span>  <span class="nm">0</span><span class="pu">,</span>                                      <span class="cm">// local UI state ✗</span>
+  theme<span class="pu">:</span>        <span class="st">'light'</span><span class="pu">,</span>                                <span class="cm">// global client ✓</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── After classification: each type gets its correct tool ─────</span>
+<span class="cm">// Local UI state → stays in component</span>
+<span class="kw">const</span> <span class="pu">[</span>modalOpen, setModalOpen<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="kw">false</span><span class="pu">)</span>
+<span class="kw">const</span> <span class="pu">[</span>selectedTab, setTab<span class="pu">]</span>   <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+
+<span class="cm">// Global client state → Zustand (lightweight, no boilerplate)</span>
+<span class="kw">const</span> useAuthStore <span class="op">=</span> <span class="fn">create</span><span class="pu">((</span>set<span class="pu">)</span> <span class="op">=></span> <span class="pu">({</span>
+  user<span class="pu">:</span>  <span class="kw">null</span><span class="pu">,</span>
+  theme<span class="pu">:</span> <span class="st">'light'</span><span class="pu">,</span>
+  <span class="fn">setUser</span><span class="pu">:</span>  user  <span class="op">=></span> <span class="fn">set</span><span class="pu">({</span> user <span class="pu">}),</span>
+  <span class="fn">setTheme</span><span class="pu">:</span> theme <span class="op">=></span> <span class="fn">set</span><span class="pu">({</span> theme <span class="pu">}),</span>
+<span class="pu">}))</span>
+
+<span class="cm">// Server state → TanStack Query (caching, refetching, sync)</span>
+<span class="kw">const</span> <span class="pu">{</span> data<span class="pu">:</span> users <span class="pu">}</span>  <span class="op">=</span> <span class="fn">useQuery</span><span class="pu">({</span> queryKey<span class="pu">:</span> <span class="pu">[</span><span class="st">'users'</span><span class="pu">],</span>  queryFn<span class="pu">:</span> fetchUsers <span class="pu">})</span>
+<span class="kw">const</span> <span class="pu">{</span> data<span class="pu">:</span> orders <span class="pu">}</span> <span class="op">=</span> <span class="fn">useQuery</span><span class="pu">({</span> queryKey<span class="pu">:</span> <span class="pu">[</span><span class="st">'orders'</span><span class="pu">],</span> queryFn<span class="pu">:</span> fetchOrders <span class="pu">})</span>
+<span class="cm">// Each query has its own loading/error/stale state — no manual management.</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 14 SERVER STATE ═══ -->
+  <div class="section" id="server-state">
+    <div class="section-label">14 — Remote Data Lifecycle</div>
+    <h2>Server State Management</h2>
+    <p class="lead">Server state is fundamentally different from client state. It lives on a remote server. It can change without your application's knowledge. It has a staleness concept — data fetched 5 minutes ago may no longer be accurate. Managing it correctly requires caching, revalidation, deduplication, and synchronisation that pure client state libraries were never designed to handle.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — TanStack Query: Server State Done Right</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> useQuery, useMutation, useQueryClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@tanstack/react-query'</span>
+
+<span class="cm">// ── Fetching with automatic caching + background refetch ──────</span>
+<span class="kw">function</span> <span class="fn">UserList</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">{</span> data, isLoading, isError, isFetching <span class="pu">}</span> <span class="op">=</span> <span class="fn">useQuery</span><span class="pu">({</span>
+    queryKey<span class="pu">:</span>  <span class="pu">[</span><span class="st">'users'</span><span class="pu">],</span>
+    queryFn<span class="pu">:</span>   fetchUsers<span class="pu">,</span>
+    staleTime<span class="pu">:</span> <span class="nm">5</span> <span class="op">*</span> <span class="nm">60</span> <span class="op">*</span> <span class="nm">1000</span><span class="pu">,</span>   <span class="cm">// 5 min — don't refetch if data is fresh</span>
+    retry<span class="pu">:</span>     <span class="nm">3</span><span class="pu">,</span>               <span class="cm">// retry failed requests 3 times</span>
+  <span class="pu">})</span>
+  <span class="cm">// isFetching = background refetch in progress (show subtle indicator)
+  // isLoading  = first fetch, no cached data yet (show skeleton)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Mutations with optimistic updates ─────────────────────────</span>
+<span class="kw">function</span> <span class="fn">DeleteUser</span><span class="pu">({</span> userId <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">const</span> queryClient <span class="op">=</span> <span class="fn">useQueryClient</span><span class="pu">()</span>
+  <span class="kw">const</span> mutation <span class="op">=</span> <span class="fn">useMutation</span><span class="pu">({</span>
+    mutationFn<span class="pu">:</span> <span class="pu">(</span>id<span class="pu">)</span> <span class="op">=></span> <span class="fn">deleteUser</span><span class="pu">(</span>id<span class="pu">),</span>
+
+    <span class="cm">// Optimistic update: remove from cache before server confirms</span>
+    <span class="fn">onMutate</span><span class="pu">:</span> <span class="kw">async</span> <span class="pu">(</span>id<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+      <span class="kw">await</span> queryClient<span class="pu">.</span><span class="fn">cancelQueries</span><span class="pu">({</span> queryKey<span class="pu">:</span> <span class="pu">[</span><span class="st">'users'</span><span class="pu">]</span> <span class="pu">})</span>
+      <span class="kw">const</span> previous <span class="op">=</span> queryClient<span class="pu">.</span><span class="fn">getQueryData</span><span class="pu">([</span><span class="st">'users'</span><span class="pu">])</span>
+      queryClient<span class="pu">.</span><span class="fn">setQueryData</span><span class="pu">([</span><span class="st">'users'</span><span class="pu">],</span> users <span class="op">=></span>
+        users<span class="pu">.</span><span class="fn">filter</span><span class="pu">(</span>u <span class="op">=></span> u<span class="pu">.</span>id <span class="op">!==</span> id<span class="pu">)</span>
+      <span class="pu">)</span>
+      <span class="kw">return</span> <span class="pu">{</span> previous <span class="pu">}</span>  <span class="cm">// snapshot for rollback</span>
+    <span class="pu">},</span>
+
+    <span class="cm">// Rollback on error</span>
+    <span class="fn">onError</span><span class="pu">:</span> <span class="pu">(</span>err<span class="pu">,</span> id<span class="pu">,</span> ctx<span class="pu">)</span> <span class="op">=></span>
+      queryClient<span class="pu">.</span><span class="fn">setQueryData</span><span class="pu">([</span><span class="st">'users'</span><span class="pu">],</span> ctx<span class="pu">.</span>previous<span class="pu">),</span>
+
+    <span class="cm">// Refetch to ensure cache matches server</span>
+    <span class="fn">onSettled</span><span class="pu">:</span> <span class="pu">()</span> <span class="op">=></span>
+      queryClient<span class="pu">.</span><span class="fn">invalidateQueries</span><span class="pu">({</span> queryKey<span class="pu">:</span> <span class="pu">[</span><span class="st">'users'</span><span class="pu">]</span> <span class="pu">}),</span>
+  <span class="pu">})</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">button</span> onClick<span class="pu">={()</span> <span class="op">=></span> mutation<span class="pu">.</span><span class="fn">mutate</span><span class="pu">(</span>userId<span class="pu">)}&gt;</span>Delete<span class="pu">&lt;/</span><span class="ty">button</span><span class="pu">&gt;</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 15 MODERN STORES ═══ -->
+  <div class="section" id="modern-stores">
+    <div class="section-label">15 — Minimal Architecture</div>
+    <h2>Modern Lightweight Stores</h2>
+    <p class="lead">The pendulum swung from jQuery's stateless chaos through Redux's maximum ceremony to a new equilibrium: lightweight stores that are small enough to understand completely, large enough to cover real use cases, and simple enough to adopt without a week of learning.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Zustand: The Modern Sweet Spot</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> create <span class="pu">}</span> <span class="kw">from</span> <span class="st">'zustand'</span>
+<span class="kw">import</span> <span class="pu">{</span> persist <span class="pu">}</span> <span class="kw">from</span> <span class="st">'zustand/middleware'</span>
+
+<span class="cm">// ── A complete auth store — no boilerplate, fully typed ────────</span>
+<span class="kw">const</span> useAuthStore <span class="op">=</span> <span class="fn">create</span><span class="pu">(</span>
+  <span class="fn">persist</span><span class="pu">(</span>
+    <span class="pu">(</span>set, get<span class="pu">)</span> <span class="op">=></span> <span class="pu">({</span>
+      user<span class="pu">:</span>    <span class="kw">null</span><span class="pu">,</span>
+      token<span class="pu">:</span>   <span class="kw">null</span><span class="pu">,</span>
+      loading<span class="pu">:</span> <span class="kw">false</span><span class="pu">,</span>
+
+      <span class="fn">login</span><span class="pu">:</span> <span class="kw">async</span> <span class="pu">(</span>email<span class="pu">,</span> password<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+        <span class="fn">set</span><span class="pu">({</span> loading<span class="pu">:</span> <span class="kw">true</span> <span class="pu">})</span>
+        <span class="kw">try</span> <span class="pu">{</span>
+          <span class="kw">const</span> <span class="pu">{</span> user<span class="pu">,</span> token <span class="pu">}</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">authApi</span><span class="pu">.</span><span class="fn">login</span><span class="pu">(</span>email<span class="pu">,</span> password<span class="pu">)</span>
+          <span class="fn">set</span><span class="pu">({</span> user<span class="pu">,</span> token<span class="pu">,</span> loading<span class="pu">:</span> <span class="kw">false</span> <span class="pu">})</span>
+        <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">(</span>err<span class="pu">)</span> <span class="pu">{</span>
+          <span class="fn">set</span><span class="pu">({</span> loading<span class="pu">:</span> <span class="kw">false</span> <span class="pu">})</span>
+          <span class="kw">throw</span> err
+        <span class="pu">}</span>
+      <span class="pu">},</span>
+
+      <span class="fn">logout</span><span class="pu">:</span> <span class="pu">()</span> <span class="op">=></span> <span class="fn">set</span><span class="pu">({</span> user<span class="pu">:</span> <span class="kw">null</span><span class="pu">,</span> token<span class="pu">:</span> <span class="kw">null</span> <span class="pu">}),</span>
+
+      <span class="fn">isAdmin</span><span class="pu">:</span> <span class="pu">()</span> <span class="op">=></span> <span class="fn">get</span><span class="pu">().</span>user<span class="pu">?.</span>roles<span class="pu">.</span><span class="fn">includes</span><span class="pu">(</span><span class="st">'admin'</span><span class="pu">),</span>
+    <span class="pu">}),</span>
+    <span class="pu">{</span> name<span class="pu">:</span> <span class="st">'auth-storage'</span> <span class="pu">}</span>  <span class="cm">// persist to localStorage</span>
+  <span class="pu">)</span>
+<span class="pu">)</span>
+
+<span class="cm">// Usage: subscribe to only what you need — prevents unnecessary re-renders</span>
+<span class="kw">const</span> user    <span class="op">=</span> <span class="fn">useAuthStore</span><span class="pu">(</span>state <span class="op">=></span> state<span class="pu">.</span>user<span class="pu">)</span>
+<span class="kw">const</span> login   <span class="op">=</span> <span class="fn">useAuthStore</span><span class="pu">(</span>state <span class="op">=></span> state<span class="pu">.</span>login<span class="pu">)</span>
+<span class="kw">const</span> isAdmin <span class="op">=</span> <span class="fn">useAuthStore</span><span class="pu">(</span>state <span class="op">=></span> state<span class="pu">.</span><span class="fn">isAdmin</span><span class="pu">())</span>
+<span class="cm">// Each selector is independent — changing user doesn't re-render
+// components that only subscribed to isAdmin().</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 16 VUE STATE ═══ -->
+  <div class="section" id="vue-state">
+    <div class="section-label">16 — The Vue Ecosystem</div>
+    <h2>Vue State Evolution</h2>
+    <p class="lead">Vue's state management evolution mirrors React's but arrived at different conclusions, particularly around the relationship between reactivity and stores. Pinia's design — built directly on Vue's Composition API — demonstrates what a state manager looks like when the framework and the library share the same reactive primitives.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Vuex vs Pinia: Vue's State Management Arc</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Vuex (2015–2022): Redux-inspired, Vue-flavoured ───────────</span>
+<span class="cm">// Strict mutation/action separation. Modules for namespace.
+// Served Vue 2 well. Felt like fighting the framework in Vue 3.</span>
+<span class="kw">const</span> cartModule <span class="op">=</span> <span class="pu">{</span>
+  namespaced<span class="pu">:</span> <span class="kw">true</span><span class="pu">,</span>
+  state<span class="pu">:</span>    <span class="pu">()</span> <span class="op">=></span> <span class="pu">({</span> items<span class="pu">:</span> <span class="pu">[]</span> <span class="pu">}),</span>
+  getters<span class="pu">:</span>  <span class="pu">{</span> total<span class="pu">:</span> s <span class="op">=></span> s<span class="pu">.</span>items<span class="pu">.</span><span class="fn">reduce</span><span class="pu">((</span>t<span class="pu">,</span>i<span class="pu">)</span> <span class="op">=></span> t<span class="op">+</span>i<span class="pu">.</span>price<span class="pu">,</span> <span class="nm">0</span><span class="pu">)</span> <span class="pu">},</span>
+  mutations<span class="pu">:</span><span class="pu">{</span> ADD<span class="pu">:</span> <span class="pu">(</span>s<span class="pu">,</span>item<span class="pu">)</span> <span class="op">=></span> s<span class="pu">.</span>items<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>item<span class="pu">)</span> <span class="pu">},</span>  <span class="cm">// synchronous only</span>
+  actions<span class="pu">:</span>  <span class="pu">{</span> addAsync<span class="pu">:</span> <span class="pu">({</span>commit<span class="pu">},</span>item<span class="pu">)</span> <span class="op">=></span> <span class="pu">{</span>
+    <span class="cm">// async logic here, then commit a mutation</span>
+    <span class="fn">commit</span><span class="pu">(</span><span class="st">'ADD'</span><span class="pu">,</span> item<span class="pu">)</span>
+  <span class="pu">}</span> <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Pinia (2021–present): the Vue 3 state manager ─────────────</span>
+<span class="cm">// No mutations. No strict action/mutation split. Just Composition API.</span>
+<span class="kw">import</span> <span class="pu">{</span> defineStore <span class="pu">}</span> <span class="kw">from</span> <span class="st">'pinia'</span>
+<span class="kw">import</span> <span class="pu">{</span> ref, computed <span class="pu">}</span> <span class="kw">from</span> <'vue'</span>
+
+<span class="kw">export const</span> <span class="fn">useCartStore</span> <span class="op">=</span> <span class="fn">defineStore</span><span class="pu">(</span><span class="st">'cart'</span><span class="pu">,</span> <span class="pu">()</span> <span class="op">=></span> <span class="pu">{</span>
+  <span class="kw">const</span> items <span class="op">=</span> <span class="fn">ref</span><span class="pu">([</span><span class="pu">])</span>
+  <span class="kw">const</span> total <span class="op">=</span> <span class="fn">computed</span><span class="pu">(()</span> <span class="op">=></span>
+    items<span class="pu">.</span>value<span class="pu">.</span><span class="fn">reduce</span><span class="pu">((</span>s<span class="pu">,</span> i<span class="pu">)</span> <span class="op">=></span> s <span class="op">+</span> i<span class="pu">.</span>price<span class="pu">,</span> <span class="nm">0</span><span class="pu">)</span>
+  <span class="pu">)</span>
+
+  <span class="kw">async function</span> <span class="fn">addItem</span><span class="pu">(</span>item<span class="pu">)</span> <span class="pu">{</span>
+    items<span class="pu">.</span>value<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>item<span class="pu">)</span>                  <span class="cm">// direct mutation via Vue's Proxy</span>
+    <span class="kw">await</span> <span class="fn">syncCartWithServer</span><span class="pu">(</span>items<span class="pu">.</span>value<span class="pu">)</span>   <span class="cm">// async in same function, no split</span>
+  <span class="pu">}</span>
+
+  <span class="kw">return</span> <span class="pu">{</span> items<span class="pu">,</span> total<span class="pu">,</span> addItem <span class="pu">}</span>
+<span class="pu">})</span>
+<span class="cm">// Pinia = Composition API applied to stores.
+// Same mental model as component code. No new concepts to learn.
+// Full TypeScript inference. Vue DevTools support. SSR-compatible.</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 17 META-FRAMEWORKS ═══ -->
+  <div class="section" id="meta">
+    <div class="section-label">17 — Server-First State</div>
+    <h2>Meta-Framework State Architecture</h2>
+    <p class="lead">Next.js, Nuxt, and SvelteKit introduced a new state concern: server-rendered state that must survive the transition to the client. The hydration problem — making the server-rendered HTML interactive without flickering, double-fetching, or state mismatch — is the defining state management challenge of the meta-framework era.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — Next.js App Router: Server-Side State &amp; Hydration</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Server Component: state fetched on the server, serialised to HTML ──</span>
+<span class="kw">async function</span> <span class="fn">ProductPage</span><span class="pu">({</span> params <span class="pu">})</span> <span class="pu">{</span>
+  <span class="cm">// This runs on the server. Data is fetched ONCE.
+  // Result is serialised into the HTML stream.
+  // Client never re-fetches this — zero waterfall.</span>
+  <span class="kw">const</span> product <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>products<span class="pu">.</span><span class="fn">findById</span><span class="pu">(</span>params<span class="pu">.</span>id<span class="pu">)</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="pu">&lt;</span><span class="ty">div</span><span class="pu">&gt;</span>
+      <span class="pu">&lt;</span><span class="ty">h1</span><span class="pu">&gt;{</span>product<span class="pu">.</span>name<span class="pu">}&lt;/</span><span class="ty">h1</span><span class="pu">&gt;</span>
+      <span class="cm">{/* QuantitySelector is a client component — it has local UI state */}</span>
+      <span class="pu">&lt;</span><span class="ty">QuantitySelector</span> productId<span class="pu">={</span>product<span class="pu">.</span>id<span class="pu">}</span> defaultQty<span class="pu">={</span><span class="nm">1</span><span class="pu">}</span> <span class="pu">/&gt;</span>
+    <span class="pu">&lt;/</span><span class="ty">div</span><span class="pu">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── SvelteKit: load functions and page stores ──────────────────</span>
+<span class="cm">// +page.server.ts — runs on server, returns data for page</span>
+<span class="kw">export async function</span> <span class="fn">load</span><span class="pu">({</span> params<span class="pu">,</span> locals <span class="pu">})</span> <span class="pu">{</span>
+  <span class="kw">const</span> product <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>products<span class="pu">.</span><span class="fn">findById</span><span class="pu">(</span>params<span class="pu">.</span>id<span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">{</span> product <span class="pu">}</span>  <span class="cm">// serialised, available as page.data in component</span>
+<span class="pu">}</span>
+
+<span class="cm">// Key insight: in meta-frameworks, the DATA is the state.
+// Server fetches it; framework serialises it; client picks it up.
+// No separate API call from client. No loading state for initial render.
+// State management shifts from "how do we fetch and cache this?"
+// to "what fetches it, and when is it stale?"</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 18 RSC STATE ═══ -->
+  <div class="section" id="rsc">
+    <div class="section-label">18 — Server-Side State</div>
+    <h2>React Server Components &amp; State</h2>
+    <p class="lead">React Server Components represent the most significant rethinking of where state lives since Redux centralised it in 2015. RSC's bet: most state that applications put in client-side stores should never have been client-side state at all — it was always server state that was being awkwardly cached locally.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript — RSC: Reducing Client State to Its Irreducible Minimum</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── What RSC eliminates: the entire server-state client side ───</span>
+<span class="cm">// Before RSC: this was in a Redux store or TanStack Query</span>
+<span class="kw">const</span> <span class="pu">{</span> data<span class="pu">:</span> user <span class="pu">}</span>         <span class="op">=</span> <span class="fn">useQuery</span><span class="pu">([</span><span class="st">'user'</span><span class="pu">],</span>      fetchCurrentUser<span class="pu">)</span>
+<span class="kw">const</span> <span class="pu">{</span> data<span class="pu">:</span> permissions <span class="pu">}</span>  <span class="op">=</span> <span class="fn">useQuery</span><span class="pu">([</span><span class="st">'permissions'</span><span class="pu">],</span> fetchPermissions<span class="pu">)</span>
+<span class="kw">const</span> <span class="pu">{</span> data<span class="pu">:</span> notifications <span class="pu">}</span><span class="op">=</span> <span class="fn">useQuery</span><span class="pu">([</span><span class="st">'notifications'</span><span class="pu">],</span> fetchNotifications<span class="pu">)</span>
+
+<span class="cm">// After RSC: server components access this directly from the DB/session</span>
+<span class="kw">async function</span> <span class="fn">AppShell</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">const</span> session       <span class="op">=</span> <span class="kw">await</span> <span class="fn">getSession</span><span class="pu">()</span>
+  <span class="kw">const</span> permissions   <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>permissions<span class="pu">.</span><span class="fn">findByUser</span><span class="pu">(</span>session<span class="pu">.</span>userId<span class="pu">)</span>
+  <span class="kw">const</span> notifications <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span>notifications<span class="pu">.</span><span class="fn">findUnread</span><span class="pu">(</span>session<span class="pu">.</span>userId<span class="pu">)</span>
+  <span class="cm">// Zero client-side state. Zero API round trips. Zero loading states.
+  // This data renders as static HTML. Client JS budget: zero for this.</span>
+  <span class="kw">return</span> <span class="pu">&lt;</span><span class="ty">Shell</span> user<span class="pu">={</span>session<span class="pu">.</span>user<span class="pu">}</span> permissions<span class="pu">={</span>permissions<span class="pu">}</span> notifications<span class="pu">={</span>notifications<span class="pu">}</span> <span class="pu">/&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── What remains as client state in an RSC architecture ────────</span>
+<span class="cm">// 1. Optimistic UI state — cart additions before server confirms
+// 2. Ephemeral UI state — modal open/closed, selected tab
+// 3. Real-time state — WebSocket/SSE data pushed from server
+// 4. Form draft state — unsaved form input before submission
+//
+// This is the irreducible minimum of client state.
+// Everything else belongs on the server.</span></code></pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 19 TRADE-OFFS ═══ -->
+  <div class="section" id="tradeoffs">
+    <div class="section-label">19 — Decision Framework</div>
+    <h2>Architectural Trade-off Analysis</h2>
+    <p class="lead">Choosing a state management solution is choosing its trade-offs. Every tool optimises for different constraints. The right answer depends on your team size, application complexity, performance requirements, and the classification of state you are managing.</p>
+
+    <table>
+      <tr><th>Tool</th><th>Best For</th><th>Performance</th><th>Complexity</th><th>DevTools</th><th>Team Size</th></tr>
+      <tr>
+        <td><strong>useState + useReducer</strong></td>
+        <td>Local UI state</td>
+        <td><span class="badge badge-green">Optimal</span></td>
+        <td><span class="badge badge-green">Minimal</span></td>
+        <td>React DevTools</td>
+        <td>Any</td>
+      </tr>
+      <tr>
+        <td><strong>Context API</strong></td>
+        <td>Infrequent globals (theme, locale)</td>
+        <td><span class="badge badge-amber">OK (low frequency)</span></td>
+        <td><span class="badge badge-green">Low</span></td>
+        <td>React DevTools</td>
+        <td>Any</td>
+      </tr>
+      <tr>
+        <td><strong>Zustand</strong></td>
+        <td>Global client state, medium apps</td>
+        <td><span class="badge badge-green">Excellent</span></td>
+        <td><span class="badge badge-green">Low</span></td>
+        <td>Redux DevTools</td>
+        <td>1–20</td>
+      </tr>
+      <tr>
+        <td><strong>Redux Toolkit</strong></td>
+        <td>Large/enterprise, audit trails</td>
+        <td><span class="badge badge-green">Good</span></td>
+        <td><span class="badge badge-amber">Medium</span></td>
+        <td><span class="badge badge-green">Best-in-class</span></td>
+        <td>10+</td>
+      </tr>
+      <tr>
+        <td><strong>MobX</strong></td>
+        <td>Complex domain models, reactive graphs</td>
+        <td><span class="badge badge-green">Excellent</span></td>
+        <td><span class="badge badge-amber">Medium (magic)</span></td>
+        <td>MobX DevTools</td>
+        <td>Any</td>
+      </tr>
+      <tr>
+        <td><strong>TanStack Query</strong></td>
+        <td>Server state (always)</td>
+        <td><span class="badge badge-green">Excellent</span></td>
+        <td><span class="badge badge-green">Low-medium</span></td>
+        <td>Dedicated DevTools</td>
+        <td>Any</td>
+      </tr>
+      <tr>
+        <td><strong>Jotai / Recoil</strong></td>
+        <td>Atomic state, derived state graphs</td>
+        <td><span class="badge badge-green">Excellent</span></td>
+        <td><span class="badge badge-amber">Medium</span></td>
+        <td>Limited</td>
+        <td>1–10</td>
+      </tr>
+      <tr>
+        <td><strong>Pinia</strong></td>
+        <td>Vue 3 global state (default choice)</td>
+        <td><span class="badge badge-green">Excellent</span></td>
+        <td><span class="badge badge-green">Low</span></td>
+        <td>Vue DevTools</td>
+        <td>Any</td>
+      </tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 20 DISTRIBUTED ═══ -->
+  <div class="section" id="distributed">
+    <div class="section-label">20 — Hidden Complexity</div>
+    <h2>Distributed State Concepts</h2>
+    <p class="lead">Every frontend state management library, whether its authors know it or not, is solving a subset of distributed systems problems. Understanding the underlying CS concepts explains why the problems are hard and why no solution is perfect.</p>
+
+    <div class="concept-grid">
+      <div class="concept-card"><div class="concept-icon">🔄</div><h4>Cache Coherence</h4><p>When the same data exists in multiple places (Redux store + TanStack Query cache + component state), they can diverge. Cache coherence protocols (invalidation, TTL, versioning) are the solutions. TanStack Query's <code>invalidateQueries</code> is exactly cache invalidation.</p></div>
+      <div class="concept-card"><div class="concept-icon">⏱️</div><h4>Data Freshness &amp; Staleness</h4><p>TanStack Query's <code>staleTime</code>, SWR's revalidation — these are implementations of TTL-based cache expiry from distributed caching systems. The concept predates React by decades.</p></div>
+      <div class="concept-card"><div class="concept-icon">🏃</div><h4>Optimistic Concurrency</h4><p>Optimistic UI updates assume success and roll back on failure. This is the same pattern as optimistic locking in databases. Both solve the "assume good, reconcile on conflict" problem.</p></div>
+      <div class="concept-card"><div class="concept-icon">📡</div><h4>Event Propagation</h4><p>Redux's event sourcing model (append-only action log, state derived from replaying events) is the same architecture as CQRS/Event Sourcing in backend systems. The store is a projection of the event stream.</p></div>
+      <div class="concept-card"><div class="concept-icon">🔁</div><h4>Eventual Consistency</h4><p>A client cache is eventually consistent with the server. After an update, there is a window where the client and server disagree. TanStack Query's background refetch is a convergence mechanism.</p></div>
+      <div class="concept-card"><div class="concept-icon">🔒</div><h4>Synchronisation</h4><p>When multiple browser tabs share a user session, they need state synchronisation. Zustand's <code>persist</code> middleware with <code>StorageEvent</code> listeners, BroadcastChannel, and SharedWorkers are the client-side equivalents of distributed consensus.</p></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ 21 PRINCIPLES ═══ -->
+  <div class="section" id="principles">
+    <div class="section-label">21 — The Architecture</div>
+    <h2>State Management Design Principles</h2>
+    <p class="lead">Twenty years of evolution and thousands of production applications have distilled the practice of state management into a small set of durable principles. These are not framework-specific — they apply regardless of what tools you choose.</p>
+
+    <div class="principle">
+      <div class="principle-num">Principle 01</div>
+      <div class="principle-title">State should have a single owner</div>
+      <div class="principle-desc">Every piece of state belongs to exactly one store, hook, or component. No duplicates. No synchronisation code. When you find yourself copying state between two places or writing code to keep two pieces of state in sync, you have two owners — collapse them into one.</div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-num">Principle 02</div>
+      <div class="principle-title">Not all state is global</div>
+      <div class="principle-desc">The default for any new piece of state should be local. Promote to shared state only when a second consumer needs it. Promote to global only when the component tree makes sharing via props impractical. Most state should never leave the component that created it.</div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-num">Principle 03</div>
+      <div class="principle-title">Server state is different from client state</div>
+      <div class="principle-desc">Data that lives on a server has a lifecycle — loading, stale, error, background refreshing — that client state libraries are not designed to manage. Use TanStack Query, SWR, or RTK Query for server state. Never put loading/error wrappers around server data in your Redux or Zustand store.</div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-num">Principle 04</div>
+      <div class="principle-title">Derive, don't duplicate</div>
+      <div class="principle-desc">Computed values, filtered lists, aggregate totals — these should be computed from state, not stored alongside it. Storing derived state creates two sources of truth and the inevitable synchronisation bug when they drift. <code>useMemo</code>, <code>computed()</code>, and selector functions exist for this reason.</div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-num">Principle 05</div>
+      <div class="principle-title">Simpler solutions should be preferred</div>
+      <div class="principle-desc">Use the least powerful tool that solves the problem. <code>useState</code> before <code>useReducer</code>. <code>useReducer</code> before Zustand. Zustand before Redux. Every layer of abstraction has a cost in learning, debugging, and onboarding. Choose the tool that matches the actual complexity of the problem, not the potential future complexity.</div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-num">Principle 06</div>
+      <div class="principle-title">Architecture should follow state classification</div>
+      <div class="principle-desc">Your state architecture should mirror your state classification: local UI state stays in components, global client state goes in a lightweight store, server state gets a dedicated query library. Resist the urge to pick one tool and use it for everything — that is the original sin of Redux-for-all-state.</div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-num">Principle 07</div>
+      <div class="principle-title">State management is fundamentally a data synchronisation problem</div>
+      <div class="principle-desc">Every state bug — stale data, inconsistent UI, race conditions, optimistic update failures — is a synchronisation failure. When you understand this, you understand why cache invalidation is one of the hardest problems in computing, why TanStack Query's design is correct, and why RSC's approach of eliminating client-side caches where possible is architecturally sound.</div>
+    </div>
+
+    <div class="pullquote">"The evolution from global variables to React Server Components is the story of gradually understanding where data belongs, who owns it, and how little of it needs to live in the browser at all."</div>
+
+    <h3>The Evolution in One Picture</h3>
+    <div class="evo-flow">
+      <div class="evo-item">
+        <div class="evo-dot" style="background:#374151">DOM</div>
+        <div class="evo-body">
+          <div class="evo-year">~2005</div>
+          <div class="evo-title">DOM as State</div>
+          <div class="evo-desc">State lived in the DOM. Querying DOM = reading state. Mutating DOM = updating state. No separation. No predictability.</div>
+        </div>
+      </div>
+      <div class="evo-arrow">↓</div>
+      <div class="evo-item">
+        <div class="evo-dot" style="background:#b45309">MVC</div>
+        <div class="evo-body">
+          <div class="evo-year">~2010</div>
+          <div class="evo-title">MVC Models</div>
+          <div class="evo-desc">State extracted to Model objects. Views observe models and re-render. State and UI formally separated for the first time.</div>
+        </div>
+      </div>
+      <div class="evo-arrow">↓</div>
+      <div class="evo-item">
+        <div class="evo-dot" style="background:#9d174d">2WB</div>
+        <div class="evo-body">
+          <div class="evo-year">~2012</div>
+          <div class="evo-title">Two-Way Binding</div>
+          <div class="evo-desc">AngularJS automated model↔view sync. Magical but unscalable. Proved developers want automatic sync, not the cost of unbounded change propagation.</div>
+        </div>
+      </div>
+      <div class="evo-arrow">↓</div>
+      <div class="evo-item">
+        <div class="evo-dot" style="background:#1d4ed8">React</div>
+        <div class="evo-body">
+          <div class="evo-year">~2013</div>
+          <div class="evo-title">Unidirectional Flow</div>
+          <div class="evo-desc">UI = f(state). State flows down via props. Events flow up via callbacks. Immutable updates. Predictable rendering. The correct model.</div>
+        </div>
+      </div>
+      <div class="evo-arrow">↓</div>
+      <div class="evo-item">
+        <div class="evo-dot" style="background:#7c3aed">Redux</div>
+        <div class="evo-body">
+          <div class="evo-year">~2015</div>
+          <div class="evo-title">Centralised Flux</div>
+          <div class="evo-desc">Single store. Explicit actions. Pure reducers. Time-travel debugging. Solved shared state. Created ceremony for simple state.</div>
+        </div>
+      </div>
+      <div class="evo-arrow">↓</div>
+      <div class="evo-item">
+        <div class="evo-dot" style="background:#0369a1">Query</div>
+        <div class="evo-body">
+          <div class="evo-year">~2019</div>
+          <div class="evo-title">State Classification</div>
+          <div class="evo-desc">TanStack Query, Zustand, Jotai: recognition that server state ≠ client state. Right tool for each. Redux for client globals; Query for server data.</div>
+        </div>
+      </div>
+      <div class="evo-arrow">↓</div>
+      <div class="evo-item">
+        <div class="evo-dot" style="background:#065f46">RSC</div>
+        <div class="evo-body">
+          <div class="evo-year">~2023</div>
+          <div class="evo-title">Server Components</div>
+          <div class="evo-desc">Most state should never have been client-side. Server fetches data; sends HTML. Client state reduced to its irreducible minimum: UI state, optimistic updates, real-time streams.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>The Evolution of Global State Management</strong><br>
+  Part of the <a href="index.html">DevDive</a> series — Deep dives for serious developers.<br><br>
+  <span style="color:rgba(255,255,255,.3)">© 2026 DevDive · DOM State → RSC · June 2026</span>
+</footer>
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre')
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    const orig = btn.textContent
+    btn.textContent = 'Copied!'
+    setTimeout(() => btn.textContent = orig, 2000)
+  })
+}
+</script>
+</body>
+</html>
