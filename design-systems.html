@@ -1,0 +1,1135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frontend Design Systems: Architecture, Tokens &amp; Scalable Components</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #faf8f5;
+        --surface: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b6b6b;
+        --text-muted: #9a9a9a;
+        --accent: #0891b2;
+        --accent-light: #ecfeff;
+        --accent-subtle: #cffafe;
+        --border: #e8e3db;
+        --code-bg: #0d1117;
+        --code-text: #e6edf3;
+        --tag-bg: #f3f0eb;
+        --tag-text: #555;
+        --tip-bg: #f0fdf4;
+        --tip-border: #16a34a;
+        --warn-bg: #fff7ed;
+        --warn-border: #ea580c;
+        --info-bg: #eff6ff;
+        --info-border: #2563eb;
+        --keyword: #ff7b72;
+        --string: #a5d6ff;
+        --number: #f0883e;
+        --type: #79c0ff;
+        --comment: #8b949e;
+        --func: #d2a8ff;
+        --operator: #c9d1d9;
+        --builtin: #ffa657;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: "Outfit", sans-serif; background: var(--bg); color: var(--text-primary); font-size: 17px; line-height: 1.75; }
+
+      nav { position: sticky; top: 0; z-index: 100; background: rgba(250,248,245,0.93); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+      .nav-left { display: flex; align-items: center; gap: 12px; }
+      .nav-back { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.15s; display: flex; align-items: center; gap: 5px; }
+      .nav-back:hover { color: var(--accent); }
+      .nav-pipe { color: var(--border); font-size: 18px; }
+      .nav-brand { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+      .nav-badge { font-size: 11px; font-weight: 600; padding: 2px 10px; background: var(--accent-light); color: var(--accent); border-radius: 100px; letter-spacing: 0.3px; }
+      .nav-links { display: flex; gap: 0; }
+      .nav-links a { font-size: 13px; color: var(--text-secondary); text-decoration: none; padding: 6px 10px; border-radius: 6px; transition: all 0.15s; white-space: nowrap; }
+      .nav-links a:hover { background: var(--tag-bg); color: var(--text-primary); }
+      .nav-rt { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+
+      .hero { max-width: 780px; margin: 0 auto; padding: 64px 2rem 48px; }
+      .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-subtle); color: var(--accent); font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 100px; margin-bottom: 24px; letter-spacing: 0.3px; }
+      .hero h1 { font-family: "Lora", serif; font-size: clamp(32px, 5vw, 50px); font-weight: 600; line-height: 1.15; letter-spacing: -0.5px; color: var(--text-primary); margin-bottom: 20px; }
+      .hero-sub { font-size: 19px; color: var(--text-secondary); font-weight: 300; line-height: 1.6; margin-bottom: 32px; }
+      .hero-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+      .avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #0891b2, #0e7490); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: white; }
+      .meta-text { font-size: 14px; color: var(--text-secondary); }
+      .meta-text strong { color: var(--text-primary); }
+      .hero-divider { border: none; border-top: 1px solid var(--border); margin-top: 32px; }
+
+      .toc-wrapper { max-width: 780px; margin: 0 auto; padding: 0 2rem 8px; }
+      .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 40px; }
+      .toc h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500; }
+      .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+      .toc a { font-size: 14px; color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 4px 0; transition: color 0.15s; }
+      .toc a:hover { color: var(--accent); }
+      .toc-num { font-size: 12px; color: var(--text-muted); font-weight: 500; min-width: 20px; }
+
+      .content { max-width: 780px; margin: 0 auto; padding: 0 2rem 80px; }
+      .section { margin-bottom: 72px; scroll-margin-top: 72px; }
+      .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+      .section-label::after { content: ""; flex: 1; height: 1px; background: var(--accent-subtle); }
+      h2 { font-family: "Lora", serif; font-size: clamp(22px, 3vw, 30px); font-weight: 600; letter-spacing: -0.3px; margin-bottom: 16px; color: var(--text-primary); }
+      h3 { font-size: 19px; font-weight: 600; margin: 32px 0 12px; color: var(--text-primary); }
+      h4 { font-size: 16px; font-weight: 600; margin: 20px 0 8px; color: var(--text-primary); }
+      p { margin-bottom: 18px; color: #2d2d2d; }
+      .lead { font-size: 19px; color: var(--text-secondary); font-weight: 300; margin-bottom: 24px; }
+
+      .code-block { background: var(--code-bg); border-radius: 10px; margin: 24px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+      .code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); }
+      .code-lang { font-size: 12px; color: #6e7681; font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+      .copy-btn { font-size: 12px; color: #484f58; background: none; border: none; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-family: "Outfit", sans-serif; transition: all 0.15s; }
+      .copy-btn:hover { background: rgba(255,255,255,0.07); color: #8b949e; }
+      pre { padding: 20px; overflow-x: auto; font-family: "JetBrains Mono", monospace; font-size: 13.5px; line-height: 1.7; color: var(--code-text); }
+      pre code { background: none; padding: 0; font-size: inherit; }
+      code { font-family: "JetBrains Mono", monospace; font-size: 13.5px; background: #e0f7fa; color: #0e7490; padding: 2px 6px; border-radius: 4px; }
+
+      .kw{color:#ff7b72} .ty{color:#79c0ff} .st{color:#a5d6ff} .nm{color:#f0883e}
+      .cm{color:#8b949e;font-style:italic} .fn{color:#d2a8ff} .op{color:#c9d1d9}
+      .pu{color:#e6edf3} .bi{color:#ffa657} .rx{color:#7ee787} .at{color:#79c0ff}
+      .pr{color:#e6edf3}
+
+      .tip { background: var(--tip-bg); border-left: 3px solid var(--tip-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+      .tip-label { font-size: 12px; font-weight: 600; color: #16a34a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+      .warn { background: var(--warn-bg); border-left: 3px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+      .warn-label { font-size: 12px; font-weight: 600; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+      .info { background: var(--info-bg); border-left: 3px solid var(--info-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+      .info-label { font-size: 12px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+      .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+      .compare-card { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+      .compare-header { padding: 10px 16px; font-size: 13px; font-weight: 600; }
+      .compare-header.bad { background: #fef2f2; color: #dc2626; }
+      .compare-header.good { background: #f0fdf4; color: #16a34a; }
+      .compare-card .code-block { border-radius: 0; margin: 0; border: none; }
+
+      table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
+      th { background: var(--tag-bg); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+      td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+      tr:last-child td { border-bottom: none; }
+      tr:hover td { background: var(--bg); }
+
+      .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0; }
+      .concept-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+      .concept-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; margin-top: 0; }
+      .concept-card p { font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+      .concept-icon { font-size: 22px; margin-bottom: 10px; }
+
+      .token-layer { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 24px 0; }
+      .token-row { display: grid; grid-template-columns: 140px 1fr 1fr; align-items: center; gap: 16px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+      .token-row:last-child { border-bottom: none; }
+      .token-row.header { background: var(--tag-bg); font-weight: 600; font-size: 13px; color: var(--text-secondary); }
+      .token-swatch { width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.08); display: inline-block; vertical-align: middle; margin-right: 8px; }
+
+      .pullquote { font-family: "Lora", serif; font-style: italic; font-size: 22px; line-height: 1.5; color: var(--text-secondary); border-left: 4px solid var(--accent); padding: 12px 24px; margin: 36px 0; }
+
+      .checklist { list-style: none; margin: 16px 0; }
+      .checklist li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .check-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+
+      .arch-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 28px; margin: 24px 0; font-family: "JetBrains Mono", monospace; font-size: 13px; line-height: 1.9; color: var(--text-secondary); overflow-x: auto; }
+      .arch-diagram .layer { color: var(--accent); font-weight: 600; }
+      .arch-diagram .item { color: var(--text-primary); }
+      .arch-diagram .arrow { color: var(--text-muted); }
+
+      .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; letter-spacing: 0.3px; vertical-align: middle; }
+      .badge-cyan { background: #cffafe; color: #0e7490; }
+      .badge-green { background: #dcfce7; color: #15803d; }
+      .badge-amber { background: #fef3c7; color: #b45309; }
+      .badge-red { background: #fee2e2; color: #b91c1c; }
+
+      footer { background: #1a1a1a; color: rgba(255,255,255,0.65); text-align: center; padding: 40px 2rem; font-size: 14px; }
+      footer strong { color: white; }
+
+      @media (max-width: 640px) {
+        .toc-grid, .compare-grid, .concept-grid { grid-template-columns: 1fr; }
+        .nav-links { display: none; }
+        .token-row { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">&#8592; DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">Design Systems</span>
+        <span class="nav-badge">Best Practices</span>
+      </div>
+      <div class="nav-links">
+        <a href="#layers">Architecture</a>
+        <a href="#tokens">Tokens</a>
+        <a href="#typography">Typography</a>
+        <a href="#color">Color</a>
+        <a href="#spacing">Spacing</a>
+        <a href="#components">Components</a>
+        <a href="#api">API Design</a>
+        <a href="#governance">Governance</a>
+      </div>
+      <span class="nav-rt">~28 min read</span>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-tag">&#9679; Best Practices</div>
+      <h1>Frontend Design Systems: Architecture, Tokens &amp; Scalable Components</h1>
+      <p class="hero-sub">
+        A deep dive into building a production-grade design system from first
+        principles &mdash; design tokens, type scales, color semantics, atomic
+        component architecture, polymorphic APIs, theming, and the governance
+        model that keeps teams aligned as the system grows.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">DS</div>
+        <div class="meta-text">
+          <strong>Frontend Design System Architecture</strong><br />
+          Tokens &middot; Components &middot; Governance &mdash; June 2026
+        </div>
+      </div>
+      <hr class="hero-divider" />
+    </div>
+
+    <div class="toc-wrapper">
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <div class="toc-grid">
+          <a href="#layers"><span class="toc-num">01</span> The Three-Layer Architecture</a>
+          <a href="#spacing"><span class="toc-num">05</span> Spacing, Grid &amp; Layout</a>
+          <a href="#tokens"><span class="toc-num">02</span> Design Tokens in Depth</a>
+          <a href="#components"><span class="toc-num">06</span> Atomic Component Architecture</a>
+          <a href="#typography"><span class="toc-num">03</span> Typography System</a>
+          <a href="#api"><span class="toc-num">07</span> Component API Design</a>
+          <a href="#color"><span class="toc-num">04</span> Color System &amp; Theming</a>
+          <a href="#governance"><span class="toc-num">08</span> Governance &amp; Documentation</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ═══════════════ 01 LAYERS -->
+      <div class="section" id="layers">
+        <div class="section-label">01 &mdash; The Big Picture</div>
+        <h2>The Three-Layer Architecture</h2>
+        <p class="lead">
+          A design system is not a component library. It is a product that ships
+          products. It has three distinct layers, and confusing them is the
+          primary reason design systems stall, fork, or get abandoned.
+        </p>
+
+        <p>
+          Most teams start by building a component library and calling it a
+          design system. Components are the most visible layer, so the mistake
+          is understandable &mdash; but components without a token foundation are
+          impossible to theme, and components without documented usage patterns
+          are impossible to adopt consistently. The three layers must be built in
+          order: tokens first, then components, then patterns.
+        </p>
+
+        <div class="arch-diagram">
+<span class="layer">LAYER 3 — PATTERNS &amp; DOCUMENTATION</span>
+<span class="arrow">        ↓  usage guidelines · page templates · composition rules · content models</span>
+
+<span class="layer">LAYER 2 — COMPONENTS</span>
+<span class="arrow">        ↓  atoms · molecules · organisms · hooks · utilities</span>
+
+<span class="layer">LAYER 1 — DESIGN TOKENS</span>
+<span class="arrow">           primitives · semantic tokens · component tokens · mode tokens</span>
+        </div>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🪙</div>
+            <h4>Design Tokens</h4>
+            <p>Named, purposeful decisions: colors, spacing, radii, shadows, transitions. Platform-agnostic JSON that compiles to CSS variables, iOS Swift, Android XML.</p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🧱</div>
+            <h4>Components</h4>
+            <p>Reusable UI units built entirely from tokens. Never hard-coded values inside components — every visual decision traces back to a token.</p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📐</div>
+            <h4>Patterns</h4>
+            <p>Opinionated recipes: how to compose components into common flows — forms, navigation, data tables, onboarding. Answers the "when" and "why", not just "what".</p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📖</div>
+            <h4>Documentation</h4>
+            <p>The system's source of truth. Living Storybook stories, token visualizers, do/don't comparisons, accessibility notes, and API references.</p>
+          </div>
+        </div>
+
+        <div class="pullquote">
+          "If a designer can change a decision in Figma without needing an
+          engineer to ship it, you have a design system. If they can't, you
+          have a component library."
+        </div>
+
+        <p>
+          The technical implication of this distinction is that tokens must
+          exist as a source of truth that both the design tool (Figma variables)
+          and the codebase (CSS custom properties, JS constants) consume
+          &mdash; compiled from the same JSON, not maintained in parallel.
+        </p>
+      </div>
+
+      <!-- ═══════════════ 02 TOKENS -->
+      <div class="section" id="tokens">
+        <div class="section-label">02 &mdash; The Foundation</div>
+        <h2>Design Tokens in Depth</h2>
+        <p class="lead">
+          Tokens are named design decisions. They are the atoms of your system
+          &mdash; not "blue" or "16px" but <em>what that value means</em>. The
+          W3C Design Token Community Group format defines three tiers: primitive,
+          semantic, and component-specific.
+        </p>
+
+        <h3>The Three-Tier Token Hierarchy</h3>
+
+        <div class="token-layer">
+          <div class="token-row header"><span>Tier</span><span>Example Token</span><span>Example Value</span></div>
+          <div class="token-row">
+            <span><strong>Primitive</strong><br/><span style="font-size:12px;color:var(--text-muted)">Raw scale values</span></span>
+            <span><code>color.cyan.600</code></span>
+            <span><code>#0891b2</code></span>
+          </div>
+          <div class="token-row">
+            <span><strong>Semantic</strong><br/><span style="font-size:12px;color:var(--text-muted)">Intent-named aliases</span></span>
+            <span><code>color.action.default</code></span>
+            <span><code>{color.cyan.600}</code></span>
+          </div>
+          <div class="token-row">
+            <span><strong>Component</strong><br/><span style="font-size:12px;color:var(--text-muted)">Scoped overrides</span></span>
+            <span><code>button.primary.bg</code></span>
+            <span><code>{color.action.default}</code></span>
+          </div>
+        </div>
+
+        <p>
+          Primitives are never used directly in components. Components consume
+          semantic tokens. Semantic tokens reference primitives. This indirection
+          is what makes theming possible: you can swap an entire brand by
+          re-mapping semantic tokens to different primitives &mdash; without
+          touching a single component.
+        </p>
+
+        <h3>W3C Token Format &amp; Style Dictionary</h3>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">JSON — tokens/primitives/color.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="pu">{</span>
+  <span class="st">"color"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="st">"cyan"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"50"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"#ecfeff"</span><span class="pu">,</span> <span class="st">"$type"</span><span class="op">:</span> <span class="st">"color"</span> <span class="pu">},</span>
+      <span class="st">"100"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"#cffafe"</span><span class="pu">,</span> <span class="st">"$type"</span><span class="op">:</span> <span class="st">"color"</span> <span class="pu">},</span>
+      <span class="st">"600"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"#0891b2"</span><span class="pu">,</span> <span class="st">"$type"</span><span class="op">:</span> <span class="st">"color"</span> <span class="pu">},</span>
+      <span class="st">"700"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"#0e7490"</span><span class="pu">,</span> <span class="st">"$type"</span><span class="op">:</span> <span class="st">"color"</span> <span class="pu">},</span>
+      <span class="st">"900"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"#164e63"</span><span class="pu">,</span> <span class="st">"$type"</span><span class="op">:</span> <span class="st">"color"</span> <span class="pu">}</span>
+    <span class="pu">},</span>
+    <span class="st">"neutral"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"0"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"#ffffff"</span><span class="pu">,</span> <span class="st">"$type"</span><span class="op">:</span> <span class="st">"color"</span> <span class="pu">},</span>
+      <span class="st">"900"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"#111827"</span><span class="pu">,</span> <span class="st">"$type"</span><span class="op">:</span> <span class="st">"color"</span> <span class="pu">}</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">JSON — tokens/semantic/color.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="pu">{</span>
+  <span class="st">"color"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="st">"action"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"default"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"{color.cyan.600}"</span> <span class="pu">},</span>
+      <span class="st">"hover"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"{color.cyan.700}"</span> <span class="pu">},</span>
+      <span class="st">"subtle"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"{color.cyan.50}"</span>  <span class="pu">}</span>
+    <span class="pu">},</span>
+    <span class="st">"surface"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"default"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"{color.neutral.0}"</span>   <span class="pu">},</span>
+      <span class="st">"raised"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"{color.neutral.0}"</span>   <span class="pu">},</span>
+      <span class="st">"sunken"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"{color.neutral.50}"</span>  <span class="pu">}</span>
+    <span class="pu">},</span>
+    <span class="st">"text"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"primary"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"{color.neutral.900}"</span> <span class="pu">},</span>
+      <span class="st">"secondary"</span><span class="op">:</span><span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"{color.neutral.600}"</span> <span class="pu">},</span>
+      <span class="st">"inverse"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"{color.neutral.0}"</span>   <span class="pu">}</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">JavaScript — style-dictionary.config.mjs</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> StyleDictionary <span class="kw">from</span> <span class="st">'style-dictionary'</span>
+
+<span class="kw">const</span> sd <span class="op">=</span> <span class="kw">new</span> <span class="fn">StyleDictionary</span><span class="pu">({</span>
+  source<span class="op">:</span> <span class="pu">[</span><span class="st">'tokens/**/*.json'</span><span class="pu">],</span>
+  platforms<span class="op">:</span> <span class="pu">{</span>
+    <span class="st">'css'</span><span class="op">:</span> <span class="pu">{</span>
+      transformGroup<span class="op">:</span> <span class="st">'css'</span><span class="pu">,</span>
+      prefix<span class="op">:</span> <span class="st">'ds'</span><span class="pu">,</span>           <span class="cm">// --ds-color-action-default</span>
+      buildPath<span class="op">:</span> <span class="st">'dist/css/'</span><span class="pu">,</span>
+      files<span class="op">:</span> <span class="pu">[{</span>
+        destination<span class="op">:</span> <span class="st">'tokens.css'</span><span class="pu">,</span>
+        format<span class="op">:</span> <span class="st">'css/variables'</span><span class="pu">,</span>
+        options<span class="op">:</span> <span class="pu">{</span> outputReferences<span class="op">:</span> <span class="kw">true</span> <span class="pu">}</span>
+      <span class="pu">}]</span>
+    <span class="pu">},</span>
+    <span class="st">'js'</span><span class="op">:</span> <span class="pu">{</span>
+      transformGroup<span class="op">:</span> <span class="st">'js'</span><span class="pu">,</span>
+      buildPath<span class="op">:</span> <span class="st">'dist/js/'</span><span class="pu">,</span>
+      files<span class="op">:</span> <span class="pu">[{</span>
+        destination<span class="op">:</span> <span class="st">'tokens.mjs'</span><span class="pu">,</span>
+        format<span class="op">:</span> <span class="st">'javascript/es6'</span>
+      <span class="pu">}]</span>
+    <span class="pu">},</span>
+    <span class="st">'ios'</span><span class="op">:</span> <span class="pu">{</span>
+      transformGroup<span class="op">:</span> <span class="st">'ios-swift'</span><span class="pu">,</span>
+      buildPath<span class="op">:</span> <span class="st">'dist/ios/'</span><span class="pu">,</span>
+      files<span class="op">:</span> <span class="pu">[{</span> destination<span class="op">:</span> <span class="st">'DesignTokens.swift'</span><span class="pu">,</span> format<span class="op">:</span> <span class="st">'ios-swift/class.swift'</span> <span class="pu">}]</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="kw">await</span> sd<span class="pu">.</span><span class="fn">buildAllPlatforms</span><span class="pu">()</span></code></pre>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">&#128161; One token source, every platform</div>
+          Style Dictionary compiles the same JSON into CSS custom properties,
+          JavaScript ES6 exports, Swift structs, and Android resources in a
+          single build step. The design tool (Figma) reads from the same JSON
+          via the Tokens Studio plugin. Every platform stays in sync automatically.
+        </div>
+      </div>
+
+      <!-- ═══════════════ 03 TYPOGRAPHY -->
+      <div class="section" id="typography">
+        <div class="section-label">03 &mdash; Text &amp; Readability</div>
+        <h2>Typography System</h2>
+        <p class="lead">
+          A typography system is not a list of font sizes. It is a set of named
+          text roles &mdash; each with a fixed combination of size, line height,
+          weight, and letter spacing &mdash; that map to the semantic meaning of the
+          content, not to its visual outcome.
+        </p>
+
+        <h3>Modular Type Scale</h3>
+        <p>
+          A modular scale generates harmonious size steps from a base size and a
+          ratio. The most common ratios are 1.25 (Major Third), 1.333 (Perfect
+          Fourth), and 1.5 (Perfect Fifth). Each step multiplies the previous by
+          the ratio, producing a coherent visual rhythm across headings and body text.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">JSON — tokens/typography/scale.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="pu">{</span>
+  <span class="st">"font"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="st">"family"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"display"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"'Lora', Georgia, serif"</span>    <span class="pu">},</span>
+      <span class="st">"body"</span><span class="op">:</span>    <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"'Outfit', system-ui, sans-serif"</span> <span class="pu">},</span>
+      <span class="st">"mono"</span><span class="op">:</span>    <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"'JetBrains Mono', monospace"</span>   <span class="pu">}</span>
+    <span class="pu">},</span>
+    <span class="st">"size"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="cm">// Base: 16px, Ratio: 1.25 (Major Third)</span>
+      <span class="st">"xs"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"0.64rem"</span>  <span class="pu">},</span>  <span class="cm">// 10.24px</span>
+      <span class="st">"sm"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"0.8rem"</span>   <span class="pu">},</span>  <span class="cm">// 12.8px</span>
+      <span class="st">"base"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1rem"</span>     <span class="pu">},</span>  <span class="cm">// 16px</span>
+      <span class="st">"lg"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1.25rem"</span>  <span class="pu">},</span>  <span class="cm">// 20px</span>
+      <span class="st">"xl"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1.563rem"</span> <span class="pu">},</span>  <span class="cm">// 25px</span>
+      <span class="st">"2xl"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1.953rem"</span> <span class="pu">},</span>  <span class="cm">// 31.25px</span>
+      <span class="st">"3xl"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"2.441rem"</span> <span class="pu">},</span>  <span class="cm">// 39px</span>
+      <span class="st">"4xl"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"3.052rem"</span> <span class="pu">}</span>   <span class="cm">// 48.8px</span>
+    <span class="pu">},</span>
+    <span class="st">"lineHeight"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"tight"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1.2"</span> <span class="pu">},</span>
+      <span class="st">"snug"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1.375"</span> <span class="pu">},</span>
+      <span class="st">"normal"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1.5"</span> <span class="pu">},</span>
+      <span class="st">"relaxed"</span><span class="op">:</span><span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1.75"</span> <span class="pu">}</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>Fluid Typography with CSS clamp()</h3>
+        <p>
+          Fluid typography removes the need for breakpoint-specific font size
+          overrides. The <code>clamp()</code> function linearly interpolates
+          between a minimum and maximum size across a defined viewport range,
+          producing smooth scaling at every screen width.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS — Fluid type scale via clamp()</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">/*
+  Formula: clamp(min, preferred, max)
+  preferred = minSize + (maxSize - minSize) * ((100vw - minVW) / (maxVW - minVW))
+  Simplified to a vw-based calc for CSS native use:
+*/</span>
+<span class="bi">:root</span> <span class="pu">{</span>
+  <span class="cm">/* Display heading: 32px → 50px, 375px → 1280px viewport */</span>
+  <span class="op">--</span>ds<span class="op">-</span>text<span class="op">-</span>display<span class="op">-</span>size<span class="op">:</span> <span class="fn">clamp</span><span class="pu">(</span><span class="nm">2rem</span><span class="pu">,</span> <span class="nm">1.27rem</span> <span class="op">+</span> <span class="nm">3.09vw</span><span class="pu">,</span> <span class="nm">3.125rem</span><span class="pu">);</span>
+
+  <span class="cm">/* H1: 28px → 40px */</span>
+  <span class="op">--</span>ds<span class="op">-</span>text<span class="op">-</span>h1<span class="op">-</span>size<span class="op">:</span> <span class="fn">clamp</span><span class="pu">(</span><span class="nm">1.75rem</span><span class="pu">,</span> <span class="nm">1.31rem</span> <span class="op">+</span> <span class="nm">1.87vw</span><span class="pu">,</span> <span class="nm">2.5rem</span><span class="pu">);</span>
+
+  <span class="cm">/* Body: always 16px — never fluid */</span>
+  <span class="op">--</span>ds<span class="op">-</span>text<span class="op">-</span>body<span class="op">-</span>size<span class="op">:</span> <span class="nm">1rem</span><span class="pu">;</span>
+<span class="pu">}</span>
+
+<span class="cm">/* ── Semantic text roles (what components actually consume) ── */</span>
+<span class="pu">.ds-text-display</span> <span class="pu">{</span>
+  font<span class="op">-</span>family<span class="op">:</span> <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>ds<span class="op">-</span>font<span class="op">-</span>family<span class="op">-</span>display<span class="pu">);</span>
+  font<span class="op">-</span>size<span class="op">:</span> <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>ds<span class="op">-</span>text<span class="op">-</span>display<span class="op">-</span>size<span class="pu">);</span>
+  font<span class="op">-</span>weight<span class="op">:</span> <span class="nm">600</span><span class="pu">;</span>
+  line<span class="op">-</span>height<span class="op">:</span> <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>ds<span class="op">-</span>font<span class="op">-</span>lineHeight<span class="op">-</span>tight<span class="pu">);</span>
+  letter<span class="op">-</span>spacing<span class="op">:</span> <span class="op">-</span><span class="nm">0.025em</span><span class="pu">;</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="info">
+          <div class="info-label">&#128218; Variable Fonts</div>
+          If your brand allows it, a single variable font file replaces an entire
+          weight family. A variable font with <code>wght</code> axis lets you use
+          any weight from 100–900 in a single 80KB file instead of loading
+          six separate 40KB files. Google Fonts serves variable variants for
+          Outfit, Inter, and most modern typefaces.
+        </div>
+      </div>
+
+      <!-- ═══════════════ 04 COLOR -->
+      <div class="section" id="color">
+        <div class="section-label">04 &mdash; Visual Identity</div>
+        <h2>Color System &amp; Theming</h2>
+        <p class="lead">
+          A color system has two jobs: encode brand identity and communicate
+          meaning. These are in constant tension. Solve both by separating the
+          palette (raw values) from the semantic layer (what each color means in
+          context) and the mode layer (how semantics shift between light and dark).
+        </p>
+
+        <h3>Palette → Semantic → Mode</h3>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS — Full color token cascade with dark mode</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">/* ── Layer 0: Raw palette (never use directly in components) ── */</span>
+<span class="bi">:root</span> <span class="pu">{</span>
+  <span class="op">--</span>palette<span class="op">-</span>cyan<span class="op">-</span><span class="nm">50</span><span class="op">:</span>  <span class="nm">#ecfeff</span><span class="pu">;</span>
+  <span class="op">--</span>palette<span class="op">-</span>cyan<span class="op">-</span><span class="nm">600</span><span class="op">:</span> <span class="nm">#0891b2</span><span class="pu">;</span>
+  <span class="op">--</span>palette<span class="op">-</span>cyan<span class="op">-</span><span class="nm">700</span><span class="op">:</span> <span class="nm">#0e7490</span><span class="pu">;</span>
+  <span class="op">--</span>palette<span class="op">-</span>red<span class="op">-</span><span class="nm">600</span><span class="op">:</span>  <span class="nm">#dc2626</span><span class="pu">;</span>
+  <span class="op">--</span>palette<span class="op">-</span>green<span class="op">-</span><span class="nm">600</span><span class="op">:</span><span class="nm">#16a34a</span><span class="pu">;</span>
+  <span class="op">--</span>palette<span class="op">-</span>neutral<span class="op">-</span><span class="nm">0</span><span class="op">:</span>  <span class="nm">#ffffff</span><span class="pu">;</span>
+  <span class="op">--</span>palette<span class="op">-</span>neutral<span class="op">-</span><span class="nm">50</span><span class="op">:</span> <span class="nm">#f9fafb</span><span class="pu">;</span>
+  <span class="op">--</span>palette<span class="op">-</span>neutral<span class="op">-</span><span class="nm">900</span><span class="op">:</span><span class="nm">#111827</span><span class="pu">;</span>
+<span class="pu">}</span>
+
+<span class="cm">/* ── Layer 1: Semantic tokens (light mode defaults) ── */</span>
+<span class="bi">:root</span> <span class="pu">{</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>action<span class="op">-</span>default<span class="op">:</span>  <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>palette<span class="op">-</span>cyan<span class="op">-</span><span class="nm">600</span><span class="pu">);</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>action<span class="op">-</span>hover<span class="op">:</span>    <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>palette<span class="op">-</span>cyan<span class="op">-</span><span class="nm">700</span><span class="pu">);</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>surface<span class="op">-</span>default<span class="op">:</span> <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>palette<span class="op">-</span>neutral<span class="op">-</span><span class="nm">0</span><span class="pu">);</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>surface<span class="op">-</span>sunken<span class="op">:</span>  <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>palette<span class="op">-</span>neutral<span class="op">-</span><span class="nm">50</span><span class="pu">);</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>text<span class="op">-</span>primary<span class="op">:</span>    <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>palette<span class="op">-</span>neutral<span class="op">-</span><span class="nm">900</span><span class="pu">);</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>feedback<span class="op">-</span>error<span class="op">:</span>  <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>palette<span class="op">-</span>red<span class="op">-</span><span class="nm">600</span><span class="pu">);</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>feedback<span class="op">-</span>success<span class="op">:</span> <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>palette<span class="op">-</span>green<span class="op">-</span><span class="nm">600</span><span class="pu">);</span>
+<span class="pu">}</span>
+
+<span class="cm">/* ── Layer 2: Mode overrides (dark theme) ── */</span>
+<span class="pu">[data-theme=</span><span class="st">"dark"</span><span class="pu">]</span> <span class="pu">{</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>action<span class="op">-</span>default<span class="op">:</span>  <span class="nm">#22d3ee</span><span class="pu">;</span>  <span class="cm">/* cyan-400 — passes 4.5:1 on dark bg */</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>surface<span class="op">-</span>default<span class="op">:</span> <span class="nm">#111827</span><span class="pu">;</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>surface<span class="op">-</span>sunken<span class="op">:</span>  <span class="nm">#0f172a</span><span class="pu">;</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>text<span class="op">-</span>primary<span class="op">:</span>    <span class="nm">#f9fafb</span><span class="pu">;</span>
+<span class="pu">}</span>
+
+<span class="cm">/* ── Honour OS preference when no explicit toggle ── */</span>
+<span class="bi">@media</span> <span class="pu">(</span>prefers<span class="op">-</span>color<span class="op">-</span>scheme<span class="op">:</span> dark<span class="pu">) {</span>
+  <span class="bi">:root</span><span class="op">:not(</span><span class="pu">[data-theme=</span><span class="st">"light"</span><span class="pu">])</span> <span class="pu">{</span>
+    <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>surface<span class="op">-</span>default<span class="op">:</span> <span class="nm">#111827</span><span class="pu">;</span>
+    <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>text<span class="op">-</span>primary<span class="op">:</span>    <span class="nm">#f9fafb</span><span class="pu">;</span>
+    <span class="cm">/* ...remaining overrides */</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="warn">
+          <div class="warn-label">&#9888; Never create a dark mode by inverting</div>
+          Inverting light colors for dark mode is a predictable failure. A cyan
+          that reads at 4.6:1 on white may drop to 2.1:1 on a dark surface.
+          Dark mode requires independently verified token values &mdash; not
+          programmatic transformations. Always re-check contrast ratios for every
+          semantic color in each mode.
+        </div>
+
+        <h3>Multi-brand Theming</h3>
+        <p>
+          When a single codebase must serve multiple brands (a SaaS product with
+          white-labeling, or a company with sub-brands), CSS custom property
+          cascading makes brand switching zero-JavaScript. The component code
+          never changes; only the token values do.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS — Brand-specific token overrides via data-brand</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">/* Brand A (default — loaded in :root above) */</span>
+
+<span class="cm">/* Brand B — loaded on the root element at runtime */</span>
+<span class="pu">[data-brand=</span><span class="st">"nova"</span><span class="pu">]</span> <span class="pu">{</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>action<span class="op">-</span>default<span class="op">:</span> <span class="nm">#7c3aed</span><span class="pu">;</span>
+  <span class="op">--</span>ds<span class="op">-</span>color<span class="op">-</span>action<span class="op">-</span>hover<span class="op">:</span>   <span class="nm">#6d28d9</span><span class="pu">;</span>
+  <span class="op">--</span>ds<span class="op">-</span>font<span class="op">-</span>family<span class="op">-</span>display<span class="op">:</span>  <span class="st">"Playfair Display", Georgia, serif</span><span class="pu">;</span>
+  <span class="op">--</span>ds<span class="op">-</span>radius<span class="op">-</span>base<span class="op">:</span>          <span class="nm">2px</span><span class="pu">;</span>   <span class="cm">/* brand nova is angular */</span>
+<span class="pu">}</span>
+
+<span class="cm">/* Switching brands in React — no component code touched */</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">JSX — ThemeProvider with brand switching</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> createContext<span class="pu">,</span> useContext<span class="pu">,</span> useEffect <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="kw">const</span> ThemeCtx <span class="op">=</span> <span class="fn">createContext</span><span class="pu">({})</span>
+
+<span class="kw">export function</span> <span class="fn">ThemeProvider</span><span class="pu">({</span> brand <span class="op">=</span> <span class="st">'default'</span><span class="pu">,</span> mode <span class="op">=</span> <span class="st">'light'</span><span class="pu">,</span> children <span class="pu">}) {</span>
+  <span class="fn">useEffect</span><span class="pu">(() =&gt; {</span>
+    <span class="kw">const</span> root <span class="op">=</span> document<span class="pu">.</span>documentElement
+    root<span class="pu">.</span><span class="fn">setAttribute</span><span class="pu">(</span><span class="st">'data-brand'</span><span class="pu">,</span> brand<span class="pu">)</span>
+    root<span class="pu">.</span><span class="fn">setAttribute</span><span class="pu">(</span><span class="st">'data-theme'</span><span class="pu">,</span> mode<span class="pu">)</span>
+  <span class="pu">}, [</span>brand<span class="pu">,</span> mode<span class="pu">])</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">ThemeCtx.Provider</span> <span class="at">value</span><span class="op">={{</span> brand<span class="pu">,</span> mode <span class="op">}}&gt;</span>
+      <span class="pu">{</span>children<span class="pu">}</span>
+    <span class="op">&lt;/</span><span class="ty">ThemeCtx.Provider</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="kw">export const</span> useTheme <span class="op">=</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="fn">useContext</span><span class="pu">(</span>ThemeCtx<span class="pu">)</span></code></pre>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════ 05 SPACING -->
+      <div class="section" id="spacing">
+        <div class="section-label">05 &mdash; Structure &amp; Rhythm</div>
+        <h2>Spacing, Grid &amp; Layout</h2>
+        <p class="lead">
+          Spacing is the most underestimated token category. Inconsistent whitespace
+          is the single most common reason a UI looks "off" without anyone being
+          able to name why. An 8pt grid system eliminates the problem at its source.
+        </p>
+
+        <h3>The 8pt Grid System</h3>
+        <p>
+          Every spacing value in the system is a multiple of 8. The base unit of 8px
+          was chosen because it divides evenly into the most common screen resolutions,
+          aligns with the standard line-height rhythms for 16px body text (16 = 8×2),
+          and produces a consistent vertical rhythm when applied uniformly. 4px is
+          permitted as a half-unit for tight internal padding only.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">JSON — tokens/spacing.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="pu">{</span>
+  <span class="st">"space"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="st">"0"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"0"</span>       <span class="pu">},</span>
+    <span class="st">"1"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"0.25rem"</span> <span class="pu">},</span>  <span class="cm">// 4px  — tight internal padding</span>
+    <span class="st">"2"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"0.5rem"</span>  <span class="pu">},</span>  <span class="cm">// 8px  — base unit</span>
+    <span class="st">"3"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"0.75rem"</span> <span class="pu">},</span>  <span class="cm">// 12px</span>
+    <span class="st">"4"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1rem"</span>    <span class="pu">},</span>  <span class="cm">// 16px</span>
+    <span class="st">"6"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"1.5rem"</span>  <span class="pu">},</span>  <span class="cm">// 24px</span>
+    <span class="st">"8"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"2rem"</span>    <span class="pu">},</span>  <span class="cm">// 32px</span>
+    <span class="st">"12"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"3rem"</span>    <span class="pu">},</span>  <span class="cm">// 48px</span>
+    <span class="st">"16"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"4rem"</span>    <span class="pu">},</span>  <span class="cm">// 64px</span>
+    <span class="st">"24"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"6rem"</span>    <span class="pu">},</span>  <span class="cm">// 96px</span>
+    <span class="st">"32"</span><span class="op">:</span>  <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"8rem"</span>    <span class="pu">}</span>   <span class="cm">// 128px — section separators</span>
+  <span class="pu">},</span>
+  <span class="st">"radius"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="st">"none"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"0"</span>      <span class="pu">},</span>
+    <span class="st">"sm"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"4px"</span>    <span class="pu">},</span>
+    <span class="st">"base"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"8px"</span>    <span class="pu">},</span>
+    <span class="st">"lg"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"12px"</span>   <span class="pu">},</span>
+    <span class="st">"full"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"9999px"</span> <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>Container Queries for Component-level Responsiveness</h3>
+        <p>
+          CSS container queries are now widely supported and fundamentally change
+          how responsive components work inside a design system. Instead of
+          responding to the viewport (which depends on where a component happens
+          to be placed), a component responds to the size of its immediate container.
+          This makes components genuinely portable.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS — Container query responsive card</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">/* Mark the parent as a containment context */</span>
+<span class="pu">.ds-card-wrapper</span> <span class="pu">{</span>
+  container<span class="op">-</span>type<span class="op">:</span> inline<span class="op">-</span>size<span class="pu">;</span>
+  container<span class="op">-</span>name<span class="op">:</span> card<span class="pu">;</span>
+<span class="pu">}</span>
+
+<span class="cm">/* Card adapts to its container, not the viewport */</span>
+<span class="pu">.ds-card</span> <span class="pu">{</span>
+  display<span class="op">:</span> flex<span class="pu">;</span>
+  flex<span class="op">-</span>direction<span class="op">:</span> column<span class="pu">;</span>
+  gap<span class="op">:</span> <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>ds<span class="op">-</span>space<span class="op">-</span><span class="nm">3</span><span class="pu">);</span>
+<span class="pu">}</span>
+
+<span class="bi">@container</span> card <span class="pu">(</span>min<span class="op">-</span>width<span class="op">:</span> <span class="nm">400px</span><span class="pu">) {</span>
+  <span class="pu">.ds-card</span> <span class="pu">{</span>
+    flex<span class="op">-</span>direction<span class="op">:</span> row<span class="pu">;</span>
+    align<span class="op">-</span>items<span class="op">:</span> center<span class="pu">;</span>
+  <span class="pu">}</span>
+  <span class="pu">.ds-card__image</span> <span class="pu">{</span>
+    width<span class="op">:</span> <span class="nm">160px</span><span class="pu">;</span>
+    flex<span class="op">-</span>shrink<span class="op">:</span> <span class="nm">0</span><span class="pu">;</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="bi">@container</span> card <span class="pu">(</span>min<span class="op">-</span>width<span class="op">:</span> <span class="nm">600px</span><span class="pu">) {</span>
+  <span class="pu">.ds-card__image</span> <span class="pu">{</span> width<span class="op">:</span> <span class="nm">240px</span><span class="pu">;</span> <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+      </div>
+
+      <!-- ═══════════════ 06 COMPONENTS -->
+      <div class="section" id="components">
+        <div class="section-label">06 &mdash; Building Blocks</div>
+        <h2>Atomic Component Architecture</h2>
+        <p class="lead">
+          Atomic design, introduced by Brad Frost, provides the right vocabulary for
+          component hierarchy: atoms are the smallest possible units, molecules are
+          composed of atoms, and organisms are composed of molecules. In a React
+          design system, this maps directly to implementation decisions about
+          scope, API surface, and import paths.
+        </p>
+
+        <table>
+          <thead>
+            <tr><th>Level</th><th>Examples</th><th>Rule</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Atom</strong></td>
+              <td><code>Button</code>, <code>Input</code>, <code>Label</code>, <code>Badge</code>, <code>Icon</code></td>
+              <td>No component dependencies. Uses only tokens and HTML.</td>
+            </tr>
+            <tr>
+              <td><strong>Molecule</strong></td>
+              <td><code>FormField</code>, <code>SearchBar</code>, <code>Card</code>, <code>Tooltip</code></td>
+              <td>Composes 2–5 atoms. Has a single, clear job.</td>
+            </tr>
+            <tr>
+              <td><strong>Organism</strong></td>
+              <td><code>Navbar</code>, <code>DataTable</code>, <code>CommentThread</code></td>
+              <td>Composed of molecules. May connect to context or store.</td>
+            </tr>
+            <tr>
+              <td><strong>Template</strong></td>
+              <td><code>PageLayout</code>, <code>DashboardShell</code></td>
+              <td>Wires organisms into a page structure. No business logic.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Compound Components Pattern</h3>
+        <p>
+          For complex stateful widgets like Tabs, Accordions, Dropdowns, or Selects,
+          the compound component pattern gives consumers a declarative, composable
+          API while keeping internal state encapsulated. It is the pattern used by
+          Radix UI, HeadlessUI, and React Aria.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">JSX — Compound Select component with Context</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> createContext<span class="pu">,</span> useContext<span class="pu">,</span> useState<span class="pu">,</span> useId <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="kw">const</span> SelectCtx <span class="op">=</span> <span class="fn">createContext</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+
+<span class="cm">// ── Root: owns all state ──────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">Select</span><span class="pu">({</span> value<span class="pu">,</span> onChange<span class="pu">,</span> children <span class="pu">}) {</span>
+  <span class="kw">const</span> <span class="pu">[</span>open<span class="pu">,</span> setOpen<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="kw">false</span><span class="pu">)</span>
+  <span class="kw">const</span> id <span class="op">=</span> <span class="fn">useId</span><span class="pu">()</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">SelectCtx.Provider</span> <span class="at">value</span><span class="op">={{</span> value<span class="pu">,</span> onChange<span class="pu">,</span> open<span class="pu">,</span> setOpen<span class="pu">,</span> id <span class="op">}}&gt;</span>
+      <span class="op">&lt;</span><span class="ty">div</span> <span class="at">className</span><span class="op">=</span><span class="st">"ds-select"</span> <span class="at">role</span><span class="op">=</span><span class="st">"combobox"</span>
+        <span class="at">aria-haspopup</span><span class="op">=</span><span class="st">"listbox"</span> <span class="at">aria-expanded</span><span class="op">={</span>open<span class="pu">}</span>
+        <span class="at">aria-owns</span><span class="op">={</span><span class="st">`</span><span class="pu">${</span>id<span class="pu">}</span><span class="st">-listbox`</span><span class="pu">}</span>
+      <span class="op">&gt;</span>
+        <span class="pu">{</span>children<span class="pu">}</span>
+      <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">SelectCtx.Provider</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Trigger: renders the visible control ──────────────────</span>
+<span class="kw">function</span> <span class="fn">SelectTrigger</span><span class="pu">({</span> placeholder <span class="op">=</span> <span class="st">'Select…'</span><span class="pu">,</span> children <span class="pu">}) {</span>
+  <span class="kw">const</span> <span class="pu">{</span> value<span class="pu">,</span> open<span class="pu">,</span> setOpen <span class="pu">}</span> <span class="op">=</span> <span class="fn">useContext</span><span class="pu">(</span>SelectCtx<span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">button</span> <span class="at">type</span><span class="op">=</span><span class="st">"button"</span> <span class="at">className</span><span class="op">=</span><span class="st">"ds-select__trigger"</span>
+      <span class="at">onClick</span><span class="op">={() =&gt;</span> <span class="fn">setOpen</span><span class="pu">(</span>o <span class="op">=&gt; !</span>o<span class="pu">)}</span>
+    <span class="op">&gt;</span>
+      <span class="pu">{</span>value <span class="op">??</span> placeholder<span class="pu">}</span>
+      <span class="op">&lt;</span><span class="ty">span</span> <span class="at">aria-hidden</span><span class="op">=</span><span class="st">"true"</span><span class="op">&gt;{</span>open <span class="op">?</span> <span class="st">'▲'</span> <span class="op">:</span> <span class="st">'▼'</span><span class="pu">}</span><span class="op">&lt;/</span><span class="ty">span</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Content: the dropdown panel ───────────────────────────</span>
+<span class="kw">function</span> <span class="fn">SelectContent</span><span class="pu">({</span> children <span class="pu">}) {</span>
+  <span class="kw">const</span> <span class="pu">{</span> open<span class="pu">,</span> id <span class="pu">}</span> <span class="op">=</span> <span class="fn">useContext</span><span class="pu">(</span>SelectCtx<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(!</span>open<span class="pu">)</span> <span class="kw">return</span> <span class="kw">null</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">ul</span> <span class="at">id</span><span class="op">={</span><span class="st">`</span><span class="pu">${</span>id<span class="pu">}</span><span class="st">-listbox`</span><span class="pu">}</span> <span class="at">role</span><span class="op">=</span><span class="st">"listbox"</span> <span class="at">className</span><span class="op">=</span><span class="st">"ds-select__list"</span><span class="op">&gt;</span>
+      <span class="pu">{</span>children<span class="pu">}</span>
+    <span class="op">&lt;/</span><span class="ty">ul</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Item: each selectable option ──────────────────────────</span>
+<span class="kw">function</span> <span class="fn">SelectItem</span><span class="pu">({</span> value<span class="op">:</span> itemValue<span class="pu">,</span> children <span class="pu">}) {</span>
+  <span class="kw">const</span> <span class="pu">{</span> value<span class="pu">,</span> onChange<span class="pu">,</span> setOpen <span class="pu">}</span> <span class="op">=</span> <span class="fn">useContext</span><span class="pu">(</span>SelectCtx<span class="pu">)</span>
+  <span class="kw">const</span> isSelected <span class="op">=</span> value <span class="op">===</span> itemValue
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">li</span> <span class="at">role</span><span class="op">=</span><span class="st">"option"</span> <span class="at">aria-selected</span><span class="op">={</span>isSelected<span class="pu">}</span>
+      <span class="at">className</span><span class="op">={</span><span class="st">`ds-select__item </span><span class="pu">${</span>isSelected <span class="op">?</span> <span class="st">'is-selected'</span> <span class="op">:</span> <span class="st">''</span><span class="pu">}</span><span class="st">`</span><span class="pu">}</span>
+      <span class="at">onClick</span><span class="op">={() =&gt; {</span> <span class="fn">onChange</span><span class="pu">(</span>itemValue<span class="pu">)</span>; <span class="fn">setOpen</span><span class="pu">(</span><span class="kw">false</span><span class="pu">)</span> <span class="op">}}</span>
+    <span class="op">&gt;</span>
+      <span class="pu">{</span>children<span class="pu">}</span>
+    <span class="op">&lt;/</span><span class="ty">li</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Export as namespace ───────────────────────────────────</span>
+Select<span class="pu">.</span>Trigger  <span class="op">=</span> SelectTrigger
+Select<span class="pu">.</span>Content <span class="op">=</span> SelectContent
+Select<span class="pu">.</span>Item    <span class="op">=</span> SelectItem
+
+<span class="cm">// ── Consumer usage ────────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">Example</span><span class="pu">() {</span>
+  <span class="kw">const</span> <span class="pu">[</span>lang<span class="pu">,</span> setLang<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">Select</span> <span class="at">value</span><span class="op">={</span>lang<span class="pu">}</span> <span class="at">onChange</span><span class="op">={</span>setLang<span class="pu">}&gt;</span>
+      <span class="op">&lt;</span><span class="ty">Select.Trigger</span> <span class="at">placeholder</span><span class="op">=</span><span class="st">"Choose language"</span> <span class="op">/&gt;</span>
+      <span class="op">&lt;</span><span class="ty">Select.Content</span><span class="op">&gt;</span>
+        <span class="op">&lt;</span><span class="ty">Select.Item</span> <span class="at">value</span><span class="op">=</span><span class="st">"ts"</span><span class="op">&gt;</span>TypeScript<span class="op">&lt;/</span><span class="ty">Select.Item</span><span class="op">&gt;</span>
+        <span class="op">&lt;</span><span class="ty">Select.Item</span> <span class="at">value</span><span class="op">=</span><span class="st">"js"</span><span class="op">&gt;</span>JavaScript<span class="op">&lt;/</span><span class="ty">Select.Item</span><span class="op">&gt;</span>
+        <span class="op">&lt;</span><span class="ty">Select.Item</span> <span class="at">value</span><span class="op">=</span><span class="st">"py"</span><span class="op">&gt;</span>Python<span class="op">&lt;/</span><span class="ty">Select.Item</span><span class="op">&gt;</span>
+      <span class="op">&lt;/</span><span class="ty">Select.Content</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">Select</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+      </div>
+
+      <!-- ═══════════════ 07 API DESIGN -->
+      <div class="section" id="api">
+        <div class="section-label">07 &mdash; Developer Experience</div>
+        <h2>Component API Design</h2>
+        <p class="lead">
+          The component API is the interface between your design system and every
+          product team that consumes it. A bad API generates workarounds that
+          spread through codebases and become impossible to deprecate. A good API
+          is predictable, composable, and constrains choices toward the right answer.
+        </p>
+
+        <h3>Variant-first Props with cva()</h3>
+        <p>
+          The <strong>class-variance-authority</strong> library provides a typed,
+          composable way to define visual variants. It produces a single
+          function that maps props to class strings, keeping component code
+          clean and providing TypeScript autocomplete for every variant slot.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Button with cva variants</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> cva<span class="pu">,</span> <span class="ty">VariantProps</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'class-variance-authority'</span>
+<span class="kw">import</span> <span class="pu">{</span> forwardRef<span class="pu">,</span> <span class="ty">ButtonHTMLAttributes</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="kw">const</span> button <span class="op">=</span> <span class="fn">cva</span><span class="pu">(</span>
+  <span class="cm">// Base classes applied to every variant</span>
+  <span class="st">'inline-flex items-center justify-center font-medium rounded-base'</span>
+  <span class="op">+</span> <span class="st">' transition-colors focus-visible:outline-none focus-visible:ring-2'</span>
+  <span class="op">+</span> <span class="st">' disabled:pointer-events-none disabled:opacity-50'</span><span class="pu">,</span>
+  <span class="pu">{</span>
+    variants<span class="op">:</span> <span class="pu">{</span>
+      variant<span class="op">:</span> <span class="pu">{</span>
+        primary<span class="op">:</span>   <span class="st">'bg-action text-inverse hover:bg-action-hover'</span><span class="pu">,</span>
+        secondary<span class="op">:</span> <span class="st">'bg-surface border border-border hover:bg-sunken'</span><span class="pu">,</span>
+        ghost<span class="op">:</span>     <span class="st">'hover:bg-sunken hover:text-primary'</span><span class="pu">,</span>
+        danger<span class="op">:</span>    <span class="st">'bg-error text-inverse hover:bg-error-hover'</span><span class="pu">,</span>
+      <span class="pu">},</span>
+      size<span class="op">:</span> <span class="pu">{</span>
+        sm<span class="op">:</span>   <span class="st">'h-8  px-3 text-sm gap-1.5'</span><span class="pu">,</span>
+        base<span class="op">:</span> <span class="st">'h-10 px-4 text-sm gap-2'</span><span class="pu">,</span>
+        lg<span class="op">:</span>   <span class="st">'h-12 px-6 text-base gap-2.5'</span><span class="pu">,</span>
+      <span class="pu">},</span>
+      loading<span class="op">:</span> <span class="pu">{</span>
+        <span class="kw">true</span><span class="op">:</span> <span class="st">'cursor-wait'</span><span class="pu">,</span>
+      <span class="pu">}</span>
+    <span class="pu">},</span>
+    defaultVariants<span class="op">:</span> <span class="pu">{</span>
+      variant<span class="op">:</span> <span class="st">'primary'</span><span class="pu">,</span>
+      size<span class="op">:</span>    <span class="st">'base'</span><span class="pu">,</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">)</span>
+
+<span class="kw">type</span> <span class="ty">ButtonProps</span> <span class="op">=</span>
+  <span class="ty">ButtonHTMLAttributes</span><span class="op">&lt;</span><span class="ty">HTMLButtonElement</span><span class="op">&gt;</span>
+  <span class="op">&amp;</span> <span class="ty">VariantProps</span><span class="op">&lt;</span><span class="kw">typeof</span> button<span class="op">&gt;</span>
+  <span class="op">&amp;</span> <span class="pu">{</span> loading<span class="op">?:</span> <span class="ty">boolean</span> <span class="pu">}</span>
+
+<span class="kw">export const</span> Button <span class="op">=</span> <span class="fn">forwardRef</span><span class="op">&lt;</span><span class="ty">HTMLButtonElement</span><span class="pu">,</span> <span class="ty">ButtonProps</span><span class="op">&gt;</span><span class="pu">(</span>
+  <span class="pu">({</span> variant<span class="pu">,</span> size<span class="pu">,</span> loading<span class="pu">,</span> disabled<span class="pu">,</span> className<span class="pu">,</span> children<span class="pu">,</span> <span class="pu">...props },</span> ref<span class="pu">) =&gt; {</span>
+    <span class="kw">return</span> <span class="pu">(</span>
+      <span class="op">&lt;</span><span class="ty">button</span>
+        <span class="at">ref</span><span class="op">={</span>ref<span class="pu">}</span>
+        <span class="at">className</span><span class="op">={</span><span class="fn">button</span><span class="pu">({</span> variant<span class="pu">,</span> size<span class="pu">,</span> loading<span class="pu">,</span> className <span class="pu">})}</span>
+        <span class="at">disabled</span><span class="op">={</span>disabled <span class="op">||</span> loading<span class="pu">}</span>
+        <span class="at">aria-busy</span><span class="op">={</span>loading<span class="pu">}</span>
+        <span class="pu">{...props}</span>
+      <span class="op">&gt;</span>
+        <span class="pu">{</span>loading <span class="op">&amp;&amp;</span> <span class="op">&lt;</span><span class="ty">Spinner</span> <span class="at">aria-hidden</span><span class="op">=</span><span class="st">"true"</span> <span class="op">/&gt;}</span>
+        <span class="pu">{</span>children<span class="pu">}</span>
+      <span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>
+    <span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">)</span>
+Button<span class="pu">.</span>displayName <span class="op">=</span> <span class="st">'Button'</span></code></pre>
+        </div>
+
+        <h3>Polymorphic Components with the <code>as</code> Prop</h3>
+        <p>
+          A polymorphic component renders as a different HTML element or custom
+          component based on the <code>as</code> prop. This is the correct way to
+          build a <code>Text</code> or <code>Box</code> primitive that can render
+          as a <code>&lt;p&gt;</code>, <code>&lt;span&gt;</code>, or
+          <code>&lt;h1&gt;</code> without duplicating prop types or losing TypeScript inference.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Polymorphic Text primitive</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> <span class="ty">ComponentPropsWithRef</span><span class="pu">,</span> <span class="ty">ElementType</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="cm">// ── Generic helper type ───────────────────────────────────</span>
+<span class="kw">type</span> <span class="ty">PolymorphicProps</span><span class="op">&lt;</span>
+  <span class="ty">E</span> <span class="kw">extends</span> <span class="ty">ElementType</span><span class="pu">,</span>
+  <span class="ty">P</span> <span class="op">=</span> <span class="pu">{}</span>
+<span class="op">&gt;</span> <span class="op">=</span> <span class="ty">ComponentPropsWithRef</span><span class="op">&lt;</span><span class="ty">E</span><span class="op">&gt;</span> <span class="op">&amp;</span> <span class="pu">{</span>
+  as<span class="op">?:</span> <span class="ty">E</span>
+<span class="pu">}</span> <span class="op">&amp;</span> <span class="ty">P</span>
+
+<span class="cm">// ── Text-specific variant props ───────────────────────────</span>
+<span class="kw">type</span> <span class="ty">TextVariant</span> <span class="op">=</span> <span class="st">'display'</span> <span class="op">|</span> <span class="st">'h1'</span> <span class="op">|</span> <span class="st">'h2'</span> <span class="op">|</span> <span class="st">'body'</span> <span class="op">|</span> <span class="st">'caption'</span>
+<span class="kw">type</span> <span class="ty">TextOwnProps</span> <span class="op">=</span> <span class="pu">{</span> variant<span class="op">?:</span> <span class="ty">TextVariant</span>; muted<span class="op">?:</span> <span class="ty">boolean</span> <span class="pu">}</span>
+
+<span class="kw">const</span> variantMap<span class="op">:</span> <span class="ty">Record</span><span class="op">&lt;</span><span class="ty">TextVariant</span><span class="pu">,</span> <span class="ty">ElementType</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pu">{</span>
+  display<span class="op">:</span> <span class="st">'h1'</span><span class="pu">,</span> h1<span class="op">:</span> <span class="st">'h1'</span><span class="pu">,</span> h2<span class="op">:</span> <span class="st">'h2'</span><span class="pu">,</span>
+  body<span class="op">:</span> <span class="st">'p'</span><span class="pu">,</span> caption<span class="op">:</span> <span class="st">'span'</span>
+<span class="pu">}</span>
+
+<span class="kw">export function</span> <span class="fn">Text</span><span class="op">&lt;</span><span class="ty">E</span> <span class="kw">extends</span> <span class="ty">ElementType</span> <span class="op">=</span> <span class="st">'p'</span><span class="op">&gt;</span><span class="pu">({</span>
+  as<span class="pu">,</span>
+  variant <span class="op">=</span> <span class="st">'body'</span><span class="pu">,</span>
+  muted<span class="pu">,</span>
+  className<span class="pu">,</span>
+  <span class="pu">...props</span>
+<span class="pu">}:</span> <span class="ty">PolymorphicProps</span><span class="op">&lt;</span><span class="ty">E</span><span class="pu">,</span> <span class="ty">TextOwnProps</span><span class="op">&gt;</span><span class="pu">) {</span>
+  <span class="cm">// 'as' wins; then infer from variant; fallback to 'p'</span>
+  <span class="kw">const</span> Component <span class="op">=</span> as <span class="op">??</span> variantMap<span class="pu">[</span>variant<span class="pu">]</span> <span class="op">??</span> <span class="st">'p'</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">Component</span>
+      <span class="at">className</span><span class="op">={[</span><span class="st">`ds-text-</span><span class="pu">${</span>variant<span class="pu">}</span><span class="st">`</span><span class="pu">,</span> muted <span class="op">&amp;&amp;</span> <span class="st">'ds-text--muted'</span><span class="pu">,</span> className<span class="pu">]</span>
+        <span class="pu">.</span><span class="fn">filter</span><span class="pu">(</span><span class="ty">Boolean</span><span class="pu">).</span><span class="fn">join</span><span class="pu">(</span><span class="st">' '</span><span class="pu">)}</span>
+      <span class="pu">{...props}</span>
+    <span class="op">/&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// Usage — TypeScript knows which HTML attrs are valid on each element:
+// &lt;Text variant="h1"&gt;Title&lt;/Text&gt;                   → renders &lt;h1&gt;
+// &lt;Text as="label" htmlFor="id"&gt;Label&lt;/Text&gt;        → renders &lt;label&gt;
+// &lt;Text as="time" dateTime="2026-06"&gt;June&lt;/Text&gt;    → renders &lt;time&gt;</span></code></pre>
+        </div>
+
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">&#10060; Prop surface too wide</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Escape hatch = API contract broken</span>
+<span class="op">&lt;</span><span class="ty">Button</span>
+  <span class="at">primaryColor</span><span class="op">=</span><span class="st">"#ff0000"</span>
+  <span class="at">textSize</span><span class="op">=</span><span class="st">"20px"</span>
+  <span class="at">marginTop</span><span class="op">=</span><span class="st">"12px"</span>
+  <span class="at">borderWidth</span><span class="op">=</span><span class="st">"2px"</span>
+<span class="op">/&gt;</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">&#10003; Constrained variant API</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Consumers pick from known variants</span>
+<span class="op">&lt;</span><span class="ty">Button</span>
+  <span class="at">variant</span><span class="op">=</span><span class="st">"danger"</span>
+  <span class="at">size</span><span class="op">=</span><span class="st">"sm"</span>
+<span class="op">&gt;</span>
+  Delete
+<span class="op">&lt;/</span><span class="ty">Button</span><span class="op">&gt;</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="warn">
+          <div class="warn-label">&#9888; Avoid style props on design system components</div>
+          Accepting arbitrary <code>style</code>, <code>color</code>, or dimension
+          props on design system atoms defeats the purpose of the system. If a
+          consumer needs something the current variants don't cover, that is a signal
+          to add a variant &mdash; not to expose an escape hatch. Escape hatches
+          accumulate and eventually replace the system.
+        </div>
+      </div>
+
+      <!-- ═══════════════ 08 GOVERNANCE -->
+      <div class="section" id="governance">
+        <div class="section-label">08 &mdash; Long-term Health</div>
+        <h2>Governance &amp; Documentation</h2>
+        <p class="lead">
+          The technical layer of a design system accounts for perhaps 30% of its
+          success. The remaining 70% is governance: who decides what goes in, how
+          changes are communicated, and how the system stays relevant as products
+          evolve. Systems that skip this rot within two years.
+        </p>
+
+        <h3>Semantic Versioning for Design Systems</h3>
+        <p>
+          Design system versions have a stronger social contract than typical library
+          semver because consuming teams commit design and engineering resources to
+          upgrades. A clear versioning policy reduces upgrade anxiety and prevents
+          teams from pinning to old versions indefinitely.
+        </p>
+
+        <table>
+          <thead>
+            <tr><th>Version</th><th>When to bump</th><th>Examples</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-red">MAJOR</span></td>
+              <td>Breaking API change, removed prop, token rename</td>
+              <td>Renaming <code>variant="primary"</code> → <code>"brand"</code>; removing <code>size="xs"</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-amber">MINOR</span></td>
+              <td>New component, new variant, new token</td>
+              <td>Adding <code>&lt;Stepper&gt;</code>; adding <code>size="2xl"</code>; adding semantic color token</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">PATCH</span></td>
+              <td>Bug fix, visual tweak that doesn't change API</td>
+              <td>Fixing focus ring offset; correcting a contrast ratio; fixing a broken SSR prop</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Storybook Documentation Architecture</h3>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Button.stories.tsx</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> <span class="kw">type</span> <span class="pu">{</span> <span class="ty">Meta</span><span class="pu">,</span> <span class="ty">StoryObj</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@storybook/react'</span>
+<span class="kw">import</span> <span class="pu">{</span> Button <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./Button'</span>
+
+<span class="kw">const</span> meta<span class="op">:</span> <span class="ty">Meta</span><span class="op">&lt;</span><span class="kw">typeof</span> Button<span class="op">&gt;</span> <span class="op">=</span> <span class="pu">{</span>
+  title<span class="op">:</span> <span class="st">'Atoms/Button'</span><span class="pu">,</span>
+  component<span class="op">:</span> Button<span class="pu">,</span>
+  tags<span class="op">:</span> <span class="pu">[</span><span class="st">'autodocs'</span><span class="pu">],</span>  <span class="cm">// auto-generate API docs from TypeScript types</span>
+  argTypes<span class="op">:</span> <span class="pu">{</span>
+    variant<span class="op">:</span> <span class="pu">{</span>
+      control<span class="op">:</span> <span class="st">'select'</span><span class="pu">,</span>
+      description<span class="op">:</span> <span class="st">'Visual treatment. Primary is for the single most important action on a page.'</span><span class="pu">,</span>
+    <span class="pu">},</span>
+    loading<span class="op">:</span> <span class="pu">{</span>
+      description<span class="op">:</span> <span class="st">'Shows spinner and disables the button. Set aria-label to describe the in-progress action.'</span>
+    <span class="pu">}</span>
+  <span class="pu">},</span>
+  parameters<span class="op">:</span> <span class="pu">{</span>
+    a11y<span class="op">:</span> <span class="pu">{</span> disable<span class="op">:</span> <span class="kw">false</span> <span class="pu">},</span>  <span class="cm">// run axe on every story</span>
+    design<span class="op">:</span> <span class="pu">{</span>
+      type<span class="op">:</span> <span class="st">'figma'</span><span class="pu">,</span>
+      url<span class="op">:</span> <span class="st">'https://figma.com/file/…/Button'</span>  <span class="cm">// links story to Figma frame</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="kw">export default</span> meta
+<span class="kw">type</span> <span class="ty">Story</span> <span class="op">=</span> <span class="ty">StoryObj</span><span class="op">&lt;</span><span class="kw">typeof</span> Button<span class="op">&gt;</span>
+
+<span class="cm">// Each story = one testable state</span>
+<span class="kw">export const</span> Primary<span class="op">:</span> <span class="ty">Story</span> <span class="op">=</span> <span class="pu">{</span> args<span class="op">:</span> <span class="pu">{</span> variant<span class="op">:</span> <span class="st">'primary'</span><span class="pu">,</span>  children<span class="op">:</span> <span class="st">'Save changes'</span> <span class="pu">}}</span>
+<span class="kw">export const</span> Secondary<span class="op">:</span> <span class="ty">Story</span> <span class="op">=</span> <span class="pu">{</span> args<span class="op">:</span> <span class="pu">{</span> variant<span class="op">:</span> <span class="st">'secondary'</span><span class="pu">,</span> children<span class="op">:</span> <span class="st">'Cancel'</span> <span class="pu">}}</span>
+<span class="kw">export const</span> Danger<span class="op">:</span> <span class="ty">Story</span>   <span class="op">=</span> <span class="pu">{</span> args<span class="op">:</span> <span class="pu">{</span> variant<span class="op">:</span> <span class="st">'danger'</span><span class="pu">,</span>    children<span class="op">:</span> <span class="st">'Delete account'</span> <span class="pu">}}</span>
+<span class="kw">export const</span> Loading<span class="op">:</span> <span class="ty">Story</span>  <span class="op">=</span> <span class="pu">{</span> args<span class="op">:</span> <span class="pu">{</span> loading<span class="op">:</span> <span class="kw">true</span><span class="pu">,</span>     children<span class="op">:</span> <span class="st">'Saving…'</span> <span class="pu">}}</span>
+<span class="kw">export const</span> AllSizes<span class="op">:</span> <span class="ty">Story</span> <span class="op">=</span> <span class="pu">{</span>
+  render<span class="op">:</span> <span class="pu">() =&gt; (</span>
+    <span class="op">&lt;</span><span class="ty">div</span> <span class="at">style</span><span class="op">={{</span>display<span class="op">:</span><span class="st">'flex'</span><span class="pu">,</span>gap<span class="op">:</span><span class="st">'8px'</span><span class="pu">,</span>alignItems<span class="op">:</span><span class="st">'center'</span><span class="op">}}&gt;</span>
+      <span class="op">&lt;</span><span class="ty">Button</span> <span class="at">size</span><span class="op">=</span><span class="st">"sm"</span><span class="op">&gt;</span>Small<span class="op">&lt;/</span><span class="ty">Button</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">Button</span> <span class="at">size</span><span class="op">=</span><span class="st">"base"</span><span class="op">&gt;</span>Base<span class="op">&lt;/</span><span class="ty">Button</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">Button</span> <span class="at">size</span><span class="op">=</span><span class="st">"lg"</span><span class="op">&gt;</span>Large<span class="op">&lt;/</span><span class="ty">Button</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>Contribution Checklist</h3>
+        <ul class="checklist">
+          <li><span class="check-icon">&#9989;</span><span><strong>Token-first:</strong> Every new visual decision is a token before it is a component prop. No hard-coded values anywhere in the system.</span></li>
+          <li><span class="check-icon">&#9989;</span><span><strong>Accessibility by default:</strong> Every interactive component has correct ARIA roles, keyboard navigation, and passes axe. No component merges without a passing <code>jest-axe</code> test.</span></li>
+          <li><span class="check-icon">&#9989;</span><span><strong>API review:</strong> New props are reviewed by at least one consuming team before merge. Prop names follow the system's conventions (<code>variant</code>, <code>size</code>, <code>as</code>) not the implementor's preference.</span></li>
+          <li><span class="check-icon">&#9989;</span><span><strong>Stories before code:</strong> Write all Storybook stories first. If you can't write a story for a state, you don't yet understand what you're building.</span></li>
+          <li><span class="check-icon">&#9989;</span><span><strong>Visual regression tests:</strong> Chromatic (or equivalent) runs on every PR and blocks merge on unreviewed visual changes to existing components.</span></li>
+          <li><span class="check-icon">&#9989;</span><span><strong>Changelog discipline:</strong> Every PR includes a <code>CHANGELOG.md</code> entry categorised as Added, Changed, Deprecated, Removed, Fixed, or Security.</span></li>
+          <li><span class="check-icon">&#9989;</span><span><strong>Deprecation period:</strong> Removed APIs get a deprecation notice in a minor version, with a codemod or migration guide, before removal in the next major.</span></li>
+          <li><span class="check-icon">&#9989;</span><span><strong>Office hours:</strong> Design system team holds weekly open office hours. Consuming teams should never resort to forking or monkey-patching because they couldn't get a question answered.</span></li>
+        </ul>
+
+        <div class="pullquote">
+          "A design system is never finished. It reflects the living design
+          language of your organisation. When it stops evolving, it starts dying."
+        </div>
+      </div>
+
+    </div><!-- /content -->
+
+    <footer>
+      <p><strong>Frontend Design Systems: Architecture, Tokens &amp; Scalable Components</strong></p>
+      <p style="margin-top: 8px; font-size: 13px">Build systematic. Ship consistent.</p>
+    </footer>
+
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest('.code-block').querySelector('pre')
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          btn.textContent = 'Copied!'
+          setTimeout(() => (btn.textContent = 'Copy'), 2000)
+        })
+      }
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault()
+          document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' })
+        })
+      })
+    </script>
+  </body>
+</html>

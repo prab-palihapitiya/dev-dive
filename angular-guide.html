@@ -1,0 +1,1200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Angular In Depth: Architecture, Patterns &amp; Comparison with React/Next.js</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg:#faf8f5; --surface:#ffffff; --text-primary:#1a1a1a;
+        --text-secondary:#6b6b6b; --text-muted:#9a9a9a;
+        --accent:#c2185b; --accent-light:#fce4ec; --accent-subtle:#fce4ec;
+        --border:#e8e3db; --code-bg:#0d1117; --code-text:#e6edf3;
+        --tag-bg:#f3f0eb; --tag-text:#555;
+        --tip-bg:#f0fdf4; --tip-border:#16a34a;
+        --warn-bg:#fff7ed; --warn-border:#ea580c;
+        --info-bg:#eff6ff; --info-border:#2563eb;
+        --ng:#dd0031; --react:#61dafb; --next:#000;
+      }
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:"Outfit",sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.75}
+
+      nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+      .nav-left{display:flex;align-items:center;gap:12px}
+      .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;transition:color .15s;display:flex;align-items:center;gap:5px}
+      .nav-back:hover{color:var(--accent)}
+      .nav-pipe{color:var(--border);font-size:18px}
+      .nav-brand{font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-.3px}
+      .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:#fef3c7;color:#b45309;border-radius:100px;letter-spacing:.3px}
+      .nav-links{display:flex;gap:0}
+      .nav-links a{font-size:13px;color:var(--text-secondary);text-decoration:none;padding:6px 10px;border-radius:6px;transition:all .15s;white-space:nowrap}
+      .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
+      .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+
+      .hero{max-width:780px;margin:0 auto;padding:64px 2rem 48px}
+      .hero-tag{display:inline-flex;align-items:center;gap:6px;background:#fef3c7;color:#b45309;font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:24px;letter-spacing:.3px}
+      .hero h1{font-family:"Lora",serif;font-size:clamp(32px,5vw,50px);font-weight:600;line-height:1.15;letter-spacing:-.5px;margin-bottom:20px}
+      .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+      .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+      .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#dd0031,#9c0023);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white}
+      .meta-text{font-size:14px;color:var(--text-secondary)}
+      .meta-text strong{color:var(--text-primary)}
+      .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+
+      .toc-wrapper{max-width:780px;margin:0 auto;padding:0 2rem 8px}
+      .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:40px}
+      .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+      .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+      .toc a{font-size:14px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
+      .toc a:hover{color:var(--accent)}
+      .toc-num{font-size:12px;color:var(--text-muted);font-weight:500;min-width:20px}
+
+      .content{max-width:780px;margin:0 auto;padding:0 2rem 80px}
+      .section{margin-bottom:72px;scroll-margin-top:72px}
+      .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+      .section-label::after{content:"";flex:1;height:1px;background:#fce4ec}
+      h2{font-family:"Lora",serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:16px}
+      h3{font-size:19px;font-weight:600;margin:32px 0 12px}
+      h4{font-size:16px;font-weight:600;margin:20px 0 8px}
+      p{margin-bottom:18px;color:#2d2d2d}
+      .lead{font-size:19px;color:var(--text-secondary);font-weight:300;margin-bottom:24px}
+      ul.prose{margin:0 0 18px 20px} ul.prose li{margin-bottom:6px;color:#2d2d2d}
+
+      .code-block{background:var(--code-bg);border-radius:10px;margin:24px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+      .code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+      .code-lang{font-size:12px;color:#6e7681;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+      .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:"Outfit",sans-serif;transition:all .15s}
+      .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+      pre{padding:20px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.7;color:var(--code-text)}
+      pre code{background:none;padding:0;font-size:inherit}
+      code{font-family:"JetBrains Mono",monospace;font-size:13.5px;background:#fce4ec;color:#c2185b;padding:2px 6px;border-radius:4px}
+
+      .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+      .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+      .pu{color:#e6edf3}.bi{color:#ffa657}.at{color:#79c0ff}.dc{color:#f0883e}
+
+      .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+      .compare-card{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+      .compare-header{padding:10px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+      .compare-header.ng{background:#fce4ec;color:#9c0023}
+      .compare-header.react{background:#e0f7fa;color:#006064}
+      .compare-header.next{background:#f3f4f6;color:#111}
+      .compare-header.bad{background:#fef2f2;color:#dc2626}
+      .compare-header.good{background:#f0fdf4;color:#16a34a}
+      .compare-card .code-block{border-radius:0;margin:0;border:none}
+
+      .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+      .tip-label{font-size:12px;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+      .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+      .warn-label{font-size:12px;font-weight:600;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+      .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
+      .info-label{font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+
+      table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px}
+      th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+      td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+      tr:last-child td{border-bottom:none}
+      tr:hover td{background:var(--bg)}
+
+      .fw-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:2px 10px;border-radius:100px;white-space:nowrap}
+      .fw-ng{background:#fce4ec;color:#c2185b}
+      .fw-react{background:#e0f7fa;color:#006064}
+      .fw-next{background:#f3f4f6;color:#374151;border:1px solid #d1d5db}
+
+      .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0}
+      .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+      .concept-card h4{font-size:15px;font-weight:600;margin:0 0 6px}
+      .concept-card p{font-size:14px;color:var(--text-secondary);margin:0;line-height:1.5}
+      .concept-icon{font-size:22px;margin-bottom:10px}
+
+      .pullquote{font-family:"Lora",serif;font-style:italic;font-size:22px;line-height:1.5;color:var(--text-secondary);border-left:4px solid var(--accent);padding:12px 24px;margin:36px 0}
+      .checklist{list-style:none;margin:16px 0}
+      .checklist li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:15px}
+      .checklist li:last-child{border-bottom:none}
+      .check-icon{font-size:16px;flex-shrink:0;margin-top:2px}
+
+      .verdict-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+      .verdict-card{border-radius:10px;padding:20px;border:2px solid var(--border)}
+      .verdict-card.ng-card{border-color:#dd0031;background:#fff5f7}
+      .verdict-card.react-card{border-color:#61dafb;background:#f0fdff}
+      .verdict-card.next-card{border-color:#374151;background:#f9fafb}
+      .verdict-title{font-size:14px;font-weight:700;margin-bottom:10px}
+      .verdict-list{list-style:none;font-size:13px;color:var(--text-secondary);line-height:1.8}
+
+      footer{background:#1a1a1a;color:rgba(255,255,255,.65);text-align:center;padding:40px 2rem;font-size:14px}
+      footer strong{color:white}
+      @media(max-width:640px){.toc-grid,.compare-grid,.concept-grid,.verdict-grid{grid-template-columns:1fr}.nav-links{display:none}}
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">&#8592; DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">Angular In Depth</span>
+        <span class="nav-badge">JavaScript</span>
+      </div>
+      <div class="nav-links">
+        <a href="#philosophy">Philosophy</a>
+        <a href="#components">Components</a>
+        <a href="#reactivity">Reactivity</a>
+        <a href="#di">DI</a>
+        <a href="#routing">Routing</a>
+        <a href="#forms">Forms</a>
+        <a href="#ssr">SSR</a>
+        <a href="#state">State</a>
+        <a href="#verdict">Verdict</a>
+      </div>
+      <span class="nav-rt">~30 min read</span>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-tag">&#9679; JavaScript</div>
+      <h1>Angular In Depth: Architecture, Patterns &amp; Comparison with React/Next.js</h1>
+      <p class="hero-sub">
+        A senior engineer's guide to Angular — components, signals, dependency
+        injection, reactive forms, routing, SSR — with direct side-by-side
+        comparisons to React and Next.js so you can make informed architectural
+        decisions for your team.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">NG</div>
+        <div class="meta-text">
+          <strong>Angular vs React vs Next.js</strong><br />
+          Angular 17+ &middot; React 19 &middot; Next.js 15 &mdash; June 2026
+        </div>
+      </div>
+      <hr class="hero-divider" />
+    </div>
+
+    <div class="toc-wrapper">
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <div class="toc-grid">
+          <a href="#philosophy"><span class="toc-num">01</span> Philosophy &amp; Mental Model</a>
+          <a href="#routing"><span class="toc-num">05</span> Routing Deep Dive</a>
+          <a href="#components"><span class="toc-num">02</span> Component Architecture</a>
+          <a href="#forms"><span class="toc-num">06</span> Forms &amp; Validation</a>
+          <a href="#reactivity"><span class="toc-num">03</span> Reactivity &amp; Change Detection</a>
+          <a href="#ssr"><span class="toc-num">07</span> SSR &amp; Performance</a>
+          <a href="#di"><span class="toc-num">04</span> Dependency Injection</a>
+          <a href="#state"><span class="toc-num">08</span> State Management</a>
+          <a href="#verdict"><span class="toc-num">09</span> When to Choose What</a>
+          <a href="#verdict"><span class="toc-num">&nbsp;</span> &nbsp;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══════════════════════ 01 PHILOSOPHY -->
+      <div class="section" id="philosophy">
+        <div class="section-label">01 &mdash; The Core Distinction</div>
+        <h2>Philosophy &amp; Mental Model</h2>
+        <p class="lead">
+          The most important question isn't "which is better" — it's "what problem
+          is each solving?" Angular, React, and Next.js occupy different positions
+          on the spectrum between <em>library</em> and <em>platform</em>, and that
+          position shapes every technical decision downstream.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th><span class="fw-badge fw-ng">Angular</span></th>
+              <th><span class="fw-badge fw-react">React</span></th>
+              <th><span class="fw-badge fw-next">Next.js</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Classification</strong></td><td>Full framework (opinionated platform)</td><td>UI library</td><td>React meta-framework</td></tr>
+            <tr><td><strong>Language</strong></td><td>TypeScript — first class, mandatory</td><td>JS or TS — opt-in</td><td>JS or TS — opt-in</td></tr>
+            <tr><td><strong>Routing</strong></td><td>Built-in (<code>@angular/router</code>)</td><td>Third-party (React Router, TanStack)</td><td>Built-in (file-based App Router)</td></tr>
+            <tr><td><strong>HTTP client</strong></td><td>Built-in (<code>HttpClient</code>)</td><td>Third-party (fetch, axios, TanStack Query)</td><td>Native fetch + Server Components</td></tr>
+            <tr><td><strong>Forms</strong></td><td>Built-in (Reactive + Template-driven)</td><td>Third-party (react-hook-form, Formik)</td><td>Third-party (same as React)</td></tr>
+            <tr><td><strong>DI system</strong></td><td>Built-in, hierarchical</td><td>Context API (manual)</td><td>Context API (manual)</td></tr>
+            <tr><td><strong>State</strong></td><td>Signals (built-in) + NgRx</td><td>useState/useReducer + Zustand/Redux</td><td>Same + Server state via RSC</td></tr>
+            <tr><td><strong>Testing</strong></td><td>Built-in (Karma → Jest, TestBed)</td><td>Third-party (Jest + RTL)</td><td>Third-party (Jest + RTL + Playwright)</td></tr>
+            <tr><td><strong>CLI</strong></td><td>Angular CLI — batteries included</td><td>Vite / CRA (deprecated)</td><td><code>create-next-app</code></td></tr>
+            <tr><td><strong>Bundle size (hello world)</strong></td><td>~45KB gzip</td><td>~42KB gzip</td><td>~80KB gzip (with runtime)</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          Angular's bet is that <strong>consistency and productivity at scale</strong>
+          outweigh flexibility. When 30 engineers join a project, they already know
+          where the routing config lives, how services are injected, how forms are
+          validated, and how HTTP calls are made — because there is one canonical
+          Angular way to do each. React's bet is the inverse: the ecosystem's
+          diversity produces better individual solutions than any framework could
+          ship natively.
+        </p>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🏗️</div>
+            <h4>Angular is a platform</h4>
+            <p>Routing, HTTP, forms, animations, i18n, testing utilities — all from <code>@angular/*</code>. One upgrade path, one breaking change policy.</p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🧩</div>
+            <h4>React is a library</h4>
+            <p>React renders UI. Everything else — routing, data fetching, forms, state — is your choice. Maximum flexibility, maximum decision fatigue.</p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚡</div>
+            <h4>Next.js is a meta-framework</h4>
+            <p>React + opinionated file-based routing + SSR/SSG/ISR + Edge Runtime + Server Components. The production-ready default for React apps.</p>
+          </div>
+        </div>
+
+        <div class="pullquote">
+          "Choosing Angular means choosing the Google-opinionated full solution.
+          Choosing Next.js means choosing the Vercel-opinionated React solution.
+          Choosing React alone means you are the architect."
+        </div>
+      </div>
+
+      <!-- ══════════════════════ 02 COMPONENTS -->
+      <div class="section" id="components">
+        <div class="section-label">02 &mdash; Building Blocks</div>
+        <h2>Component Architecture</h2>
+        <p class="lead">
+          Both Angular and React converge on the component as the fundamental unit
+          of UI, but their component models diverge sharply on class vs function,
+          template syntax, and how metadata is declared.
+        </p>
+
+        <h3>The Same Component: Side by Side</h3>
+        <p>A user profile card with a name, avatar, role badge, and a follow button:</p>
+
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header ng">🅰 Angular (Standalone)</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// user-card.component.ts</span>
+<span class="kw">import</span> <span class="pu">{</span> Component<span class="pu">,</span> input<span class="pu">,</span> output <span class="pu">}</span>
+  <span class="kw">from</span> <span class="st">'@angular/core'</span>
+<span class="kw">import</span> <span class="pu">{</span> NgClass <span class="pu">}</span>
+  <span class="kw">from</span> <span class="st">'@angular/common'</span>
+
+<span class="kw">type</span> <span class="ty">Role</span> <span class="op">=</span> <span class="st">'admin'</span> <span class="op">|</span> <span class="st">'user'</span>
+
+<span class="dc">@Component</span><span class="pu">({</span>
+  selector<span class="op">:</span> <span class="st">'app-user-card'</span><span class="pu">,</span>
+  standalone<span class="op">:</span> <span class="kw">true</span><span class="pu">,</span>
+  imports<span class="op">:</span> <span class="pu">[</span>NgClass<span class="pu">],</span>
+  template<span class="op">:</span> <span class="st">`
+    &lt;div class="card"&gt;
+      &lt;img [src]="avatar()"
+           [alt]="name()" /&gt;
+      &lt;h3&gt;{{ name() }}&lt;/h3&gt;
+      &lt;span [ngClass]="'badge-'+role()"&gt;
+        {{ role() }}
+      &lt;/span&gt;
+      &lt;button (click)="follow.emit()"&gt;
+        Follow
+      &lt;/button&gt;
+    &lt;/div&gt;
+  `</span>
+<span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">UserCardComponent</span> <span class="pu">{</span>
+  name   <span class="op">=</span> <span class="fn">input</span><span class="op">.required&lt;</span><span class="ty">string</span><span class="op">&gt;</span><span class="pu">()</span>
+  avatar <span class="op">=</span> <span class="fn">input</span><span class="op">.required&lt;</span><span class="ty">string</span><span class="op">&gt;</span><span class="pu">()</span>
+  role   <span class="op">=</span> <span class="fn">input</span><span class="op">&lt;</span><span class="ty">Role</span><span class="op">&gt;</span><span class="pu">(</span><span class="st">'user'</span><span class="pu">)</span>
+  follow <span class="op">=</span> <span class="fn">output</span><span class="pu">&lt;</span><span class="ty">void</span><span class="pu">&gt;()</span>
+<span class="pu">}</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header react">⚛ React (TypeScript)</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// UserCard.tsx</span>
+<span class="kw">type</span> <span class="ty">Role</span> <span class="op">=</span> <span class="st">'admin'</span> <span class="op">|</span> <span class="st">'user'</span>
+
+<span class="kw">interface</span> <span class="ty">UserCardProps</span> <span class="pu">{</span>
+  name<span class="op">:</span>     <span class="ty">string</span>
+  avatar<span class="op">:</span>   <span class="ty">string</span>
+  role<span class="op">?:</span>    <span class="ty">Role</span>
+  onFollow<span class="op">:</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="ty">void</span>
+<span class="pu">}</span>
+
+<span class="kw">export function</span> <span class="fn">UserCard</span><span class="pu">({</span>
+  name<span class="pu">,</span> avatar<span class="pu">,</span>
+  role <span class="op">=</span> <span class="st">'user'</span><span class="pu">,</span>
+  onFollow
+<span class="pu">}:</span> <span class="ty">UserCardProps</span><span class="pu">) {</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">div</span> <span class="at">className</span><span class="op">=</span><span class="st">"card"</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">img</span> <span class="at">src</span><span class="op">={</span>avatar<span class="pu">}</span>
+           <span class="at">alt</span><span class="op">={</span>name<span class="pu">}</span> <span class="op">/&gt;</span>
+      <span class="op">&lt;</span><span class="ty">h3</span><span class="op">&gt;{</span>name<span class="pu">}</span><span class="op">&lt;/</span><span class="ty">h3</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">span</span> <span class="at">className</span><span class="op">={</span><span class="st">`badge-</span><span class="pu">${</span>role<span class="pu">}</span><span class="st">`</span><span class="pu">}&gt;</span>
+        <span class="pu">{</span>role<span class="pu">}</span>
+      <span class="op">&lt;/</span><span class="ty">span</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">button</span> <span class="at">onClick</span><span class="op">={</span>onFollow<span class="pu">}&gt;</span>
+        Follow
+      <span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          Angular's component is a <strong>class decorated with metadata</strong>.
+          The decorator declares the selector (custom HTML tag), which dependencies
+          need to be imported, and the template. React's component is a
+          <strong>plain function</strong> — no decorators, no class, no imports
+          list — the JSX template is inlined in the return statement.
+        </p>
+
+        <h3>Angular Standalone Components (Angular 14+)</h3>
+        <p>
+          Prior to Angular 14, every component had to be declared in an
+          <code>NgModule</code>. Modules were a source of ceremony, confusion,
+          and boilerplate. Standalone components remove the <code>NgModule</code>
+          requirement: a component declares its own imports directly. Angular 17
+          makes standalone the default for all CLI-generated code.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Angular 17 app bootstrap (no NgModule)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">// main.ts — Angular 17+ bootstraps a standalone component directly</span>
+<span class="kw">import</span> <span class="pu">{</span> bootstrapApplication <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/platform-browser'</span>
+<span class="kw">import</span> <span class="pu">{</span> AppComponent <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./app/app.component'</span>
+<span class="kw">import</span> <span class="pu">{</span> appConfig <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./app/app.config'</span>
+
+<span class="fn">bootstrapApplication</span><span class="pu">(</span>AppComponent<span class="pu">,</span> appConfig<span class="pu">)</span>
+
+<span class="cm">// app.config.ts — replaces AppModule for providers</span>
+<span class="kw">import</span> <span class="pu">{</span> ApplicationConfig <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/core'</span>
+<span class="kw">import</span> <span class="pu">{</span> provideRouter <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/router'</span>
+<span class="kw">import</span> <span class="pu">{</span> provideHttpClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/common/http'</span>
+<span class="kw">import</span> <span class="pu">{</span> routes <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./app.routes'</span>
+
+<span class="kw">export const</span> appConfig<span class="op">:</span> <span class="ty">ApplicationConfig</span> <span class="op">=</span> <span class="pu">{</span>
+  providers<span class="op">:</span> <span class="pu">[</span>
+    <span class="fn">provideRouter</span><span class="pu">(</span>routes<span class="pu">),</span>
+    <span class="fn">provideHttpClient</span><span class="pu">(),</span>
+  <span class="pu">]</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>Angular Template Syntax vs JSX</h3>
+
+        <table>
+          <thead>
+            <tr><th>Concept</th><th>Angular template</th><th>React JSX</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Conditional rendering</td><td><code>@if (cond) { } @else { }</code></td><td><code>{cond &amp;&amp; &lt;X /&gt;}</code> or ternary</td></tr>
+            <tr><td>List rendering</td><td><code>@for (item of list; track item.id) { }</code></td><td><code>{list.map(i =&gt; &lt;X key={i.id} /&gt;)}</code></td></tr>
+            <tr><td>Property binding</td><td><code>[src]="avatarUrl"</code></td><td><code>src={avatarUrl}</code></td></tr>
+            <tr><td>Event binding</td><td><code>(click)="handleClick()"</code></td><td><code>onClick={handleClick}</code></td></tr>
+            <tr><td>Two-way binding</td><td><code>[(ngModel)]="value"</code></td><td><code>value={v} onChange={setV}</code></td></tr>
+            <tr><td>CSS class binding</td><td><code>[class.active]="isActive"</code></td><td><code>className={isActive ? 'active' : ''}</code></td></tr>
+            <tr><td>Content projection</td><td><code>&lt;ng-content /&gt;</code></td><td><code>{children}</code></td></tr>
+            <tr><td>Switch/match</td><td><code>@switch (val) { @case ('a') {} }</code></td><td>Map object or nested ternary</td></tr>
+          </tbody>
+        </table>
+
+        <div class="info">
+          <div class="info-label">📌 Angular 17 New Control Flow</div>
+          Angular 17 replaced structural directives (<code>*ngIf</code>,
+          <code>*ngFor</code>, <code>*ngSwitch</code>) with built-in template
+          control flow blocks (<code>@if</code>, <code>@for</code>,
+          <code>@switch</code>). The new syntax is more readable, type-safe,
+          and 30–90% faster at runtime due to improved diff tracking.
+        </div>
+      </div>
+
+      <!-- ══════════════════════ 03 REACTIVITY -->
+      <div class="section" id="reactivity">
+        <div class="section-label">03 &mdash; State &amp; Updates</div>
+        <h2>Reactivity &amp; Change Detection</h2>
+        <p class="lead">
+          How a framework knows <em>when</em> and <em>what</em> to re-render is the
+          defining performance characteristic. Angular and React have fundamentally
+          different answers — and Angular's Signals (v16+) are closing the gap with
+          React's fine-grained reactivity model while eliminating Zone.js overhead.
+        </p>
+
+        <h3>Angular's Change Detection: Zone.js → OnPush → Signals</h3>
+        <p>
+          Angular's original change detection used <strong>Zone.js</strong> to
+          monkey-patch every async operation (setTimeout, fetch, DOM events) and
+          trigger a full component tree check after each one. Effective, but
+          expensive at scale. The progression since then:
+        </p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Angular change detection evolution</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">// ─── Step 1: Default (Zone.js) — checks entire tree ────────</span>
+<span class="dc">@Component</span><span class="pu">({</span> template<span class="op">:</span> <span class="st">'{{ count }}'</span> <span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">DefaultComponent</span> <span class="pu">{</span>
+  count <span class="op">=</span> <span class="nm">0</span>
+  <span class="fn">increment</span><span class="pu">() {</span> <span class="kw">this</span><span class="pu">.</span>count<span class="op">++</span> <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ─── Step 2: OnPush — only checks on @Input() changes ───────</span>
+<span class="dc">@Component</span><span class="pu">({</span>
+  changeDetection<span class="op">:</span> <span class="ty">ChangeDetectionStrategy</span><span class="pu">.</span>OnPush<span class="pu">,</span>
+  template<span class="op">:</span> <span class="st">'{{ count }}'</span>
+<span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">OnPushComponent</span> <span class="pu">{</span>
+  count <span class="op">=</span> <span class="nm">0</span>
+  <span class="fn">constructor</span><span class="pu">(</span><span class="kw">private</span> cdr<span class="op">:</span> <span class="ty">ChangeDetectorRef</span><span class="pu">) {}</span>
+  <span class="fn">increment</span><span class="pu">() {</span>
+    <span class="kw">this</span><span class="pu">.</span>count<span class="op">++</span>
+    <span class="kw">this</span><span class="pu">.</span>cdr<span class="pu">.</span><span class="fn">markForCheck</span><span class="pu">()</span> <span class="cm">// manual notify</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ─── Step 3: Signals (Angular 16+) — fine-grained, no Zone ─</span>
+<span class="dc">@Component</span><span class="pu">({</span>
+  template<span class="op">:</span> <span class="st">'{{ count() }}'</span><span class="pu">,</span>
+  changeDetection<span class="op">:</span> <span class="ty">ChangeDetectionStrategy</span><span class="pu">.</span>OnPush
+<span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">SignalComponent</span> <span class="pu">{</span>
+  count <span class="op">=</span> <span class="fn">signal</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+
+  <span class="fn">increment</span><span class="pu">() {</span>
+    <span class="kw">this</span><span class="pu">.</span>count<span class="pu">.</span><span class="fn">update</span><span class="pu">(</span>n <span class="op">=&gt;</span> n <span class="op">+</span> <span class="nm">1</span><span class="pu">)</span>
+    <span class="cm">// Angular knows EXACTLY which view to update — no diffing</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>Angular Signals vs React Hooks</h3>
+
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header ng">🅰 Angular Signals</div>
+            <div class="code-block">
+              <pre><code><span class="kw">import</span> <span class="pu">{</span>
+  signal<span class="pu">,</span> computed<span class="pu">,</span> effect
+<span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/core'</span>
+
+<span class="cm">// Writable signal</span>
+<span class="kw">const</span> price <span class="op">=</span> <span class="fn">signal</span><span class="pu">(</span><span class="nm">100</span><span class="pu">)</span>
+<span class="kw">const</span> qty   <span class="op">=</span> <span class="fn">signal</span><span class="pu">(</span><span class="nm">3</span><span class="pu">)</span>
+
+<span class="cm">// Derived — auto-tracks dependencies</span>
+<span class="kw">const</span> total <span class="op">=</span> <span class="fn">computed</span><span class="pu">(() =&gt;</span>
+  price<span class="pu">()</span> <span class="op">*</span> qty<span class="pu">()</span>
+<span class="pu">)</span>
+
+<span class="cm">// Side effects — re-runs on signal change</span>
+<span class="fn">effect</span><span class="pu">(() =&gt; {</span>
+  <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">'Total:'</span><span class="pu">,</span> total<span class="pu">())</span>
+<span class="pu">})</span>
+
+<span class="cm">// Update</span>
+price<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span><span class="nm">120</span><span class="pu">)</span>         <span class="cm">// direct set</span>
+qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</span>n <span class="op">=&gt;</span> n<span class="op">+</span><span class="nm">1</span><span class="pu">)</span> <span class="cm">// derive from prev</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header react">⚛ React Hooks</div>
+            <div class="code-block">
+              <pre><code><span class="kw">import</span> <span class="pu">{</span>
+  useState<span class="pu">,</span> useMemo<span class="pu">,</span> useEffect
+<span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="cm">// State</span>
+<span class="kw">const</span> <span class="pu">[</span>price<span class="pu">,</span> setPrice<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="nm">100</span><span class="pu">)</span>
+<span class="kw">const</span> <span class="pu">[</span>qty<span class="pu">,</span>   setQty<span class="pu">]</span>   <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="nm">3</span><span class="pu">)</span>
+
+<span class="cm">// Derived — manual dep array</span>
+<span class="kw">const</span> total <span class="op">=</span> <span class="fn">useMemo</span><span class="pu">(() =&gt;</span>
+  price <span class="op">*</span> qty
+<span class="pu">, [</span>price<span class="pu">,</span> qty<span class="pu">])</span>
+
+<span class="cm">// Side effect — manual dep array</span>
+<span class="fn">useEffect</span><span class="pu">(() =&gt; {</span>
+  <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span><span class="st">'Total:'</span><span class="pu">,</span> total<span class="pu">)</span>
+<span class="pu">, [</span>total<span class="pu">])</span>
+
+<span class="cm">// Update</span>
+<span class="fn">setPrice</span><span class="pu">(</span><span class="nm">120</span><span class="pu">)</span>
+<span class="fn">setQty</span><span class="pu">(</span>n <span class="op">=&gt;</span> n <span class="op">+</span> <span class="nm">1</span><span class="pu">)</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          Angular Signals auto-track their dependencies — no dependency array to
+          maintain, no stale closure bugs, no <code>useCallback</code> to stabilise
+          references. React's <code>useMemo</code> and <code>useEffect</code> require
+          manually declaring what they depend on, which is the root cause of the
+          majority of React performance bugs in production.
+        </p>
+
+        <div class="tip">
+          <div class="tip-label">💡 Signal-based components are Zone-free</div>
+          Angular 18 introduced <strong>zoneless change detection</strong> as
+          experimental — applications built entirely with signals can opt out of
+          Zone.js entirely (<code>provideExperimentalZonelessChangeDetection()</code>),
+          shrinking bundle size by ~12KB and improving startup performance measurably.
+        </div>
+      </div>
+
+      <!-- ══════════════════════ 04 DI -->
+      <div class="section" id="di">
+        <div class="section-label">04 &mdash; Services &amp; Sharing State</div>
+        <h2>Dependency Injection</h2>
+        <p class="lead">
+          Angular's Dependency Injection system is one of its most powerful and
+          most misunderstood features. It is a hierarchical IoC container that
+          resolves class dependencies at runtime. React has no equivalent — Context
+          is the closest analogue, but the mental model differs significantly.
+        </p>
+
+        <h3>Angular DI — Services &amp; Providers</h3>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Angular injectable service</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> Injectable<span class="pu">,</span> signal<span class="pu">,</span> computed <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/core'</span>
+<span class="kw">import</span> <span class="pu">{</span> HttpClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/common/http'</span>
+
+<span class="dc">@Injectable</span><span class="pu">({</span>
+  providedIn<span class="op">:</span> <span class="st">'root'</span>  <span class="cm">// singleton across the entire app</span>
+<span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">AuthService</span> <span class="pu">{</span>
+  <span class="kw">private</span> _user <span class="op">=</span> <span class="fn">signal</span><span class="op">&lt;</span><span class="ty">User</span> <span class="op">|</span> <span class="kw">null</span><span class="op">&gt;</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+
+  <span class="kw">readonly</span> user       <span class="op">=</span> <span class="kw">this</span><span class="pu">.</span>_user<span class="pu">.</span><span class="fn">asReadonly</span><span class="pu">()</span>
+  <span class="kw">readonly</span> isLoggedIn <span class="op">=</span> <span class="fn">computed</span><span class="pu">(() =&gt;</span> <span class="kw">this</span><span class="pu">.</span>_user<span class="pu">()</span> <span class="op">!==</span> <span class="kw">null</span><span class="pu">)</span>
+  <span class="kw">readonly</span> isAdmin    <span class="op">=</span> <span class="fn">computed</span><span class="pu">(() =&gt;</span> <span class="kw">this</span><span class="pu">.</span>_user<span class="pu">()?.</span>role <span class="op">===</span> <span class="st">'admin'</span><span class="pu">)</span>
+
+  <span class="cm">// HttpClient injected via constructor DI</span>
+  <span class="fn">constructor</span><span class="pu">(</span><span class="kw">private</span> http<span class="op">:</span> <span class="ty">HttpClient</span><span class="pu">) {}</span>
+
+  <span class="fn">login</span><span class="pu">(</span>email<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span> password<span class="op">:</span> <span class="ty">string</span><span class="pu">) {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>http
+      <span class="pu">.</span><span class="fn">post</span><span class="op">&lt;</span><span class="ty">User</span><span class="op">&gt;</span><span class="pu">(</span><span class="st">'/api/auth/login'</span><span class="pu">,</span> <span class="pu">{</span> email<span class="pu">,</span> password <span class="pu">})</span>
+      <span class="pu">.</span><span class="fn">pipe</span><span class="pu">(</span><span class="fn">tap</span><span class="pu">(</span>user <span class="op">=&gt;</span> <span class="kw">this</span><span class="pu">.</span>_user<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>user<span class="pu">)))</span>
+  <span class="pu">}</span>
+
+  <span class="fn">logout</span><span class="pu">() {</span>
+    <span class="kw">this</span><span class="pu">.</span>_user<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// Consumed in any component — Angular resolves the instance</span>
+<span class="dc">@Component</span><span class="pu">({</span> template<span class="op">:</span> <span class="st">`
+  @if (auth.isAdmin()) {
+    &lt;admin-panel /&gt;
+  }
+`</span> <span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">AppShell</span> <span class="pu">{</span>
+  auth <span class="op">=</span> <span class="fn">inject</span><span class="pu">(</span>AuthService<span class="pu">)</span>  <span class="cm">// modern inject() API</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>React Equivalent — Context + Custom Hook</h3>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — React auth service pattern</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">// auth-context.tsx</span>
+<span class="kw">import</span> <span class="pu">{</span> createContext<span class="pu">,</span> useContext<span class="pu">,</span> useState<span class="pu">,</span> useMemo <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="kw">interface</span> <span class="ty">AuthCtxValue</span> <span class="pu">{</span>
+  user<span class="op">:</span>        <span class="ty">User</span> <span class="op">|</span> <span class="kw">null</span>
+  isLoggedIn<span class="op">:</span>  <span class="ty">boolean</span>
+  isAdmin<span class="op">:</span>     <span class="ty">boolean</span>
+  login<span class="op">:</span>       <span class="pu">(</span>email<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span> password<span class="op">:</span> <span class="ty">string</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">void</span><span class="op">&gt;</span>
+  logout<span class="op">:</span>      <span class="pu">()</span> <span class="op">=&gt;</span> <span class="ty">void</span>
+<span class="pu">}</span>
+
+<span class="kw">const</span> AuthCtx <span class="op">=</span> <span class="fn">createContext</span><span class="op">&lt;</span><span class="ty">AuthCtxValue</span><span class="op">&gt;</span><span class="pu">(</span><span class="kw">null</span><span class="op">!</span><span class="pu">)</span>
+
+<span class="kw">export function</span> <span class="fn">AuthProvider</span><span class="pu">({</span> children <span class="pu">}:</span> <span class="pu">{</span> children<span class="op">:</span> <span class="ty">React.ReactNode</span> <span class="pu">}) {</span>
+  <span class="kw">const</span> <span class="pu">[</span>user<span class="pu">,</span> setUser<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="op">&lt;</span><span class="ty">User</span> <span class="op">|</span> <span class="kw">null</span><span class="op">&gt;</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+
+  <span class="kw">const</span> value <span class="op">=</span> <span class="fn">useMemo</span><span class="pu">(() =&gt; ({</span>
+    user<span class="pu">,</span>
+    isLoggedIn<span class="op">:</span> user <span class="op">!==</span> <span class="kw">null</span><span class="pu">,</span>
+    isAdmin<span class="op">:</span>    user<span class="op">?.</span>role <span class="op">===</span> <span class="st">'admin'</span><span class="pu">,</span>
+    login<span class="op">:</span> <span class="kw">async</span> <span class="pu">(</span>email<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span> password<span class="op">:</span> <span class="ty">string</span><span class="pu">) =&gt; {</span>
+      <span class="kw">const</span> res <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span><span class="st">'/api/auth/login'</span><span class="pu">,</span> <span class="pu">{</span>
+        method<span class="op">:</span> <span class="st">'POST'</span><span class="pu">,</span>
+        body<span class="op">:</span> <span class="ty">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">({</span> email<span class="pu">,</span> password <span class="pu">})</span>
+      <span class="pu">})</span>
+      <span class="fn">setUser</span><span class="pu">(</span><span class="kw">await</span> res<span class="pu">.</span><span class="fn">json</span><span class="pu">())</span>
+    <span class="pu">},</span>
+    logout<span class="op">:</span> <span class="pu">() =&gt;</span> <span class="fn">setUser</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+  <span class="pu">}), [</span>user<span class="pu">])</span>
+
+  <span class="kw">return</span> <span class="op">&lt;</span><span class="ty">AuthCtx.Provider</span> <span class="at">value</span><span class="op">={</span>value<span class="pu">}&gt;{</span>children<span class="pu">}</span><span class="op">&lt;/</span><span class="ty">AuthCtx.Provider</span><span class="op">&gt;</span>
+<span class="pu">}</span>
+
+<span class="kw">export const</span> useAuth <span class="op">=</span> <span class="pu">() =&gt;</span> <span class="fn">useContext</span><span class="pu">(</span>AuthCtx<span class="pu">)</span></code></pre>
+        </div>
+
+        <p>
+          Angular's DI is more powerful: it is hierarchical (you can provide a
+          service at the component level for a scoped instance), testable (swap
+          implementations in TestBed), and lazy-loadable. React's Context is flat —
+          one provider, all consumers — and re-renders every consumer when the
+          context value changes unless you manually optimise with <code>memo</code>.
+        </p>
+      </div>
+
+
+      <!-- ══════════════════════ 05 ROUTING -->
+      <div class="section" id="routing">
+        <div class="section-label">05 &mdash; Navigation</div>
+        <h2>Routing Deep Dive</h2>
+        <p class="lead">
+          Routing is the area where Angular and Next.js differ most dramatically.
+          Angular uses an explicit route configuration object. Next.js uses the
+          file system itself as the route definition — no config file required.
+          Both approaches have real trade-offs worth understanding deeply.
+        </p>
+
+        <h3>Angular Router — Explicit Configuration</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Angular app.routes.ts (lazy + guards)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> <span class="ty">Routes</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/router'</span>
+<span class="kw">import</span> <span class="pu">{</span> authGuard <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./guards/auth.guard'</span>
+
+<span class="kw">export const</span> routes<span class="op">:</span> <span class="ty">Routes</span> <span class="op">=</span> <span class="pu">[</span>
+  <span class="pu">{</span>
+    path<span class="op">:</span> <span class="st">''</span><span class="pu">,</span>
+    <span class="cm">// Lazy-load entire feature module</span>
+    loadComponent<span class="op">:</span> <span class="pu">() =&gt;</span>
+      <span class="kw">import</span><span class="pu">(</span><span class="st">'./home/home.component'</span><span class="pu">)</span>
+        <span class="pu">.</span><span class="fn">then</span><span class="pu">(</span>m <span class="op">=&gt;</span> m<span class="pu">.</span>HomeComponent<span class="pu">)</span>
+  <span class="pu">},</span>
+  <span class="pu">{</span>
+    path<span class="op">:</span> <span class="st">'dashboard'</span><span class="pu">,</span>
+    canActivate<span class="op">:</span> <span class="pu">[</span>authGuard<span class="pu">],</span>   <span class="cm">// route guard</span>
+    loadChildren<span class="op">:</span> <span class="pu">() =&gt;</span>
+      <span class="kw">import</span><span class="pu">(</span><span class="st">'./dashboard/routes'</span><span class="pu">)</span>
+        <span class="pu">.</span><span class="fn">then</span><span class="pu">(</span>m <span class="op">=&gt;</span> m<span class="pu">.</span>DASHBOARD_ROUTES<span class="pu">)</span>
+  <span class="pu">},</span>
+  <span class="pu">{</span>
+    path<span class="op">:</span> <span class="st">'users/:id'</span><span class="pu">,</span>
+    loadComponent<span class="op">:</span> <span class="pu">() =&gt;</span>
+      <span class="kw">import</span><span class="pu">(</span><span class="st">'./users/user-detail.component'</span><span class="pu">)</span>
+        <span class="pu">.</span><span class="fn">then</span><span class="pu">(</span>m <span class="op">=&gt;</span> m<span class="pu">.</span>UserDetailComponent<span class="pu">)</span><span class="pu">,</span>
+    resolve<span class="op">:</span> <span class="pu">{</span>
+      <span class="cm">// Pre-fetch data before component activates</span>
+      user<span class="op">:</span> <span class="pu">(</span>route<span class="op">:</span> <span class="ty">ActivatedRouteSnapshot</span><span class="pu">) =&gt;</span>
+        <span class="fn">inject</span><span class="pu">(</span>UserService<span class="pu">).</span><span class="fn">getUser</span><span class="pu">(</span>route<span class="pu">.</span>paramMap<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'id'</span><span class="pu">)!)</span>
+    <span class="pu">}</span>
+  <span class="pu">},</span>
+  <span class="pu">{</span> path<span class="op">:</span> <span class="st">'**'</span><span class="pu">,</span> redirectTo<span class="op">:</span> <span class="st">''</span> <span class="pu">}</span>
+<span class="pu">]</span>
+
+<span class="cm">// Functional guard — replaces class-based CanActivate</span>
+<span class="kw">export const</span> authGuard <span class="op">=</span> <span class="pu">():</span> <span class="ty">boolean</span> <span class="op">|</span> <span class="ty">UrlTree</span> <span class="op">=&gt; {</span>
+  <span class="kw">const</span> auth   <span class="op">=</span> <span class="fn">inject</span><span class="pu">(</span>AuthService<span class="pu">)</span>
+  <span class="kw">const</span> router <span class="op">=</span> <span class="fn">inject</span><span class="pu">(</span>Router<span class="pu">)</span>
+  <span class="kw">return</span> auth<span class="pu">.</span><span class="fn">isLoggedIn</span><span class="pu">()</span>
+    <span class="op">||</span> router<span class="pu">.</span><span class="fn">createUrlTree</span><span class="pu">([</span><span class="st">'/login'</span><span class="pu">])</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>Next.js App Router — File System Routing</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Bash — Next.js 15 App Router file structure</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code>app/
+├── layout.tsx          <span class="cm"># Root layout (persistent shell)</span>
+├── page.tsx            <span class="cm"># Route: /</span>
+├── loading.tsx         <span class="cm"># Automatic suspense boundary</span>
+├── error.tsx           <span class="cm"># Error boundary for this segment</span>
+├── dashboard/
+│   ├── layout.tsx      <span class="cm"># Nested layout (sidebar, auth guard)</span>
+│   ├── page.tsx        <span class="cm"># Route: /dashboard</span>
+│   └── settings/
+│       └── page.tsx    <span class="cm"># Route: /dashboard/settings</span>
+├── users/
+│   └── [id]/
+│       ├── page.tsx    <span class="cm"># Route: /users/:id (dynamic)</span>
+│       └── not-found.tsx
+└── (marketing)/        <span class="cm"># Route group — no URL segment</span>
+    ├── about/page.tsx  <span class="cm"># Route: /about</span>
+    └── blog/page.tsx   <span class="cm"># Route: /blog</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Next.js route with auth middleware + data fetch</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">// middleware.ts — runs on Edge, guards all /dashboard routes</span>
+<span class="kw">import</span> <span class="pu">{</span> NextResponse <span class="pu">}</span> <span class="kw">from</span> <span class="st">'next/server'</span>
+<span class="kw">import</span> <span class="kw">type</span> <span class="pu">{</span> <span class="ty">NextRequest</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'next/server'</span>
+
+<span class="kw">export function</span> <span class="fn">middleware</span><span class="pu">(</span>req<span class="op">:</span> <span class="ty">NextRequest</span><span class="pu">) {</span>
+  <span class="kw">const</span> token <span class="op">=</span> req<span class="pu">.</span>cookies<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'token'</span><span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(!</span>token<span class="pu">)</span>
+    <span class="kw">return</span> <span class="ty">NextResponse</span><span class="pu">.</span><span class="fn">redirect</span><span class="pu">(</span><span class="kw">new</span> <span class="fn">URL</span><span class="pu">(</span><span class="st">'/login'</span><span class="pu">,</span> req<span class="pu">.</span>url<span class="pu">))</span>
+<span class="pu">}</span>
+<span class="kw">export const</span> config <span class="op">=</span> <span class="pu">{</span> matcher<span class="op">:</span> <span class="pu">[</span><span class="st">'/dashboard/:path*'</span><span class="pu">]</span> <span class="pu">}</span>
+
+<span class="cm">// app/users/[id]/page.tsx — Server Component + data fetch</span>
+<span class="kw">interface</span> <span class="ty">Props</span> <span class="pu">{</span> params<span class="op">:</span> <span class="ty">Promise</span><span class="op">&lt;{</span> id<span class="op">:</span> <span class="ty">string</span> <span class="pu">}></span> <span class="pu">}</span>
+
+<span class="kw">export default async function</span> <span class="fn">UserPage</span><span class="pu">({</span> params <span class="pu">}:</span> <span class="ty">Props</span><span class="pu">) {</span>
+  <span class="kw">const</span> <span class="pu">{</span> id <span class="pu">}</span> <span class="op">=</span> <span class="kw">await</span> params
+  <span class="cm">// fetch() here runs on the server — zero client JS for data</span>
+  <span class="kw">const</span> user <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span><span class="st">`/api/users/</span><span class="pu">${</span>id<span class="pu">}</span><span class="st">`</span><span class="pu">).</span><span class="fn">then</span><span class="pu">(</span>r <span class="op">=&gt;</span> r<span class="pu">.</span><span class="fn">json</span><span class="pu">())</span>
+  <span class="kw">return</span> <span class="op">&lt;</span><span class="ty">UserDetail</span> <span class="at">user</span><span class="op">={</span>user<span class="pu">}</span> <span class="op">/&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// Generate static paths at build time</span>
+<span class="kw">export async function</span> <span class="fn">generateStaticParams</span><span class="pu">() {</span>
+  <span class="kw">const</span> users <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span><span class="st">'/api/users'</span><span class="pu">).</span><span class="fn">then</span><span class="pu">(</span>r <span class="op">=&gt;</span> r<span class="pu">.</span><span class="fn">json</span><span class="pu">())</span>
+  <span class="kw">return</span> users<span class="pu">.</span><span class="fn">map</span><span class="pu">((</span>u<span class="op">:</span> <span class="ty">User</span><span class="pu">) =&gt; ({</span> id<span class="op">:</span> u<span class="pu">.</span>id <span class="pu">}))</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Feature</th><th><span class="fw-badge fw-ng">Angular Router</span></th><th><span class="fw-badge fw-next">Next.js App Router</span></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Route definition</td><td>TypeScript config array</td><td>File system (<code>page.tsx</code>)</td></tr>
+            <tr><td>Lazy loading</td><td><code>loadComponent</code> / <code>loadChildren</code></td><td>Automatic per-segment</td></tr>
+            <tr><td>Auth guard</td><td>Functional guard (<code>canActivate</code>)</td><td>Middleware on Edge</td></tr>
+            <tr><td>Data pre-fetch</td><td><code>resolve</code> object</td><td><code>async</code> Server Component</td></tr>
+            <tr><td>Nested layouts</td><td>Named router outlets</td><td>Nested <code>layout.tsx</code> files</td></tr>
+            <tr><td>Loading states</td><td>Manual skeleton components</td><td><code>loading.tsx</code> auto Suspense</td></tr>
+            <tr><td>Parallel routes</td><td>Named outlets (complex)</td><td><code>@slot</code> folders (native)</td></tr>
+            <tr><td>Route groups</td><td>Module organisation</td><td><code>(group)</code> folder convention</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ══════════════════════ 06 FORMS -->
+      <div class="section" id="forms">
+        <div class="section-label">06 &mdash; User Input</div>
+        <h2>Forms &amp; Validation</h2>
+        <p class="lead">
+          Forms are where Angular's "batteries included" philosophy pays the biggest
+          dividend. Angular ships two complete form systems — Reactive and
+          Template-driven — both type-safe in Angular 14+. React has no native form
+          system; the ecosystem converged on <strong>react-hook-form</strong> as
+          the de facto standard.
+        </p>
+
+        <h3>Angular Typed Reactive Forms</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Angular strictly-typed reactive form</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span>
+  FormBuilder<span class="pu">,</span> Validators<span class="pu">,</span> AbstractControl
+<span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/forms'</span>
+
+<span class="dc">@Component</span><span class="pu">({</span>
+  imports<span class="op">:</span> <span class="pu">[</span>ReactiveFormsModule<span class="pu">],</span>
+  template<span class="op">:</span> <span class="st">`
+    &lt;form [formGroup]="form" (ngSubmit)="onSubmit()"&gt;
+      &lt;input formControlName="email"
+             [class.error]="email.invalid &amp;&amp; email.touched" /&gt;
+      @if (email.hasError('email') &amp;&amp; email.touched) {
+        &lt;p class="err"&gt;Invalid email address&lt;/p&gt;
+      }
+
+      &lt;input type="password" formControlName="password" /&gt;
+
+      &lt;button type="submit" [disabled]="form.invalid"&gt;
+        Sign In
+      &lt;/button&gt;
+    &lt;/form&gt;
+  `</span>
+<span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">LoginFormComponent</span> <span class="pu">{</span>
+  <span class="cm">// TypeScript fully infers the form shape</span>
+  form <span class="op">=</span> <span class="kw">new</span> <span class="fn">FormGroup</span><span class="pu">({</span>
+    email<span class="op">:</span> <span class="kw">new</span> <span class="fn">FormControl</span><span class="pu">(</span><span class="st">''</span><span class="pu">,</span> <span class="pu">{</span>
+      validators<span class="op">:</span> <span class="pu">[</span>
+        Validators<span class="pu">.</span>required<span class="pu">,</span>
+        Validators<span class="pu">.</span>email
+      <span class="pu">],</span>
+      nonNullable<span class="op">:</span> <span class="kw">true</span>
+    <span class="pu">}),</span>
+    password<span class="op">:</span> <span class="kw">new</span> <span class="fn">FormControl</span><span class="pu">(</span><span class="st">''</span><span class="pu">,</span> <span class="pu">{</span>
+      validators<span class="op">:</span> <span class="pu">[</span>
+        Validators<span class="pu">.</span>required<span class="pu">,</span>
+        Validators<span class="pu">.</span><span class="fn">minLength</span><span class="pu">(</span><span class="nm">8</span><span class="pu">)</span>
+      <span class="pu">],</span>
+      nonNullable<span class="op">:</span> <span class="kw">true</span>
+    <span class="pu">})</span>
+  <span class="pu">})</span>
+
+  <span class="cm">// Typed accessor — no casting required</span>
+  <span class="kw">get</span> <span class="fn">email</span><span class="pu">() {</span> <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>form<span class="pu">.</span>controls<span class="pu">.</span>email <span class="pu">}</span>
+
+  <span class="fn">onSubmit</span><span class="pu">() {</span>
+    <span class="kw">if</span> <span class="pu">(</span><span class="kw">this</span><span class="pu">.</span>form<span class="pu">.</span>valid<span class="pu">) {</span>
+      <span class="cm">// form.getRawValue() is fully typed: { email: string; password: string }</span>
+      <span class="kw">const</span> <span class="pu">{</span> email<span class="pu">,</span> password <span class="pu">}</span> <span class="op">=</span> <span class="kw">this</span><span class="pu">.</span>form<span class="pu">.</span><span class="fn">getRawValue</span><span class="pu">()</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>React with react-hook-form + Zod</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — React login form with RHF + Zod</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> useForm <span class="pu">}</span>       <span class="kw">from</span> <span class="st">'react-hook-form'</span>
+<span class="kw">import</span> <span class="pu">{</span> zodResolver <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@hookform/resolvers/zod'</span>
+<span class="kw">import</span> <span class="pu">{</span> z <span class="pu">}</span>             <span class="kw">from</span> <span class="st">'zod'</span>
+
+<span class="kw">const</span> schema <span class="op">=</span> z<span class="pu">.</span><span class="fn">object</span><span class="pu">({</span>
+  email<span class="op">:</span>    z<span class="pu">.</span><span class="fn">string</span><span class="pu">().</span><span class="fn">email</span><span class="pu">(</span><span class="st">'Invalid email'</span><span class="pu">),</span>
+  password<span class="op">:</span> z<span class="pu">.</span><span class="fn">string</span><span class="pu">().</span><span class="fn">min</span><span class="pu">(</span><span class="nm">8</span><span class="pu">,</span> <span class="st">'Min 8 characters'</span><span class="pu">),</span>
+<span class="pu">})</span>
+<span class="kw">type</span> <span class="ty">FormData</span> <span class="op">=</span> z<span class="pu">.</span><span class="fn">infer</span><span class="op">&lt;</span><span class="kw">typeof</span> schema<span class="op">&gt;</span>
+
+<span class="kw">export function</span> <span class="fn">LoginForm</span><span class="pu">() {</span>
+  <span class="kw">const</span> <span class="pu">{</span>
+    register<span class="pu">,</span> handleSubmit<span class="pu">,</span>
+    formState<span class="op">:</span> <span class="pu">{</span> errors <span class="pu">}</span>
+  <span class="pu">}</span> <span class="op">=</span> <span class="fn">useForm</span><span class="op">&lt;</span><span class="ty">FormData</span><span class="op">&gt;</span><span class="pu">({</span>
+    resolver<span class="op">:</span> <span class="fn">zodResolver</span><span class="pu">(</span>schema<span class="pu">)</span>
+  <span class="pu">})</span>
+
+  <span class="kw">const</span> <span class="fn">onSubmit</span> <span class="op">=</span> <span class="pu">(</span>data<span class="op">:</span> <span class="ty">FormData</span><span class="pu">) =&gt; {</span>
+    <span class="cm">// data is fully typed — email: string, password: string</span>
+    <span class="fn">console</span><span class="pu">.</span><span class="fn">log</span><span class="pu">(</span>data<span class="pu">)</span>
+  <span class="pu">}</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">form</span> <span class="at">onSubmit</span><span class="op">={</span><span class="fn">handleSubmit</span><span class="pu">(</span>onSubmit<span class="pu">)}&gt;</span>
+      <span class="op">&lt;</span><span class="ty">input</span>
+        <span class="pu">{...</span><span class="fn">register</span><span class="pu">(</span><span class="st">'email'</span><span class="pu">)}</span>
+        <span class="at">className</span><span class="op">={</span>errors<span class="pu">.</span>email <span class="op">?</span> <span class="st">'error'</span> <span class="op">:</span> <span class="st">''</span><span class="pu">}</span>
+      <span class="op">/&gt;</span>
+      <span class="pu">{</span>errors<span class="pu">.</span>email <span class="op">&amp;&amp;</span>
+        <span class="op">&lt;</span><span class="ty">p</span> <span class="at">className</span><span class="op">=</span><span class="st">"err"</span><span class="op">&gt;{</span>errors<span class="pu">.</span>email<span class="pu">.</span>message<span class="pu">}</span><span class="op">&lt;/</span><span class="ty">p</span><span class="op">&gt;</span>
+      <span class="pu">}</span>
+      <span class="op">&lt;</span><span class="ty">input</span> <span class="at">type</span><span class="op">=</span><span class="st">"password"</span> <span class="pu">{...</span><span class="fn">register</span><span class="pu">(</span><span class="st">'password'</span><span class="pu">)}</span> <span class="op">/&gt;</span>
+      <span class="op">&lt;</span><span class="ty">button</span> <span class="at">type</span><span class="op">=</span><span class="st">"submit"</span><span class="op">&gt;</span>Sign In<span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">form</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">💡 Angular vs React-Hook-Form — strengths</div>
+          Angular Reactive Forms shine for <strong>deeply nested, dynamic forms</strong>
+          (FormArrays, conditional validators, cross-field validation) because the
+          form model lives in the class, not in JSX. RHF + Zod wins on
+          <strong>schema-first validation</strong> and uncontrolled inputs (it never
+          forces re-renders on every keystroke by default).
+        </div>
+      </div>
+
+      <!-- ══════════════════════ 07 SSR -->
+      <div class="section" id="ssr">
+        <div class="section-label">07 &mdash; Server Rendering</div>
+        <h2>SSR &amp; Performance</h2>
+        <p class="lead">
+          Next.js has a significant lead over Angular in server rendering maturity,
+          flexibility, and developer experience — though Angular SSR has closed the
+          gap substantially with Angular 17's updated SSR pipeline and hydration.
+        </p>
+
+        <h3>Next.js Rendering Strategies</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Next.js 15 rendering modes per route</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">// ── Static Site Generation (SSG) — build-time HTML ───────</span>
+<span class="cm">// Any async Server Component with no dynamic data = SSG by default</span>
+<span class="kw">export default async function</span> <span class="fn">BlogPost</span><span class="pu">({</span> params <span class="pu">}) {</span>
+  <span class="kw">const</span> post <span class="op">=</span> <span class="kw">await</span> <span class="fn">getPost</span><span class="pu">(</span>params<span class="pu">.</span>slug<span class="pu">)</span>
+  <span class="kw">return</span> <span class="op">&lt;</span><span class="ty">Article</span> <span class="at">post</span><span class="op">={</span>post<span class="pu">}</span> <span class="op">/&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Incremental Static Regeneration (ISR) — stale + revalidate</span>
+<span class="kw">export default async function</span> <span class="fn">ProductPage</span><span class="pu">({</span> params <span class="pu">}) {</span>
+  <span class="kw">const</span> product <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">(</span><span class="st">`/api/products/</span><span class="pu">${</span>params<span class="pu">.</span>id<span class="pu">}</span><span class="st">`</span><span class="pu">,</span> <span class="pu">{</span>
+    next<span class="op">:</span> <span class="pu">{</span> revalidate<span class="op">:</span> <span class="nm">3600</span> <span class="pu">}</span> <span class="cm">// re-generate every hour</span>
+  <span class="pu">}).</span><span class="fn">then</span><span class="pu">(</span>r <span class="op">=&gt;</span> r<span class="pu">.</span><span class="fn">json</span><span class="pu">())</span>
+  <span class="kw">return</span> <span class="op">&lt;</span><span class="ty">Product</span> <span class="at">data</span><span class="op">={</span>product<span class="pu">}</span> <span class="op">/&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── SSR (dynamic) — per-request HTML, no cache ────────────</span>
+<span class="kw">import</span> <span class="pu">{</span> cookies <span class="pu">}</span> <span class="kw">from</span> <span class="st">'next/headers'</span>
+
+<span class="kw">export default async function</span> <span class="fn">Dashboard</span><span class="pu">() {</span>
+  <span class="kw">const</span> token <span class="op">=</span> <span class="pu">(</span><span class="kw">await</span> <span class="fn">cookies</span><span class="pu">()).</span><span class="fn">get</span><span class="pu">(</span><span class="st">'token'</span><span class="pu">)</span>
+  <span class="cm">// Reading cookies opts the route into dynamic rendering</span>
+  <span class="kw">const</span> data <span class="op">=</span> <span class="kw">await</span> <span class="fn">getUserData</span><span class="pu">(</span>token<span class="pu">)</span>
+  <span class="kw">return</span> <span class="op">&lt;</span><span class="ty">DashboardShell</span> <span class="at">user</span><span class="op">={</span>data<span class="pu">}</span> <span class="op">/&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Partial Prerendering (Next 15 stable) ─────────────────</span>
+<span class="cm">// Static shell + dynamic holes filled via Suspense streaming</span>
+<span class="kw">export default function</span> <span class="fn">Home</span><span class="pu">() {</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;&gt;</span>
+      <span class="op">&lt;</span><span class="ty">HeroSection</span> <span class="op">/&gt;</span>               <span class="cm">// static</span>
+      <span class="op">&lt;</span><span class="ty">Suspense</span> <span class="at">fallback</span><span class="op">=</span><span class="pu">{</span><span class="op">&lt;</span><span class="ty">Skeleton</span> <span class="op">/&gt;}&gt;</span>
+        <span class="op">&lt;</span><span class="ty">PersonalizedFeed</span> <span class="op">/&gt;</span>       <span class="cm">// dynamic, streamed</span>
+      <span class="op">&lt;/</span><span class="ty">Suspense</span><span class="op">&gt;</span>
+    <span class="op">&lt;/&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>Angular SSR (Angular 17+)</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">TypeScript — Angular SSR with HttpClient transfer state</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">// app.config.ts — enable SSR hydration</span>
+<span class="kw">import</span> <span class="pu">{</span> provideClientHydration <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/platform-browser'</span>
+<span class="kw">import</span> <span class="pu">{</span> withHttpTransferCacheOptions <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/platform-browser'</span>
+
+<span class="kw">export const</span> appConfig<span class="op">:</span> <span class="ty">ApplicationConfig</span> <span class="op">=</span> <span class="pu">{</span>
+  providers<span class="op">:</span> <span class="pu">[</span>
+    <span class="fn">provideRouter</span><span class="pu">(</span>routes<span class="pu">),</span>
+    <span class="fn">provideHttpClient</span><span class="pu">(</span><span class="fn">withFetch</span><span class="pu">()),</span>
+    <span class="fn">provideClientHydration</span><span class="pu">(</span>
+      <span class="cm">// HTTP responses from SSR are reused on the client</span>
+      <span class="cm">// eliminating duplicate API calls on hydration</span>
+      <span class="fn">withHttpTransferCacheOptions</span><span class="pu">({</span>
+        includePostRequests<span class="op">:</span> <span class="kw">false</span>
+      <span class="pu">})</span>
+    <span class="pu">)</span>
+  <span class="pu">]</span>
+<span class="pu">}</span>
+
+<span class="cm">// Component uses HttpClient identically for SSR and CSR</span>
+<span class="dc">@Component</span><span class="pu">({</span>
+  template<span class="op">:</span> <span class="st">`
+    @if (product(); as p) {
+      &lt;h1&gt;{{ p.name }}&lt;/h1&gt;
+      &lt;p&gt;{{ p.price | currency }}&lt;/p&gt;
+    }
+  `</span>
+<span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">ProductDetailComponent</span> <span class="pu">{</span>
+  product <span class="op">=</span> <span class="fn">toSignal</span><span class="pu">(</span>
+    <span class="fn">inject</span><span class="pu">(</span>HttpClient<span class="pu">).</span><span class="fn">get</span><span class="op">&lt;</span><span class="ty">Product</span><span class="op">&gt;</span><span class="pu">(</span><span class="st">'/api/product'</span><span class="pu">)</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Feature</th><th><span class="fw-badge fw-ng">Angular SSR</span></th><th><span class="fw-badge fw-next">Next.js</span></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>SSR</td><td>✅ Angular Universal / built-in</td><td>✅ Server Components (default)</td></tr>
+            <tr><td>SSG</td><td>⚠️ Via prerender config</td><td>✅ Automatic (no dynamic data)</td></tr>
+            <tr><td>ISR</td><td>❌ Not native</td><td>✅ <code>revalidate</code> option</td></tr>
+            <tr><td>Streaming SSR</td><td>⚠️ Experimental</td><td>✅ Suspense + React Server Components</td></tr>
+            <tr><td>Hydration</td><td>✅ Non-destructive hydration (v16+)</td><td>✅ Selective hydration</td></tr>
+            <tr><td>Edge runtime</td><td>❌ Node.js only</td><td>✅ Edge + Node.js per-route</td></tr>
+            <tr><td>Image optimisation</td><td>⚠️ Manual / NgOptimizedImage</td><td>✅ <code>&lt;Image /&gt;</code> component</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ══════════════════════ 08 STATE -->
+      <div class="section" id="state">
+        <div class="section-label">08 &mdash; Global State</div>
+        <h2>State Management</h2>
+        <p class="lead">
+          Both ecosystems have mature state management solutions, but their
+          philosophies differ. Angular Signals built into the framework reduce the
+          need for external state libraries for most apps. React's ecosystem pushed
+          lightweight stores (Zustand, Jotai) as the answer to Redux's verbosity.
+        </p>
+
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header ng">🅰 Angular — Signals Store</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Simple signal-based store</span>
+<span class="kw">import</span> <span class="pu">{</span> signal<span class="pu">,</span> computed <span class="pu">}</span>
+  <span class="kw">from</span> <span class="st">'@angular/core'</span>
+
+<span class="kw">interface</span> <span class="ty">CartState</span> <span class="pu">{</span>
+  items<span class="op">:</span> <span class="ty">CartItem</span><span class="pu">[]</span>
+<span class="pu">}</span>
+
+<span class="dc">@Injectable</span><span class="pu">({</span> providedIn<span class="op">:</span> <span class="st">'root'</span> <span class="pu">})</span>
+<span class="kw">export class</span> <span class="ty">CartStore</span> <span class="pu">{</span>
+  <span class="kw">private</span> state <span class="op">=</span> <span class="fn">signal</span><span class="op">&lt;</span><span class="ty">CartState</span><span class="op">&gt;</span><span class="pu">({</span>
+    items<span class="op">:</span> <span class="pu">[]</span>
+  <span class="pu">})</span>
+
+  items <span class="op">=</span> <span class="fn">computed</span><span class="pu">(() =&gt;</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="fn">state</span><span class="pu">().</span>items
+  <span class="pu">)</span>
+  total <span class="op">=</span> <span class="fn">computed</span><span class="pu">(() =&gt;</span>
+    <span class="kw">this</span><span class="pu">.</span><span class="fn">items</span><span class="pu">().</span><span class="fn">reduce</span><span class="pu">(</span>
+      <span class="pu">(</span>s<span class="pu">,</span> i<span class="pu">) =&gt;</span> s <span class="op">+</span> i<span class="pu">.</span>price<span class="pu">,</span> <span class="nm">0</span>
+    <span class="pu">)</span>
+  <span class="pu">)</span>
+
+  <span class="fn">addItem</span><span class="pu">(</span>item<span class="op">:</span> <span class="ty">CartItem</span><span class="pu">) {</span>
+    <span class="kw">this</span><span class="pu">.</span>state<span class="pu">.</span><span class="fn">update</span><span class="pu">(</span>s <span class="op">=&gt; ({</span>
+      items<span class="op">:</span> <span class="pu">[...</span>s<span class="pu">.</span>items<span class="pu">,</span> item<span class="pu">]</span>
+    <span class="pu">}))</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header react">⚛ React — Zustand store</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Simple Zustand store</span>
+<span class="kw">import</span> <span class="pu">{</span> create <span class="pu">}</span>
+  <span class="kw">from</span> <span class="st">'zustand'</span>
+
+<span class="kw">interface</span> <span class="ty">CartState</span> <span class="pu">{</span>
+  items<span class="op">:</span>    <span class="ty">CartItem</span><span class="pu">[]</span>
+  total<span class="op">:</span>    <span class="ty">number</span>
+  addItem<span class="op">:</span>  <span class="pu">(</span>item<span class="op">:</span> <span class="ty">CartItem</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">void</span>
+<span class="pu">}</span>
+
+<span class="kw">export const</span> useCart <span class="op">=</span>
+  <span class="fn">create</span><span class="op">&lt;</span><span class="ty">CartState</span><span class="op">&gt;</span><span class="pu">((</span>set<span class="pu">,</span> get<span class="pu">) =&gt; ({</span>
+    items<span class="op">:</span> <span class="pu">[],</span>
+    total<span class="op">:</span> <span class="nm">0</span><span class="pu">,</span>
+
+    addItem<span class="op">:</span> <span class="pu">(</span>item<span class="pu">) =&gt;</span> <span class="fn">set</span><span class="pu">(</span>s <span class="op">=&gt; {</span>
+      <span class="kw">const</span> items <span class="op">=</span>
+        <span class="pu">[...</span>s<span class="pu">.</span>items<span class="pu">,</span> item<span class="pu">]</span>
+      <span class="kw">return</span> <span class="pu">{</span>
+        items<span class="pu">,</span>
+        total<span class="op">:</span> items<span class="pu">.</span><span class="fn">reduce</span><span class="pu">(</span>
+          <span class="pu">(</span>s<span class="pu">,</span>i<span class="pu">) =&gt;</span> s<span class="op">+</span>i<span class="pu">.</span>price<span class="pu">,</span> <span class="nm">0</span>
+        <span class="pu">)</span>
+      <span class="pu">}</span>
+    <span class="pu">})</span>
+  <span class="pu">}))</span>
+
+<span class="cm">// Usage in any component</span>
+<span class="kw">const</span> <span class="pu">{</span> items<span class="pu">,</span> addItem <span class="pu">}</span>
+  <span class="op">=</span> <span class="fn">useCart</span><span class="pu">()</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          For large-scale Angular apps, <strong>NgRx</strong> (Redux-inspired, RxJS-powered)
+          remains the enterprise standard. Angular 17 also introduced the
+          <strong>NgRx Signal Store</strong> — a lighter alternative that combines
+          signals with NgRx's action/effect pattern without the boilerplate of classic
+          NgRx. For React, <strong>TanStack Query</strong> has largely replaced
+          Redux for <em>server state</em>, while Zustand handles UI state.
+        </p>
+      </div>
+
+      <!-- ══════════════════════ 09 VERDICT -->
+      <div class="section" id="verdict">
+        <div class="section-label">09 &mdash; The Decision</div>
+        <h2>When to Choose What</h2>
+        <p class="lead">
+          There is no universally correct answer. The right choice depends on team
+          size, existing expertise, project duration, and whether you're building
+          a product or a platform. Here is an honest decision framework.
+        </p>
+
+        <div class="verdict-grid">
+          <div class="verdict-card ng-card">
+            <div class="verdict-title" style="color:#c2185b">🅰 Choose Angular when…</div>
+            <ul class="verdict-list">
+              <li>✅ Team is large (10+ engineers)</li>
+              <li>✅ Project is long-lived (3+ years)</li>
+              <li>✅ Enterprise / banking / SaaS with complex forms</li>
+              <li>✅ Consistency matters more than flexibility</li>
+              <li>✅ You want one upgrade path for everything</li>
+              <li>✅ Strong Java / OOP background on team</li>
+              <li>✅ Content is interactive, not public-facing SEO</li>
+              <li>❌ You need best-in-class SSG / ISR / Edge SSR</li>
+              <li>❌ Team is small and moving fast</li>
+            </ul>
+          </div>
+          <div class="verdict-card react-card">
+            <div class="verdict-title" style="color:#006064">⚛ Choose React when…</div>
+            <ul class="verdict-list">
+              <li>✅ You want maximum ecosystem choice</li>
+              <li>✅ Team has strong JS / functional background</li>
+              <li>✅ Building a design system or component library</li>
+              <li>✅ React Native mobile is also in scope</li>
+              <li>✅ Hiring pool matters (largest talent market)</li>
+              <li>✅ You'll add Next.js on top for production</li>
+              <li>❌ You want routing / HTTP / forms out of the box</li>
+              <li>❌ Team is undisciplined about consistent patterns</li>
+            </ul>
+          </div>
+          <div class="verdict-card next-card">
+            <div class="verdict-title" style="color:#374151">▲ Choose Next.js when…</div>
+            <ul class="verdict-list">
+              <li>✅ SEO-critical public-facing site or app</li>
+              <li>✅ Marketing + app in one codebase</li>
+              <li>✅ You need ISR, Edge SSR, or Partial Prerendering</li>
+              <li>✅ Deploying to Vercel / serverless</li>
+              <li>✅ Content-heavy: blogs, e-commerce, docs</li>
+              <li>✅ Team already knows React</li>
+              <li>❌ Pure SPA with no SEO requirements</li>
+              <li>❌ Need full offline / desktop-like PWA</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>The Honest Performance Reality</h3>
+        <table>
+          <thead>
+            <tr><th>Metric</th><th><span class="fw-badge fw-ng">Angular 17</span></th><th><span class="fw-badge fw-react">React 19</span></th><th><span class="fw-badge fw-next">Next.js 15</span></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Initial JS (hello world)</td><td>~45KB gzip</td><td>~42KB gzip</td><td>~80KB gzip</td></tr>
+            <tr><td>Build-time tree shaking</td><td>Excellent (Ivy)</td><td>Good (Vite/Rollup)</td><td>Good (Turbopack)</td></tr>
+            <tr><td>Runtime update perf</td><td>Excellent (Signals)</td><td>Good (VDOM diff)</td><td>Excellent (RSC skip)</td></tr>
+            <tr><td>TTI (SSR app)</td><td>Good (hydration v16+)</td><td>Good</td><td>Excellent (PPR)</td></tr>
+            <tr><td>Dev server HMR</td><td>Fast (esbuild)</td><td>Instant (Vite)</td><td>Fast (Turbopack)</td></tr>
+            <tr><td>Build output (large app)</td><td>45–120KB routes</td><td>50–200KB routes</td><td>Variable (RSC reduces)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Final Checklist Before Deciding</h3>
+        <ul class="checklist">
+          <li><span class="check-icon">🔷</span><span><strong>Team size &amp; seniority:</strong> Large junior-heavy teams benefit most from Angular's conventions. Small senior teams benefit most from React's flexibility.</span></li>
+          <li><span class="check-icon">🔷</span><span><strong>SEO requirements:</strong> If Google ranking matters for the primary surface, Next.js is the clearest choice. Angular SSR works but lags Next.js in ISR and Edge SSR.</span></li>
+          <li><span class="check-icon">🔷</span><span><strong>Form complexity:</strong> Dashboard apps with complex multi-step forms, conditional validation, and deeply nested models genuinely benefit from Angular Reactive Forms.</span></li>
+          <li><span class="check-icon">🔷</span><span><strong>Ecosystem lock-in:</strong> Angular means Google. Next.js means Vercel. React means Meta. All are open source — but understand who drives the roadmap.</span></li>
+          <li><span class="check-icon">🔷</span><span><strong>Long-term maintenance:</strong> Angular's strict semver and LTS policy (18-month active, 6-month LTS) gives predictable upgrade windows. React has no formal LTS policy.</span></li>
+          <li><span class="check-icon">🔷</span><span><strong>Mobile ambitions:</strong> If React Native is a future consideration, React + Next.js keeps the skill set and potentially the component logic shared.</span></li>
+        </ul>
+
+        <div class="pullquote">
+          "The best framework is the one your team ships quality software with
+          confidently. Framework benchmarks don't survive contact with a team
+          that doesn't understand the tool they're using."
+        </div>
+      </div>
+
+    </div><!-- /content -->
+
+    <footer>
+      <p><strong>Angular In Depth: Architecture, Patterns &amp; Comparison with React/Next.js</strong></p>
+      <p style="margin-top:8px;font-size:13px">Angular 17+ &middot; React 19 &middot; Next.js 15 &mdash; Choose deliberately.</p>
+    </footer>
+
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest('.code-block').querySelector('pre')
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          btn.textContent = 'Copied!'
+          setTimeout(() => btn.textContent = 'Copy', 2000)
+        })
+      }
+      document.querySelectorAll('a[href^="#"]').forEach(a =>
+        a.addEventListener('click', e => {
+          e.preventDefault()
+          document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' })
+        })
+      )
+    </script>
+  </body>
+</html>

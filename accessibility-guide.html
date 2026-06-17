@@ -1,0 +1,1216 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frontend Accessibility (a11y): The Complete Implementation Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #faf8f5;
+        --surface: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b6b6b;
+        --text-muted: #9a9a9a;
+        --accent: #7c3aed;
+        --accent-light: #f5f3ff;
+        --accent-subtle: #ede9fe;
+        --border: #e8e3db;
+        --code-bg: #0d1117;
+        --code-text: #e6edf3;
+        --tag-bg: #f3f0eb;
+        --tag-text: #555;
+        --tip-bg: #f0fdf4;
+        --tip-border: #16a34a;
+        --warn-bg: #fff7ed;
+        --warn-border: #ea580c;
+        --info-bg: #eff6ff;
+        --info-border: #2563eb;
+        --keyword: #ff7b72;
+        --string: #a5d6ff;
+        --number: #f0883e;
+        --type: #79c0ff;
+        --comment: #8b949e;
+        --func: #d2a8ff;
+        --operator: #c9d1d9;
+        --builtin: #ffa657;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.75;
+      }
+
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(250, 248, 245, 0.93);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-left { display: flex; align-items: center; gap: 12px; }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover { color: var(--accent); }
+      .nav-pipe { color: var(--border); font-size: 18px; }
+      .nav-brand { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: var(--accent-light);
+        color: var(--accent);
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links { display: flex; gap: 0; }
+      .nav-links a {
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover { background: var(--tag-bg); color: var(--text-primary); }
+      .nav-rt { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 2rem 48px;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        letter-spacing: 0.3px;
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(32px, 5vw, 50px);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+      .hero-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+      .avatar {
+        width: 38px; height: 38px; border-radius: 50%;
+        background: linear-gradient(135deg, #7c3aed, #5b21b6);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; font-weight: 600; color: white;
+      }
+      .meta-text { font-size: 14px; color: var(--text-secondary); }
+      .meta-text strong { color: var(--text-primary); }
+      .hero-divider { border: none; border-top: 1px solid var(--border); margin-top: 32px; }
+
+      .toc-wrapper { max-width: 780px; margin: 0 auto; padding: 0 2rem 8px; }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 40px;
+      }
+      .toc h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+        transition: color 0.15s;
+      }
+      .toc a:hover { color: var(--accent); }
+      .toc-num { font-size: 12px; color: var(--text-muted); font-weight: 500; min-width: 20px; }
+
+      .content { max-width: 780px; margin: 0 auto; padding: 0 2rem 80px; }
+
+      .section { margin-bottom: 72px; scroll-margin-top: 72px; }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-label::after { content: ""; flex: 1; height: 1px; background: var(--accent-subtle); }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+      h3 { font-size: 19px; font-weight: 600; margin: 32px 0 12px; color: var(--text-primary); }
+      p { margin-bottom: 18px; color: #2d2d2d; }
+      .lead { font-size: 19px; color: var(--text-secondary); font-weight: 300; margin-bottom: 24px; }
+
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 10px;
+        margin: 24px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(255,255,255,0.03);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      .code-lang { font-size: 12px; color: #6e7681; font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+      .copy-btn {
+        font-size: 12px; color: #484f58; background: none; border: none;
+        cursor: pointer; padding: 2px 8px; border-radius: 4px;
+        font-family: "Outfit", sans-serif; transition: all 0.15s;
+      }
+      .copy-btn:hover { background: rgba(255,255,255,0.07); color: #8b949e; }
+      pre { padding: 20px; overflow-x: auto; font-family: "JetBrains Mono", monospace; font-size: 13.5px; line-height: 1.7; color: var(--code-text); }
+      pre code { background: none; padding: 0; font-size: inherit; }
+      code { font-family: "JetBrains Mono", monospace; font-size: 13.5px; background: #f0ebe3; color: #5b21b6; padding: 2px 6px; border-radius: 4px; }
+
+      .kw { color: #ff7b72; }
+      .ty { color: #79c0ff; }
+      .st { color: #a5d6ff; }
+      .nm { color: #f0883e; }
+      .cm { color: #8b949e; font-style: italic; }
+      .fn { color: #d2a8ff; }
+      .op { color: #c9d1d9; }
+      .pu { color: #e6edf3; }
+      .bi { color: #ffa657; }
+      .rx { color: #7ee787; }
+      .at { color: #79c0ff; }
+
+      .tip { background: var(--tip-bg); border-left: 3px solid var(--tip-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+      .tip-label { font-size: 12px; font-weight: 600; color: #16a34a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+      .warn { background: var(--warn-bg); border-left: 3px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+      .warn-label { font-size: 12px; font-weight: 600; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+      .info { background: var(--info-bg); border-left: 3px solid var(--info-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
+      .info-label { font-size: 12px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+      .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+      .compare-card { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+      .compare-header { padding: 10px 16px; font-size: 13px; font-weight: 600; }
+      .compare-header.bad { background: #fef2f2; color: #dc2626; }
+      .compare-header.good { background: #f0fdf4; color: #16a34a; }
+      .compare-card .code-block { border-radius: 0; margin: 0; border: none; }
+
+      table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
+      th { background: var(--tag-bg); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+      td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+      tr:last-child td { border-bottom: none; }
+      tr:hover td { background: var(--bg); }
+
+      .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; letter-spacing: 0.3px; vertical-align: middle; }
+      .badge-amber { background: #fef3c7; color: #b45309; }
+      .badge-green { background: #dcfce7; color: #15803d; }
+      .badge-blue { background: #dbeafe; color: #1d4ed8; }
+      .badge-red { background: #fee2e2; color: #b91c1c; }
+      .badge-purple { background: #ede9fe; color: #6d28d9; }
+
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 12px 24px;
+        margin: 36px 0;
+      }
+
+      .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+      .concept-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+      .concept-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+      .concept-card p { font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+      .concept-icon { font-size: 22px; margin-bottom: 10px; }
+
+      .checklist { list-style: none; margin: 16px 0; }
+      .checklist li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .check-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+
+      .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+      footer { background: #1a1a1a; color: rgba(255,255,255,0.65); text-align: center; padding: 40px 2rem; font-size: 14px; }
+      footer strong { color: white; }
+
+      @media (max-width: 640px) {
+        .toc-grid, .compare-grid { grid-template-columns: 1fr; }
+        .nav-links { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">&#8592; DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">Frontend Accessibility</span>
+        <span class="nav-badge">Best Practices</span>
+      </div>
+      <div class="nav-links">
+        <a href="#semantic">Semantic HTML</a>
+        <a href="#focus">Focus Management</a>
+        <a href="#aria">ARIA</a>
+        <a href="#forms">Forms</a>
+        <a href="#keyboard">Keyboard</a>
+        <a href="#live">Live Regions</a>
+        <a href="#contrast">Contrast</a>
+        <a href="#testing">Testing</a>
+      </div>
+      <span class="nav-rt">~22 min read</span>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-tag">&#9679; Best Practices</div>
+      <h1>Frontend Accessibility: Building Interfaces Everyone Can Use</h1>
+      <p class="hero-sub">
+        Semantic HTML, ARIA roles, dynamic focus management, keyboard navigation,
+        live regions, colour contrast, and automated tooling — the complete
+        implementation guide for a11y in modern React applications.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">A11Y</div>
+        <div class="meta-text">
+          <strong>Frontend Accessibility Deep Dive</strong><br />
+          Covering WCAG 2.2, React &amp; modern SPA patterns &mdash; June 2026
+        </div>
+      </div>
+      <hr class="hero-divider" />
+    </div>
+
+    <div class="toc-wrapper">
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <div class="toc-grid">
+          <a href="#semantic"><span class="toc-num">01</span> Semantic HTML &amp; the DOM Tree</a>
+          <a href="#keyboard"><span class="toc-num">05</span> Keyboard Navigation Patterns</a>
+          <a href="#focus"><span class="toc-num">02</span> Dynamic Focus Management</a>
+          <a href="#live"><span class="toc-num">06</span> Live Regions &amp; Async Updates</a>
+          <a href="#aria"><span class="toc-num">03</span> ARIA Roles, Labels &amp; States</a>
+          <a href="#contrast"><span class="toc-num">07</span> Colour Contrast &amp; Motion</a>
+          <a href="#forms"><span class="toc-num">04</span> Forms &amp; Error Handling</a>
+          <a href="#testing"><span class="toc-num">08</span> Testing &amp; Automated Tooling</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ═══════════════════════ 01 SEMANTIC HTML -->
+      <div class="section" id="semantic">
+        <div class="section-label">01 &mdash; The Foundation</div>
+        <h2>Semantic HTML &amp; the Accessibility Tree</h2>
+        <p class="lead">
+          Accessibility begins before a single line of JavaScript runs. Every HTML
+          element you choose either helps or hinders the browser's ability to build
+          an accurate Accessibility Tree &mdash; the parallel structure screen readers
+          and other assistive technologies navigate instead of the visual DOM.
+        </p>
+
+        <p>
+          Modern browsers expose two parallel representations of your page: the
+          render tree (pixels on screen) and the accessibility tree (semantic roles,
+          names, and states). A <code>&lt;button&gt;</code> element automatically
+          carries <code>role="button"</code>, keyboard focusability, and an implicit
+          label from its text content. A <code>&lt;div onclick&gt;</code> carries
+          none of these &mdash; you must reconstruct every affordance by hand.
+        </p>
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">&#127981;</div>
+            <h4>Landmarks</h4>
+            <p>Elements like <code>&lt;main&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;aside&gt;</code>, and <code>&lt;header&gt;</code> create jump points that screen reader users rely on to skip large content blocks.</p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">&#128203;</div>
+            <h4>Heading Hierarchy</h4>
+            <p>One <code>&lt;h1&gt;</code> per page. <code>&lt;h2&gt;</code>&ndash;<code>&lt;h6&gt;</code> must descend logically &mdash; never skip a level. Screen readers offer keyboard shortcuts to navigate headings like a table of contents.</p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">&#9875;</div>
+            <h4>Interactive Elements</h4>
+            <p>Use <code>&lt;button&gt;</code> for actions and <code>&lt;a href&gt;</code> for navigation. The distinction matters: buttons trigger behaviour; links change location.</p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">&#128209;</div>
+            <h4>Lists &amp; Tables</h4>
+            <p>Wrap related items in <code>&lt;ul&gt;</code>/<code>&lt;ol&gt;</code>. Use <code>&lt;th scope&gt;</code> and <code>&lt;caption&gt;</code> on data tables so screen readers announce structure, not raw cells.</p>
+          </div>
+        </div>
+
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">&#10060; Div soup &mdash; no tree</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Nothing is conveyed to AT</span>
+<span class="kw">function</span> <span class="fn">UserProfile</span><span class="pu">() {</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">div</span> <span class="at">className</span><span class="op">=</span><span class="st">"card"</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">div</span> <span class="at">className</span><span class="op">=</span><span class="st">"title"</span><span class="op">&gt;</span>Prabath<span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">div</span>
+        <span class="at">className</span><span class="op">=</span><span class="st">"btn"</span>
+        <span class="at">onClick</span><span class="op">={</span>save<span class="op">}</span>
+      <span class="op">&gt;</span>Save<span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">&#10003; Semantic &mdash; full tree</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// Role, name, state — all implicit</span>
+<span class="kw">function</span> <span class="fn">UserProfile</span><span class="pu">() {</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">article</span> <span class="at">className</span><span class="op">=</span><span class="st">"card"</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">h2</span><span class="op">&gt;</span>Prabath<span class="op">&lt;/</span><span class="ty">h2</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">button</span>
+        <span class="at">type</span><span class="op">=</span><span class="st">"button"</span>
+        <span class="at">onClick</span><span class="op">={</span>save<span class="op">}</span>
+      <span class="op">&gt;</span>Save<span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">article</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">&#128161; Use React Fragments to avoid wrapper divs</div>
+          When a component needs to return multiple elements but a wrapping
+          <code>&lt;div&gt;</code> would break the document structure (e.g. inside a
+          <code>&lt;ul&gt;</code>), reach for <code>&lt;&gt;...&lt;/&gt;</code> or
+          <code>&lt;React.Fragment&gt;</code>. No DOM node is added, no accessibility
+          tree is polluted.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════ 02 FOCUS MANAGEMENT -->
+      <div class="section" id="focus">
+        <div class="section-label">02 &mdash; SPA Challenge</div>
+        <h2>Dynamic Focus Management</h2>
+        <p class="lead">
+          In a traditional multi-page website, every navigation triggers a full reload
+          and the browser resets focus to the document top. SPAs silently swap content
+          without reloading &mdash; which means focus silently gets lost, trapped on
+          deleted elements, or left marooned in a now-invisible component.
+        </p>
+
+        <h3>Route Change Focus Reset</h3>
+        <p>
+          When a user navigates to a new view, manually shift focus to the primary
+          heading or page wrapper of the incoming route. Pair this with an
+          <code>aria-live</code> announcement so screen readers know a navigation
+          occurred.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSX &mdash; Route focus hook</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> useEffect, useRef <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+<span class="kw">import</span> <span class="pu">{</span> useLocation <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react-router-dom'</span>
+
+<span class="cm">// ── Drop this at the root of your router outlet ──</span>
+<span class="kw">function</span> <span class="fn">RouteAnnouncer</span><span class="pu">() {</span>
+  <span class="kw">const</span> headingRef <span class="op">=</span> <span class="fn">useRef</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+  <span class="kw">const</span> location <span class="op">=</span> <span class="fn">useLocation</span><span class="pu">()</span>
+
+  <span class="fn">useEffect</span><span class="pu">(() =&gt; {</span>
+    <span class="cm">// Small delay lets React finish painting the new route</span>
+    <span class="kw">const</span> id <span class="op">=</span> <span class="fn">setTimeout</span><span class="pu">(() =&gt; {</span>
+      headingRef<span class="pu">.</span>current<span class="op">?.</span><span class="fn">focus</span><span class="pu">()</span>
+    <span class="pu">},</span> <span class="nm">50</span><span class="pu">)</span>
+    <span class="kw">return</span> <span class="pu">() =&gt;</span> <span class="fn">clearTimeout</span><span class="pu">(</span>id<span class="pu">)</span>
+  <span class="pu">}, [</span>location<span class="pu">.</span>pathname<span class="pu">])</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">h1</span>
+      <span class="at">ref</span><span class="op">={</span>headingRef<span class="pu">}</span>
+      <span class="cm">// tabIndex={-1}: programmatically focusable, not in tab order</span>
+      <span class="at">tabIndex</span><span class="op">={-</span><span class="nm">1</span><span class="op">}</span>
+      <span class="at">style</span><span class="op">={{</span> outline<span class="op">:</span> <span class="st">'none'</span> <span class="op">}}</span>
+    <span class="op">&gt;</span>
+      <span class="pu">{</span>getPageTitle<span class="pu">(</span>location<span class="pu">.</span>pathname<span class="pu">)}</span>
+    <span class="op">&lt;/</span><span class="ty">h1</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>Modal Focus Trapping</h3>
+        <p>
+          When a modal or dialog is open, keyboard focus must be contained inside
+          it. A user tabbing to the last focusable element should cycle back to the
+          first &mdash; never escape into the inert background page.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSX &mdash; Accessible modal with focus trap</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> useEffect, useRef <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="kw">const</span> FOCUSABLE <span class="op">=</span> <span class="st">[</span>
+  <span class="st">'a[href]'</span><span class="pu">,</span> <span class="st">'button:not([disabled])'</span><span class="pu">,</span>
+  <span class="st">'input:not([disabled])'</span><span class="pu">,</span> <span class="st">'select'</span><span class="pu">,</span>
+  <span class="st">'textarea'</span><span class="pu">,</span> <span class="st">'[tabindex]:not([tabindex="-1"])'</span>
+<span class="st">].</span><span class="fn">join</span><span class="pu">(</span><span class="st">','</span><span class="pu">)</span>
+
+<span class="kw">function</span> <span class="fn">Modal</span><span class="pu">({</span> title<span class="pu">,</span> onClose<span class="pu">,</span> children <span class="pu">}) {</span>
+  <span class="kw">const</span> dialogRef <span class="op">=</span> <span class="fn">useRef</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+
+  <span class="fn">useEffect</span><span class="pu">(() =&gt; {</span>
+    <span class="kw">const</span> el <span class="op">=</span> dialogRef<span class="pu">.</span>current
+    <span class="kw">const</span> focusable <span class="op">=</span> <span class="pu">[...</span>el<span class="pu">.</span><span class="fn">querySelectorAll</span><span class="pu">(</span>FOCUSABLE<span class="pu">)]</span>
+    <span class="kw">const</span> first <span class="op">=</span> focusable<span class="pu">[</span><span class="nm">0</span><span class="pu">]</span>
+    <span class="kw">const</span> last  <span class="op">=</span> focusable<span class="pu">[</span>focusable<span class="pu">.</span>length <span class="op">-</span> <span class="nm">1</span><span class="pu">]</span>
+
+    first<span class="op">?.</span><span class="fn">focus</span><span class="pu">()</span>  <span class="cm">// move focus into modal on open</span>
+
+    <span class="kw">const</span> <span class="fn">handleKeyDown</span> <span class="op">=</span> <span class="pu">(e) =&gt; {</span>
+      <span class="kw">if</span> <span class="pu">(</span>e<span class="pu">.</span>key <span class="op">===</span> <span class="st">'Escape'</span><span class="pu">)</span> <span class="pu">{</span> <span class="fn">onClose</span><span class="pu">()</span>; <span class="kw">return</span> <span class="pu">}</span>
+      <span class="kw">if</span> <span class="pu">(</span>e<span class="pu">.</span>key <span class="op">!==</span> <span class="st">'Tab'</span><span class="pu">)</span> <span class="kw">return</span>
+
+      <span class="kw">if</span> <span class="pu">(</span>e<span class="pu">.</span>shiftKey <span class="op">&amp;&amp;</span> document<span class="pu">.</span>activeElement <span class="op">===</span> first<span class="pu">) {</span>
+        e<span class="pu">.</span><span class="fn">preventDefault</span><span class="pu">()</span>; last<span class="op">?.</span><span class="fn">focus</span><span class="pu">()</span>   <span class="cm">// wrap to last</span>
+      <span class="pu">}</span> <span class="kw">else if</span> <span class="pu">(</span><span class="op">!</span>e<span class="pu">.</span>shiftKey <span class="op">&amp;&amp;</span> document<span class="pu">.</span>activeElement <span class="op">===</span> last<span class="pu">) {</span>
+        e<span class="pu">.</span><span class="fn">preventDefault</span><span class="pu">()</span>; first<span class="op">?.</span><span class="fn">focus</span><span class="pu">()</span>  <span class="cm">// wrap to first</span>
+      <span class="pu">}</span>
+    <span class="pu">}</span>
+    document<span class="pu">.</span><span class="fn">addEventListener</span><span class="pu">(</span><span class="st">'keydown'</span><span class="pu">,</span> handleKeyDown<span class="pu">)</span>
+    <span class="kw">return</span> <span class="pu">() =&gt;</span> document<span class="pu">.</span><span class="fn">removeEventListener</span><span class="pu">(</span><span class="st">'keydown'</span><span class="pu">,</span> handleKeyDown<span class="pu">)</span>
+  <span class="pu">}, [])</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">div</span> <span class="at">role</span><span class="op">=</span><span class="st">"dialog"</span> <span class="at">aria-modal</span><span class="op">=</span><span class="st">"true"</span> <span class="at">aria-labelledby</span><span class="op">=</span><span class="st">"modal-title"</span> <span class="at">ref</span><span class="op">={</span>dialogRef<span class="pu">}}&gt;</span>
+      <span class="op">&lt;</span><span class="ty">h2</span> <span class="at">id</span><span class="op">=</span><span class="st">"modal-title"</span><span class="op">&gt;{</span>title<span class="op">}&lt;/</span><span class="ty">h2</span><span class="op">&gt;</span>
+      <span class="pu">{</span>children<span class="pu">}</span>
+      <span class="op">&lt;</span><span class="ty">button</span> <span class="at">type</span><span class="op">=</span><span class="st">"button"</span> <span class="at">onClick</span><span class="op">={</span>onClose<span class="pu">}&gt;</span>Close<span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="info">
+          <div class="info-label">&#128218; Production Recommendation</div>
+          For production code, reach for <strong>react-focus-lock</strong> or
+          <strong>focus-trap-react</strong> instead of hand-rolling focus trap logic.
+          These libraries handle edge cases like dynamically added focusable elements,
+          portals, and shadow DOM that manual implementations routinely miss.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════ 03 ARIA -->
+      <div class="section" id="aria">
+        <div class="section-label">03 &mdash; The Vocabulary</div>
+        <h2>ARIA Roles, Labels &amp; States</h2>
+        <p class="lead">
+          ARIA (Accessible Rich Internet Applications) is a set of HTML attributes
+          that supplement &mdash; never replace &mdash; semantic markup. The first
+          rule of ARIA: if a native HTML element already communicates the right
+          semantics, use it instead of adding ARIA.
+        </p>
+
+        <p>
+          ARIA has three categories of attributes. <strong>Roles</strong> define what
+          a widget is (<code>role="tab"</code>, <code>role="combobox"</code>).
+          <strong>Properties</strong> describe relationships
+          (<code>aria-labelledby</code>, <code>aria-controls</code>).
+          <strong>States</strong> reflect dynamic conditions
+          (<code>aria-expanded</code>, <code>aria-selected</code>,
+          <code>aria-busy</code>).
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Attribute</th><th>Purpose</th><th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>aria-label</code></td>
+              <td>Provides an accessible name when visible text isn't present</td>
+              <td>Icon-only close button</td>
+            </tr>
+            <tr>
+              <td><code>aria-labelledby</code></td>
+              <td>Points to another element's text as the accessible name</td>
+              <td>Dialog labelled by its <code>&lt;h2&gt;</code></td>
+            </tr>
+            <tr>
+              <td><code>aria-describedby</code></td>
+              <td>Links supplementary descriptive text to an element</td>
+              <td>Input linked to its validation error</td>
+            </tr>
+            <tr>
+              <td><code>aria-expanded</code></td>
+              <td>Indicates whether a collapsible section is open or closed</td>
+              <td>Accordion, dropdown menu</td>
+            </tr>
+            <tr>
+              <td><code>aria-hidden</code></td>
+              <td>Removes an element from the accessibility tree entirely</td>
+              <td>Decorative icons, duplicate text</td>
+            </tr>
+            <tr>
+              <td><code>aria-live</code></td>
+              <td>Marks a region whose content updates should be announced</td>
+              <td>Toast notifications, search results</td>
+            </tr>
+            <tr>
+              <td><code>aria-busy</code></td>
+              <td>Signals a region is being updated; suppress announcements until false</td>
+              <td>Loading skeleton containers</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Custom Accordion Component</h3>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSX &mdash; Accessible accordion</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> useState <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="kw">function</span> <span class="fn">Accordion</span><span class="pu">({</span> items <span class="pu">}) {</span>
+  <span class="kw">const</span> <span class="pu">[</span>openIndex<span class="pu">,</span> setOpenIndex<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">div</span> <span class="at">role</span><span class="op">=</span><span class="st">"region"</span> <span class="at">aria-label</span><span class="op">=</span><span class="st">"FAQ"</span><span class="op">&gt;</span>
+      <span class="pu">{</span>items<span class="pu">.</span><span class="fn">map</span><span class="pu">((</span>item<span class="pu">,</span> i<span class="pu">) =&gt; {</span>
+        <span class="kw">const</span> isOpen <span class="op">=</span> openIndex <span class="op">===</span> i
+        <span class="kw">const</span> panelId <span class="op">=</span> <span class="st">`panel-</span><span class="pu">${</span>i<span class="pu">}</span><span class="st">`</span>
+        <span class="kw">const</span> headingId <span class="op">=</span> <span class="st">`heading-</span><span class="pu">${</span>i<span class="pu">}</span><span class="st">`</span>
+
+        <span class="kw">return</span> <span class="pu">(</span>
+          <span class="op">&lt;</span><span class="ty">div</span> <span class="at">key</span><span class="op">={</span>i<span class="pu">}&gt;</span>
+            <span class="op">&lt;</span><span class="ty">h3</span><span class="op">&gt;</span>
+              <span class="op">&lt;</span><span class="ty">button</span>
+                <span class="at">id</span><span class="op">={</span>headingId<span class="pu">}</span>
+                <span class="at">aria-expanded</span><span class="op">={</span>isOpen<span class="pu">}</span>
+                <span class="at">aria-controls</span><span class="op">={</span>panelId<span class="pu">}</span>
+                <span class="at">onClick</span><span class="op">={() =&gt;</span> <span class="fn">setOpenIndex</span><span class="pu">(</span>isOpen <span class="op">?</span> <span class="kw">null</span> <span class="op">:</span> i<span class="pu">)}</span>
+              <span class="op">&gt;</span>
+                <span class="pu">{</span>item<span class="pu">.</span>question<span class="pu">}</span>
+                <span class="op">&lt;</span><span class="ty">span</span> <span class="at">aria-hidden</span><span class="op">=</span><span class="st">"true"</span><span class="op">&gt;{</span>isOpen <span class="op">?</span> <span class="st">'▲'</span> <span class="op">:</span> <span class="st">'▼'</span><span class="pu">}</span><span class="op">&lt;/</span><span class="ty">span</span><span class="op">&gt;</span>
+              <span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>
+            <span class="op">&lt;/</span><span class="ty">h3</span><span class="op">&gt;</span>
+            <span class="op">&lt;</span><span class="ty">div</span>
+              <span class="at">id</span><span class="op">={</span>panelId<span class="pu">}</span>
+              <span class="at">role</span><span class="op">=</span><span class="st">"region"</span>
+              <span class="at">aria-labelledby</span><span class="op">={</span>headingId<span class="pu">}</span>
+              <span class="at">hidden</span><span class="op">={!</span>isOpen<span class="pu">}</span>
+            <span class="op">&gt;</span>
+              <span class="pu">{</span>item<span class="pu">.</span>answer<span class="pu">}</span>
+            <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+          <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+        <span class="pu">)</span>
+      <span class="pu">})}</span>
+    <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="warn">
+          <div class="warn-label">&#9888; ARIA Anti-patterns to Avoid</div>
+          Never apply <code>aria-hidden="true"</code> to a focused element or
+          an element that contains focusable children &mdash; keyboard users will
+          land on invisible elements. Also avoid nesting interactive roles
+          (<code>role="button"</code> inside <code>role="link"</code>); screen
+          readers expose only the outermost role in many implementations.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════ 04 FORMS -->
+      <div class="section" id="forms">
+        <div class="section-label">04 &mdash; User Input</div>
+        <h2>Forms &amp; Accessible Error Handling</h2>
+        <p class="lead">
+          Form fields are where most a11y failures live in production. The problems
+          are predictable: unlabelled inputs, validation errors that appear visually
+          but are never announced, and required-field conventions that exist only as
+          red asterisks sighted users learn to recognise.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSX &mdash; Fully accessible form field</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">function</span> <span class="fn">FormField</span><span class="pu">({</span> id<span class="pu">,</span> label<span class="pu">,</span> error<span class="pu">,</span> hint<span class="pu">,</span> required<span class="pu">,</span> <span class="pu">...props }) {</span>
+  <span class="kw">const</span> errorId <span class="op">=</span> <span class="st">`</span><span class="pu">${</span>id<span class="pu">}</span><span class="st">-error`</span>
+  <span class="kw">const</span> hintId  <span class="op">=</span> <span class="st">`</span><span class="pu">${</span>id<span class="pu">}</span><span class="st">-hint`</span>
+
+  <span class="cm">// Build described-by list only for present elements</span>
+  <span class="kw">const</span> describedBy <span class="op">=</span> <span class="pu">[</span>
+    hint  <span class="op">&amp;&amp;</span> hintId<span class="pu">,</span>
+    error <span class="op">&amp;&amp;</span> errorId<span class="pu">,</span>
+  <span class="pu">].</span><span class="fn">filter</span><span class="pu">(</span><span class="ty">Boolean</span><span class="pu">).</span><span class="fn">join</span><span class="pu">(</span><span class="st">' '</span><span class="pu">)</span> <span class="op">||</span> <span class="kw">undefined</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">div</span> <span class="at">className</span><span class="op">=</span><span class="st">"field"</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">label</span> <span class="at">htmlFor</span><span class="op">={</span>id<span class="pu">}&gt;</span>
+        <span class="pu">{</span>label<span class="pu">}</span>
+        <span class="pu">{</span>required <span class="op">&amp;&amp;</span> <span class="pu">(</span>
+          <span class="op">&lt;</span><span class="ty">span</span>
+            <span class="at">aria-hidden</span><span class="op">=</span><span class="st">"true"</span>
+            <span class="at">className</span><span class="op">=</span><span class="st">"required-star"</span>
+          <span class="op">&gt;</span> *<span class="op">&lt;/</span><span class="ty">span</span><span class="op">&gt;</span>  <span class="cm">// visual only</span>
+        <span class="pu">)}</span>
+      <span class="op">&lt;/</span><span class="ty">label</span><span class="op">&gt;</span>
+
+      <span class="pu">{</span>hint <span class="op">&amp;&amp;</span> <span class="op">&lt;</span><span class="ty">p</span> <span class="at">id</span><span class="op">={</span>hintId<span class="pu">}</span> <span class="at">className</span><span class="op">=</span><span class="st">"field-hint"</span><span class="op">&gt;{</span>hint<span class="pu">}</span><span class="op">&lt;/</span><span class="ty">p</span><span class="op">&gt;}</span>
+
+      <span class="op">&lt;</span><span class="ty">input</span>
+        <span class="at">id</span><span class="op">={</span>id<span class="pu">}</span>
+        <span class="at">required</span><span class="op">={</span>required<span class="pu">}</span>
+        <span class="at">aria-required</span><span class="op">={</span>required<span class="pu">}</span>
+        <span class="at">aria-invalid</span><span class="op">={</span>error <span class="op">?</span> <span class="st">'true'</span> <span class="op">:</span> <span class="kw">undefined</span><span class="pu">}</span>
+        <span class="at">aria-describedby</span><span class="op">={</span>describedBy<span class="pu">}</span>
+        <span class="pu">{...props}</span>
+      <span class="op">/&gt;</span>
+
+      <span class="pu">{</span>error <span class="op">&amp;&amp;</span> <span class="pu">(</span>
+        <span class="op">&lt;</span><span class="ty">p</span>
+          <span class="at">id</span><span class="op">={</span>errorId<span class="pu">}</span>
+          <span class="at">role</span><span class="op">=</span><span class="st">"alert"</span>       <span class="cm">// assertive live region — announces immediately</span>
+          <span class="at">className</span><span class="op">=</span><span class="st">"field-error"</span>
+        <span class="op">&gt;</span>
+          <span class="pu">{</span>error<span class="pu">}</span>
+        <span class="op">&lt;/</span><span class="ty">p</span><span class="op">&gt;</span>
+      <span class="pu">)}</span>
+    <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>Form Validation Summary</h3>
+        <p>
+          When a form is submitted with multiple errors, never rely on inline error
+          messages alone. Render a validation summary at the top of the form,
+          move focus to it, and list each error as a link that jumps to the
+          offending field.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSX &mdash; Validation summary with focus</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">function</span> <span class="fn">ValidationSummary</span><span class="pu">({</span> errors <span class="pu">}) {</span>
+  <span class="kw">const</span> ref <span class="op">=</span> <span class="fn">useRef</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+
+  <span class="fn">useEffect</span><span class="pu">(() =&gt; {</span>
+    <span class="kw">if</span> <span class="pu">(</span>errors<span class="pu">.</span>length<span class="pu">)</span> ref<span class="pu">.</span>current<span class="op">?.</span><span class="fn">focus</span><span class="pu">()</span>
+  <span class="pu">}, [</span>errors<span class="pu">.</span>length<span class="pu">])</span>
+
+  <span class="kw">if</span> <span class="pu">(!</span>errors<span class="pu">.</span>length<span class="pu">)</span> <span class="kw">return</span> <span class="kw">null</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">div</span>
+      <span class="at">ref</span><span class="op">={</span>ref<span class="pu">}</span>
+      <span class="at">tabIndex</span><span class="op">={-</span><span class="nm">1</span><span class="op">}</span>
+      <span class="at">role</span><span class="op">=</span><span class="st">"alert"</span>
+      <span class="at">aria-label</span><span class="op">=</span><span class="st">"Form submission failed"</span>
+    <span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">h2</span><span class="op">&gt;</span>Please fix the following errors<span class="op">&lt;/</span><span class="ty">h2</span><span class="op">&gt;</span>
+      <span class="op">&lt;</span><span class="ty">ul</span><span class="op">&gt;</span>
+        <span class="pu">{</span>errors<span class="pu">.</span><span class="fn">map</span><span class="pu">((</span>e<span class="pu">) =&gt; (</span>
+          <span class="op">&lt;</span><span class="ty">li</span> <span class="at">key</span><span class="op">={</span>e<span class="pu">.</span>field<span class="pu">}&gt;</span>
+            <span class="op">&lt;</span><span class="ty">a</span> <span class="at">href</span><span class="op">={</span><span class="st">`#</span><span class="pu">${</span>e<span class="pu">.</span>field<span class="pu">}</span><span class="st">`</span><span class="pu">}&gt;</span><span class="pu">{</span>e<span class="pu">.</span>message<span class="pu">}</span><span class="op">&lt;/</span><span class="ty">a</span><span class="op">&gt;</span>
+          <span class="op">&lt;/</span><span class="ty">li</span><span class="op">&gt;</span>
+        <span class="pu">))}</span>
+      <span class="op">&lt;/</span><span class="ty">ul</span><span class="op">&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════ 05 KEYBOARD -->
+      <div class="section" id="keyboard">
+        <div class="section-label">05 &mdash; Input Independence</div>
+        <h2>Keyboard Navigation Patterns</h2>
+        <p class="lead">
+          WCAG 2.1 Success Criterion 2.1.1 mandates that all functionality is
+          operable through a keyboard alone. This doesn't just mean "don't block
+          Tab key" &mdash; it means complex widgets like tab panels, tree views, and
+          data grids must implement standardised keyboard interaction models defined
+          by the ARIA Authoring Practices Guide.
+        </p>
+
+        <h3>The Roving tabIndex Pattern</h3>
+        <p>
+          For composite widgets like tab lists, radio groups, or toolbars, using
+          a native <code>tabIndex</code> on every child produces a poor UX:
+          keyboard users must tab through every item. The roving tabIndex pattern
+          keeps only the active item in the tab order (<code>tabIndex={0}</code>)
+          and sets all others to <code>tabIndex={-1}</code>, using arrow keys to
+          move within the group.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSX &mdash; Tab list with roving tabIndex</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> useState<span class="pu">,</span> useRef <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="kw">function</span> <span class="fn">TabPanel</span><span class="pu">({</span> tabs <span class="pu">}) {</span>
+  <span class="kw">const</span> <span class="pu">[</span>activeTab<span class="pu">,</span> setActiveTab<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+  <span class="kw">const</span> tabRefs <span class="op">=</span> <span class="fn">useRef</span><span class="pu">([])</span>
+
+  <span class="kw">const</span> <span class="fn">handleKeyDown</span> <span class="op">=</span> <span class="pu">(e,</span> index<span class="pu">) =&gt; {</span>
+    <span class="kw">let</span> next <span class="op">=</span> index
+
+    <span class="kw">if</span> <span class="pu">(</span>e<span class="pu">.</span>key <span class="op">===</span> <span class="st">'ArrowRight'</span><span class="pu">)</span>
+      next <span class="op">=</span> <span class="pu">(</span>index <span class="op">+</span> <span class="nm">1</span><span class="pu">)</span> <span class="op">%</span> tabs<span class="pu">.</span>length
+    <span class="kw">else if</span> <span class="pu">(</span>e<span class="pu">.</span>key <span class="op">===</span> <span class="st">'ArrowLeft'</span><span class="pu">)</span>
+      next <span class="op">=</span> <span class="pu">(</span>index <span class="op">-</span> <span class="nm">1</span> <span class="op">+</span> tabs<span class="pu">.</span>length<span class="pu">)</span> <span class="op">%</span> tabs<span class="pu">.</span>length
+    <span class="kw">else if</span> <span class="pu">(</span>e<span class="pu">.</span>key <span class="op">===</span> <span class="st">'Home'</span><span class="pu">)</span> next <span class="op">=</span> <span class="nm">0</span>
+    <span class="kw">else if</span> <span class="pu">(</span>e<span class="pu">.</span>key <span class="op">===</span> <span class="st">'End'</span><span class="pu">)</span>  next <span class="op">=</span> tabs<span class="pu">.</span>length <span class="op">-</span> <span class="nm">1</span>
+    <span class="kw">else return</span>
+
+    e<span class="pu">.</span><span class="fn">preventDefault</span><span class="pu">()</span>
+    <span class="fn">setActiveTab</span><span class="pu">(</span>next<span class="pu">)</span>
+    tabRefs<span class="pu">.</span>current<span class="pu">[</span>next<span class="pu">]?.</span><span class="fn">focus</span><span class="pu">()</span>  <span class="cm">// move DOM focus with state</span>
+  <span class="pu">}</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;&gt;</span>
+      <span class="op">&lt;</span><span class="ty">div</span> <span class="at">role</span><span class="op">=</span><span class="st">"tablist"</span><span class="op">&gt;</span>
+        <span class="pu">{</span>tabs<span class="pu">.</span><span class="fn">map</span><span class="pu">((</span>tab<span class="pu">,</span> i<span class="pu">) =&gt; (</span>
+          <span class="op">&lt;</span><span class="ty">button</span>
+            <span class="at">key</span><span class="op">={</span>i<span class="pu">}</span>
+            <span class="at">role</span><span class="op">=</span><span class="st">"tab"</span>
+            <span class="at">ref</span><span class="op">={</span>el <span class="op">=&gt;</span> tabRefs<span class="pu">.</span>current<span class="pu">[</span>i<span class="pu">]</span> <span class="op">=</span> el<span class="pu">}</span>
+            <span class="at">aria-selected</span><span class="op">={</span>activeTab <span class="op">===</span> i<span class="pu">}</span>
+            <span class="at">aria-controls</span><span class="op">={</span><span class="st">`panel-</span><span class="pu">${</span>i<span class="pu">}</span><span class="st">`</span><span class="pu">}</span>
+            <span class="at">tabIndex</span><span class="op">={</span>activeTab <span class="op">===</span> i <span class="op">?</span> <span class="nm">0</span> <span class="op">:</span> <span class="op">-</span><span class="nm">1</span><span class="pu">}</span>
+            <span class="at">onClick</span><span class="op">={() =&gt;</span> <span class="fn">setActiveTab</span><span class="pu">(</span>i<span class="pu">)}</span>
+            <span class="at">onKeyDown</span><span class="op">={</span>e <span class="op">=&gt;</span> <span class="fn">handleKeyDown</span><span class="pu">(</span>e<span class="pu">,</span> i<span class="pu">)}</span>
+          <span class="op">&gt;</span>
+            <span class="pu">{</span>tab<span class="pu">.</span>label<span class="pu">}</span>
+          <span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>
+        <span class="pu">))}</span>
+      <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+      <span class="pu">{</span>tabs<span class="pu">.</span><span class="fn">map</span><span class="pu">((</span>tab<span class="pu">,</span> i<span class="pu">) =&gt; (</span>
+        <span class="op">&lt;</span><span class="ty">div</span>
+          <span class="at">key</span><span class="op">={</span>i<span class="pu">}</span>
+          <span class="at">id</span><span class="op">={</span><span class="st">`panel-</span><span class="pu">${</span>i<span class="pu">}</span><span class="st">`</span><span class="pu">}</span>
+          <span class="at">role</span><span class="op">=</span><span class="st">"tabpanel"</span>
+          <span class="at">aria-labelledby</span><span class="op">={</span><span class="st">`tab-</span><span class="pu">${</span>i<span class="pu">}</span><span class="st">`</span><span class="pu">}</span>
+          <span class="at">hidden</span><span class="op">={</span>activeTab <span class="op">!==</span> i<span class="pu">}</span>
+        <span class="op">&gt;</span>
+          <span class="pu">{</span>tab<span class="pu">.</span>content<span class="pu">}</span>
+        <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+      <span class="pu">))}</span>
+    <span class="op">&lt;/&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">&#128161; Skip Navigation Links</div>
+          Add a visually-hidden "Skip to main content" link as the very first
+          focusable element on every page. Keyboard users and screen reader users
+          can then bypass repeated nav blocks without tabbing through 20 links.
+          Make it visible on focus with <code>:focus { clip: auto; position: static }</code>.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════ 06 LIVE REGIONS -->
+      <div class="section" id="live">
+        <div class="section-label">06 &mdash; Dynamic Announcements</div>
+        <h2>Live Regions &amp; Async Updates</h2>
+        <p class="lead">
+          When your React app modifies the DOM in response to a user action &mdash;
+          a toast pops up, search results reload, a cart updates &mdash; sighted
+          users perceive the change visually. Screen readers do not automatically
+          know the page changed unless you declare an ARIA live region.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSX &mdash; Announcement manager hook</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> useState<span class="pu">,</span> useCallback <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="cm">// ── A single global announcer mounted once in your app root ──</span>
+<span class="kw">function</span> <span class="fn">Announcer</span><span class="pu">({</span> message<span class="pu">,</span> priority <span class="op">=</span> <span class="st">'polite'</span> <span class="pu">}) {</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">div</span>
+      <span class="at">aria-live</span><span class="op">={</span>priority<span class="pu">}</span>
+      <span class="at">aria-atomic</span><span class="op">=</span><span class="st">"true"</span>
+      <span class="at">style</span><span class="op">={{</span>
+        <span class="cm">/* Visually hidden but present in accessibility tree */</span>
+        position<span class="op">:</span> <span class="st">'absolute'</span><span class="pu">,</span>
+        width<span class="op">:</span> <span class="st">'1px'</span><span class="pu">,</span>
+        height<span class="op">:</span> <span class="st">'1px'</span><span class="pu">,</span>
+        overflow<span class="op">:</span> <span class="st">'hidden'</span><span class="pu">,</span>
+        clip<span class="op">:</span> <span class="st">'rect(0,0,0,0)'</span><span class="pu">,</span>
+        whiteSpace<span class="op">:</span> <span class="st">'nowrap'</span><span class="pu">,</span>
+      <span class="pu">}}</span>
+    <span class="op">&gt;</span>
+      <span class="pu">{</span>message<span class="pu">}</span>
+    <span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Hook for any component to trigger announcements ──</span>
+<span class="kw">function</span> <span class="fn">useAnnounce</span><span class="pu">() {</span>
+  <span class="kw">const</span> <span class="pu">[</span>msg<span class="pu">,</span> setMsg<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="st">''</span><span class="pu">)</span>
+
+  <span class="kw">const</span> announce <span class="op">=</span> <span class="fn">useCallback</span><span class="pu">((</span>text<span class="pu">) =&gt; {</span>
+    setMsg<span class="pu">(</span><span class="st">''</span><span class="pu">)</span>  <span class="cm">// reset first — same string won't re-announce</span>
+    <span class="fn">requestAnimationFrame</span><span class="pu">(() =&gt;</span> <span class="fn">setMsg</span><span class="pu">(</span>text<span class="pu">))</span>
+  <span class="pu">}, [])</span>
+
+  <span class="kw">return</span> <span class="pu">{</span> announce<span class="pu">,</span> Announcer<span class="op">:</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="op">&lt;</span><span class="ty">Announcer</span> <span class="at">message</span><span class="op">={</span>msg<span class="pu">}</span> <span class="op">/&gt;</span> <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// Usage</span>
+<span class="kw">function</span> <span class="fn">SearchBox</span><span class="pu">() {</span>
+  <span class="kw">const</span> <span class="pu">{</span> announce<span class="pu">,</span> Announcer <span class="pu">}</span> <span class="op">=</span> <span class="fn">useAnnounce</span><span class="pu">()</span>
+
+  <span class="kw">const</span> <span class="fn">handleSearch</span> <span class="op">=</span> <span class="kw">async</span> <span class="pu">(</span>query<span class="pu">) =&gt; {</span>
+    <span class="kw">const</span> results <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetchResults</span><span class="pu">(</span>query<span class="pu">)</span>
+    <span class="fn">announce</span><span class="pu">(</span><span class="st">`</span><span class="pu">${</span>results<span class="pu">.</span>length<span class="pu">}</span><span class="st"> results found for </span><span class="pu">${</span>query<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+  <span class="pu">}</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;&gt;</span>
+      <span class="op">&lt;</span><span class="ty">Announcer</span> <span class="op">/&gt;</span>  <span class="cm">// invisible, speaks to screen readers</span>
+      <span class="op">&lt;</span><span class="ty">input</span> <span class="at">type</span><span class="op">=</span><span class="st">"search"</span> <span class="at">onChange</span><span class="op">={</span>e <span class="op">=&gt;</span> <span class="fn">handleSearch</span><span class="pu">(</span>e<span class="pu">.</span>target<span class="pu">.</span>value<span class="pu">)}</span> <span class="op">/&gt;</span>
+    <span class="op">&lt;/&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Value</th><th>Interrupts?</th><th>Best For</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>aria-live="polite"</code></td>
+              <td>No &mdash; waits for idle</td>
+              <td>Success messages, search result counts, cart updates</td>
+            </tr>
+            <tr>
+              <td><code>aria-live="assertive"</code></td>
+              <td>Yes &mdash; interrupts immediately</td>
+              <td>Critical errors, session timeouts, payment failures</td>
+            </tr>
+            <tr>
+              <td><code>role="status"</code></td>
+              <td>No (implies polite)</td>
+              <td>Persistent status bars, loading states</td>
+            </tr>
+            <tr>
+              <td><code>role="alert"</code></td>
+              <td>Yes (implies assertive)</td>
+              <td>Error messages, inline validation failures</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="warn">
+          <div class="warn-label">&#9888; Use assertive sparingly</div>
+          <code>aria-live="assertive"</code> stops the screen reader mid-sentence
+          to announce your message. Used carelessly on frequent updates (every
+          keystroke, every poll result), it becomes an unusable torrent of
+          interruptions. Reserve it for genuinely critical, time-sensitive information.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════ 07 CONTRAST -->
+      <div class="section" id="contrast">
+        <div class="section-label">07 &mdash; Visual Design</div>
+        <h2>Colour Contrast &amp; Reduced Motion</h2>
+        <p class="lead">
+          WCAG 2.1 AA requires a contrast ratio of at least <strong>4.5:1</strong>
+          for normal text and <strong>3:1</strong> for large text and UI component
+          boundaries. WCAG AAA raises this to 7:1 and 4.5:1 respectively.
+          Contrast failures are among the most common a11y violations in production
+          because they're invisible to sighted developers with typical vision.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">CSS &mdash; Contrast-safe design tokens + reduced motion</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">/* ── Colour tokens with documented contrast ratios ── */</span>
+<span class="bi">:root</span> <span class="pu">{</span>
+  <span class="cm">/* Primary text on white: 16.1:1  ✅ AAA */</span>
+  <span class="op">--</span>text<span class="op">-</span>primary<span class="op">:</span> <span class="nm">#1a1a1a</span><span class="pu">;</span>
+
+  <span class="cm">/* Secondary text on white: 5.9:1  ✅ AA */</span>
+  <span class="op">--</span>text<span class="op">-</span>secondary<span class="op">:</span> <span class="nm">#595959</span><span class="pu">;</span>
+
+  <span class="cm">/* ⚠️  Muted text on white: 2.8:1  ❌ FAIL */</span>
+  <span class="cm">/* --text-muted: #9a9a9a; — never use for meaningful text */</span>
+
+  <span class="cm">/* Brand accent on white: 4.6:1  ✅ AA */</span>
+  <span class="op">--</span>accent<span class="op">:</span> <span class="nm">#7c3aed</span><span class="pu">;</span>
+
+  <span class="cm">/* Error red on white: 4.9:1  ✅ AA */</span>
+  <span class="op">--</span>error<span class="op">:</span> <span class="nm">#b91c1c</span><span class="pu">;</span>
+<span class="pu">}</span>
+
+<span class="cm">/* ── Respect user's motion preference ── */</span>
+<span class="bi">@media</span> <span class="pu">(</span>prefers<span class="op">-</span>reduced<span class="op">-</span>motion<span class="op">:</span> reduce<span class="pu">) {</span>
+  <span class="op">*,</span> <span class="op">*::before,</span> <span class="op">*::after</span> <span class="pu">{</span>
+    animation<span class="op">-</span>duration<span class="op">:</span>   <span class="nm">0.01</span><span class="bi">ms</span> <span class="op">!</span>important<span class="pu">;</span>
+    animation<span class="op">-</span>iteration<span class="op">-</span>count<span class="op">:</span> <span class="nm">1</span>     <span class="op">!</span>important<span class="pu">;</span>
+    transition<span class="op">-</span>duration<span class="op">:</span>  <span class="nm">0.01</span><span class="bi">ms</span> <span class="op">!</span>important<span class="pu">;</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">/* ── Always show a visible focus ring ── */</span>
+<span class="op">:focus-visible</span> <span class="pu">{</span>
+  outline<span class="op">:</span> <span class="nm">3</span><span class="bi">px</span> solid <span class="kw">var</span><span class="pu">(</span><span class="op">--</span>accent<span class="pu">)</span><span class="pu">;</span>
+  outline<span class="op">-</span>offset<span class="op">:</span> <span class="nm">2</span><span class="bi">px</span><span class="pu">;</span>
+  border<span class="op">-</span>radius<span class="op">:</span> <span class="nm">3</span><span class="bi">px</span><span class="pu">;</span>
+<span class="pu">}</span>
+<span class="cm">/* Remove outline only for pointer users, not keyboard */</span>
+<span class="op">:focus:not(:focus-visible)</span> <span class="pu">{</span>
+  outline<span class="op">:</span> none<span class="pu">;</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <div class="pullquote">
+          "Removing focus rings to make an interface look cleaner is one of the most common accessibility failures we encounter in audits. If you can't see where focus is, you can't use the keyboard."
+        </div>
+
+        <div class="info">
+          <div class="info-label">&#128269; Contrast Checking Tools</div>
+          <strong>Colour Contrast Analyser</strong> (TPGi) is the industry-standard
+          desktop tool. For browser-based workflows, Chrome DevTools now shows
+          contrast ratios inline in the colour picker. The
+          <strong>axe DevTools</strong> browser extension will flag failing elements
+          automatically during development.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════ 08 TESTING -->
+      <div class="section" id="testing">
+        <div class="section-label">08 &mdash; Automated Guardrails</div>
+        <h2>Testing &amp; Automated Tooling</h2>
+        <p class="lead">
+          Automated tools can catch roughly 30–40% of WCAG failures &mdash; the
+          mechanical ones: missing alt text, empty form labels, insufficient contrast.
+          The remaining 60% requires manual keyboard testing and screen reader
+          verification. A good a11y workflow stacks both.
+        </p>
+
+        <h3>A. Linting — <code>eslint-plugin-jsx-a11y</code></h3>
+        <p>
+          This plugin statically analyses your JSX and warns in your editor before
+          code is even saved. It catches missing <code>alt</code> attributes,
+          click handlers on non-interactive elements, and disconnected form labels.
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">.eslintrc.json</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="pu">{</span>
+  <span class="st">"plugins"</span><span class="op">:</span> <span class="pu">[</span><span class="st">"jsx-a11y"</span><span class="pu">],</span>
+  <span class="st">"extends"</span><span class="op">:</span> <span class="pu">[</span>
+    <span class="st">"plugin:jsx-a11y/recommended"</span>
+  <span class="pu">],</span>
+  <span class="st">"rules"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="cm">// Upgrade click-on-div to an error (default is warn)</span>
+    <span class="st">"jsx-a11y/click-events-have-key-events"</span><span class="op">:</span> <span class="st">"error"</span><span class="pu">,</span>
+    <span class="st">"jsx-a11y/no-static-element-interactions"</span><span class="op">:</span> <span class="st">"error"</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>B. Runtime Audits — <code>@axe-core/react</code></h3>
+        <p>
+          Axe analyses the rendered DOM and logs violations to your browser console
+          during development, surfacing issues the linter can't catch (like contrast
+          ratios and ARIA relationship correctness).
+        </p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript &mdash; main.jsx / index.js</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> React <span class="kw">from</span> <span class="st">'react'</span>
+<span class="kw">import</span> ReactDOM <span class="kw">from</span> <span class="st">'react-dom'</span>
+
+<span class="kw">if</span> <span class="pu">(</span>process<span class="pu">.</span>env<span class="pu">.</span>NODE_ENV <span class="op">!==</span> <span class="st">'production'</span><span class="pu">) {</span>
+  <span class="kw">import</span><span class="pu">(</span><span class="st">'@axe-core/react'</span><span class="pu">).</span><span class="fn">then</span><span class="pu">((</span>axe<span class="pu">) =&gt; {</span>
+    axe<span class="pu">.</span><span class="kw">default</span><span class="pu">(</span>React<span class="pu">,</span> ReactDOM<span class="pu">,</span> <span class="nm">1000</span><span class="pu">)</span>
+    <span class="cm">// Violations printed to DevTools console with WCAG references</span>
+  <span class="pu">})</span>
+<span class="pu">}</span></code></pre>
+        </div>
+
+        <h3>C. Component Testing — <code>jest-axe</code></h3>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript &mdash; Accessibility unit test</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> render <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@testing-library/react'</span>
+<span class="kw">import</span> <span class="pu">{</span> axe<span class="pu">,</span> toHaveNoViolations <span class="pu">}</span> <span class="kw">from</span> <span class="st">'jest-axe'</span>
+
+expect<span class="pu">.</span><span class="fn">extend</span><span class="pu">(</span>toHaveNoViolations<span class="pu">)</span>
+
+<span class="fn">test</span><span class="pu">(</span><span class="st">'FormField has no axe violations'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">() =&gt; {</span>
+  <span class="kw">const</span> <span class="pu">{</span> container <span class="pu">}</span> <span class="op">=</span> <span class="fn">render</span><span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">FormField</span>
+      <span class="at">id</span><span class="op">=</span><span class="st">"email"</span>
+      <span class="at">label</span><span class="op">=</span><span class="st">"Email address"</span>
+      <span class="at">required</span>
+    <span class="op">/&gt;</span>
+  <span class="pu">)</span>
+  <span class="kw">const</span> results <span class="op">=</span> <span class="kw">await</span> <span class="fn">axe</span><span class="pu">(</span>container<span class="pu">)</span>
+  expect<span class="pu">(</span>results<span class="pu">).</span><span class="fn">toHaveNoViolations</span><span class="pu">()</span>
+<span class="pu">})</span></code></pre>
+        </div>
+
+        <h3>Implementation Checklist</h3>
+        <ul class="checklist">
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span>Every interactive element is a <code>&lt;button&gt;</code> or <code>&lt;a href&gt;</code>. Custom widgets have the correct <code>role</code>, <code>tabIndex={0}</code>, and keyboard handlers.</span>
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span>All images have <code>alt</code> text. Decorative images use <code>alt=""</code>. Icon-only buttons have <code>aria-label</code>.</span>
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span>Every form input has a visible, programmatically associated <code>&lt;label&gt;</code> via <code>htmlFor</code>. Placeholder text is never the sole label.</span>
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span>Validation errors are linked to their inputs via <code>aria-describedby</code> and <code>aria-invalid</code>. A validation summary receives focus on submit.</span>
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span>Route changes and modal opens shift focus programmatically. Modals trap focus. Closing a modal returns focus to the trigger element.</span>
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span>All live DOM changes (toasts, loading states, search results) are announced via <code>aria-live</code> or <code>role="alert"</code>.</span>
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span>Text contrast meets WCAG AA (4.5:1). UI component boundaries meet 3:1. Contrast is verified with a dedicated tool, not eyeballed.</span>
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span>A visible focus ring is always shown on keyboard focus via <code>:focus-visible</code>. The ring is never suppressed globally.</span>
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span>Animations respect <code>prefers-reduced-motion</code>. All transitions disabled or slowed to near-zero for users who opt out.</span>
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span>
+            <span><code>eslint-plugin-jsx-a11y</code> runs in CI. <code>jest-axe</code> tests cover critical components. Manual keyboard walk-through on every new page/flow.</span>
+          </li>
+        </ul>
+      </div>
+
+    </div><!-- /content -->
+
+    <footer>
+      <p><strong>Frontend Accessibility Deep Dive</strong> &mdash; Covering WCAG 2.2, React &amp; modern SPA patterns</p>
+      <p style="margin-top: 8px; font-size: 13px">Build for everyone. The web is for everyone.</p>
+    </footer>
+
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest('.code-block').querySelector('pre');
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          btn.textContent = 'Copied!';
+          setTimeout(() => (btn.textContent = 'Copy'), 2000);
+        });
+      }
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = document.querySelector(a.getAttribute('href'));
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+    </script>
+  </body>
+</html>
