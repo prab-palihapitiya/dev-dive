@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>The Senior Full-Stack Engineer Checklist: 50 Chapters to Engineering Mastery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#faf8f5;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
+      --text-muted:#9a9a9a;--accent:#4f46e5;--accent-light:#eef2ff;--accent-subtle:#e0e7ff;
+      --border:#e8e3db;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#f3f0eb;
+      --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
+      --info-bg:#eff6ff;--info-border:#2563eb;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Outfit",sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.8}
+    nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s}
+    .nav-back:hover{color:var(--accent)}
+    .nav-pipe{color:var(--border);font-size:18px}
+    .nav-brand{font-size:14px;font-weight:700;letter-spacing:-.3px}
+    .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:100px}
+    .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+    .hero{max-width:820px;margin:0 auto;padding:64px 2rem 48px}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:24px}
+    .hero h1{font-family:"Lora",serif;font-size:clamp(30px,4.5vw,48px);font-weight:600;line-height:1.15;letter-spacing:-.5px;margin-bottom:20px}
+    .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+    .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#3730a3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;letter-spacing:-.5px}
+    .meta-text{font-size:14px;color:var(--text-secondary)}
+    .meta-text strong{color:var(--text-primary)}
+    .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+    .toc-wrapper{max-width:820px;margin:0 auto;padding:0 2rem 8px}
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:48px}
+    .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+    .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}
+    .toc a{font-size:13.5px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:baseline;gap:8px;padding:4px 0;transition:color .15s}
+    .toc a:hover{color:var(--accent)}
+    .toc-num{font-size:11px;color:var(--text-muted);font-weight:600;min-width:22px;flex-shrink:0}
+    .content{max-width:820px;margin:0 auto;padding:0 2rem 100px}
+    .part{margin-bottom:80px}
+    .part-header{display:flex;align-items:center;gap:16px;margin-bottom:40px;padding:20px 24px;background:var(--accent-light);border-radius:12px;border-left:4px solid var(--accent)}
+    .part-number{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--accent);white-space:nowrap}
+    .part-title{font-family:"Lora",serif;font-size:clamp(18px,2.5vw,24px);font-weight:600;color:var(--text-primary)}
+    .chapter{margin-bottom:56px;scroll-margin-top:72px}
+    .chapter-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .chapter-label::after{content:"";flex:1;height:1px;background:var(--accent-subtle)}
+    h2{font-family:"Lora",serif;font-size:clamp(20px,2.8vw,28px);font-weight:600;letter-spacing:-.3px;margin-bottom:14px}
+    h3{font-size:18px;font-weight:600;margin:28px 0 10px}
+    h4{font-size:15px;font-weight:600;margin:18px 0 8px;color:var(--text-secondary)}
+    p{margin-bottom:16px;color:#2d2d2d;line-height:1.8}
+    .lead{font-size:18px;color:var(--text-secondary);font-weight:300;margin-bottom:22px;line-height:1.7}
+    ul.prose,ol.prose{margin:0 0 16px 22px}
+    ul.prose li,ol.prose li{margin-bottom:6px;color:#2d2d2d;line-height:1.7}
+    .code-block{background:var(--code-bg);border-radius:10px;margin:20px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+    .code-header{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+    .code-lang{font-size:11px;color:#6e7681;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+    .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:"Outfit",sans-serif;transition:all .15s}
+    .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+    pre{padding:18px 20px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.75;color:var(--code-text)}
+    pre code{background:none;padding:0;font-size:inherit;color:inherit}
+    code{font-family:"JetBrains Mono",monospace;font-size:13px;background:#eef2ff;color:#4338ca;padding:2px 6px;border-radius:4px}
+    .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+    .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+    .pu{color:#e6edf3}.bi{color:#ffa657}.at{color:#79c0ff}.dc{color:#f0883e}
+    .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .tip-label{font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .warn-label{font-size:11px;font-weight:700;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .info-label{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14.5px}
+    th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:12px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+    td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--bg)}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:20px 0}
+    .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+    .concept-card h4{font-size:14px;font-weight:600;margin:0 0 6px;color:var(--text-primary)}
+    .concept-card p{font-size:13px;color:var(--text-secondary);margin:0;line-height:1.5}
+    .concept-icon{font-size:20px;margin-bottom:8px}
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+    .compare-card{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+    .compare-header{padding:8px 14px;font-size:13px;font-weight:700}
+    .compare-header.bad{background:#fef2f2;color:#dc2626}
+    .compare-header.good{background:#f0fdf4;color:#16a34a}
+    .compare-card .code-block{border-radius:0;margin:0;border:none}
+    .pullquote{font-family:"Lora",serif;font-style:italic;font-size:20px;line-height:1.55;color:var(--text-secondary);border-left:4px solid var(--accent);padding:10px 22px;margin:32px 0}
+    .checklist{list-style:none;margin:14px 0}
+    .checklist li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);font-size:15px}
+    .checklist li:last-child{border-bottom:none}
+    .check-icon{font-size:15px;flex-shrink:0;margin-top:2px}
+    .arch-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin:20px 0;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:2;text-align:center;color:var(--text-secondary);overflow-x:auto}
+    .arch-box .layer{color:var(--accent);font-weight:600}
+    .arch-box .arrow{color:var(--text-muted)}
+    .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px}
+    .badge-indigo{background:#eef2ff;color:#4338ca}
+    .badge-green{background:#dcfce7;color:#15803d}
+    .badge-amber{background:#fef3c7;color:#b45309}
+    .badge-red{background:#fee2e2;color:#b91c1c}
+    footer{background:#1a1a1a;color:rgba(255,255,255,.65);text-align:center;padding:40px 2rem;font-size:14px}
+    footer strong{color:white}
+    @media(max-width:640px){.toc-grid,.compare-grid,.concept-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="index.html">&#8592; DevDive</a>
+    <span class="nav-pipe">|</span>
+    <span class="nav-brand">Senior Full-Stack Guide</span>
+    <span class="nav-badge">Best Practices</span>
+  </div>
+  <span class="nav-rt">~60 min read &nbsp;·&nbsp; 50 chapters</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; Best Practices</div>
+  <h1>The Senior Full-Stack Engineer Checklist: 50 Chapters to Engineering Mastery</h1>
+  <p class="hero-sub">
+    From mid-level thinking to senior engineering — covering mindset, computer science
+    foundations, frontend and backend architecture, databases, system design, cloud,
+    security, AI-augmented development, and technical leadership. One definitive guide.
+  </p>
+  <div class="hero-meta">
+    <div class="avatar">SR</div>
+    <div class="meta-text">
+      <strong>Senior Full-Stack Engineering — Complete Guide</strong><br/>
+      50 Chapters &middot; 12 Parts &middot; React/Node/PostgreSQL/Cloud &mdash; June 2026
+    </div>
+  </div>
+  <hr class="hero-divider"/>
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>12 Parts — 50 Chapters</h3>
+    <div class="toc-grid">
+      <a href="#part1"><span class="toc-num">I</span> The Senior Engineer Mindset (Ch. 1–3)</a>
+      <a href="#part7"><span class="toc-num">VII</span> System Design (Ch. 25–29)</a>
+      <a href="#part2"><span class="toc-num">II</span> CS Foundations (Ch. 4–6)</a>
+      <a href="#part8"><span class="toc-num">VIII</span> Cloud Engineering (Ch. 30–34)</a>
+      <a href="#part3"><span class="toc-num">III</span> Frontend Engineering (Ch. 7–11)</a>
+      <a href="#part9"><span class="toc-num">IX</span> Cybersecurity (Ch. 35–38)</a>
+      <a href="#part4"><span class="toc-num">IV</span> Backend Engineering (Ch. 12–15)</a>
+      <a href="#part10"><span class="toc-num">X</span> AI-Augmented Engineering (Ch. 39–42)</a>
+      <a href="#part5"><span class="toc-num">V</span> Database Engineering (Ch. 16–19)</a>
+      <a href="#part11"><span class="toc-num">XI</span> Engineering Excellence (Ch. 43–46)</a>
+      <a href="#part6"><span class="toc-num">VI</span> Software Architecture (Ch. 20–24)</a>
+      <a href="#part12"><span class="toc-num">XII</span> Leadership &amp; Growth (Ch. 47–50)</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ════════════════════════════ PART I ════════════════════════════ -->
+<div class="part" id="part1">
+  <div class="part-header">
+    <span class="part-number">Part I</span>
+    <span class="part-title">The Senior Engineer Mindset</span>
+  </div>
+
+  <div class="chapter" id="ch1">
+    <div class="chapter-label">Chapter 1</div>
+    <h2>What Does "Senior Full-Stack Engineer" Actually Mean?</h2>
+    <p class="lead">Seniority is not a function of years. It is a function of the quality of decisions you make, the problems you choose to solve, and the responsibility you take for outcomes you didn't directly produce.</p>
+    <p>A mid-level engineer asks "how do I implement this?" A senior engineer asks "should we implement this at all?" That shift — from <em>implementation</em> to <em>decision-making</em> — is the core of seniority. It means understanding business context well enough to push back on poorly-defined requirements, propose simpler solutions, or flag when a feature adds technical debt that outweighs its business value.</p>
+    <p><strong>Ownership vs implementation</strong> is the clearest dividing line. Implementation means you write the code assigned to you. Ownership means you are responsible for whether the system works in production, handles edge cases, degrades gracefully under load, is observable, and can be maintained six months from now by someone who wasn't in the design meeting. Owners don't disappear when the ticket closes.</p>
+    <p><strong>Business impact</strong> is the other dimension juniors systematically undervalue. Every engineering decision has an economic consequence — latency affects conversion rates, unreliability erodes user trust, poor developer experience slows future delivery. Senior engineers learn to reason in these terms, which lets them influence roadmaps rather than just execute them.</p>
+    <div class="concept-grid">
+      <div class="concept-card"><div class="concept-icon">🧭</div><h4>Ownership</h4><p>Responsibility for production outcomes, not just code correctness on your local machine.</p></div>
+      <div class="concept-card"><div class="concept-icon">📊</div><h4>Business Impact</h4><p>Every technical decision is an economic decision. Understand the cost of latency, reliability, and tech debt in revenue terms.</p></div>
+      <div class="concept-card"><div class="concept-icon">⚖️</div><h4>Decision-Making</h4><p>Choosing between approaches with full awareness of trade-offs — not just picking the newest technology.</p></div>
+      <div class="concept-card"><div class="concept-icon">🎓</div><h4>Engineering Maturity</h4><p>Knowing when to over-engineer (high-stakes core) and when to deliberately cut corners (throwaway feature).</p></div>
+    </div>
+    <div class="tip"><div class="tip-label">Senior signal</div>The fastest way to identify a senior engineer in a room: they're the ones asking "what happens when this fails?" while everyone else is still debating the happy path.</div>
+  </div>
+
+  <div class="chapter" id="ch2">
+    <div class="chapter-label">Chapter 2</div>
+    <h2>Thinking in Systems Instead of Features</h2>
+    <p class="lead">A feature is a local optimisation. A system is a global one. Senior engineers constantly zoom out to ask: what does this change do to the system as a whole?</p>
+    <p>Local optimisation is seductive because it produces measurable, immediate results. You speed up a database query. The dashboard loads faster. Everyone is pleased. But if that query now runs 10× more frequently because it's been surfaced in a new API endpoint, and you didn't notice, the global performance regressed. Systems thinking means modelling the second and third-order effects of changes.</p>
+    <p><strong>Trade-off analysis</strong> is the primary tool of a systems thinker. Every architectural decision involves giving up something to gain something else. Caching improves latency but introduces staleness. Microservices improve deployment independence but add network overhead and operational complexity. The senior engineer's job is not to find the objectively correct answer — it doesn't exist — but to make the trade-off explicit, document it, and ensure the team is choosing it deliberately rather than accidentally.</p>
+    <p><strong>Technical debt</strong> is not inherently bad. Deliberately incurred debt — "we'll use a simple polling solution now and build WebSockets in Q3 when we have more users" — is a rational business decision. Accidentally incurred debt — "we hardcoded the API URL because we were in a hurry" — is a liability. Senior engineers track debt intentionally, communicate it upward, and schedule its repayment before it becomes load-bearing.</p>
+    <div class="info"><div class="info-label">Engineering Economics</div>Technical debt has an interest rate. The longer you hold it, the more it costs — in slower velocity, harder onboarding, higher defect rates. A good senior engineer knows their team's current debt load the same way a CFO knows the company's credit exposure.</div>
+  </div>
+
+  <div class="chapter" id="ch3">
+    <div class="chapter-label">Chapter 3</div>
+    <h2>The Software Development Lifecycle</h2>
+    <p class="lead">Every phase of the SDLC is an opportunity to reduce cost. The cost of fixing a bug in requirements is 1×. In design: 5×. In development: 10×. In testing: 20×. In production: 100×.</p>
+    <p><strong>Requirements gathering</strong> is where senior engineers add disproportionate value. The ability to read a product requirement and ask "but what should happen when the user has no internet connection?", "what's the expected data volume in 18 months?", and "do we need this to be reversible?" prevents entire categories of re-work. Ambiguity in requirements is the root cause of most schedule overruns.</p>
+    <p><strong>Design</strong> at a senior level means producing artefacts that others can critique — architecture diagrams, sequence diagrams, API contracts, data models — before code is written. The purpose of a design review is not to find the perfect solution but to surface the assumptions that would most expensively turn out to be wrong.</p>
+    <p><strong>Monitoring and observability</strong> are not post-deployment concerns. They are design constraints. A system you cannot observe is a system you cannot operate. Every feature should be designed with its observability story: what metrics confirm it's working? What logs confirm why it's failing? What traces show where time is spent?</p>
+    <table>
+      <thead><tr><th>Phase</th><th>Senior contribution</th><th>Common mistake</th></tr></thead>
+      <tbody>
+        <tr><td>Requirements</td><td>Surface hidden constraints, edge cases, scalability limits</td><td>Accepting ambiguous requirements and discovering them in QA</td></tr>
+        <tr><td>Design</td><td>Produce reviewable artefacts, document trade-offs explicitly</td><td>Designing in isolation, no design review</td></tr>
+        <tr><td>Development</td><td>Write for future maintainers, not just for today's ticket</td><td>Optimising for local clarity at cost of system coherence</td></tr>
+        <tr><td>Testing</td><td>Define test strategy up front, include failure scenarios</td><td>Only testing the happy path</td></tr>
+        <tr><td>Deployment</td><td>Feature flags, canary releases, rollback plan</td><td>Big-bang deployments with no rollback</td></tr>
+        <tr><td>Monitoring</td><td>Define SLOs before shipping, alert on symptoms not causes</td><td>No alerts until users complain</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PART II ════════════════════════════ -->
+<div class="part" id="part2">
+  <div class="part-header">
+    <span class="part-number">Part II</span>
+    <span class="part-title">Computer Science Foundations</span>
+  </div>
+
+  <div class="chapter" id="ch4">
+    <div class="chapter-label">Chapter 4</div>
+    <h2>Data Structures &amp; Algorithms for Production Systems</h2>
+    <p class="lead">The goal is not to pass a LeetCode interview. The goal is to reach for the right tool instantly when a production problem demands it — and to immediately recognise when the wrong data structure is causing a performance cliff.</p>
+    <p><strong>Hash maps</strong> are the Swiss Army knife of production code. O(1) average-case lookup makes them the right choice for deduplication, caching, counting, grouping, and indexing. But they have a hidden cost: hash collisions degrade to O(n), and their memory overhead is 3–5× the stored data. Knowing when a sorted array with binary search (O(log n)) is actually better — when the dataset is small, read-heavy, and needs ordered traversal — separates engineers who think about data from those who just use maps by default.</p>
+    <p><strong>Trees</strong> appear everywhere in production: file systems, database indexes (B-Trees), DOM, routing tries, decision trees in feature flags. Understanding tree traversal — DFS vs BFS — tells you whether you should use a stack or a queue for your iterative implementation, which directly affects memory profile on deep vs wide structures.</p>
+    <p><strong>Complexity analysis</strong> in production is always about the <em>realistic</em> case, not the theoretical worst case. An O(n²) algorithm over a list that never exceeds 50 items is fine. An O(n log n) sort applied to 10 million records on every API request is not. Profile before optimising; optimise the bottleneck, not the elegant part.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — HashMap vs sorted array trade-off in real code</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// Scenario: look up a user's permission level by role</span>
+<span class="cm">// Roles rarely exceed 20 — sorted array + binary search is cache-friendlier</span>
+
+<span class="kw">const</span> roles <span class="op">=</span> <span class="pu">[</span>
+  <span class="pu">{</span> name<span class="op">:</span> <span class="st">'admin'</span><span class="pu">,</span>  level<span class="op">:</span> <span class="nm">100</span> <span class="pu">},</span>
+  <span class="pu">{</span> name<span class="op">:</span> <span class="st">'editor'</span><span class="pu">,</span> level<span class="op">:</span>  <span class="nm">50</span>  <span class="pu">},</span>
+  <span class="pu">{</span> name<span class="op">:</span> <span class="st">'viewer'</span><span class="pu">,</span> level<span class="op">:</span>  <span class="nm">10</span>  <span class="pu">},</span>
+<span class="pu">]</span> <span class="kw">as const</span>
+
+<span class="cm">// For > 1000 roles: use Map for O(1)</span>
+<span class="cm">// For ≤ 50 roles: sorted array is fine AND uses less memory</span>
+<span class="kw">const</span> roleMap <span class="op">=</span> <span class="kw">new</span> Map<span class="pu">(</span>roles<span class="pu">.</span><span class="fn">map</span><span class="pu">(</span>r <span class="op">=&gt;</span> <span class="pu">[</span>r<span class="pu">.</span>name<span class="pu">,</span> r<span class="pu">.</span>level<span class="pu">]))</span>
+
+<span class="cm">// The real production question: how often is this called?</span>
+<span class="cm">// If it's on every request: pre-compute once at startup</span>
+<span class="cm">// If it's per-user-action: inline lookup is fine</span>
+
+<span class="cm">// Graphs in production: dependency resolution</span>
+<span class="kw">function</span> <span class="fn">topologicalSort</span><span class="pu">(</span>tasks<span class="op">:</span> <span class="ty">Map</span><span class="op">&lt;</span><span class="ty">string</span><span class="pu">,</span> <span class="ty">string</span><span class="pu">[]&gt;</span><span class="pu">):</span> <span class="ty">string</span><span class="pu">[]</span> <span class="pu">{</span>
+  <span class="kw">const</span> visited <span class="op">=</span> <span class="kw">new</span> <span class="fn">Set</span><span class="op">&lt;</span><span class="ty">string</span><span class="op">&gt;</span><span class="pu">()</span>
+  <span class="kw">const</span> result<span class="op">:</span> <span class="ty">string</span><span class="pu">[]</span> <span class="op">=</span> <span class="pu">[]</span>
+
+  <span class="kw">const</span> <span class="fn">dfs</span> <span class="op">=</span> <span class="pu">(</span>node<span class="op">:</span> <span class="ty">string</span><span class="pu">) =&gt; {</span>
+    <span class="kw">if</span> <span class="pu">(</span>visited<span class="pu">.</span><span class="fn">has</span><span class="pu">(</span>node<span class="pu">))</span> <span class="kw">return</span>
+    visited<span class="pu">.</span><span class="fn">add</span><span class="pu">(</span>node<span class="pu">)</span>
+    <span class="pu">(</span>tasks<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>node<span class="pu">)</span> <span class="op">??</span> <span class="pu">[]).</span><span class="fn">forEach</span><span class="pu">(</span>dfs<span class="pu">)</span>
+    result<span class="pu">.</span><span class="fn">push</span><span class="pu">(</span>node<span class="pu">)</span>
+  <span class="pu">}</span>
+
+  tasks<span class="pu">.</span><span class="fn">forEach</span><span class="pu">((</span>_<span class="pu">,</span> k<span class="pu">) =&gt;</span> <span class="fn">dfs</span><span class="pu">(</span>k<span class="pu">))</span>
+  <span class="kw">return</span> result<span class="pu">.</span><span class="fn">reverse</span><span class="pu">()</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch5">
+    <div class="chapter-label">Chapter 5</div>
+    <h2>Concurrency and Parallelism</h2>
+    <p class="lead">Node.js is single-threaded. Understanding precisely what that means — and what it doesn't mean — is essential for building systems that stay responsive under load.</p>
+    <p>Node.js runs JavaScript on a single thread using an event loop backed by libuv, which manages a thread pool for I/O operations. When you call <code>fs.readFile()</code>, the read happens on a libuv thread; when complete, the callback is queued on the event loop. Your JavaScript never blocks — but your event loop can be starved if you put CPU-intensive work on it directly.</p>
+    <p><strong>The rule:</strong> async I/O (database, network, filesystem) is non-blocking by design. CPU work (image processing, PDF generation, cryptography, JSON parsing of huge payloads) blocks the event loop and starves every other concurrent request. Senior engineers offload CPU work to worker threads (<code>worker_threads</code> module) or a separate process/service.</p>
+    <p><strong>Race conditions</strong> occur in Node.js even without threads. If two concurrent requests both read a counter, increment it, and write it back, you have a read-modify-write race. The fix: atomic database operations (<code>UPDATE counter SET val = val + 1</code>), Redis atomic commands (<code>INCR</code>), or database-level locking.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Worker thread for CPU-bound work</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> Worker<span class="pu">,</span> isMainThread<span class="pu">,</span> parentPort<span class="pu">,</span> workerData <span class="pu">}</span> <span class="kw">from</span> <span class="st">'worker_threads'</span>
+
+<span class="cm">// ── main thread ─────────────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">runInWorker</span><span class="pu">&lt;</span><span class="ty">T</span><span class="pu">&gt;(</span>data<span class="op">:</span> <span class="kw">unknown</span><span class="pu">):</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="kw">return new</span> <span class="fn">Promise</span><span class="pu">((</span>resolve<span class="pu">,</span> reject<span class="pu">) =&gt; {</span>
+    <span class="kw">const</span> worker <span class="op">=</span> <span class="kw">new</span> <span class="fn">Worker</span><span class="pu">(</span>__filename<span class="pu">,</span> <span class="pu">{</span> workerData<span class="op">:</span> data <span class="pu">})</span>
+    worker<span class="pu">.</span><span class="fn">once</span><span class="pu">(</span><span class="st">'message'</span><span class="pu">,</span> resolve<span class="pu">)</span>
+    worker<span class="pu">.</span><span class="fn">once</span><span class="pu">(</span><span class="st">'error'</span><span class="pu">,</span> reject<span class="pu">)</span>
+  <span class="pu">})</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── worker thread ────────────────────────────────────────────</span>
+<span class="kw">if</span> <span class="pu">(!</span>isMainThread<span class="pu">) {</span>
+  <span class="cm">// CPU-intensive work safely off the main event loop</span>
+  <span class="kw">const</span> result <span class="op">=</span> <span class="fn">heavyCryptoOperation</span><span class="pu">(</span>workerData<span class="pu">)</span>
+  parentPort<span class="op">!.</span><span class="fn">postMessage</span><span class="pu">(</span>result<span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+    </div>
+    <div class="warn"><div class="warn-label">Event loop starvation</div>A synchronous <code>JSON.parse()</code> on a 50MB payload blocks the event loop for ~800ms. Every other request queued behind it waits. Use streaming JSON parsers (<code>stream-json</code>) for large payloads or process them in a worker thread.</div>
+  </div>
+
+  <div class="chapter" id="ch6">
+    <div class="chapter-label">Chapter 6</div>
+    <h2>Networking Fundamentals</h2>
+    <p class="lead">Every millisecond of network latency between your services is a tax on your response time. Understanding the stack from TCP to TLS to HTTP/2 tells you where that tax is coming from and how to reduce it.</p>
+    <p><strong>TCP</strong> provides reliable, ordered byte delivery through connection establishment (3-way handshake), sequencing, and retransmission. Each new TCP connection adds ~1 RTT before any data is sent — which is why connection pooling, HTTP keep-alive, and HTTP/2 multiplexing exist. In a microservices architecture with 10 service hops, eliminating a new TCP connection per hop can save 100–300ms per request.</p>
+    <p><strong>TLS</strong> adds a further 1–2 RTTs for the handshake, plus CPU for encryption/decryption. TLS 1.3 reduces the handshake to 1 RTT (0-RTT resumption for returning connections). On internal service-to-service traffic, mutual TLS (mTLS) provides authentication and encryption — the trade-off is certificate management complexity.</p>
+    <p><strong>DNS</strong> is the first thing that can break your system. A misconfigured TTL means clients cache stale addresses. A DNS resolver with high latency adds hundreds of milliseconds to cold starts. Senior engineers know their DNS TTLs, test DNS failover explicitly, and use service mesh (Envoy/Istio) for internal service discovery instead of relying on DNS for health-aware routing.</p>
+    <p><strong>Load balancing</strong> strategies: Round-robin distributes evenly but ignores server load. Least-connections routes to the least-busy server. Consistent hashing routes the same client to the same server (useful for caching locality). Layer 7 load balancers can route based on request content — path, header, cookie — enabling blue/green and canary deployments at the traffic layer.</p>
+    <table>
+      <thead><tr><th>Protocol</th><th>Layer</th><th>Key characteristic</th><th>When it matters</th></tr></thead>
+      <tbody>
+        <tr><td>TCP</td><td>Transport (4)</td><td>Reliable, ordered, connection-based</td><td>Every HTTP request; connection pool sizing</td></tr>
+        <tr><td>UDP</td><td>Transport (4)</td><td>Unreliable, unordered, low overhead</td><td>DNS, streaming video, game state</td></tr>
+        <tr><td>HTTP/1.1</td><td>Application (7)</td><td>One request per connection (keep-alive helps)</td><td>Legacy APIs; head-of-line blocking</td></tr>
+        <tr><td>HTTP/2</td><td>Application (7)</td><td>Multiplexed streams, header compression</td><td>High-concurrency APIs; gRPC</td></tr>
+        <tr><td>TLS 1.3</td><td>Session (5)</td><td>1-RTT handshake, forward secrecy</td><td>All external traffic; internal mTLS</td></tr>
+        <tr><td>WebSocket</td><td>Application (7)</td><td>Full-duplex, persistent connection</td><td>Real-time features: chat, live dashboards</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PART III ════════════════════════════ -->
+<div class="part" id="part3">
+  <div class="part-header">
+    <span class="part-number">Part III</span>
+    <span class="part-title">Modern Frontend Engineering</span>
+  </div>
+
+  <div class="chapter" id="ch7">
+    <div class="chapter-label">Chapter 7</div>
+    <h2>Evolution of Frontend Architecture</h2>
+    <p class="lead">Understanding <em>why</em> each architectural shift happened — what problem it solved and what new problem it introduced — is more valuable than knowing how to use any individual framework.</p>
+    <p><strong>jQuery era</strong> solved cross-browser DOM inconsistency with a unified API. The problem it introduced was spaghetti event handlers, global state scattered across callbacks, and no component abstraction. Applications became unmaintainable past a certain scale because there was no enforced structure.</p>
+    <p><strong>MVC frameworks</strong> (Backbone, Angular 1, Ember) introduced structure — models, views, controllers — but the synchronisation between model state and DOM state remained manual and error-prone. The fundamental insight of React (2013) was that if you re-render from scratch on every state change, you never have synchronisation bugs. The virtual DOM made this affordable.</p>
+    <p><strong>SPAs</strong> moved routing and rendering entirely to the client, enabling app-like interactivity without page reloads. The trade-off: initial load requires the full JS bundle, Time to Interactive is slow, and SEO requires workarounds. <strong>SSR</strong> (server-side rendering) brought HTML generation back to the server to solve TTI and SEO — but added server complexity and lost the simplicity of pure static hosting. <strong>Server Components</strong> (React 19, Next.js App Router) are the current evolution: components that render on the server, stream to the client, and have zero JavaScript footprint on the client unless they explicitly opt in.</p>
+  </div>
+
+  <div class="chapter" id="ch8">
+    <div class="chapter-label">Chapter 8</div>
+    <h2>Rendering Architectures</h2>
+    <p class="lead">Choosing the wrong rendering strategy for a route is one of the most expensive frontend architecture mistakes — because it's baked into the framework configuration and expensive to change later.</p>
+    <table>
+      <thead><tr><th>Strategy</th><th>When HTML is generated</th><th>Best for</th><th>Weakness</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-indigo">CSR</span></td><td>In the browser, after JS loads</td><td>Highly interactive apps behind auth (dashboards, tools)</td><td>Poor SEO, slow TTI on slow networks</td></tr>
+        <tr><td><span class="badge badge-green">SSG</span></td><td>At build time</td><td>Marketing pages, docs, blogs with infrequent updates</td><td>Stale content; long builds at scale</td></tr>
+        <tr><td><span class="badge badge-amber">SSR</span></td><td>Per request on server</td><td>Personalised pages, real-time data, e-commerce PDPs</td><td>Server cost; TTFB higher than static</td></tr>
+        <tr><td><span class="badge badge-indigo">ISR</span></td><td>Build time + revalidate on interval</td><td>Product catalogues, news feeds, semi-dynamic content</td><td>Stale windows; complex cache invalidation</td></tr>
+        <tr><td><span class="badge badge-green">Streaming</span></td><td>Server, progressively via chunks</td><td>Pages with slow data dependencies</td><td>Requires HTTP/2; complex error handling</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Hydration</strong> is the process of attaching React event listeners to server-rendered HTML. Full hydration re-renders the entire component tree on the client — wasted work if the component is static. Partial hydration (Islands Architecture used by Astro) hydrates only interactive components. React's Selective Hydration prioritises hydrating the component the user is interacting with first.</p>
+    <div class="tip"><div class="tip-label">Decision rule</div>Default to SSG for anything that doesn't require per-request data. Use ISR when content changes but not on every request. Use SSR only when the page content is personalised or real-time. Use CSR only for routes behind authentication where SEO is irrelevant.</div>
+  </div>
+
+  <div class="chapter" id="ch9">
+    <div class="chapter-label">Chapter 9</div>
+    <h2>State Management Architecture</h2>
+    <p class="lead">The most common state management mistake is treating all state as the same kind of state. Server state, local UI state, and global shared state have completely different lifecycles, ownership, and invalidation strategies.</p>
+    <p><strong>Local state</strong> (<code>useState</code>, <code>useReducer</code>) belongs in the component that owns it. Lifting state up to a global store because "it might be needed elsewhere later" is premature abstraction that makes components harder to test and reason about. A component that manages its own state is self-contained.</p>
+    <p><strong>Server state</strong> — data that lives on the server and is fetched asynchronously — is not the same as client state. It has loading states, error states, staleness, and a cache invalidation strategy. <strong>TanStack Query</strong> (React Query) exists specifically for this. It handles caching, background refetching, deduplication of concurrent requests, and optimistic updates. Using <code>useState + useEffect + fetch</code> manually for server data is a solved problem — use the tool.</p>
+    <p><strong>Global shared state</strong> — authenticated user, theme, feature flags, shopping cart — should be in a global store. <strong>Zustand</strong> is the current industry choice for most apps: minimal boilerplate, no providers, excellent TypeScript support, and compatible with React Server Components. Redux remains appropriate for very large teams where the strictly enforced action/reducer pattern provides consistency guarantees.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Three state types, three tools</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// 1. Local UI state — useState stays local, don't lift prematurely</span>
+<span class="kw">const</span> <span class="pu">[</span>isOpen<span class="pu">,</span> setIsOpen<span class="pu">]</span> <span class="op">=</span> <span class="fn">useState</span><span class="pu">(</span><span class="kw">false</span><span class="pu">)</span>
+
+<span class="cm">// 2. Server state — TanStack Query manages caching + revalidation</span>
+<span class="kw">const</span> <span class="pu">{</span> data<span class="op">:</span> user<span class="pu">,</span> isLoading <span class="pu">}</span> <span class="op">=</span> <span class="fn">useQuery</span><span class="pu">({</span>
+  queryKey<span class="op">:</span> <span class="pu">[</span><span class="st">'user'</span><span class="pu">,</span> userId<span class="pu">],</span>
+  queryFn<span class="op">:</span> <span class="pu">() =&gt;</span> <span class="fn">fetchUser</span><span class="pu">(</span>userId<span class="pu">),</span>
+  staleTime<span class="op">:</span> <span class="nm">5</span> <span class="op">*</span> <span class="nm">60_000</span><span class="pu">,</span> <span class="cm">// 5 min before background refetch</span>
+<span class="pu">})</span>
+
+<span class="cm">// 3. Global shared state — Zustand, no Provider needed</span>
+<span class="kw">const</span> useCartStore <span class="op">=</span> <span class="fn">create</span><span class="op">&lt;</span><span class="ty">CartStore</span><span class="op">&gt;</span><span class="pu">((</span>set<span class="pu">) =&gt; ({</span>
+  items<span class="op">:</span> <span class="pu">[],</span>
+  addItem<span class="op">:</span> <span class="pu">(</span>item<span class="pu">) =&gt;</span> <span class="fn">set</span><span class="pu">(</span>s <span class="op">=&gt; ({</span> items<span class="op">:</span> <span class="pu">[...</span>s<span class="pu">.</span>items<span class="pu">,</span> item<span class="pu">]</span> <span class="pu">}))</span>
+<span class="pu">}))</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch10">
+    <div class="chapter-label">Chapter 10</div>
+    <h2>Frontend Performance Engineering</h2>
+    <p class="lead">Performance is a feature. Studies consistently show that a 100ms increase in load time reduces conversion by 1%. For an e-commerce site doing $10M/year, that's $100K/year per 100ms of unnecessary latency.</p>
+    <p><strong>Core Web Vitals</strong> are Google's user-centric performance metrics that directly affect search ranking. LCP (Largest Contentful Paint) measures load speed — target under 2.5s. INP (Interaction to Next Paint) measures responsiveness — target under 200ms. CLS (Cumulative Layout Shift) measures visual stability — target under 0.1. These three numbers should be on a dashboard that the frontend team reviews weekly.</p>
+    <p><strong>Code splitting</strong> is the practice of breaking the JavaScript bundle into chunks loaded on demand. Every route should be a separate chunk. Large third-party libraries (charts, rich text editors, date pickers) should be dynamically imported at the point of use. The goal: the initial route loads only the JavaScript it needs, nothing else.</p>
+    <p><strong>Virtualisation</strong> (windowing) is required for any list that can exceed 100 items. Rendering 10,000 DOM nodes for a data grid is a rendering performance disaster. React Virtualizer or TanStack Virtual renders only the rows visible in the viewport — the DOM stays small regardless of dataset size.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Dynamic import + Suspense for lazy loading</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> lazy<span class="pu">,</span> Suspense <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="cm">// Heavy chart library — load only when chart is rendered</span>
+<span class="kw">const</span> RevenueChart <span class="op">=</span> <span class="fn">lazy</span><span class="pu">(() =&gt;</span> <span class="kw">import</span><span class="pu">(</span><span class="st">'./RevenueChart'</span><span class="pu">))</span>
+
+<span class="kw">function</span> <span class="fn">Dashboard</span><span class="pu">() {</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span><span class="ty">Suspense</span> <span class="at">fallback</span><span class="op">=</span><span class="pu">{</span><span class="op">&lt;</span><span class="ty">ChartSkeleton</span> <span class="op">/&gt;}&gt;</span>
+      <span class="op">&lt;</span><span class="ty">RevenueChart</span> <span class="op">/&gt;</span>
+    <span class="op">&lt;/</span><span class="ty">Suspense</span><span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// Memoisation — only when profiling shows it's needed</span>
+<span class="cm">// useCallback/useMemo are not free; they add memory + comparison cost</span>
+<span class="cm">// Rule: profile first, memoize proven bottlenecks only</span>
+<span class="kw">const</span> sortedItems <span class="op">=</span> <span class="fn">useMemo</span><span class="pu">(() =&gt;</span>
+  <span class="pu">[...</span>items<span class="pu">].</span><span class="fn">sort</span><span class="pu">((</span>a<span class="pu">,</span> b<span class="pu">) =&gt;</span> a<span class="pu">.</span>price <span class="op">-</span> b<span class="pu">.</span>price<span class="pu">),</span>
+  <span class="pu">[</span>items<span class="pu">]</span>  <span class="cm">// recalculate only when items reference changes</span>
+<span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch11">
+    <div class="chapter-label">Chapter 11</div>
+    <h2>Frontend System Design</h2>
+    <p class="lead">Frontend system design is undervalued in engineering interviews and underinvested in real projects. The decisions made here — micro-frontend boundaries, real-time data strategies, design system architecture — determine whether a frontend scales with the organisation.</p>
+    <p><strong>Real-time dashboards</strong> require a choice between polling, Server-Sent Events (SSE), and WebSockets. Polling is the simplest: request on an interval. It creates unnecessary load when nothing changes. SSE is a one-way persistent HTTP connection — the server pushes updates to the client. It works over HTTP/1.1, survives proxies, and auto-reconnects. WebSockets are full-duplex — required when the client also pushes data (collaborative editors, chat). For dashboards where data only flows server-to-client, SSE is almost always the right choice.</p>
+    <p><strong>Micro-frontends</strong> apply microservice principles to the frontend: independent teams own independent frontend modules that are composed at runtime. Module Federation (Webpack 5) is the primary implementation mechanism. The trade-offs are real: shared dependency management becomes complex, consistent UX across teams requires a strong design system, and performance suffers without careful shared library strategies.</p>
+    <div class="tip"><div class="tip-label">Design system as infrastructure</div>A design system is not a UI component library — it is shared infrastructure. It should be versioned, have a changelog, follow semver, have a contribution process, and be someone's primary responsibility. Teams that treat it as a side project end up with N divergent component libraries after 18 months.</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════ PART IV ════════════════════════════ -->
+<div class="part" id="part4">
+  <div class="part-header">
+    <span class="part-number">Part IV</span>
+    <span class="part-title">Backend Engineering</span>
+  </div>
+
+  <div class="chapter" id="ch12">
+    <div class="chapter-label">Chapter 12</div>
+    <h2>Evolution of Backend Architectures</h2>
+    <p class="lead">Architecture choices are permanent in the short term and reversible in the long term — but the reversal is expensive. Choosing the right architecture for your current scale saves enormous re-architecture cost later.</p>
+    <p><strong>Monoliths</strong> are the correct starting architecture for most products. A single deployable unit is faster to develop, easier to test, simpler to operate, and has zero network overhead between components. The failure mode of a monolith is not that it breaks — it's that it becomes a <em>big ball of mud</em>: no module boundaries, every component coupled to every other, impossible to understand or change safely. The solution is not microservices — it's a <strong>Modular Monolith</strong>: strict internal module boundaries enforced by code ownership, dependency rules, or import linters, without the operational overhead of service separation.</p>
+    <p><strong>Microservices</strong> are justified when: independent deployment of services is a business requirement (different release cadences for different teams), services have radically different scaling needs, or organisational structure demands independent team ownership. They are not justified by scale alone — Netflix moved to microservices to enable independent team deployment, not because their monolith couldn't handle the load. The operational cost is significant: distributed tracing, service discovery, network partitions, eventual consistency, and distributed transactions are all problems you don't have with a monolith.</p>
+    <p><strong>Event-driven architecture</strong> decouples producers from consumers through an event bus (Kafka, RabbitMQ, AWS EventBridge). A payment service emits a <code>PaymentCompleted</code> event; the email service, the inventory service, and the analytics service all consume it independently. The producer knows nothing about its consumers. This enables loose coupling but makes end-to-end tracing harder and introduces eventual consistency throughout the system.</p>
+    <table>
+      <thead><tr><th>Architecture</th><th>Team size</th><th>Scale</th><th>Complexity</th><th>Choose when</th></tr></thead>
+      <tbody>
+        <tr><td>Monolith</td><td>1–15</td><td>Low–High</td><td>Low</td><td>Starting out; unclear domain boundaries</td></tr>
+        <tr><td>Modular Monolith</td><td>10–50</td><td>Medium–High</td><td>Medium</td><td>Growing team; clear domains; single deployment</td></tr>
+        <tr><td>Microservices</td><td>50+</td><td>High</td><td>High</td><td>Independent team deployments; radically different scaling needs</td></tr>
+        <tr><td>Event-driven</td><td>Any</td><td>High</td><td>High</td><td>Async workflows; cross-domain integration; audit trails</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chapter" id="ch13">
+    <div class="chapter-label">Chapter 13</div>
+    <h2>API Design</h2>
+    <p class="lead">An API is a contract. Contracts are hard to change after consumers depend on them. Design APIs with the discipline of a library author, not the flexibility of an internal developer.</p>
+    <p><strong>REST</strong> uses HTTP verbs and resource URLs as its vocabulary. Well-designed REST: nouns not verbs in URLs (<code>/users/{id}</code> not <code>/getUser</code>); correct HTTP status codes (201 for created, 404 for not found, 422 for validation error, 409 for conflict); idempotent PUT/DELETE; pagination with cursor-based tokens for large collections. Poor REST: <code>POST /doAction</code>, always returning 200 with error in the body, no versioning strategy.</p>
+    <p><strong>GraphQL</strong> solves the over-fetching and under-fetching problems of REST: clients specify exactly which fields they need. The cost: N+1 query problems (solved with DataLoader batching), caching complexity (no URL-based HTTP cache), schema management, and a steeper learning curve. GraphQL is the right choice when you have many different clients (web, mobile, partner APIs) with different data shape requirements. It is overkill for a simple CRUD API with one client.</p>
+    <p><strong>gRPC</strong> uses Protocol Buffers over HTTP/2 for strongly-typed, high-performance service-to-service communication. 5–10× faster than REST for binary payloads. The contract is a <code>.proto</code> file, and code is generated for client and server in any language. Ideal for internal microservice communication where both sides are under your control. Not suitable for browser-based APIs without a proxy layer (grpc-web).</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — REST API design patterns (Node.js / Express)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Cursor-based pagination (vs offset — safer for live data) ──</span>
+<span class="kw">interface</span> <span class="ty">PaginatedResponse</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="pu">{</span>
+  data<span class="op">:</span>       <span class="ty">T</span><span class="pu">[]</span>
+  nextCursor<span class="op">:</span> <span class="ty">string</span> <span class="op">|</span> <span class="kw">null</span>
+  hasMore<span class="op">:</span>    <span class="ty">boolean</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Versioning via URL prefix (most pragmatic approach) ────────</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="st">'/v1'</span><span class="pu">,</span> v1Router<span class="pu">)</span>
+app<span class="pu">.</span><span class="fn">use</span><span class="pu">(</span><span class="st">'/v2'</span><span class="pu">,</span> v2Router<span class="pu">)</span>
+
+<span class="cm">// ── Idempotency key for safe POST retries ─────────────────────</span>
+app<span class="pu">.</span><span class="fn">post</span><span class="pu">(</span><span class="st">'/payments'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span>req<span class="pu">,</span> res<span class="pu">) =&gt; {</span>
+  <span class="kw">const</span> idempotencyKey <span class="op">=</span> req<span class="pu">.</span>headers<span class="pu">[</span><span class="st">'idempotency-key'</span><span class="pu">]</span>
+  <span class="kw">if</span> <span class="pu">(!</span>idempotencyKey<span class="pu">)</span> <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">400</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="op">:</span> <span class="st">'Idempotency-Key required'</span> <span class="pu">})</span>
+
+  <span class="cm">// Check if request already processed</span>
+  <span class="kw">const</span> cached <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">`idem:</span><span class="pu">${</span>idempotencyKey<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>cached<span class="pu">)</span> <span class="kw">return</span> res<span class="pu">.</span><span class="fn">json</span><span class="pu">(</span><span class="ty">JSON</span><span class="pu">.</span><span class="fn">parse</span><span class="pu">(</span>cached<span class="pu">))</span>  <span class="cm">// return same response</span>
+
+  <span class="kw">const</span> result <span class="op">=</span> <span class="kw">await</span> <span class="fn">processPayment</span><span class="pu">(</span>req<span class="pu">.</span>body<span class="pu">)</span>
+  <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">setex</span><span class="pu">(</span><span class="st">`idem:</span><span class="pu">${</span>idempotencyKey<span class="pu">}</span><span class="st">`</span><span class="pu">,</span> <span class="nm">86400</span><span class="pu">,</span> <span class="ty">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>result<span class="pu">))</span>
+  res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">201</span><span class="pu">).</span><span class="fn">json</span><span class="pu">(</span>result<span class="pu">)</span>
+<span class="pu">})</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch14">
+    <div class="chapter-label">Chapter 14</div>
+    <h2>Backend for Frontend (BFF)</h2>
+    <p class="lead">A BFF is a dedicated API layer owned by a frontend team that aggregates, transforms, and tailors data from multiple backend services for a specific client's needs. It is the solution to the problem of general-purpose APIs that don't match any client's exact requirements.</p>
+    <p>Without a BFF, mobile clients make 7 API calls to render a product detail page (product info, inventory, reviews, recommendations, seller info, shipping options, promotions). The network overhead on a mobile connection is significant. With a BFF, one call to <code>/bff/product-detail/{id}</code> returns the exact data shape the mobile app needs, aggregated server-side where the network is fast.</p>
+    <p>BFFs also handle client-specific authentication flows, response format transformations (mobile prefers flat JSON; desktop app can handle nested), and field selection — no over-fetching. The cost is another service to deploy and maintain. The rule: when you have multiple significantly different clients (web SPA, mobile app, smart TV) with different data shape requirements, a BFF per client surface is worth the operational cost.</p>
+    <div class="info"><div class="info-label">BFF in Next.js</div>Next.js Route Handlers and Server Components naturally implement the BFF pattern without a separate service: they run on the server, call internal APIs, aggregate data, and return exactly what the client needs. For a Next.js app, the App Router IS your BFF layer.</div>
+  </div>
+
+  <div class="chapter" id="ch15">
+    <div class="chapter-label">Chapter 15</div>
+    <h2>Asynchronous Systems</h2>
+    <p class="lead">Synchronous request-response is a direct coupling between caller and callee. Asynchronous messaging decouples them in time, allowing systems to absorb bursts, survive partial failures, and distribute work across workers.</p>
+    <p><strong>Message queues</strong> (RabbitMQ, SQS) provide point-to-point delivery: one producer, one consumer per message. The classic use case: a web server receives an order, puts it on a queue, and returns immediately. An order-processing worker picks it up, processes it at its own pace, and the web server's response time is unaffected by how long processing takes.</p>
+    <p><strong>Pub/Sub</strong> (Kafka, Google Pub/Sub, AWS SNS) provides one-to-many delivery: one producer, many independent consumers per message. An <code>OrderPlaced</code> event is consumed by the email service (sends confirmation), the inventory service (reserves stock), the analytics service (records the sale), and the fraud service (checks for anomalies) — all independently, all in parallel.</p>
+    <p><strong>Dead letter queues</strong> are non-optional in production. When a message fails processing after N retries, it moves to a DLQ instead of being lost or causing an infinite retry loop. Senior engineers monitor DLQ depth as a critical alert — messages piling up there mean something is systematically failing.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Worker with exponential backoff + dead letter queue</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> Queue<span class="pu">,</span> Worker <span class="pu">}</span> <span class="kw">from</span> <span class="st">'bullmq'</span>
+
+<span class="kw">const</span> emailQueue <span class="op">=</span> <span class="kw">new</span> <span class="fn">Queue</span><span class="pu">(</span><span class="st">'emails'</span><span class="pu">,</span> <span class="pu">{</span>
+  defaultJobOptions<span class="op">:</span> <span class="pu">{</span>
+    attempts<span class="op">:</span> <span class="nm">5</span><span class="pu">,</span>
+    backoff<span class="op">:</span> <span class="pu">{</span> type<span class="op">:</span> <span class="st">'exponential'</span><span class="pu">,</span> delay<span class="op">:</span> <span class="nm">2000</span> <span class="pu">},</span>
+    <span class="cm">// After 5 failures, move to DLQ (separate queue)</span>
+    removeOnFail<span class="op">:</span> <span class="kw">false</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="kw">const</span> worker <span class="op">=</span> <span class="kw">new</span> <span class="fn">Worker</span><span class="pu">(</span><span class="st">'emails'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span>job<span class="pu">) =&gt; {</span>
+  <span class="kw">await</span> <span class="fn">sendEmail</span><span class="pu">(</span>job<span class="pu">.</span>data<span class="pu">)</span>
+<span class="pu">})</span>
+
+worker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'failed'</span><span class="pu">,</span> <span class="pu">(</span>job<span class="pu">,</span> err<span class="pu">) =&gt; {</span>
+  <span class="kw">if</span> <span class="pu">(</span>job<span class="op">?.</span>attemptsMade <span class="op">===</span> <span class="nm">5</span><span class="pu">) {</span>
+    <span class="cm">// Final failure — alert on-call, move to DLQ for manual inspection</span>
+    metrics<span class="pu">.</span><span class="fn">increment</span><span class="pu">(</span><span class="st">'email.dlq'</span><span class="pu">)</span>
+    logger<span class="pu">.</span><span class="fn">error</span><span class="pu">({</span> jobId<span class="op">:</span> job<span class="pu">.</span>id<span class="pu">,</span> err <span class="pu">},</span> <span class="st">'Email permanently failed'</span><span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">})</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PART V ════════════════════════════ -->
+<div class="part" id="part5">
+  <div class="part-header">
+    <span class="part-number">Part V</span>
+    <span class="part-title">Database Engineering</span>
+  </div>
+
+  <div class="chapter" id="ch16">
+    <div class="chapter-label">Chapter 16</div>
+    <h2>Relational Database Mastery</h2>
+    <p class="lead">SQL is the most valuable language a full-stack engineer can be fluent in. Not CRUD SQL — the SQL that makes a query go from 8,000ms to 12ms through correct index design and query planning.</p>
+    <p><strong>Indexes</strong> are the first tool for query performance, but they have a cost: every write must also update the index. A table with 15 indexes will have noticeably slower inserts than the same table with 3. The rule: index columns that appear in <code>WHERE</code>, <code>JOIN ON</code>, and <code>ORDER BY</code> clauses. Composite indexes follow the leftmost prefix rule — an index on <code>(user_id, created_at)</code> serves queries filtering on <code>user_id</code> alone, or <code>user_id AND created_at</code>, but not <code>created_at</code> alone.</p>
+    <p><strong>Query execution plans</strong> (<code>EXPLAIN ANALYZE</code> in PostgreSQL) show you what the database actually does with your query. A Sequential Scan on a large table is an immediate red flag — it means no index is being used. An Index Scan with a low cost estimate and a high actual row count suggests the statistics are stale and need a <code>VACUUM ANALYZE</code>. Reading execution plans is a non-negotiable skill for any engineer who writes SQL against production tables.</p>
+    <p><strong>Transactions and isolation levels</strong> are misunderstood in production. The default isolation level in PostgreSQL is Read Committed — which prevents dirty reads but allows non-repeatable reads and phantom reads. For financial operations (debit account A, credit account B), you need Serializable isolation or explicit locking to prevent anomalies. Understanding what each level prevents is the difference between a correct financial system and one with subtle double-spend bugs.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">SQL — Index design + EXPLAIN ANALYZE pattern</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">-- Slow query: full table scan on orders (5M rows)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> orders
+<span class="kw">WHERE</span> user_id <span class="op">=</span> <span class="nm">12345</span>
+  <span class="kw">AND</span> status <span class="op">=</span> <span class="st">'pending'</span>
+  <span class="kw">AND</span> created_at <span class="op">&gt;</span> NOW<span class="pu">()</span> <span class="op">-</span> <span class="ty">INTERVAL</span> <span class="st">'7 days'</span><span class="pu">;</span>
+<span class="cm">-- Execution time: 4,200ms (Seq Scan, 5M rows)</span>
+
+<span class="cm">-- Composite index: leftmost prefix = user_id, then status, then created_at</span>
+<span class="kw">CREATE</span> <span class="kw">INDEX</span> CONCURRENTLY idx_orders_user_status_date
+  <span class="kw">ON</span> orders <span class="pu">(</span>user_id<span class="pu">,</span> status<span class="pu">,</span> created_at DESC<span class="pu">);</span>
+<span class="cm">-- After index: 3ms (Index Scan, 4 rows)</span>
+
+<span class="cm">-- Check if index is being used</span>
+<span class="kw">EXPLAIN</span> ANALYZE
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> orders <span class="kw">WHERE</span> user_id <span class="op">=</span> <span class="nm">12345</span>
+  <span class="kw">AND</span> status <span class="op">=</span> <span class="st">'pending'</span>
+  <span class="kw">AND</span> created_at <span class="op">&gt;</span> NOW<span class="pu">()</span> <span class="op">-</span> <span class="ty">INTERVAL</span> <span class="st">'7 days'</span><span class="pu">;</span>
+
+<span class="cm">-- Correct transaction isolation for financial transfers</span>
+<span class="kw">BEGIN</span> <span class="ty">ISOLATION LEVEL</span> SERIALIZABLE<span class="pu">;</span>
+  <span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance <span class="op">=</span> balance <span class="op">-</span> <span class="nm">100</span> <span class="kw">WHERE</span> id <span class="op">=</span> <span class="nm">1</span><span class="pu">;</span>
+  <span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance <span class="op">=</span> balance <span class="op">+</span> <span class="nm">100</span> <span class="kw">WHERE</span> id <span class="op">=</span> <span class="nm">2</span><span class="pu">;</span>
+<span class="kw">COMMIT</span><span class="pu">;</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch17">
+    <div class="chapter-label">Chapter 17</div>
+    <h2>Data Modelling</h2>
+    <p class="lead">A poor data model is the most expensive form of technical debt. Schema changes on a table with 100M rows can require hours of downtime or complex multi-phase migrations. Get the model right before you scale.</p>
+    <p><strong>Normalisation</strong> eliminates redundancy by splitting data into related tables — a customer's address lives in one place, referenced by foreign key wherever needed. Changes to one address update everywhere automatically. The cost: more joins in queries. <strong>Denormalisation</strong> deliberately introduces redundancy (storing the user's email in the orders table alongside the user_id) to avoid expensive joins on hot query paths. The cost: update anomalies — if the user changes their email, you must update every order record.</p>
+    <p>The decision between them is a trade-off between write complexity and read performance. Most production systems denormalise specific hot read paths while keeping the canonical source of truth normalised. Senior engineers model for both correctness (normalised) and then deliberately denormalise for performance with full awareness of the consistency implications.</p>
+    <div class="tip"><div class="tip-label">Soft deletes</div>Never hard-delete rows in a production system you can't fully control. Use a <code>deleted_at TIMESTAMPTZ</code> column. Forensics, support tickets, and compliance requirements will thank you. Filter with <code>WHERE deleted_at IS NULL</code> in your default queries.</div>
+  </div>
+
+  <div class="chapter" id="ch18">
+    <div class="chapter-label">Chapter 18</div>
+    <h2>Distributed Data Systems</h2>
+    <p class="lead">The CAP theorem tells you something fundamental: in a distributed system, you cannot simultaneously guarantee Consistency, Availability, and Partition Tolerance. You must choose which two to prioritise.</p>
+    <p><strong>Replication</strong> copies data from a primary node to one or more replicas. Read replicas absorb read load; the primary handles all writes. Replication lag — the delay between a write on the primary and visibility on the replica — is the source of the most subtle production bugs: a user creates a record, is redirected to a page that reads from a replica, and the record appears missing. The solution: read your own writes from the primary for a short window after a write, or use synchronous replication (which increases write latency).</p>
+    <p><strong>Sharding</strong> splits data across multiple database nodes — each shard owns a subset of the data. Common strategies: range sharding (user IDs 1-1M on shard 1, 1M-2M on shard 2) and hash sharding (consistent hash of user_id determines the shard). The problem sharding introduces: cross-shard queries and joins are either impossible or require scatter-gather at the application layer. Shard only when you've exhausted vertical scaling, connection pooling, read replicas, and caching.</p>
+    <p><strong>Eventual consistency</strong> means that all replicas will converge to the same value — eventually. For a social media like count, eventual consistency is fine. For a bank balance, it is not. Senior engineers classify every data access in their system by its consistency requirement before choosing storage.</p>
+  </div>
+
+  <div class="chapter" id="ch19">
+    <div class="chapter-label">Chapter 19</div>
+    <h2>Caching Architecture</h2>
+    <p class="lead">A cache hit is the fastest possible database operation: one that never happens. Caching is the most powerful performance tool in a backend engineer's arsenal — and the most dangerous if done incorrectly.</p>
+    <p><strong>Cache-aside</strong> (lazy loading) is the most common pattern: the application checks the cache first, and on a miss, fetches from the database and populates the cache. Simple to implement, but the first request after a cache miss or expiry goes to the database — which can cause thundering herd problems at scale (many simultaneous misses all hitting the database at once).</p>
+    <p><strong>Write-through</strong> writes to the cache and the database simultaneously on every write. The cache is always warm — no cold start. The cost: higher write latency (two writes instead of one), and you're caching data that may never be read.</p>
+    <p><strong>Cache invalidation</strong> is the second hardest problem in computer science (after naming things). The correct mental model: don't think of cache entries as having a TTL — think of them as having a version. When the underlying data changes, the cache key should change (cache busting by embedding a version or hash in the key), not wait for the TTL to expire.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Cache-aside with stampede protection</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">async function</span> <span class="fn">getCachedUser</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">string</span><span class="pu">):</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">User</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="kw">const</span> key <span class="op">=</span> <span class="st">`user:</span><span class="pu">${</span>id<span class="pu">}</span><span class="st">`</span>
+  <span class="kw">const</span> cached <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>key<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>cached<span class="pu">)</span> <span class="kw">return</span> <span class="ty">JSON</span><span class="pu">.</span><span class="fn">parse</span><span class="pu">(</span>cached<span class="pu">)</span>
+
+  <span class="cm">// Stampede protection: SET NX (only set if not exists)</span>
+  <span class="kw">const</span> lockKey <span class="op">=</span> <span class="st">`lock:</span><span class="pu">${</span>key<span class="pu">}</span><span class="st">`</span>
+  <span class="kw">const</span> lock <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>lockKey<span class="pu">,</span> <span class="st">'1'</span><span class="pu">,</span> <span class="st">'EX'</span><span class="pu">,</span> <span class="nm">5</span><span class="pu">,</span> <span class="st">'NX'</span><span class="pu">)</span>
+
+  <span class="kw">if</span> <span class="pu">(</span>lock<span class="pu">) {</span>
+    <span class="cm">// We got the lock — fetch and populate</span>
+    <span class="kw">const</span> user <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span><span class="fn">findUser</span><span class="pu">(</span>id<span class="pu">)</span>
+    <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">setex</span><span class="pu">(</span>key<span class="pu">,</span> <span class="nm">300</span><span class="pu">,</span> <span class="ty">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>user<span class="pu">))</span>
+    <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">del</span><span class="pu">(</span>lockKey<span class="pu">)</span>
+    <span class="kw">return</span> user
+  <span class="pu">}</span>
+
+  <span class="cm">// Lock held by another request — wait briefly and retry</span>
+  <span class="kw">await</span> <span class="kw">new</span> <span class="fn">Promise</span><span class="pu">(</span>r <span class="op">=&gt;</span> <span class="fn">setTimeout</span><span class="pu">(</span>r<span class="pu">,</span> <span class="nm">50</span><span class="pu">))</span>
+  <span class="kw">return</span> <span class="fn">getCachedUser</span><span class="pu">(</span>id<span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PART VI ════════════════════════════ -->
+<div class="part" id="part6">
+  <div class="part-header">
+    <span class="part-number">Part VI</span>
+    <span class="part-title">Software Architecture</span>
+  </div>
+
+  <div class="chapter" id="ch20">
+    <div class="chapter-label">Chapter 20</div>
+    <h2>Architectural Principles</h2>
+    <p class="lead">SOLID, DRY, KISS — every engineer knows the acronyms. Senior engineers know when to violate them deliberately and why knowing the violation is as important as knowing the rule.</p>
+    <p><strong>Single Responsibility Principle</strong> says a module should have one reason to change. In practice: a 500-line class that handles HTTP parsing, business logic, database queries, and email sending has five reasons to change. When any one of those changes, the whole class is at risk. SRP pushes you to separate concerns into cohesive units.</p>
+    <p><strong>DRY</strong> (Don't Repeat Yourself) is the most frequently over-applied principle. Duplicate code that represents genuinely the same concept is a problem — change in one place should automatically apply everywhere. But two code paths that happen to look similar but represent different business concepts should <em>not</em> be unified: they will diverge in the future, and the abstraction will fight you. The question is always "are these the same thing or similar things?" Similar things should stay separate.</p>
+    <p><strong>YAGNI</strong> (You Aren't Gonna Need It) is the antidote to speculative over-engineering. Don't build the plugin system before anyone needs plugins. Don't build the multi-tenancy model before your second customer. Premature abstraction creates complexity that costs more to understand and remove than it would have cost to just build it when needed.</p>
+    <table>
+      <thead><tr><th>Principle</th><th>The insight</th><th>The over-application trap</th></tr></thead>
+      <tbody>
+        <tr><td>SRP</td><td>One reason to change per module</td><td>Splitting so fine that modules have zero cohesion</td></tr>
+        <tr><td>Open/Closed</td><td>Extend behaviour without modifying code</td><td>Plugin architectures for things that will never vary</td></tr>
+        <tr><td>DRY</td><td>One source of truth per concept</td><td>Abstracting similar-looking but conceptually-different code</td></tr>
+        <tr><td>KISS</td><td>Simplest solution that works</td><td>Dismissing necessary complexity as "over-engineering"</td></tr>
+        <tr><td>YAGNI</td><td>Don't build for speculative future needs</td><td>Under-engineering genuinely foreseeable requirements</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chapter" id="ch21">
+    <div class="chapter-label">Chapter 21</div>
+    <h2>Design Patterns</h2>
+    <p class="lead">Patterns are vocabulary, not blueprints. When a senior engineer says "use the Repository pattern here", they're communicating a set of intentions — separation of data access from business logic, testability, swappable storage — in two words.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Repository + Strategy patterns in production</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Repository: abstract data access behind an interface ────</span>
+<span class="kw">interface</span> <span class="ty">UserRepository</span> <span class="pu">{</span>
+  <span class="fn">findById</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">string</span><span class="pu">):</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">User</span> <span class="op">|</span> <span class="kw">null</span><span class="op">&gt;</span>
+  <span class="fn">save</span><span class="pu">(</span>user<span class="op">:</span> <span class="ty">User</span><span class="pu">):</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">void</span><span class="op">&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// Production: Postgres. Tests: in-memory. Same interface.</span>
+<span class="kw">class</span> <span class="ty">PostgresUserRepo</span> <span class="kw">implements</span> <span class="ty">UserRepository</span> <span class="pu">{</span>
+  <span class="kw">async</span> <span class="fn">findById</span><span class="pu">(</span>id<span class="op">:</span> <span class="ty">string</span><span class="pu">) {</span>
+    <span class="kw">return</span> db<span class="pu">.</span><span class="fn">queryOne</span><span class="pu">(</span><span class="st">'SELECT * FROM users WHERE id=$1'</span><span class="pu">,</span> <span class="pu">[</span>id<span class="pu">])</span>
+  <span class="pu">}</span>
+  <span class="kw">async</span> <span class="fn">save</span><span class="pu">(</span>user<span class="op">:</span> <span class="ty">User</span><span class="pu">) {</span>
+    <span class="kw">await</span> db<span class="pu">.</span><span class="fn">query</span><span class="pu">(</span><span class="st">'INSERT INTO users ...'</span><span class="pu">,</span> <span class="pu">[</span>user<span class="pu">])</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ── Strategy: swap algorithm at runtime ─────────────────────</span>
+<span class="kw">interface</span> <span class="ty">PricingStrategy</span> <span class="pu">{</span>
+  <span class="fn">calculate</span><span class="pu">(</span>base<span class="op">:</span> <span class="ty">number</span><span class="pu">,</span> user<span class="op">:</span> <span class="ty">User</span><span class="pu">):</span> <span class="ty">number</span>
+<span class="pu">}</span>
+
+<span class="kw">class</span> <span class="ty">StandardPricing</span> <span class="kw">implements</span> <span class="ty">PricingStrategy</span> <span class="pu">{</span>
+  <span class="fn">calculate</span><span class="pu">(</span>base<span class="op">:</span> <span class="ty">number</span><span class="pu">) {</span> <span class="kw">return</span> base <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="kw">class</span> <span class="ty">EnterpriseDiscount</span> <span class="kw">implements</span> <span class="ty">PricingStrategy</span> <span class="pu">{</span>
+  <span class="fn">calculate</span><span class="pu">(</span>base<span class="op">:</span> <span class="ty">number</span><span class="pu">) {</span> <span class="kw">return</span> base <span class="op">*</span> <span class="nm">0.7</span> <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="kw">class</span> <span class="ty">OrderService</span> <span class="pu">{</span>
+  <span class="fn">constructor</span><span class="pu">(</span><span class="kw">private</span> pricing<span class="op">:</span> <span class="ty">PricingStrategy</span><span class="pu">) {}</span>
+  <span class="fn">getPrice</span><span class="pu">(</span>product<span class="op">:</span> <span class="ty">Product</span><span class="pu">,</span> user<span class="op">:</span> <span class="ty">User</span><span class="pu">) {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>pricing<span class="pu">.</span><span class="fn">calculate</span><span class="pu">(</span>product<span class="pu">.</span>basePrice<span class="pu">,</span> user<span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch22">
+    <div class="chapter-label">Chapter 22</div>
+    <h2>Clean Architecture</h2>
+    <p class="lead">Clean Architecture is not a set of folder names. It is a dependency rule: inner layers know nothing about outer layers. Business logic knows nothing about databases, HTTP, or frameworks.</p>
+    <div class="arch-box">
+      <span class="layer">Controllers / Routes</span><br/>
+      <span class="arrow">↓ calls</span><br/>
+      <span class="layer">Use Cases (Application Logic)</span><br/>
+      <span class="arrow">↓ uses</span><br/>
+      <span class="layer">Domain (Entities + Business Rules)</span><br/>
+      <span class="arrow">↑ implemented by (Dependency Inversion)</span><br/>
+      <span class="layer">Infrastructure (DB, Email, HTTP, Queue)</span>
+    </div>
+    <p>The key insight: your <code>CreateOrder</code> use case doesn't import from <code>pg</code> or <code>express</code>. It depends on a <code>OrderRepository</code> interface. The actual Postgres implementation of that interface lives in the infrastructure layer. This means your business logic is testable with a fast in-memory repository, independent of database or framework choice. The use case doesn't care how data is stored — only that it can be stored.</p>
+    <div class="warn"><div class="warn-label">Architecture overkill</div>Clean Architecture adds indirection. For a 3-endpoint CRUD service with one developer, the overhead of ports and adapters is not justified. Apply it where business logic is genuinely complex — domain rules, multi-step processes, varied client requirements. Not everywhere by default.</div>
+  </div>
+
+  <div class="chapter" id="ch23">
+    <div class="chapter-label">Chapter 23</div>
+    <h2>Domain-Driven Design</h2>
+    <p class="lead">DDD gives you a vocabulary for the hardest problem in software: aligning the technical model to the business domain so that they evolve together rather than drifting apart over time.</p>
+    <p><strong>Ubiquitous Language</strong> is the shared vocabulary between domain experts and engineers. If the business says "customer" and the code says "user", and the database says "account", you have three different mental models for the same thing — which causes misunderstandings, bugs at boundaries, and translation costs. The discipline of DDD insists that the same word means the same thing in conversations, requirements, code, and database schema.</p>
+    <p><strong>Bounded Contexts</strong> are explicit boundaries within which a model is defined and consistent. The "Order" in the billing context and the "Order" in the shipping context are different objects with different fields, different lifecycles, and different invariants — even though they share an ID. Treating them as the same object leads to a single bloated entity that tries to satisfy both contexts and satisfies neither well.</p>
+    <p><strong>Aggregates</strong> are clusters of objects treated as a single unit for data changes. The Aggregate Root is the only entry point for mutations. This enforces invariants: you can't change an <code>OrderItem</code> directly — you go through the <code>Order</code>, which ensures the order total stays consistent. Aggregates map naturally to transaction boundaries: one transaction = one aggregate.</p>
+  </div>
+
+  <div class="chapter" id="ch24">
+    <div class="chapter-label">Chapter 24</div>
+    <h2>Architectural Decision Records (ADRs)</h2>
+    <p class="lead">An ADR is the most underutilised tool in software engineering. It captures <em>why</em> a decision was made — which is the information that disappears fastest from collective memory and costs the most to reconstruct.</p>
+    <p>Six months from now, someone will ask: "Why are we using PostgreSQL for this instead of MongoDB?" Without an ADR, the answer is "I think someone decided that before I joined." With an ADR, the answer is: "The ADR from March 2025 shows we evaluated both, chose PostgreSQL for its ACID guarantees (critical for financial data), and noted that MongoDB would be reconsidered if we needed flexible schemas for the product catalogue."</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Markdown — ADR template</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm"># ADR-007: Use PostgreSQL for order management</span>
+
+<span class="cm">## Status: Accepted</span>
+<span class="cm">## Date: 2025-03-12</span>
+<span class="cm">## Deciders: Alice (EM), Bob (Sr. Eng), Carol (Backend)</span>
+
+<span class="cm">## Context</span>
+Order data requires ACID transactions (debit + credit must be atomic).
+We considered PostgreSQL and MongoDB.
+
+<span class="cm">## Decision</span>
+PostgreSQL. Strong consistency guarantees are non-negotiable for financial
+data. Relational model fits order-lineitem-payment structure well.
+
+<span class="cm">## Consequences</span>
+<span class="op">+</span> ACID transactions; mature tooling; type safety with Zod/Prisma
+<span class="op">-</span> Horizontal scaling harder than document stores
+<span class="op">-</span> Schema migrations require coordination across services
+
+<span class="cm">## Revisit if</span>
+Product catalogue schema becomes too rigid; consider Mongo for catalogue only.</code></pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════ PART VII ════════════════════════════ -->
+<div class="part" id="part7">
+  <div class="part-header">
+    <span class="part-number">Part VII</span>
+    <span class="part-title">System Design</span>
+  </div>
+
+  <div class="chapter" id="ch25">
+    <div class="chapter-label">Chapter 25</div>
+    <h2>System Design Fundamentals</h2>
+    <p class="lead">Scalability, reliability, availability, and maintainability are not features you add at the end. They are design constraints you optimise for from the start — and they trade off against each other in ways that demand explicit choices.</p>
+    <p><strong>Scalability</strong> is the ability to handle increased load without degrading performance proportionally. A system that works fine at 100 requests/second but falls over at 1,000 is not scalable. The important distinction: scaling <em>data</em> (storage grows) and scaling <em>compute</em> (concurrent requests grow) require different strategies. More servers help with compute. Sharding or different storage technologies help with data.</p>
+    <p><strong>Reliability</strong> is the probability the system behaves correctly over a time period. It is measured by Mean Time Between Failures (MTBF). A reliable system does the right thing even when individual components fail — because in a distributed system running for years, individual components <em>will</em> fail. Design for component failure, not component uptime.</p>
+    <p><strong>Availability</strong> is the percentage of time the system is operational. Five nines (99.999%) allows 5.26 minutes of downtime per year. Four nines (99.99%) allows 52.6 minutes. The cost of each additional nine is not linear — it is roughly 10× in engineering effort and operational complexity. Know what availability your SLA requires before designing for it.</p>
+    <table>
+      <thead><tr><th>Availability</th><th>Annual downtime</th><th>Achievable with</th></tr></thead>
+      <tbody>
+        <tr><td>99%</td><td>87.6 hours</td><td>Single server, basic monitoring</td></tr>
+        <tr><td>99.9%</td><td>8.76 hours</td><td>Load balancer, health checks, auto-restart</td></tr>
+        <tr><td>99.99%</td><td>52.6 minutes</td><td>Multi-AZ deployment, active redundancy, chaos engineering</td></tr>
+        <tr><td>99.999%</td><td>5.26 minutes</td><td>Multi-region, zero-downtime deploys, extensive runbooks</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chapter" id="ch26">
+    <div class="chapter-label">Chapter 26</div>
+    <h2>Designing for Scale</h2>
+    <p class="lead">The single most important scaling decision is making your application layer stateless. Stateless servers can be scaled horizontally by adding instances behind a load balancer. Stateful servers cannot.</p>
+    <p><strong>Horizontal scaling</strong> (scaling out) adds more instances of the same service. It requires stateless application servers, a shared database, and a shared cache. Session state must live in Redis, not in-memory — otherwise a user's second request hitting a different server loses their session. File uploads must go to object storage (S3), not the local filesystem — otherwise only the server that received the upload has the file.</p>
+    <p><strong>Vertical scaling</strong> (scaling up) gives the same server more CPU and RAM. It's simpler (no distributed systems complexity) and reaches a hard limit (the largest available instance). Use vertical scaling first — it's cheaper and faster. Move to horizontal only when you've hit the vertical ceiling or when single-point-of-failure risk is unacceptable.</p>
+    <p><strong>Stateless design checklist:</strong> sessions in Redis; uploads in object storage; scheduled jobs in a queue (not cron on one server); configuration in environment variables, not files. Every one of these is a common violation found in monoliths that grew without scaling in mind.</p>
+    <div class="tip"><div class="tip-label">Scale database reads first</div>The application tier is easy to scale horizontally. The database is the bottleneck in 80% of web applications. Before adding more app servers: add a read replica, add a connection pooler (PgBouncer), add Redis caching. The database is where load concentration lives.</div>
+  </div>
+
+  <div class="chapter" id="ch27">
+    <div class="chapter-label">Chapter 27</div>
+    <h2>High Availability &amp; Fault Tolerance</h2>
+    <p class="lead">Fault tolerance is the art of designing systems that remain correct when components fail — not systems that prevent component failure, which is impossible.</p>
+    <p><strong>Redundancy</strong> eliminates single points of failure. Every load-bearing component — load balancer, application server, database, cache — must have at least one standby. Active-active redundancy serves traffic from both nodes simultaneously. Active-passive keeps the standby ready but idle. Active-active is preferred because it uses all capacity and detects failures faster (the standby that serves no traffic may not reveal it's unhealthy until it's promoted).</p>
+    <p><strong>Circuit breakers</strong> prevent cascading failures. If Service A calls Service B and B is responding slowly, A's threads pile up waiting for B, exhausting A's thread pool, making A unresponsive to all callers. A circuit breaker monitors the error rate of calls to B. When it exceeds a threshold, the circuit "opens" — calls to B fail immediately with a predictable error instead of hanging. This protects A's resources for calls that can succeed.</p>
+    <p><strong>Chaos engineering</strong> deliberately injects failures in production (or a production-like environment) to find resilience gaps before they find you. Netflix's Chaos Monkey randomly terminates production instances. Controlled chaos reveals whether your fallbacks actually work, whether your alerts fire, and whether your runbooks are accurate. The alternative — discovering gaps during an actual incident — is considerably more expensive.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Circuit breaker with opossum</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> CircuitBreaker <span class="kw">from</span> <span class="st">'opossum'</span>
+
+<span class="kw">const</span> breaker <span class="op">=</span> <span class="kw">new</span> <span class="fn">CircuitBreaker</span><span class="pu">(</span>callPaymentService<span class="pu">,</span> <span class="pu">{</span>
+  timeout<span class="op">:</span>              <span class="nm">3000</span><span class="pu">,</span>  <span class="cm">// fail after 3s</span>
+  errorThresholdPercent<span class="op">:</span> <span class="nm">50</span><span class="pu">,</span>    <span class="cm">// open if 50% fail</span>
+  resetTimeout<span class="op">:</span>          <span class="nm">30000</span>  <span class="cm">// try again after 30s</span>
+<span class="pu">})</span>
+
+<span class="cm">// Fallback — what to return when circuit is open</span>
+breaker<span class="pu">.</span><span class="fn">fallback</span><span class="pu">(() =&gt; ({</span> status<span class="op">:</span> <span class="st">'payment_deferred'</span><span class="pu">,</span> queued<span class="op">:</span> <span class="kw">true</span> <span class="pu">}))</span>
+
+<span class="cm">// Observe state changes for alerting</span>
+breaker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'open'</span><span class="pu">,</span>    <span class="pu">() =&gt;</span> metrics<span class="pu">.</span><span class="fn">gauge</span><span class="pu">(</span><span class="st">'circuit.payment'</span><span class="pu">,</span> <span class="nm">1</span><span class="pu">))</span>
+breaker<span class="pu">.</span><span class="fn">on</span><span class="pu">(</span><span class="st">'close'</span><span class="pu">,</span>   <span class="pu">() =&gt;</span> metrics<span class="pu">.</span><span class="fn">gauge</span><span class="pu">(</span><span class="st">'circuit.payment'</span><span class="pu">,</span> <span class="nm">0</span><span class="pu">))</span>
+
+<span class="kw">export const</span> <span class="fn">processPayment</span> <span class="op">=</span> <span class="pu">(</span>data<span class="pu">)</span> <span class="op">=&gt;</span> breaker<span class="pu">.</span><span class="fn">fire</span><span class="pu">(</span>data<span class="pu">)</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch28">
+    <div class="chapter-label">Chapter 28</div>
+    <h2>Real-Time System Design</h2>
+    <p class="lead">Real-time in web systems doesn't mean instantaneous — it means sub-second. Designing for sub-second latency requires understanding the constraints of each real-time transport and matching it to the problem.</p>
+    <p><strong>WebSockets</strong> maintain a persistent full-duplex TCP connection. Both client and server can push data at any time with minimal overhead (2–10 bytes per frame vs 200–800 bytes for an HTTP header). The cost: connection state must be managed; horizontal scaling requires sticky sessions or a message broker so all servers can receive events for all connections (Redis Pub/Sub or Kafka).</p>
+    <p><strong>Event sourcing</strong> stores every state change as an immutable event rather than overwriting current state. The current state is derived by replaying events. This makes the audit trail free (it's the data model), enables time-travel debugging, and allows new read models to be built by replaying historical events. The cost: eventual consistency for read models (projections), more complex queries, and eventual storage growth. Justified for: financial systems, compliance-heavy domains, collaborative editing.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — WebSocket server with Redis pub/sub for horizontal scale</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> WebSocketServer<span class="pu">,</span> WebSocket <span class="pu">}</span> <span class="kw">from</span> <span class="st">'ws'</span>
+<span class="kw">import</span> <span class="pu">{</span> createClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'redis'</span>
+
+<span class="kw">const</span> wss       <span class="op">=</span> <span class="kw">new</span> <span class="fn">WebSocketServer</span><span class="pu">({</span> port<span class="op">:</span> <span class="nm">8080</span> <span class="pu">})</span>
+<span class="kw">const</span> subscriber <span class="op">=</span> <span class="fn">createClient</span><span class="pu">()</span>
+<span class="kw">await</span> subscriber<span class="pu">.</span><span class="fn">connect</span><span class="pu">()</span>
+
+<span class="cm">// All servers subscribe to the same channel</span>
+<span class="cm">// When any server publishes, ALL connected clients receive it</span>
+<span class="kw">await</span> subscriber<span class="pu">.</span><span class="fn">subscribe</span><span class="pu">(</span><span class="st">'dashboard:updates'</span><span class="pu">,</span> <span class="pu">(</span>message<span class="pu">) =&gt; {</span>
+  wss<span class="pu">.</span>clients<span class="pu">.</span><span class="fn">forEach</span><span class="pu">(</span>client <span class="op">=&gt; {</span>
+    <span class="kw">if</span> <span class="pu">(</span>client<span class="pu">.</span>readyState <span class="op">===</span> <span class="ty">WebSocket</span><span class="pu">.</span>OPEN<span class="pu">)</span>
+      client<span class="pu">.</span><span class="fn">send</span><span class="pu">(</span>message<span class="pu">)</span>
+  <span class="pu">})</span>
+<span class="pu">})</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch29">
+    <div class="chapter-label">Chapter 29</div>
+    <h2>Designing Large-Scale Applications</h2>
+    <p class="lead">System design interviews ask you to design Twitter or Uber in 45 minutes. Production system design asks you to design systems that must be correct, observable, and maintainable for 5 years by a rotating team of engineers.</p>
+    <p><strong>FinTech platform</strong> design constraints: strong consistency for all monetary operations (Serializable transactions, event sourcing for audit); idempotency keys on all payment endpoints; double-entry bookkeeping at the data model level; PCI-DSS compliance determining data residency and encryption-at-rest requirements; and regulatory reporting requiring point-in-time queryability of historical states.</p>
+    <p><strong>Chat application</strong>: Messages need low-latency delivery (WebSockets), persistent storage for history (database with message ordering by sequence number not timestamp — clocks drift), read receipts (delivered vs read events), and fan-out at scale (when you send a message to a group of 1,000, you need to fan out the delivery to 1,000 connection handlers efficiently). At scale, fan-out to large groups moves to an async queue pattern rather than synchronous WebSocket delivery.</p>
+    <p><strong>Survey platform</strong>: Write-heavy during active survey periods, read-heavy for analytics. CQRS (Command Query Responsibility Segregation) is a natural fit: the write model accepts responses and appends them to an event log; the read model is a materialised view optimised for analytics queries (pre-aggregated, denormalised). The two models update asynchronously — eventual consistency is acceptable because survey analytics don't need real-time consistency.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PART VIII ════════════════════════════ -->
+<div class="part" id="part8">
+  <div class="part-header">
+    <span class="part-number">Part VIII</span>
+    <span class="part-title">Cloud Engineering</span>
+  </div>
+
+  <div class="chapter" id="ch30">
+    <div class="chapter-label">Chapter 30</div>
+    <h2>Cloud Fundamentals</h2>
+    <p class="lead">Cloud is not a hosting provider — it is an on-demand infrastructure API. The senior engineer's relationship with cloud is not "I deploy here" but "I compose infrastructure programmatically."</p>
+    <p><strong>IaaS</strong> (Infrastructure as a Service) gives you raw compute, networking, and storage — EC2, VMs, object storage. You manage the OS, runtime, and everything above. Maximum control, maximum operational responsibility. Appropriate for: custom infrastructure requirements, licensed software that can't run in PaaS, or maximum cost optimisation at scale.</p>
+    <p><strong>PaaS</strong> (Platform as a Service) manages the infrastructure; you deploy code. Vercel, Railway, Heroku, AWS App Runner. Appropriate for: most web applications, APIs, and background workers where the engineering team's time is better spent on product than infrastructure. The cost: less control over the runtime environment and sometimes higher per-unit cost vs IaaS at scale.</p>
+    <p><strong>Serverless</strong> (FaaS) charges per invocation and auto-scales to zero. Lambda, Cloud Functions, Vercel Edge Functions. Optimal for: event-driven workloads, infrequent jobs, APIs with highly variable traffic. The constraints: cold starts (first invocation latency), execution time limits, no persistent in-memory state between invocations, and pricing that becomes expensive for high-frequency sustained workloads.</p>
+  </div>
+
+  <div class="chapter" id="ch31">
+    <div class="chapter-label">Chapter 31</div>
+    <h2>Networking in the Cloud</h2>
+    <p class="lead">Cloud networking is where most security breaches originate and where most performance problems are introduced. Misconfigured security groups, overly permissive IAM roles, and public subnets for private services are the root causes of the majority of cloud security incidents.</p>
+    <p><strong>VPC design</strong> is the foundation. The pattern: public subnets contain only load balancers and NAT gateways. Private subnets contain application servers, databases, and caches — they have no direct internet access. All traffic to private subnet resources must flow through the load balancer. Databases never live in public subnets.</p>
+    <p><strong>Security groups</strong> are stateful firewalls at the instance level. The correct approach: each tier (load balancer, app server, database) has its own security group. The database security group allows inbound connections only from the app server security group, on the database port only. Nothing else. This principle of least privilege — each component can reach only what it explicitly needs — limits the blast radius of a compromised instance.</p>
+    <div class="info"><div class="info-label">Private endpoints</div>Never let your application server call S3 or DynamoDB over the public internet. Use VPC endpoints — private routes from your VPC to AWS services that never leave Amazon's network. This eliminates data transfer costs, improves latency, and removes a potential attack surface.</div>
+  </div>
+
+  <div class="chapter" id="ch32">
+    <div class="chapter-label">Chapter 32</div>
+    <h2>Containers &amp; Orchestration</h2>
+    <p class="lead">Docker solves "it works on my machine." Kubernetes solves "it works in production at scale" — with significantly more complexity as the price.</p>
+    <p><strong>Docker</strong> packages your application and its dependencies into a portable image. The Dockerfile is the build script; the image is the artefact; the container is the running instance. Senior engineers write multi-stage Dockerfiles (separate build and runtime stages to minimise image size), use non-root users inside containers, pin base image versions for reproducibility, and use <code>.dockerignore</code> aggressively to keep build context small.</p>
+    <p><strong>Kubernetes</strong> orchestrates containers at scale: scheduling pods on nodes, maintaining desired replica counts, health-checking and restarting failed pods, rolling updates with zero downtime, and managing secrets and configuration. The operational overhead is significant — most teams shouldn't run their own Kubernetes cluster. Managed Kubernetes (EKS, GKE, AKS) handles the control plane; you manage the node pools and workloads.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Dockerfile — Multi-stage production build</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm"># Stage 1: build</span>
+<span class="kw">FROM</span> node:<span class="nm">22</span>-alpine <span class="kw">AS</span> builder
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> package*.json ./
+<span class="kw">RUN</span> npm ci --only=production <span class="cm"># exact versions from lockfile</span>
+<span class="kw">COPY</span> . .
+<span class="kw">RUN</span> npm run build
+
+<span class="cm"># Stage 2: runtime — only what's needed</span>
+<span class="kw">FROM</span> node:<span class="nm">22</span>-alpine <span class="kw">AS</span> runtime
+<span class="kw">RUN</span> addgroup -S app <span class="op">&amp;&amp;</span> adduser -S app -G app  <span class="cm"># non-root user</span>
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> --from=builder /app/dist ./dist
+<span class="kw">COPY</span> --from=builder /app/node_modules ./node_modules
+<span class="kw">USER</span> app  <span class="cm"># never run as root in production</span>
+<span class="kw">EXPOSE</span> <span class="nm">3000</span>
+<span class="kw">CMD</span> [<span class="st">"node"</span>, <span class="st">"dist/server.js"</span>]</code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch33">
+    <div class="chapter-label">Chapter 33</div>
+    <h2>CI/CD</h2>
+    <p class="lead">A CI/CD pipeline is not a deployment automation script. It is the organisation's quality gate — the mechanism that makes it safe to ship many times a day without a dedicated QA phase.</p>
+    <p><strong>Continuous Integration</strong> means every push to the main branch runs the full test suite, linter, type checker, and security scanner. If any check fails, the branch is blocked from merging. This only works if the test suite is fast — a 45-minute CI run kills developer flow. Senior engineers invest in parallelising tests, using build caches, and running only affected tests for small changes.</p>
+    <p><strong>Deployment strategies</strong> determine how risky a deployment is. Blue/green: spin up a full new environment (green), run smoke tests, then switch the load balancer. Instant rollback by switching back. High cost (double infrastructure). Canary: route 1% of traffic to the new version, monitor error rates and latency, gradually increase. Problems affect 1% of users, not all of them. Feature flags: deploy code with the feature disabled, enable it for a subset of users via a flag. Deployment and release are decoupled.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">YAML — GitHub Actions CI pipeline</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code>name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: 'npm' }
+      - run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test -- --coverage
+
+      - name: Integration tests
+        run: npm run test:integration
+        env:
+          DATABASE_URL: postgres://test:test@localhost:5432/test
+
+      - name: Security audit
+        run: npm audit --audit-level=high</code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch34">
+    <div class="chapter-label">Chapter 34</div>
+    <h2>Observability</h2>
+    <p class="lead">You cannot fix what you cannot see. Observability is the property of a system that lets you understand its internal state from its external outputs — logs, metrics, and traces.</p>
+    <p><strong>Logs</strong> record what happened. Structured JSON logs (not freeform text) are searchable and parseable. Every log entry should include a correlation ID that ties all logs from a single request together. Never log sensitive data (passwords, PII, card numbers). Log at the right level: DEBUG for development, INFO for significant events, WARN for recoverable errors, ERROR for failures requiring attention.</p>
+    <p><strong>Metrics</strong> answer "how is the system performing right now?" The four golden signals: latency (how long requests take), traffic (requests per second), errors (error rate), and saturation (how close to capacity). These four numbers, plotted over time with alerting thresholds, tell you when something is wrong before users start complaining.</p>
+    <p><strong>Distributed tracing</strong> (OpenTelemetry, Jaeger) shows you the path of a single request through multiple services — which service added latency, where errors occurred, and what the causal chain was. In a microservices system, a slow response might traverse 8 services; tracing shows you which hop is the bottleneck. It is non-optional for any system with more than two services.</p>
+    <div class="tip"><div class="tip-label">Alert on symptoms, not causes</div>Alert on "p99 latency > 2s" and "error rate > 1%", not on "CPU > 80%". CPU at 80% may be fine. Users experiencing 2s responses is never fine. Symptom-based alerting reduces false positives and focuses on what users actually experience.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PART IX ════════════════════════════ -->
+<div class="part" id="part9">
+  <div class="part-header">
+    <span class="part-number">Part IX</span>
+    <span class="part-title">Cybersecurity</span>
+  </div>
+
+  <div class="chapter" id="ch35">
+    <div class="chapter-label">Chapter 35</div>
+    <h2>Security Fundamentals</h2>
+    <p class="lead">Security is not a feature sprint — it is a continuous engineering discipline. Systems that treat security as an afterthought are not insecure by accident; they are insecure by design.</p>
+    <p><strong>CIA Triad:</strong> Confidentiality (data is accessible only to authorised parties), Integrity (data is accurate and unmodified by unauthorised parties), and Availability (the system is accessible when needed). Every security control maps to one or more of these. Encryption at rest: Confidentiality. Cryptographic signatures: Integrity. DDoS mitigation: Availability.</p>
+    <p><strong>Threat modelling</strong> (STRIDE) asks six questions about every system component: Can an attacker Spoof an identity? Can they Tamper with data in transit or at rest? Can they achieve Repudiation (deny an action occurred)? Can they access Information they shouldn't? Can they cause Denial of service? Can they achieve Elevation of privilege? Walking through STRIDE systematically surfaces security requirements before implementation, not after a breach.</p>
+    <div class="warn"><div class="warn-label">Security by obscurity fails</div>Never rely on keeping implementation details secret as a security control. Assume attackers know your source code, your architecture, and your dependencies. Security must hold even under that assumption — through correct cryptography, access control, and input validation.</div>
+  </div>
+
+  <div class="chapter" id="ch36">
+    <div class="chapter-label">Chapter 36</div>
+    <h2>OWASP Top 10</h2>
+    <p class="lead">The OWASP Top 10 represents the most critical and most commonly exploited web application vulnerabilities. Every senior engineer must be able to identify, demonstrate, and prevent each one.</p>
+    <table>
+      <thead><tr><th>Vulnerability</th><th>Root cause</th><th>Prevention</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SQL Injection</strong></td><td>User input concatenated into SQL strings</td><td>Parameterised queries; ORMs; input validation</td></tr>
+        <tr><td><strong>XSS</strong></td><td>Untrusted data rendered as HTML without escaping</td><td>Output encoding; Content Security Policy; React's default escaping</td></tr>
+        <tr><td><strong>CSRF</strong></td><td>Malicious site triggers authenticated requests on behalf of victim</td><td>SameSite cookies; CSRF tokens; checking Origin header</td></tr>
+        <tr><td><strong>Broken Access Control</strong></td><td>Authorization not checked on every request</td><td>Deny by default; check permissions on every route; object-level auth</td></tr>
+        <tr><td><strong>Security Misconfiguration</strong></td><td>Default credentials, open cloud storage, verbose error messages</td><td>Security benchmarks (CIS); secret scanning; penetration testing</td></tr>
+        <tr><td><strong>Insecure Deserialization</strong></td><td>Trusting serialised objects from untrusted sources</td><td>Never deserialise untrusted data; validate and sanitise all input</td></tr>
+        <tr><td><strong>Vulnerable Dependencies</strong></td><td>Using libraries with known CVEs</td><td><code>npm audit</code>; Dependabot; software composition analysis in CI</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chapter" id="ch37">
+    <div class="chapter-label">Chapter 37</div>
+    <h2>Authentication &amp; Authorization</h2>
+    <p class="lead">Authentication confirms who you are. Authorization confirms what you're allowed to do. Confusing the two, or implementing either incorrectly, is the root of the majority of application security breaches.</p>
+    <p><strong>JWT</strong> (JSON Web Tokens) are stateless — the server doesn't need to store session state, making them convenient for microservices and horizontal scaling. The risk: a valid JWT cannot be invalidated before its expiry without a server-side blocklist (which reintroduces statefulness). Mitigations: short expiry (15 minutes) with refresh tokens; maintain a revocation list for logout and password changes; never store sensitive data in the payload (it's base64-encoded, not encrypted).</p>
+    <p><strong>OAuth 2.0 + OIDC</strong> is the correct pattern for third-party authentication ("Sign in with Google"). OAuth 2.0 is an authorization framework; OpenID Connect adds an identity layer on top. The authorization code flow with PKCE is the correct flow for SPAs and mobile apps — it never exposes the access token in the browser URL bar.</p>
+    <p><strong>Authorization models:</strong> RBAC (Role-Based Access Control) assigns permissions to roles and roles to users — simple, widely understood. ABAC (Attribute-Based Access Control) evaluates policies against attributes (user department, resource owner, time of day) — more flexible but significantly more complex. ReBAC (Relationship-Based Access Control, used by Google Zanzibar) defines permissions through entity relationships — correct for systems like Google Drive where "can edit" cascades through folder hierarchies.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — JWT with refresh token rotation</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> jwt <span class="kw">from</span> <span class="st">'jsonwebtoken'</span>
+
+<span class="kw">const</span> ACCESS_EXPIRY  <span class="op">=</span> <span class="st">'15m'</span>   <span class="cm">// short — minimises damage if stolen</span>
+<span class="kw">const</span> REFRESH_EXPIRY <span class="op">=</span> <span class="st">'7d'</span>    <span class="cm">// long — stored in httpOnly cookie</span>
+
+<span class="kw">function</span> <span class="fn">issueTokens</span><span class="pu">(</span>userId<span class="op">:</span> <span class="ty">string</span><span class="pu">) {</span>
+  <span class="kw">const</span> accessToken <span class="op">=</span> jwt<span class="pu">.</span><span class="fn">sign</span><span class="pu">(</span>
+    <span class="pu">{</span> sub<span class="op">:</span> userId<span class="pu">,</span> type<span class="op">:</span> <span class="st">'access'</span> <span class="pu">},</span>
+    process<span class="pu">.</span>env<span class="pu">.</span>JWT_SECRET<span class="op">!</span><span class="pu">,</span>
+    <span class="pu">{</span> expiresIn<span class="op">:</span> ACCESS_EXPIRY <span class="pu">}</span>
+  <span class="pu">)</span>
+  <span class="kw">const</span> refreshToken <span class="op">=</span> jwt<span class="pu">.</span><span class="fn">sign</span><span class="pu">(</span>
+    <span class="pu">{</span> sub<span class="op">:</span> userId<span class="pu">,</span> type<span class="op">:</span> <span class="st">'refresh'</span> <span class="pu">},</span>
+    process<span class="pu">.</span>env<span class="pu">.</span>JWT_REFRESH_SECRET<span class="op">!</span><span class="pu">,</span>
+    <span class="pu">{</span> expiresIn<span class="op">:</span> REFRESH_EXPIRY <span class="pu">}</span>
+  <span class="pu">)</span>
+  <span class="kw">return</span> <span class="pu">{</span> accessToken<span class="pu">,</span> refreshToken <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// On token refresh: issue new pair + invalidate old refresh token</span>
+<span class="cm">// (rotation — stolen refresh token can't be used twice)</span>
+<span class="kw">async function</span> <span class="fn">rotateRefreshToken</span><span class="pu">(</span>oldToken<span class="op">:</span> <span class="ty">string</span><span class="pu">) {</span>
+  <span class="kw">const</span> payload <span class="op">=</span> jwt<span class="pu">.</span><span class="fn">verify</span><span class="pu">(</span>oldToken<span class="pu">,</span> process<span class="pu">.</span>env<span class="pu">.</span>JWT_REFRESH_SECRET<span class="op">!</span><span class="pu">)</span>
+  <span class="kw">const</span> isRevoked <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">`revoked:</span><span class="pu">${</span>oldToken<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>isRevoked<span class="pu">)</span> <span class="kw">throw new</span> <span class="fn">Error</span><span class="pu">(</span><span class="st">'Token reuse detected'</span><span class="pu">)</span>
+
+  <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">setex</span><span class="pu">(</span><span class="st">`revoked:</span><span class="pu">${</span>oldToken<span class="pu">}</span><span class="st">`</span><span class="pu">,</span> <span class="nm">7</span> <span class="op">*</span> <span class="nm">86400</span><span class="pu">,</span> <span class="st">'1'</span><span class="pu">)</span>
+  <span class="kw">return</span> <span class="fn">issueTokens</span><span class="pu">((</span>payload <span class="kw">as</span> <span class="kw">any</span><span class="pu">).</span>sub<span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch38">
+    <div class="chapter-label">Chapter 38</div>
+    <h2>Secure Architecture Design</h2>
+    <p class="lead">Secure architecture is not a checklist — it is a mindset applied to every design decision. The question is always: what is the impact if this component is compromised, and how do we limit it?</p>
+    <p><strong>Secrets management</strong>: environment variables are better than hardcoded secrets, but not by much if they're committed to version control. Production secrets belong in a secrets manager — AWS Secrets Manager, HashiCorp Vault, or GCP Secret Manager. They are fetched at runtime, rotated automatically, and access is logged. Never commit secrets to Git; use tools like <code>gitleaks</code> or GitHub's secret scanning to enforce this in CI.</p>
+    <p><strong>Defence in depth</strong> layers multiple security controls so that defeating one doesn't give an attacker access to the system. Network firewall → WAF → authentication → authorisation → input validation → output encoding → audit logging. Each layer catches what the previous missed. An attacker who bypasses the firewall still faces authentication; one who defeats authentication faces authorisation.</p>
+    <p><strong>IAM principle of least privilege</strong>: every service, user, and process should have exactly the permissions it needs — not the permissions of its parent role, not admin, not "we'll tighten this later." In AWS: application servers get an IAM role that allows only <code>s3:GetObject</code> on the specific bucket they need, nothing more. A compromised server can't access other buckets, launch instances, or exfiltrate data it has no reason to touch.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PART X ════════════════════════════ -->
+<div class="part" id="part10">
+  <div class="part-header">
+    <span class="part-number">Part X</span>
+    <span class="part-title">AI-Augmented Engineering</span>
+  </div>
+
+  <div class="chapter" id="ch39">
+    <div class="chapter-label">Chapter 39</div>
+    <h2>The Rise of AI-Assisted Development</h2>
+    <p class="lead">AI coding assistants are not replacing senior engineers — they are replacing the parts of the job that junior engineers used to own: boilerplate, repetitive patterns, documentation, and first-draft code. The bar for what a senior engineer must contribute has risen.</p>
+    <p>The engineers who will be displaced by AI are those whose primary value was writing code quickly. The engineers whose value compounds with AI are those who can evaluate correctness, assess architectural trade-offs, catch security issues in generated code, and translate ambiguous requirements into precise technical specifications. AI is a productivity multiplier — the multiplier makes both the numerator and the denominator larger.</p>
+    <p><strong>Human-in-the-loop engineering</strong> means AI generates the first draft; a senior engineer reviews, corrects, and understands every line before it ships. The danger of AI-generated code is not that it's wrong — it's that it's convincingly wrong. Code that looks correct, passes tests, but has subtle security implications or incorrect edge case handling is more dangerous than code that's obviously broken. Senior engineers apply the same scrutiny to AI-generated code they'd apply to an inexperienced colleague's PR.</p>
+    <div class="tip"><div class="tip-label">The new seniority bar</div>In 2026, a senior engineer who uses AI well ships 3–5× faster than one who doesn't. The leverage is real. The discipline required: never ship AI-generated code you don't fully understand. If you can't explain why every line is correct, you don't own it.</div>
+  </div>
+
+  <div class="chapter" id="ch40">
+    <div class="chapter-label">Chapter 40</div>
+    <h2>Prompt &amp; Context Engineering</h2>
+    <p class="lead">The quality of AI output is determined by the quality of the input. Vague prompts produce vague code. Precise, context-rich prompts produce production-quality first drafts.</p>
+    <p><strong>Effective software prompts</strong> include: the specific technology stack and version; existing code patterns the output must follow; the exact constraints (performance requirements, error handling expectations, TypeScript strictness level); what the function should NOT do; and example inputs and expected outputs for complex logic. A prompt that provides all of this reliably outperforms one that says "write a function to process orders."</p>
+    <p><strong>Context management</strong> is the practical limit of AI assistance. A model's context window is finite. For large codebases, you must select which files provide relevant context — the interfaces the function must implement, the utility functions it should use, the patterns in adjacent files. Engineers who understand their codebase's architecture select context well; those who don't paste random files and get inconsistent output.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Text — High-quality vs low-quality prompting</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="cm">// ── Poor prompt ──────────────────────────────────────────────</span>
+<span class="st">"Write a function to send emails"</span>
+
+<span class="cm">// ── Effective prompt ─────────────────────────────────────────</span>
+<span class="st">"Write a TypeScript function for our Node.js 22 / Express backend
+that sends transactional emails via Resend API. Requirements:
+- Signature: sendEmail(to: string, template: EmailTemplate, data: Record&lt;string,unknown&gt;): Promise&lt;void&gt;
+- EmailTemplate is an enum: WELCOME | PASSWORD_RESET | ORDER_CONFIRM
+- Retry up to 3 times with exponential backoff on 5xx errors
+- Throw EmailDeliveryError (custom, already defined in errors.ts) on permanent failure
+- Log each attempt with our existing pino logger (imported as 'logger')
+- Never throw on 4xx — those are caller errors, log and re-throw immediately
+- Do NOT use nodemailer — we standardised on Resend SDK v3
+Follow the error handling pattern in src/services/payment.service.ts"</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch41">
+    <div class="chapter-label">Chapter 41</div>
+    <h2>AI-Assisted Architecture &amp; Code Reviews</h2>
+    <p class="lead">AI is most valuable in the review and critique phase — where a consistent, tireless second opinion surfaces issues that the author is too close to see.</p>
+    <p><strong>Design reviews with AI:</strong> paste your proposed architecture (as a description, diagram description, or ADR draft) and ask for critique focused on specific dimensions — failure modes, scalability bottlenecks, security considerations, or alternatives you may not have considered. AI doesn't replace a human architect's review but provides a fast first pass that surfaces obvious gaps before the human review.</p>
+    <p><strong>Code review augmentation:</strong> AI excels at reviewing for consistency with existing patterns, potential null/undefined errors, missing error handling branches, and SQL injection vectors. It struggles with: understanding business domain context, evaluating whether a design choice fits the team's constraints, and catching subtle race conditions in complex async flows. Use it as a complement, not a replacement.</p>
+    <p><strong>Refactoring with AI:</strong> provide the existing code, the refactoring goal (extract to service layer, apply repository pattern, add proper error handling), and the constraints (must remain backward compatible, must not change the public interface). AI produces a solid first draft; the engineer validates that the behaviour is preserved, that tests still pass, and that the refactoring actually improves the metrics it was supposed to.</p>
+  </div>
+
+  <div class="chapter" id="ch42">
+    <div class="chapter-label">Chapter 42</div>
+    <h2>Building AI-Powered Systems</h2>
+    <p class="lead">Integrating AI into products requires understanding the architecture patterns that make AI features reliable, observable, and cost-controlled — not just the API calls.</p>
+    <p><strong>RAG (Retrieval-Augmented Generation)</strong> solves the knowledge cutoff and hallucination problems of base LLMs for domain-specific applications. Instead of fine-tuning (expensive, requires labelled data, goes stale), you embed your knowledge base into a vector store and retrieve relevant chunks at query time to inject into the prompt as context. The quality of a RAG system is determined 80% by the quality of the chunking and retrieval strategy and 20% by the LLM choice.</p>
+    <p><strong>AI Agents</strong> extend a model's capability by giving it tools — functions it can call to retrieve data, perform calculations, or trigger actions. The model decides which tools to call and in what sequence. The engineering challenge: tool call failures must be handled gracefully, infinite loops must be bounded by a maximum step count, and every tool call must be logged for observability and cost tracking.</p>
+    <p><strong>MCP (Model Context Protocol)</strong> is Anthropic's open standard for connecting AI models to external data sources and tools through a standardised server/client interface. It enables AI assistants to access live data — databases, APIs, file systems — without bespoke integration code for each source. Senior engineers building AI-powered products increasingly reach for MCP servers rather than hand-rolling tool implementations.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — RAG pipeline skeleton</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">async function</span> <span class="fn">ragQuery</span><span class="pu">(</span>userQuestion<span class="op">:</span> <span class="ty">string</span><span class="pu">):</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">string</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="cm">// 1. Embed the user question into the same vector space as the KB</span>
+  <span class="kw">const</span> queryVector <span class="op">=</span> <span class="kw">await</span> <span class="fn">embedText</span><span class="pu">(</span>userQuestion<span class="pu">)</span>
+
+  <span class="cm">// 2. Retrieve top-k most semantically relevant chunks</span>
+  <span class="kw">const</span> relevant <span class="op">=</span> <span class="kw">await</span> vectorStore<span class="pu">.</span><span class="fn">similaritySearch</span><span class="pu">(</span>queryVector<span class="pu">,</span> <span class="pu">{</span> k<span class="op">:</span> <span class="nm">5</span> <span class="pu">})</span>
+
+  <span class="cm">// 3. Build context from retrieved chunks</span>
+  <span class="kw">const</span> context <span class="op">=</span> relevant<span class="pu">.</span><span class="fn">map</span><span class="pu">(</span>c <span class="op">=&gt;</span> c<span class="pu">.</span>text<span class="pu">).</span><span class="fn">join</span><span class="pu">(</span><span class="st">'\n\n'</span><span class="pu">)</span>
+
+  <span class="cm">// 4. Generate answer grounded in retrieved context</span>
+  <span class="kw">const</span> response <span class="op">=</span> <span class="kw">await</span> anthropic<span class="pu">.</span>messages<span class="pu">.</span><span class="fn">create</span><span class="pu">({</span>
+    model<span class="op">:</span> <span class="st">'claude-sonnet-4-6'</span><span class="pu">,</span>
+    messages<span class="op">:</span> <span class="pu">[{</span>
+      role<span class="op">:</span> <span class="st">'user'</span><span class="pu">,</span>
+      content<span class="op">:</span> <span class="st">`Answer using ONLY the context below.\n\nContext:\n</span><span class="pu">${</span>context<span class="pu">}</span><span class="st">\n\nQuestion: </span><span class="pu">${</span>userQuestion<span class="pu">}</span><span class="st">`</span>
+    <span class="pu">}]</span>
+  <span class="pu">})</span>
+
+  <span class="kw">return</span> response<span class="pu">.</span>content<span class="pu">[</span><span class="nm">0</span><span class="pu">].</span>text
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PART XI ════════════════════════════ -->
+<div class="part" id="part11">
+  <div class="part-header">
+    <span class="part-number">Part XI</span>
+    <span class="part-title">Engineering Excellence</span>
+  </div>
+
+  <div class="chapter" id="ch43">
+    <div class="chapter-label">Chapter 43</div>
+    <h2>Code Review Mastery</h2>
+    <p class="lead">Code review is a teaching tool, a quality gate, and a knowledge-sharing mechanism — in that order. Reviews that function only as quality gates miss most of their value.</p>
+    <p><strong>Review strategy:</strong> read the PR description before the diff. Understand the intent. Then read the diff asking: does the implementation match the intent? Are there edge cases the author didn't consider? Is the approach consistent with existing patterns? Is the code correct, not just does it work? Correct means: handles null/undefined, handles empty collections, handles partial failures, handles concurrent access correctly.</p>
+    <p><strong>Feedback quality:</strong> "This is wrong" is not feedback. "This will panic if <code>user</code> is null on line 42 — which can happen when a new user hasn't completed onboarding. Consider adding a null check or guaranteeing this function is only called post-onboarding" is feedback. Specific, actionable, explains the <em>why</em>. Senior engineers write the second kind. Distinguish between blocking issues (correctness, security), suggestions (style, minor improvements), and nitpicks (personal preference with no correctness implication).</p>
+    <p><strong>Quality gates</strong> — automated checks that run before human review — should catch everything automatable: type errors, lint violations, test failures, security audit findings, bundle size regressions. Human reviewers should focus on what machines can't check: correctness, design quality, maintainability, and knowledge transfer.</p>
+  </div>
+
+  <div class="chapter" id="ch44">
+    <div class="chapter-label">Chapter 44</div>
+    <h2>Testing Strategies</h2>
+    <p class="lead">Tests are not about coverage percentage. They are about confidence — specifically, the confidence to deploy on a Friday afternoon and go home without checking Slack every ten minutes.</p>
+    <p><strong>Unit tests</strong> verify a function or module in isolation, with all dependencies mocked. Fast (milliseconds each), cheap to write, catch logic errors early. The risk of over-mocking: tests that pass because the mock behaves as expected, not because the real system does. Unit tests are best for pure business logic: calculation functions, validation rules, data transformation.</p>
+    <p><strong>Integration tests</strong> verify multiple components working together, typically including a real database. Slower than unit tests but catch the issues that unit tests systematically miss: SQL queries that don't match the schema, ORM quirks, transaction isolation issues, constraint violations. Run against a real Postgres instance in CI (Docker Compose makes this trivial). These tests provide the highest confidence-per-test for backend systems.</p>
+    <p><strong>End-to-end tests</strong> (Playwright, Cypress) drive a real browser through real user flows. Slow, expensive to maintain, but catch integration issues no other test type finds — misconfigured CORS, broken auth flows, real network request failures. Limit to critical paths: sign up, sign in, core purchase flow, core create/read flow. 10 well-chosen E2E tests are worth more than 100 fragile ones.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">TypeScript — Integration test with real database (Vitest)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> describe<span class="pu">,</span> it<span class="pu">,</span> expect<span class="pu">,</span> beforeAll<span class="pu">,</span> afterAll <span class="pu">}</span> <span class="kw">from</span> <span class="st">'vitest'</span>
+<span class="kw">import</span> <span class="pu">{</span> createTestDb<span class="pu">,</span> cleanupTestDb <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./test-helpers'</span>
+<span class="kw">import</span> <span class="pu">{</span> OrderService <span class="pu">}</span> <span class="kw">from</span> <span class="st">'../services/order.service'</span>
+
+<span class="fn">describe</span><span class="pu">(</span><span class="st">'OrderService'</span><span class="pu">,</span> <span class="pu">() =&gt; {</span>
+  <span class="kw">let</span> db<span class="pu">,</span> service<span class="op">:</span> <span class="ty">OrderService</span>
+
+  <span class="fn">beforeAll</span><span class="pu">(</span><span class="kw">async</span> <span class="pu">() =&gt; {</span>
+    db <span class="op">=</span> <span class="kw">await</span> <span class="fn">createTestDb</span><span class="pu">()</span>   <span class="cm">// spins up isolated test schema</span>
+    service <span class="op">=</span> <span class="kw">new</span> <span class="fn">OrderService</span><span class="pu">(</span>db<span class="pu">)</span>
+  <span class="pu">})</span>
+
+  <span class="fn">afterAll</span><span class="pu">(() =&gt;</span> <span class="fn">cleanupTestDb</span><span class="pu">(</span>db<span class="pu">))</span>
+
+  <span class="fn">it</span><span class="pu">(</span><span class="st">'creates order and deducts inventory atomically'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">() =&gt; {</span>
+    <span class="kw">const</span> order <span class="op">=</span> <span class="kw">await</span> service<span class="pu">.</span><span class="fn">createOrder</span><span class="pu">({</span>
+      userId<span class="op">:</span> <span class="st">'usr_1'</span><span class="pu">,</span> productId<span class="op">:</span> <span class="st">'prod_1'</span><span class="pu">,</span> qty<span class="op">:</span> <span class="nm">2</span>
+    <span class="pu">})</span>
+    <span class="kw">const</span> inventory <span class="op">=</span> <span class="kw">await</span> db<span class="pu">.</span><span class="fn">getInventory</span><span class="pu">(</span><span class="st">'prod_1'</span><span class="pu">)</span>
+
+    <span class="fn">expect</span><span class="pu">(</span>order<span class="pu">.</span>status<span class="pu">).</span><span class="fn">toBe</span><span class="pu">(</span><span class="st">'confirmed'</span><span class="pu">)</span>
+    <span class="fn">expect</span><span class="pu">(</span>inventory<span class="pu">.</span>available<span class="pu">).</span><span class="fn">toBe</span><span class="pu">(</span><span class="nm">8</span><span class="pu">)</span>  <span class="cm">// was 10, deducted 2</span>
+  <span class="pu">})</span>
+
+  <span class="fn">it</span><span class="pu">(</span><span class="st">'rejects order when stock insufficient'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">() =&gt; {</span>
+    <span class="kw">await</span> <span class="fn">expect</span><span class="pu">(</span>
+      service<span class="pu">.</span><span class="fn">createOrder</span><span class="pu">({</span> userId<span class="op">:</span> <span class="st">'usr_2'</span><span class="pu">,</span> productId<span class="op">:</span> <span class="st">'prod_1'</span><span class="pu">,</span> qty<span class="op">:</span> <span class="nm">99</span> <span class="pu">})</span>
+    <span class="pu">).</span><span class="fn">rejects</span><span class="pu">.</span><span class="fn">toThrow</span><span class="pu">(</span><span class="st">'InsufficientStock'</span><span class="pu">)</span>
+  <span class="pu">})</span>
+<span class="pu">})</span></code></pre>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch45">
+    <div class="chapter-label">Chapter 45</div>
+    <h2>Refactoring &amp; Maintainability</h2>
+    <p class="lead">Refactoring is not rewriting. It is changing the internal structure of code without changing its observable behaviour. The discipline: change behaviour in one commit; refactor in another. Never both simultaneously.</p>
+    <p><strong>Working with legacy code:</strong> Michael Feathers' definition of legacy code is "code without tests." Before refactoring, write characterisation tests — tests that document what the existing code actually does, including its bugs. These tests serve as a safety net: if the refactoring changes behaviour, they fail. Only then do you refactor.</p>
+    <p><strong>Identifying refactoring targets:</strong> code that changes frequently and has a high defect rate is the highest-value refactoring target. Code that changes rarely and works correctly should be left alone regardless of how ugly it is. Ugly but stable code is not technical debt — it is paid debt. Technical debt is code that slows down the changes you need to make, not code that offends aesthetic sensibilities.</p>
+    <p><strong>Strangler Fig pattern</strong> for large-scale refactoring: don't rewrite the legacy system; grow the new system around it. Route new features to new code. Gradually migrate old features. The legacy system shrinks as the new system grows, and at no point is the entire system simultaneously broken. This is how organisations migrate monoliths to microservices without a big-bang rewrite.</p>
+  </div>
+
+  <div class="chapter" id="ch46">
+    <div class="chapter-label">Chapter 46</div>
+    <h2>Documentation &amp; Knowledge Sharing</h2>
+    <p class="lead">Documentation that isn't read is not documentation — it's archaeology. The goal is knowledge that flows to the person who needs it, when they need it, in the form that's most useful to them.</p>
+    <p><strong>ADRs</strong> for architectural decisions (see Chapter 24). <strong>Runbooks</strong> for operational procedures: how to restart the service, how to rotate credentials, how to diagnose common alert patterns. A runbook that requires the author to explain it in person is not a runbook. <strong>Architecture diagrams</strong> kept in version control (Mermaid, PlantUML, or C4 model) that update with the code, not with a separate diagram tool no one remembers the password to.</p>
+    <p><strong>Code as documentation:</strong> the best documentation is code that doesn't require documentation. Descriptive variable names, small functions with clear names, and well-named tests that describe the system's behaviour are worth ten pages of prose documentation. Tests are especially powerful as documentation because, unlike comments, they fail when they become incorrect.</p>
+    <div class="info"><div class="info-label">The docs test</div>Can a capable engineer who has never seen your system debug a production incident in your system at 2am using only your documentation? If the answer is no, your documentation is missing the thing it's supposed to do.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ PART XII ════════════════════════════ -->
+<div class="part" id="part12">
+  <div class="part-header">
+    <span class="part-number">Part XII</span>
+    <span class="part-title">Leadership &amp; Career Growth</span>
+  </div>
+
+  <div class="chapter" id="ch47">
+    <div class="chapter-label">Chapter 47</div>
+    <h2>Technical Leadership</h2>
+    <p class="lead">Technical leadership is not a role — it is a behaviour. You don't wait to be appointed. You start behaving as a technical leader and the title follows, if it matters to you.</p>
+    <p><strong>Mentoring</strong> is the highest-leverage activity a senior engineer can do. One hour spent unblocking a junior engineer, explaining a concept thoroughly, or pairing on a hard problem multiplies your output — because next time they face a similar problem, they won't need you. Senior engineers who hoard knowledge because it makes them indispensable have confused personal career security with team productivity. They are wrong on both counts: teams that value knowledge sharing promote the sharers, not the hoarders.</p>
+    <p><strong>Design reviews</strong> led by a senior engineer are not approval ceremonies. They are structured critiques designed to surface assumptions, failure modes, and alternatives before implementation cost is sunk. The senior engineer's job in a design review is to ask the hard questions: "What happens when the external service is down?", "How do we roll this back if it causes problems?", "What does this look like with 10× the current data volume?" These questions should be welcomed, not resented.</p>
+    <p><strong>Engineering standards</strong> — code style, testing requirements, deployment checklists, on-call runbook standards — reduce the per-decision cost of engineering across the team. A standard that 10 engineers follow is 10× more valuable than a practice one engineer follows. Senior engineers write standards collaboratively, explain the reasoning behind them (so engineers can improve them), and update them when better information arrives.</p>
+  </div>
+
+  <div class="chapter" id="ch48">
+    <div class="chapter-label">Chapter 48</div>
+    <h2>Stakeholder Communication</h2>
+    <p class="lead">The most technically brilliant engineer who cannot communicate to non-engineers will always be limited in their impact. Impact requires alignment, and alignment requires communication.</p>
+    <p><strong>Communicating with product teams:</strong> product managers speak in terms of outcomes (increase activation rate by 15%) not implementations. Translate your technical work into outcomes. "I refactored the onboarding service" lands poorly. "I reduced onboarding error rate from 8% to 0.3%, which directly affects our activation metric" lands correctly. Always connect engineering work to the metric it affects.</p>
+    <p><strong>Communicating with executives:</strong> executives have limited time and high-level context. Use the pyramid principle: lead with the conclusion ("we need to migrate our database or we will be unable to scale past 10,000 users"), then provide evidence, then detail. Never bury the conclusion in three paragraphs of technical context. They will stop reading.</p>
+    <p><strong>Communicating risk:</strong> senior engineers communicate technical risk proactively — before it becomes a production incident. "This approach has a 20% chance of causing data inconsistency under concurrent writes. I recommend X to mitigate it, but it adds 3 days to the timeline" is an excellent communication. It gives the stakeholder the information they need to make a risk/time trade-off. Hiding the risk and hoping it doesn't materialise is not engineering — it's gambling with someone else's money.</p>
+  </div>
+
+  <div class="chapter" id="ch49">
+    <div class="chapter-label">Chapter 49</div>
+    <h2>Engineering Trade-offs</h2>
+    <p class="lead">Every senior engineer eventually internalises the same set of trade-offs. Not as abstract principles, but as lived experience of the cost when the wrong choice was made at the wrong time.</p>
+    <table>
+      <thead><tr><th>Trade-off</th><th>Choose A when</th><th>Choose B when</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Performance vs Simplicity</strong></td><td>You have measured a performance bottleneck users notice</td><td>You're optimising speculatively — YAGNI applies</td></tr>
+        <tr><td><strong>Consistency vs Availability</strong></td><td>Data correctness is a hard requirement (financials, inventory)</td><td>User-facing features can tolerate eventual consistency</td></tr>
+        <tr><td><strong>Speed vs Quality</strong></td><td>Exploring a new domain, throwaway prototype, time-sensitive market window</td><td>Core domain, public API, security-critical path</td></tr>
+        <tr><td><strong>Cost vs Scalability</strong></td><td>You have more runway than traffic — over-engineering is waste</td><td>You have more traffic than you can handle — under-engineering is failure</td></tr>
+        <tr><td><strong>Flexibility vs Maintainability</strong></td><td>Domain is new and requirements are genuinely uncertain</td><td>Domain is understood — flexibility becomes complexity with no ROI</td></tr>
+      </tbody>
+    </table>
+    <p>The pattern: every trade-off has a context dependency. The engineers who make good decisions are those who correctly identify which context they're in, not those who have a preferred answer they apply regardless of context. "We always use microservices" and "we never use microservices" are both wrong. "We use microservices when the team and organisational structure make independent deployment a genuine requirement" is right.</p>
+    <div class="pullquote">"The mark of a senior engineer is not knowing the right answer. It is knowing which questions to ask to discover the right answer for this specific situation."</div>
+  </div>
+
+  <div class="chapter" id="ch50">
+    <div class="chapter-label">Chapter 50</div>
+    <h2>The Senior Full-Stack Engineer Roadmap</h2>
+    <p class="lead">This is the chapter where it all comes together — not as a checklist of technologies but as a coherent skill set with a developmental arc.</p>
+    <div class="arch-box">
+      <span class="layer">Senior Full-Stack Engineer</span><br/>
+      <span class="arrow">= </span><br/>
+      <span class="layer">Strong programming foundation</span>
+      <span class="arrow"> (TypeScript · algorithms · concurrency)</span><br/>
+      <span class="arrow">+</span><br/>
+      <span class="layer">Modern frontend mastery</span>
+      <span class="arrow"> (React/Next.js · rendering · performance · a11y)</span><br/>
+      <span class="arrow">+</span><br/>
+      <span class="layer">Production backend skills</span>
+      <span class="arrow"> (Node.js · REST/gRPC · async systems)</span><br/>
+      <span class="arrow">+</span><br/>
+      <span class="layer">Database fluency</span>
+      <span class="arrow"> (SQL mastery · data modelling · caching)</span><br/>
+      <span class="arrow">+</span><br/>
+      <span class="layer">System design thinking</span>
+      <span class="arrow"> (scalability · reliability · trade-off analysis)</span><br/>
+      <span class="arrow">+</span><br/>
+      <span class="layer">Cloud &amp; operations</span>
+      <span class="arrow"> (IaC · CI/CD · observability · security)</span><br/>
+      <span class="arrow">+</span><br/>
+      <span class="layer">AI fluency</span>
+      <span class="arrow"> (prompt engineering · RAG · agentic systems)</span><br/>
+      <span class="arrow">+</span><br/>
+      <span class="layer">Engineering leadership</span>
+      <span class="arrow"> (mentoring · communication · ownership)</span>
+    </div>
+    <p>No engineer has all of this equally. The T-shaped engineer — deep in one area, broad across all — is the realistic target. The depth gives you credibility and problem-solving capability. The breadth gives you the context to make decisions that don't create debt in the areas you didn't look at carefully enough.</p>
+    <p><strong>The path from here:</strong> identify your weakest layer. Not your least interesting — your weakest. That is where your current ceiling is. The engineer who is strong on frontend and backend but has never thought carefully about database indexes, caching strategy, or query optimisation will hit a performance problem they can't diagnose. The engineer who has never thought carefully about system design will propose solutions that work at current scale but fail at 10×. Systematically close the gaps.</p>
+    <ul class="checklist">
+      <li><span class="check-icon">✅</span><span><strong>Mindset:</strong> Own outcomes, not just tickets. Think in systems. Communicate risk proactively.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>CS Foundations:</strong> Reach for the right data structure instantly. Understand the event loop. Know your network stack.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>Frontend:</strong> Choose rendering strategy deliberately. Separate state types. Profile before optimising.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>Backend:</strong> Design APIs as contracts. Handle async failures with retries + DLQs. Understand your architecture trade-offs.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>Databases:</strong> Read execution plans. Index deliberately. Understand isolation levels for your use case.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>Architecture:</strong> Document decisions in ADRs. Apply Clean Architecture where complexity justifies it. Follow DDD in complex domains.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>Systems:</strong> Design for failure. Know your availability requirements. Use circuit breakers on all external dependencies.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>Cloud:</strong> Treat infrastructure as code. Alert on symptoms. Least-privilege IAM everywhere.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>Security:</strong> Know OWASP Top 10 cold. Rotate secrets. Defence in depth — every layer.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>AI:</strong> Use it as a force multiplier. Never ship code you don't own. Understand RAG and agents for product features.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>Excellence:</strong> Write reviews that teach. Test for confidence, not coverage. Refactor with a safety net.</span></li>
+      <li><span class="check-icon">✅</span><span><strong>Leadership:</strong> Mentor generously. Communicate in outcomes. Make trade-offs explicit and documented.</span></li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer>
+  <p><strong>The Senior Full-Stack Engineer Checklist — 50 Chapters to Engineering Mastery</strong></p>
+  <p style="margin-top:8px;font-size:13px">React · Node.js · PostgreSQL · Cloud · Security · AI · Leadership &mdash; June 2026</p>
+</footer>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre')
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      btn.textContent = 'Copied!'
+      setTimeout(() => btn.textContent = 'Copy', 2000)
+    })
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(a =>
+    a.addEventListener('click', e => {
+      e.preventDefault()
+      document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' })
+    })
+  )
+</script>
+</body>
+</html>
