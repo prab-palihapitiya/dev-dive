@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>The 12 Building Blocks of Large-Scale Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#faf8f5;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
+      --text-muted:#9a9a9a;--accent:#0f766e;--accent-light:#f0fdfa;--accent-subtle:#ccfbf1;
+      --border:#e8e3db;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#f3f0eb;
+      --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
+      --info-bg:#eff6ff;--info-border:#2563eb;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Outfit",sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.8}
+    nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s}
+    .nav-back:hover{color:var(--accent)}
+    .nav-pipe{color:var(--border);font-size:18px}
+    .nav-brand{font-size:14px;font-weight:700;letter-spacing:-.3px}
+    .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:100px}
+    .nav-links{display:flex;gap:0}
+    .nav-links a{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:5px 8px;border-radius:6px;transition:all .15s;white-space:nowrap}
+    .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
+    .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+    .hero{max-width:800px;margin:0 auto;padding:64px 2rem 48px}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:24px}
+    .hero h1{font-family:"Lora",serif;font-size:clamp(30px,4.5vw,48px);font-weight:600;line-height:1.15;letter-spacing:-.5px;margin-bottom:20px}
+    .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+    .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0f766e,#0d9488);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white}
+    .meta-text{font-size:14px;color:var(--text-secondary)}
+    .meta-text strong{color:var(--text-primary)}
+    .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+    .toc-wrapper{max-width:800px;margin:0 auto;padding:0 2rem 8px}
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:48px}
+    .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+    .toc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px 20px}
+    .toc a{font-size:13.5px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
+    .toc a:hover{color:var(--accent)}
+    .toc-num{font-size:11px;color:var(--text-muted);font-weight:600;min-width:18px;flex-shrink:0}
+    .content{max-width:800px;margin:0 auto;padding:0 2rem 80px}
+    .section{margin-bottom:72px;scroll-margin-top:72px}
+    .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .section-label::after{content:"";flex:1;height:1px;background:var(--accent-subtle)}
+    h2{font-family:"Lora",serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:14px}
+    h3{font-size:18px;font-weight:600;margin:28px 0 10px}
+    p{margin-bottom:16px;color:#2d2d2d;line-height:1.8}
+    .lead{font-size:18px;color:var(--text-secondary);font-weight:300;margin-bottom:20px;line-height:1.7}
+    .code-block{background:var(--code-bg);border-radius:10px;margin:20px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+    .code-header{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+    .code-lang{font-size:11px;color:#6e7681;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+    .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:"Outfit",sans-serif;transition:all .15s}
+    .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+    pre{padding:18px 20px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.75;color:var(--code-text)}
+    pre code{background:none;padding:0;font-size:inherit;color:inherit}
+    code{font-family:"JetBrains Mono",monospace;font-size:13px;background:#f0fdfa;color:#0f766e;padding:2px 6px;border-radius:4px}
+    .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+    .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+    .pu{color:#e6edf3}.bi{color:#ffa657}.at{color:#79c0ff}
+    .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .tip-label{font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .warn-label{font-size:11px;font-weight:700;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .info-label{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14.5px}
+    th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:12px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+    td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--bg)}
+    .pullquote{font-family:"Lora",serif;font-style:italic;font-size:21px;line-height:1.55;color:var(--text-secondary);border-left:4px solid var(--accent);padding:10px 22px;margin:32px 0}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:20px 0}
+    .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 17px}
+    .concept-card h4{font-size:14px;font-weight:600;margin:0 0 5px}
+    .concept-card p{font-size:13px;color:var(--text-secondary);margin:0;line-height:1.5}
+    .concept-icon{font-size:19px;margin-bottom:8px}
+    .domain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin:24px 0}
+    .domain-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+    .domain-name{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text-primary)}
+    .domain-tags{display:flex;flex-wrap:wrap;gap:4px}
+    .dtag{font-size:11px;font-weight:600;padding:2px 7px;border-radius:100px;background:var(--accent-subtle);color:var(--accent)}
+    .dtag.high{background:#fce7f3;color:#9d174d}
+    .dtag.med{background:#fef3c7;color:#92400e}
+    .arch-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin:20px 0;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:2.1;color:var(--text-secondary);overflow-x:auto}
+    .arch-box .hl{color:var(--accent);font-weight:600}
+    .arch-box .dim{color:var(--text-muted)}
+    .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;vertical-align:middle}
+    .badge-teal{background:#ccfbf1;color:#0f766e}
+    .badge-red{background:#fee2e2;color:#b91c1c}
+    .badge-amber{background:#fef3c7;color:#b45309}
+    .badge-green{background:#dcfce7;color:#15803d}
+    footer{background:#1a1a1a;color:rgba(255,255,255,.65);text-align:center;padding:40px 2rem;font-size:14px}
+    footer strong{color:white}
+    @media(max-width:640px){.toc-grid{grid-template-columns:1fr 1fr}.nav-links{display:none}.concept-grid,.domain-grid{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="index.html">&#8592; DevDive</a>
+    <span class="nav-pipe">|</span>
+    <span class="nav-brand">System Building Blocks</span>
+    <span class="nav-badge">Best Practices</span>
+  </div>
+  <div class="nav-links">
+    <a href="#lb">Load Balancing</a>
+    <a href="#cache">Caching</a>
+    <a href="#db">Databases</a>
+    <a href="#idx">Indexes</a>
+    <a href="#queues">Queues</a>
+    <a href="#events">Events</a>
+    <a href="#search">Search</a>
+    <a href="#replication">Replication</a>
+    <a href="#sharding">Sharding</a>
+    <a href="#ratelimit">Rate Limiting</a>
+    <a href="#locks">Dist. Locks</a>
+    <a href="#observability">Observability</a>
+  </div>
+  <span class="nav-rt">~32 min read</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; Best Practices</div>
+  <h1>The 12 Building Blocks of Large-Scale Systems</h1>
+  <p class="hero-sub">
+    Every system — banking, ERP, social network, healthcare, e-commerce — is
+    assembled from the same 12 foundational concepts. What separates domains
+    is which concepts become dominant. A senior engineer's job is mastering
+    the trade-offs behind each one, then assembling them to fit the business.
+  </p>
+  <div class="hero-meta">
+    <div class="avatar">SYS</div>
+    <div class="meta-text">
+      <strong>Systems Architecture Field Guide</strong><br/>
+      12 Building Blocks &middot; Trade-offs &middot; Domain Mapping &mdash; June 2026
+    </div>
+  </div>
+  <hr class="hero-divider"/>
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>12 Building Blocks</h3>
+    <div class="toc-grid">
+      <a href="#lb"><span class="toc-num">01</span> Load Balancing</a>
+      <a href="#search"><span class="toc-num">07</span> Search</a>
+      <a href="#cache"><span class="toc-num">02</span> Caching</a>
+      <a href="#replication"><span class="toc-num">08</span> Replication</a>
+      <a href="#db"><span class="toc-num">03</span> Databases</a>
+      <a href="#sharding"><span class="toc-num">09</span> Sharding</a>
+      <a href="#idx"><span class="toc-num">04</span> Indexes</a>
+      <a href="#ratelimit"><span class="toc-num">10</span> Rate Limiting</a>
+      <a href="#queues"><span class="toc-num">05</span> Queues</a>
+      <a href="#locks"><span class="toc-num">11</span> Distributed Locks</a>
+      <a href="#events"><span class="toc-num">06</span> Events</a>
+      <a href="#observability"><span class="toc-num">12</span> Observability</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ─── DOMAIN MAP ─── -->
+<div class="section" id="domains">
+  <div class="section-label">Preface &mdash; Domain Mapping</div>
+  <h2>Which Building Blocks Dominate Each Domain</h2>
+  <p class="lead">The same 12 concepts appear in every large-scale system. The art is knowing which ones are load-bearing for a given domain — because those are the ones that require the deepest design investment.</p>
+  <div class="domain-grid">
+    <div class="domain-card">
+      <div class="domain-name">🏦 Banking / FinTech</div>
+      <div class="domain-tags">
+        <span class="dtag high">Dist. Locks</span>
+        <span class="dtag high">Events</span>
+        <span class="dtag high">Replication</span>
+        <span class="dtag med">Rate Limiting</span>
+        <span class="dtag med">Queues</span>
+      </div>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🛒 E-commerce</div>
+      <div class="domain-tags">
+        <span class="dtag high">Caching</span>
+        <span class="dtag high">Search</span>
+        <span class="dtag high">Queues</span>
+        <span class="dtag med">Sharding</span>
+        <span class="dtag med">Dist. Locks</span>
+      </div>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🏥 Healthcare</div>
+      <div class="domain-tags">
+        <span class="dtag high">Replication</span>
+        <span class="dtag high">Observability</span>
+        <span class="dtag high">Databases</span>
+        <span class="dtag med">Rate Limiting</span>
+        <span class="dtag med">Events</span>
+      </div>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">📱 Social Network</div>
+      <div class="domain-tags">
+        <span class="dtag high">Sharding</span>
+        <span class="dtag high">Caching</span>
+        <span class="dtag high">Events</span>
+        <span class="dtag med">Search</span>
+        <span class="dtag med">Load Balancing</span>
+      </div>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">📋 ERP / SaaS</div>
+      <div class="domain-tags">
+        <span class="dtag high">Indexes</span>
+        <span class="dtag high">Databases</span>
+        <span class="dtag high">Queues</span>
+        <span class="dtag med">Rate Limiting</span>
+        <span class="dtag med">Observability</span>
+      </div>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">📊 Survey / Analytics</div>
+      <div class="domain-tags">
+        <span class="dtag high">Events</span>
+        <span class="dtag high">Queues</span>
+        <span class="dtag high">Sharding</span>
+        <span class="dtag med">Caching</span>
+        <span class="dtag med">Search</span>
+      </div>
+    </div>
+  </div>
+  <div class="pullquote">"The distinguishing factor between domains is not the technology itself, but which concepts become dominant — and how aggressively each one must be optimised."</div>
+</div>
+
+<!-- ─── 01 LOAD BALANCING ─── -->
+<div class="section" id="lb">
+  <div class="section-label">01 &mdash; Traffic Distribution</div>
+  <h2>Load Balancing</h2>
+  <p class="lead">A load balancer is the front door of every scalable system. Its job is to distribute incoming traffic across a pool of servers so that no single server becomes the bottleneck — and to route around unhealthy instances transparently.</p>
+  <p>The fundamental requirement is that your application servers be <strong>stateless</strong>. If server A holds a user's session in memory, routing their next request to server B fails. Stateless servers delegate all shared state — sessions, uploads, locks — to external systems (Redis, S3, PostgreSQL), making every instance identical and interchangeable.</p>
+
+  <h3>Algorithms</h3>
+  <table>
+    <thead><tr><th>Algorithm</th><th>How it works</th><th>Best for</th><th>Weakness</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Round Robin</strong></td><td>Requests cycle through servers in order</td><td>Homogeneous servers, uniform request cost</td><td>Ignores server load; slow requests pile up on one server</td></tr>
+      <tr><td><strong>Least Connections</strong></td><td>Routes to server with fewest active connections</td><td>Varying request durations (API gateways, streaming)</td><td>Requires connection tracking overhead</td></tr>
+      <tr><td><strong>Weighted Round Robin</strong></td><td>Higher-capacity servers get proportionally more traffic</td><td>Mixed server specs; gradual canary rollouts</td><td>Static weights don't adapt to real-time load</td></tr>
+      <tr><td><strong>IP Hash</strong></td><td>Same client IP always routes to same server</td><td>Sticky sessions when shared state is unavoidable</td><td>Uneven distribution if IPs are skewed; breaks on IP change</td></tr>
+      <tr><td><strong>Least Response Time</strong></td><td>Routes to server with lowest latency + fewest connections</td><td>Latency-sensitive workloads</td><td>More complex; requires active latency probing</td></tr>
+    </tbody>
+  </table>
+
+  <h3>L4 vs L7</h3>
+  <p><strong>Layer 4</strong> load balancers operate on TCP/UDP — they see IP addresses and ports, nothing more. Fast (no packet inspection), but routing decisions are limited. <strong>Layer 7</strong> load balancers understand HTTP — they can route on URL path, headers, cookies, and request body. This enables path-based routing (<code>/api/*</code> → API servers, <code>/static/*</code> → CDN), A/B testing via header injection, and WebSocket upgrade handling. Use L7 for all HTTP workloads; reserve L4 for raw TCP (gRPC, database proxies).</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Nginx — L7 load balancer with health checks + canary</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="bi">upstream</span> <span class="fn">api_v2</span> <span class="pu">{</span>
+  <span class="cm"># Canary: 5% traffic to new version</span>
+  <span class="at">server</span> api-v2-canary<span class="op">:</span><span class="nm">3000</span> <span class="at">weight</span><span class="op">=</span><span class="nm">5</span><span class="pu">;</span>
+  <span class="at">server</span> api-stable-1<span class="op">:</span><span class="nm">3000</span> <span class="at">weight</span><span class="op">=</span><span class="nm">95</span><span class="pu">;</span>
+  <span class="at">server</span> api-stable-2<span class="op">:</span><span class="nm">3000</span> <span class="at">weight</span><span class="op">=</span><span class="nm">95</span><span class="pu">;</span>
+
+  <span class="cm"># Remove unhealthy server after 3 failures; restore after 30s</span>
+  <span class="at">server</span> api-stable-3<span class="op">:</span><span class="nm">3000</span>
+    <span class="at">max_fails</span><span class="op">=</span><span class="nm">3</span> <span class="at">fail_timeout</span><span class="op">=</span><span class="nm">30s</span><span class="pu">;</span>
+
+  <span class="at">keepalive</span> <span class="nm">64</span><span class="pu">;</span>  <span class="cm"># reuse connections — critical for high RPS</span>
+<span class="pu">}</span>
+
+<span class="bi">server</span> <span class="pu">{</span>
+  <span class="at">location</span> <span class="op">/</span>api <span class="pu">{</span>
+    <span class="at">proxy_pass</span>         http<span class="op">://</span>api_v2<span class="pu">;</span>
+    <span class="at">proxy_next_upstream</span> error timeout http_500<span class="pu">;</span>
+    <span class="at">proxy_http_version</span>  <span class="nm">1.1</span><span class="pu">;</span>
+    <span class="at">proxy_set_header</span>    Connection <span class="st">""</span><span class="pu">;</span>  <span class="cm"># enable keepalive</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+  </div>
+  <div class="tip"><div class="tip-label">Health check depth</div>Don't health check <code>/ping</code> that returns 200 unconditionally. Check <code>/health</code> that verifies the server can reach its database and cache. A server that can't talk to Postgres is not healthy, even if its process is running.</div>
+</div>
+
+<!-- ─── 02 CACHING ─── -->
+<div class="section" id="cache">
+  <div class="section-label">02 &mdash; Performance Multiplier</div>
+  <h2>Caching</h2>
+  <p class="lead">Caching is the most impactful performance tool in distributed systems. A cache hit eliminates the most expensive operation in your stack — a database round-trip. The engineering challenge is making caches correct, not just fast.</p>
+
+  <h3>Cache Layers</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🌐</div><h4>CDN</h4><p>Static assets, public pages. Closest to users globally. Zero origin load for cache hits. TTL-based invalidation.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔀</div><h4>Reverse Proxy</h4><p>Nginx / Varnish cache full HTTP responses. Useful for public API responses that are expensive to compute.</p></div>
+    <div class="concept-card"><div class="concept-icon">⚡</div><h4>Application Cache</h4><p>Redis / Memcached. Shared across all app servers. Flexible — cache any serialisable object, result, or computed value.</p></div>
+    <div class="concept-card"><div class="concept-icon">🗄️</div><h4>Database Cache</h4><p>Query plan cache and buffer pool. Automatic. Tune <code>shared_buffers</code> (Postgres) to fit your hot dataset in RAM.</p></div>
+    <div class="concept-card"><div class="concept-icon">📦</div><h4>In-Process</h4><p>Node.js Map / LRU cache. Zero network overhead. Invalidation requires coordination across instances — only for truly immutable or short-TTL data.</p></div>
+  </div>
+
+  <h3>Strategies &amp; Eviction</h3>
+  <table>
+    <thead><tr><th>Strategy</th><th>Flow</th><th>Consistency</th><th>Use case</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Cache-aside</strong></td><td>Read: check cache → miss → DB → populate. Write: invalidate cache.</td><td>Good</td><td>Default for most read-heavy data</td></tr>
+      <tr><td><strong>Write-through</strong></td><td>Every write goes to cache AND DB simultaneously.</td><td>Strong</td><td>Data that's always read after write (user profile)</td></tr>
+      <tr><td><strong>Write-behind</strong></td><td>Write to cache immediately; async flush to DB.</td><td>Eventual</td><td>High-write, loss-tolerant (view counters, analytics)</td></tr>
+      <tr><td><strong>Read-through</strong></td><td>Cache fetches from DB on miss; caller always hits cache.</td><td>Good</td><td>Simplifies application code; cache library handles misses</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Eviction policies:</strong> <code>LRU</code> (Least Recently Used) is the correct default — evict the data least likely to be needed. <code>LFU</code> (Least Frequently Used) is better for hotspot-heavy workloads where certain keys are always hot. <code>TTL</code> expiry is always required alongside an eviction policy — don't let stale data survive indefinitely even if it's frequently accessed.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Multi-layer cache with L1 in-process + L2 Redis</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> LRUCache <span class="pu">}</span> <span class="kw">from</span> <span class="st">'lru-cache'</span>
+
+<span class="cm">// L1: in-process LRU — zero latency, bounded size</span>
+<span class="kw">const</span> l1 <span class="op">=</span> <span class="kw">new</span> <span class="fn">LRUCache</span><span class="op">&lt;</span><span class="ty">string</span><span class="pu">,</span> <span class="ty">unknown</span><span class="op">&gt;</span><span class="pu">({</span>
+  max<span class="op">:</span> <span class="nm">1000</span><span class="pu">,</span> ttl<span class="op">:</span> <span class="nm">30_000</span>  <span class="cm">// 30s — accept slight stale for hot items</span>
+<span class="pu">})</span>
+
+<span class="kw">async function</span> <span class="fn">get</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span><span class="pu">(</span>key<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span> fetch<span class="op">:</span> <span class="pu">() =&gt;</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span><span class="pu">):</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="cm">// L1 hit — no network at all</span>
+  <span class="kw">const</span> l1hit <span class="op">=</span> l1<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>key<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>l1hit <span class="op">!==</span> <span class="kw">undefined</span><span class="pu">)</span> <span class="kw">return</span> l1hit <span class="kw">as</span> <span class="ty">T</span>
+
+  <span class="cm">// L2 hit — Redis (~0.5ms)</span>
+  <span class="kw">const</span> l2hit <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span>key<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>l2hit<span class="pu">) {</span>
+    <span class="kw">const</span> val <span class="op">=</span> <span class="ty">JSON</span><span class="pu">.</span><span class="fn">parse</span><span class="pu">(</span>l2hit<span class="pu">)</span>
+    l1<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>key<span class="pu">,</span> val<span class="pu">)</span>   <span class="cm">// promote to L1</span>
+    <span class="kw">return</span> val
+  <span class="pu">}</span>
+
+  <span class="cm">// Miss — database (~5–50ms)</span>
+  <span class="kw">const</span> val <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetch</span><span class="pu">()</span>
+  <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">setex</span><span class="pu">(</span>key<span class="pu">,</span> <span class="nm">300</span><span class="pu">,</span> <span class="ty">JSON</span><span class="pu">.</span><span class="fn">stringify</span><span class="pu">(</span>val<span class="pu">))</span>
+  l1<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>key<span class="pu">,</span> val<span class="pu">)</span>
+  <span class="kw">return</span> val
+<span class="pu">}</span></code></pre>
+  </div>
+  <div class="warn"><div class="warn-label">Cache invalidation is the hardest problem</div>Never rely solely on TTL for correctness. When data changes, invalidate the key immediately. For complex dependency chains (a product price change invalidates 30 cached search result pages), maintain a tag-based invalidation index: every cache entry is tagged with its dependencies, and invalidating a tag purges all tagged entries at once.</div>
+</div>
+
+<!-- ─── 03 DATABASES ─── -->
+<div class="section" id="db">
+  <div class="section-label">03 &mdash; Data Storage</div>
+  <h2>Databases</h2>
+  <p class="lead">There is no universally correct database. There is only the database whose consistency model, query model, and scaling characteristics best match the specific data access patterns of your domain.</p>
+  <table>
+    <thead><tr><th>Type</th><th>Model</th><th>Strengths</th><th>Weaknesses</th><th>Reach for when</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Relational</strong><br/><span style="font-size:12px;color:var(--text-muted)">PostgreSQL, MySQL</span></td><td>Tables + relations</td><td>ACID, rich queries, joins, foreign keys, mature tooling</td><td>Horizontal scaling hard; schema migrations require care</td><td>Transactional data, complex relationships, reporting</td></tr>
+      <tr><td><strong>Document</strong><br/><span style="font-size:12px;color:var(--text-muted)">MongoDB, Firestore</span></td><td>JSON documents</td><td>Flexible schema, natural nesting, easy horizontal scale</td><td>No joins, consistency trade-offs, duplicate data</td><td>Content management, product catalogues, user profiles with variable shape</td></tr>
+      <tr><td><strong>Wide-Column</strong><br/><span style="font-size:12px;color:var(--text-muted)">Cassandra, DynamoDB</span></td><td>Row key + columns</td><td>Extreme write throughput, linear horizontal scaling, no SPOF</td><td>No joins, limited queries, eventual consistency, data modelling is hard</td><td>Time-series, IoT, audit logs, messaging at massive scale</td></tr>
+      <tr><td><strong>Graph</strong><br/><span style="font-size:12px;color:var(--text-muted)">Neo4j, Amazon Neptune</span></td><td>Nodes + edges</td><td>Relationship traversal is fast and natural</td><td>Poor for aggregate queries; niche tooling</td><td>Social graphs, fraud detection, recommendation engines</td></tr>
+      <tr><td><strong>Time-Series</strong><br/><span style="font-size:12px;color:var(--text-muted)">InfluxDB, TimescaleDB</span></td><td>Timestamped metrics</td><td>Compressed storage, fast range queries, auto-rollup</td><td>Poor for relational queries outside time dimension</td><td>Monitoring metrics, IoT sensor data, financial tick data</td></tr>
+      <tr><td><strong>Search</strong><br/><span style="font-size:12px;color:var(--text-muted)">Elasticsearch, Typesense</span></td><td>Inverted index</td><td>Full-text search, fuzzy matching, faceting, aggregations</td><td>Not a source of truth — sync lag, eventual consistency</td><td>Product search, log search, full-text queries</td></tr>
+    </tbody>
+  </table>
+  <div class="info"><div class="info-label">Polyglot persistence</div>Production systems routinely use multiple databases. Orders in PostgreSQL (ACID required). Product catalogue in MongoDB (flexible schema). Search in Elasticsearch. Session state in Redis. Metrics in TimescaleDB. Each data type lives in the store that best serves its access pattern. The cost: synchronisation between stores and operational complexity — justified when the performance or flexibility gains are real, not speculative.</div>
+</div>
+
+<!-- ─── 04 INDEXES ─── -->
+<div class="section" id="idx">
+  <div class="section-label">04 &mdash; Query Acceleration</div>
+  <h2>Indexes</h2>
+  <p class="lead">An index is a trade: you pay write overhead and storage to make reads fast. Every index you add slows every write. The art is indexing exactly the queries that need it — no more.</p>
+
+  <h3>Index Types</h3>
+  <table>
+    <thead><tr><th>Type</th><th>Structure</th><th>Supports</th><th>Common use</th></tr></thead>
+    <tbody>
+      <tr><td><strong>B-Tree</strong></td><td>Balanced tree — sorted</td><td>=, &lt;, &gt;, BETWEEN, ORDER BY, LIKE 'prefix%'</td><td>Default. 95% of indexes should be B-Tree.</td></tr>
+      <tr><td><strong>Hash</strong></td><td>Hash table</td><td>= only (faster than B-Tree for equality-only)</td><td>Lookup-only tables: user sessions, token maps</td></tr>
+      <tr><td><strong>GiST / GIN</strong></td><td>Generalised search tree</td><td>Full-text, JSON, geometric, array operators</td><td>JSONB querying, <code>@@</code> full-text search in PostgreSQL</td></tr>
+      <tr><td><strong>Partial</strong></td><td>B-Tree with WHERE clause</td><td>Same as B-Tree, but smaller and faster for filtered subsets</td><td><code>WHERE deleted_at IS NULL</code> — 95% of queries only touch live rows</td></tr>
+      <tr><td><strong>Covering</strong></td><td>B-Tree including extra columns</td><td>Index-only scans — no heap access needed</td><td>High-frequency queries that always fetch the same columns</td></tr>
+      <tr><td><strong>Composite</strong></td><td>B-Tree on multiple columns</td><td>Leftmost prefix queries</td><td><code>(user_id, created_at DESC)</code> for per-user sorted lists</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">SQL — Strategic index design patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">-- Partial index: only live orders (avoids indexing archived rows)</span>
+<span class="kw">CREATE</span> INDEX CONCURRENTLY idx_orders_live
+  <span class="kw">ON</span> orders <span class="pu">(</span>user_id<span class="pu">,</span> created_at DESC<span class="pu">)</span>
+  <span class="kw">WHERE</span> deleted_at <span class="kw">IS NULL</span><span class="pu">;</span>
+
+<span class="cm">-- Covering index: query returns only indexed columns → no heap hit</span>
+<span class="kw">CREATE</span> INDEX idx_products_search
+  <span class="kw">ON</span> products <span class="pu">(</span>category_id<span class="pu">,</span> price<span class="pu">)</span>
+  INCLUDE <span class="pu">(</span>name<span class="pu">,</span> slug<span class="pu">,</span> thumbnail_url<span class="pu">);</span>
+<span class="cm">-- Query: SELECT name, slug, thumbnail_url FROM products</span>
+<span class="cm">--         WHERE category_id=5 ORDER BY price → index-only scan</span>
+
+<span class="cm">-- GIN index for JSONB querying</span>
+<span class="kw">CREATE</span> INDEX idx_events_metadata
+  <span class="kw">ON</span> events <span class="kw">USING</span> gin<span class="pu">(</span>metadata<span class="pu">);</span>
+<span class="cm">-- Enables: WHERE metadata @> '{"type": "purchase"}'</span>
+
+<span class="cm">-- ALWAYS use CONCURRENTLY in production — avoids table lock</span>
+<span class="cm">-- EXPLAIN ANALYZE before and after to verify the index is used</span>
+<span class="kw">EXPLAIN</span> <span class="pu">(</span>ANALYZE<span class="pu">,</span> BUFFERS<span class="pu">,</span> FORMAT JSON<span class="pu">)</span>
+<span class="kw">SELECT</span> name<span class="pu">,</span> slug <span class="kw">FROM</span> products
+<span class="kw">WHERE</span> category_id <span class="op">=</span> <span class="nm">5</span> <span class="kw">ORDER BY</span> price <span class="kw">LIMIT</span> <span class="nm">20</span><span class="pu">;</span></code></pre>
+  </div>
+  <div class="warn"><div class="warn-label">Index bloat</div>Indexes grow monotonically. Deleted rows leave dead index entries. On high-churn tables, regular <code>VACUUM</code> and periodic <code>REINDEX CONCURRENTLY</code> keep indexes compact. An index twice the size of the table it serves is a performance liability, not an asset.</div>
+</div>
+
+<!-- ─── 05 QUEUES ─── -->
+<div class="section" id="queues">
+  <div class="section-label">05 &mdash; Async Decoupling</div>
+  <h2>Queues</h2>
+  <p class="lead">A queue decouples the rate at which work is produced from the rate at which it is consumed. It is the correct answer to: "what do we do when the downstream service can't keep up with inbound traffic?"</p>
+  <p>The fundamental contract of a queue: producers write messages without waiting for consumers to process them. Consumers process messages at their own pace. If consumers fall behind, messages accumulate — and queue depth becomes the leading indicator of capacity problems.</p>
+
+  <h3>Delivery Semantics</h3>
+  <table>
+    <thead><tr><th>Semantic</th><th>Guarantee</th><th>Risk</th><th>When to use</th></tr></thead>
+    <tbody>
+      <tr><td><strong>At-most-once</strong></td><td>Message delivered 0 or 1 time</td><td>Loss — message may never be processed</td><td>Metrics, logs, non-critical notifications</td></tr>
+      <tr><td><strong>At-least-once</strong></td><td>Message delivered 1+ times</td><td>Duplicates — consumer must be idempotent</td><td>Default for most workloads: emails, webhooks, order processing</td></tr>
+      <tr><td><strong>Exactly-once</strong></td><td>Delivered exactly once</td><td>High cost — requires distributed transactions</td><td>Financial transfers, inventory deduction (use idempotency keys instead)</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Backpressure</strong> is a queue's most important operational property. When the queue grows faster than consumers drain it, the system must either: add consumers (scale out), drop messages (at-most-once, acceptable for metrics), or apply backpressure to producers (slow down ingestion). Without an explicit backpressure strategy, a queue becomes an unbounded memory sink that eventually exhausts the broker.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — BullMQ producer + idempotent consumer</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> Queue<span class="pu">,</span> Worker<span class="pu">,</span> <span class="ty">Job</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'bullmq'</span>
+
+<span class="cm">// Producer: fire and forget</span>
+<span class="kw">const</span> emailQ <span class="op">=</span> <span class="kw">new</span> <span class="fn">Queue</span><span class="pu">(</span><span class="st">'email'</span><span class="pu">,</span> <span class="pu">{</span>
+  defaultJobOptions<span class="op">:</span> <span class="pu">{</span>
+    attempts<span class="op">:</span> <span class="nm">5</span><span class="pu">,</span>
+    backoff<span class="op">:</span> <span class="pu">{</span> type<span class="op">:</span> <span class="st">'exponential'</span><span class="pu">,</span> delay<span class="op">:</span> <span class="nm">2000</span> <span class="pu">},</span>
+    removeOnComplete<span class="op">:</span> <span class="pu">{</span> count<span class="op">:</span> <span class="nm">100</span> <span class="pu">},</span>
+    removeOnFail<span class="op">:</span> <span class="kw">false</span>  <span class="cm">// keep failed jobs for inspection</span>
+  <span class="pu">}</span>
+<span class="pu">})</span>
+
+<span class="kw">await</span> emailQ<span class="pu">.</span><span class="fn">add</span><span class="pu">(</span><span class="st">'welcome'</span><span class="pu">,</span>
+  <span class="pu">{</span> userId<span class="op">:</span> <span class="st">'usr_123'</span><span class="pu">,</span> email<span class="op">:</span> <span class="st">'a@b.com'</span> <span class="pu">},</span>
+  <span class="pu">{</span> jobId<span class="op">:</span> <span class="st">`welcome:usr_123`</span> <span class="pu">}</span>  <span class="cm">// deduplication key</span>
+<span class="pu">)</span>
+
+<span class="cm">// Consumer: idempotent — safe to run twice</span>
+<span class="kw">new</span> <span class="fn">Worker</span><span class="pu">(</span><span class="st">'email'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span>job<span class="op">:</span> <span class="ty">Job</span><span class="pu">) =&gt; {</span>
+  <span class="cm">// Check if already sent — idempotency guard</span>
+  <span class="kw">const</span> sent <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">`sent:</span><span class="pu">${</span>job<span class="pu">.</span>id<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(</span>sent<span class="pu">)</span> <span class="kw">return</span>  <span class="cm">// already processed — safe noop</span>
+
+  <span class="kw">await</span> <span class="fn">sendWelcomeEmail</span><span class="pu">(</span>job<span class="pu">.</span>data<span class="pu">)</span>
+  <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">setex</span><span class="pu">(</span><span class="st">`sent:</span><span class="pu">${</span>job<span class="pu">.</span>id<span class="pu">}</span><span class="st">`</span><span class="pu">,</span> <span class="nm">86400</span> <span class="op">*</span> <span class="nm">7</span><span class="pu">,</span> <span class="st">'1'</span><span class="pu">)</span>
+<span class="pu">},</span> <span class="pu">{</span> concurrency<span class="op">:</span> <span class="nm">10</span> <span class="pu">})</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── 06 EVENTS ─── -->
+<div class="section" id="events">
+  <div class="section-label">06 &mdash; Reactive Architecture</div>
+  <h2>Events</h2>
+  <p class="lead">Events represent facts — things that have already happened. An event is immutable; it cannot be undone. This immutability is the foundation of event-driven architectures, event sourcing, and audit trails.</p>
+  <p><strong>Event-driven architecture</strong> separates producers from consumers through an event bus. A <code>PaymentCompleted</code> event published to Kafka is consumed independently by the fulfilment service, the email service, the fraud service, and the analytics pipeline — all without the payment service knowing they exist. Adding a new consumer requires no change to the producer.</p>
+  <p><strong>Event sourcing</strong> takes this further: the database <em>is</em> the event log. Current state is derived by replaying events. Every state change is captured as a fact: <code>OrderPlaced</code>, <code>ItemAdded</code>, <code>PaymentTaken</code>, <code>OrderShipped</code>. The full history of every entity is preserved. Time-travel queries ("what was this order's state on Tuesday?") are free. Rebuilding a new read model from history is possible at any time.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Event sourcing: append event + rebuild state</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">type</span> <span class="ty">OrderEvent</span> <span class="op">=</span>
+  <span class="pu">|</span> <span class="pu">{</span> type<span class="op">:</span> <span class="st">'OrderPlaced'</span><span class="pu">;</span>  customerId<span class="op">:</span> <span class="ty">string</span><span class="pu">;</span> total<span class="op">:</span> <span class="ty">number</span> <span class="pu">}</span>
+  <span class="pu">|</span> <span class="pu">{</span> type<span class="op">:</span> <span class="st">'PaymentTaken'</span><span class="pu">;</span> amount<span class="op">:</span> <span class="ty">number</span> <span class="pu">}</span>
+  <span class="pu">|</span> <span class="pu">{</span> type<span class="op">:</span> <span class="st">'OrderShipped'</span><span class="pu">;</span> trackingId<span class="op">:</span> <span class="ty">string</span> <span class="pu">}</span>
+  <span class="pu">|</span> <span class="pu">{</span> type<span class="op">:</span> <span class="st">'OrderCancelled'</span><span class="pu">;</span> reason<span class="op">:</span> <span class="ty">string</span> <span class="pu">}</span>
+
+<span class="kw">interface</span> <span class="ty">OrderState</span> <span class="pu">{</span>
+  status<span class="op">:</span> <span class="st">'pending'</span> <span class="op">|</span> <span class="st">'paid'</span> <span class="op">|</span> <span class="st">'shipped'</span> <span class="op">|</span> <span class="st">'cancelled'</span>
+  total<span class="op">:</span> <span class="ty">number</span>
+  paidAmount<span class="op">:</span> <span class="ty">number</span>
+<span class="pu">}</span>
+
+<span class="cm">// Rebuild current state by replaying all events (pure function)</span>
+<span class="kw">function</span> <span class="fn">rehydrate</span><span class="pu">(</span>events<span class="op">:</span> <span class="ty">OrderEvent</span><span class="pu">[]):</span> <span class="ty">OrderState</span> <span class="pu">{</span>
+  <span class="kw">return</span> events<span class="pu">.</span><span class="fn">reduce</span><span class="pu">((</span>state<span class="pu">,</span> e<span class="pu">) =&gt; {</span>
+    <span class="kw">switch</span> <span class="pu">(</span>e<span class="pu">.</span>type<span class="pu">) {</span>
+      <span class="kw">case</span> <span class="st">'OrderPlaced'</span><span class="op">:</span>   <span class="kw">return</span> <span class="pu">{</span> <span class="op">...</span>state<span class="pu">,</span> status<span class="op">:</span> <span class="st">'pending'</span><span class="pu">,</span> total<span class="op">:</span> e<span class="pu">.</span>total <span class="pu">}</span>
+      <span class="kw">case</span> <span class="st">'PaymentTaken'</span><span class="op">:</span>  <span class="kw">return</span> <span class="pu">{</span> <span class="op">...</span>state<span class="pu">,</span> status<span class="op">:</span> <span class="st">'paid'</span><span class="pu">,</span> paidAmount<span class="op">:</span> e<span class="pu">.</span>amount <span class="pu">}</span>
+      <span class="kw">case</span> <span class="st">'OrderShipped'</span><span class="op">:</span>  <span class="kw">return</span> <span class="pu">{</span> <span class="op">...</span>state<span class="pu">,</span> status<span class="op">:</span> <span class="st">'shipped'</span> <span class="pu">}</span>
+      <span class="kw">case</span> <span class="st">'OrderCancelled'</span><span class="op">:</span><span class="kw">return</span> <span class="pu">{</span> <span class="op">...</span>state<span class="pu">,</span> status<span class="op">:</span> <span class="st">'cancelled'</span> <span class="pu">}</span>
+    <span class="pu">}</span>
+  <span class="pu">},</span> <span class="pu">{</span> status<span class="op">:</span> <span class="st">'pending'</span><span class="pu">,</span> total<span class="op">:</span> <span class="nm">0</span><span class="pu">,</span> paidAmount<span class="op">:</span> <span class="nm">0</span> <span class="pu">}</span> <span class="kw">as</span> <span class="ty">OrderState</span><span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// New consumer added without changing any existing code</span>
+<span class="cm">// Replay all historical events → build fraud score projection</span></code></pre>
+  </div>
+  <div class="tip"><div class="tip-label">Events vs Commands</div>Events are facts: <code>OrderPlaced</code>, <code>PaymentFailed</code>. Commands are intentions: <code>PlaceOrder</code>, <code>RefundPayment</code>. Events are past tense; commands are imperative. A consumer of an event cannot reject it — it already happened. A handler of a command can reject it — it hasn't happened yet. Keep this distinction clear in your naming and your mental model.</div>
+</div>
+
+
+<!-- ─── 07 SEARCH ─── -->
+<div class="section" id="search">
+  <div class="section-label">07 &mdash; Finding Things</div>
+  <h2>Search</h2>
+  <p class="lead">Database <code>LIKE '%query%'</code> is not search. It's a full table scan that ignores relevance, can't handle typos, and collapses under any meaningful data volume. Real search requires an inverted index.</p>
+  <p>An <strong>inverted index</strong> maps each unique term to the list of documents containing it. To search for "wireless headphones", the engine looks up both terms in the index, finds the documents containing each, intersects the lists, and scores by relevance — all in milliseconds regardless of dataset size. This is the data structure powering Elasticsearch, Typesense, Meilisearch, and PostgreSQL's full-text search.</p>
+
+  <h3>Relevance Scoring</h3>
+  <p><strong>TF-IDF</strong> (Term Frequency – Inverse Document Frequency) scores documents by how often a term appears in the document (TF) weighted against how rare the term is across all documents (IDF). "The" appearing 50 times scores lower than "acetylcholine" appearing once — because "the" is everywhere. <strong>BM25</strong> is the modern improvement on TF-IDF (used by Elasticsearch by default) — it adds document length normalisation, preventing long documents from always winning.</p>
+
+  <h3>Search Architecture</h3>
+  <p>Search is always a secondary index — the canonical data lives in a primary database. A sync pipeline keeps the search index current: on write, publish a message to a queue; a consumer applies the delta to the search index. This eventual consistency (typically &lt;1s lag) is acceptable for search. It is not acceptable to write directly to only the search engine — it is not a database of record.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Typesense: index product + multi-field search</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> Typesense <span class="kw">from</span> <span class="st">'typesense'</span>
+
+<span class="kw">const</span> client <span class="op">=</span> <span class="kw">new</span> Typesense<span class="pu">.</span><span class="fn">Client</span><span class="pu">({</span>
+  nodes<span class="op">:</span> <span class="pu">[{</span> host<span class="op">:</span> <span class="st">'localhost'</span><span class="pu">,</span> port<span class="op">:</span> <span class="nm">8108</span><span class="pu">,</span> protocol<span class="op">:</span> <span class="st">'http'</span> <span class="pu">}],</span>
+  apiKey<span class="op">:</span> process<span class="pu">.</span>env<span class="pu">.</span>TYPESENSE_KEY<span class="op">!</span>
+<span class="pu">})</span>
+
+<span class="cm">// Schema — define which fields are searchable + filterable</span>
+<span class="kw">await</span> client<span class="pu">.</span><span class="fn">collections</span><span class="pu">().</span><span class="fn">create</span><span class="pu">({</span>
+  name<span class="op">:</span> <span class="st">'products'</span><span class="pu">,</span>
+  fields<span class="op">:</span> <span class="pu">[</span>
+    <span class="pu">{</span> name<span class="op">:</span> <span class="st">'name'</span><span class="pu">,</span>       type<span class="op">:</span> <span class="st">'string'</span><span class="pu">},</span>
+    <span class="pu">{</span> name<span class="op">:</span> <span class="st">'description'</span><span class="pu">,</span> type<span class="op">:</span> <span class="st">'string'</span><span class="pu">},</span>
+    <span class="pu">{</span> name<span class="op">:</span> <span class="st">'category'</span><span class="pu">,</span>   type<span class="op">:</span> <span class="st">'string'</span><span class="pu">,</span> facet<span class="op">:</span> <span class="kw">true</span> <span class="pu">},</span>
+    <span class="pu">{</span> name<span class="op">:</span> <span class="st">'price'</span><span class="pu">,</span>       type<span class="op">:</span> <span class="st">'float'</span><span class="pu">,</span>  facet<span class="op">:</span> <span class="kw">true</span> <span class="pu">},</span>
+    <span class="pu">{</span> name<span class="op">:</span> <span class="st">'in_stock'</span><span class="pu">,</span>   type<span class="op">:</span> <span class="st">'bool'</span><span class="pu">,</span>   facet<span class="op">:</span> <span class="kw">true</span> <span class="pu">}</span>
+  <span class="pu">],</span>
+  default_sorting_field<span class="op">:</span> <span class="st">'price'</span>
+<span class="pu">})</span>
+
+<span class="cm">// Search: typo-tolerant, facets, filtered, sorted</span>
+<span class="kw">const</span> results <span class="op">=</span> <span class="kw">await</span> client
+  <span class="pu">.</span><span class="fn">collections</span><span class="pu">(</span><span class="st">'products'</span><span class="pu">)</span>
+  <span class="pu">.</span>documents<span class="pu">.</span><span class="fn">search</span><span class="pu">({</span>
+    q<span class="op">:</span>             <span class="st">'wirelss headphons'</span><span class="pu">,</span>  <span class="cm">// typo-tolerant</span>
+    query_by<span class="op">:</span>      <span class="st">'name,description'</span><span class="pu">,</span>
+    filter_by<span class="op">:</span>     <span class="st">'in_stock:true && price:&lt;=200'</span><span class="pu">,</span>
+    facet_by<span class="op">:</span>      <span class="st">'category,price'</span><span class="pu">,</span>
+    sort_by<span class="op">:</span>       <span class="st">'_text_match:desc,price:asc'</span><span class="pu">,</span>
+    per_page<span class="op">:</span>      <span class="nm">20</span>
+  <span class="pu">})</span></code></pre>
+  </div>
+  <div class="info"><div class="info-label">Search is not a database</div>Never use Elasticsearch or Typesense as your primary data store. Use them as a derived index only. Write to your primary database first; sync to the search engine asynchronously. If the search index is lost or corrupted, reindex from the database. If the primary database is lost — you have a much worse problem than search.</div>
+</div>
+
+<!-- ─── 08 REPLICATION ─── -->
+<div class="section" id="replication">
+  <div class="section-label">08 &mdash; Durability &amp; Read Scale</div>
+  <h2>Replication</h2>
+  <p class="lead">Replication copies data from one database node to one or more others. It serves two distinct goals that are often conflated: <strong>durability</strong> (survive hardware failure) and <strong>read scaling</strong> (distribute read load). The replication strategy for each differs significantly.</p>
+
+  <h3>Replication Modes</h3>
+  <table>
+    <thead><tr><th>Mode</th><th>How it works</th><th>Write latency</th><th>Data loss on failure</th><th>Use case</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Synchronous</strong></td><td>Primary waits for replica acknowledgement before committing</td><td>Higher (+RTT between nodes)</td><td>Zero — replica is always current</td><td>Financial data, anything where loss is unacceptable</td></tr>
+      <tr><td><strong>Asynchronous</strong></td><td>Primary commits immediately; replica applies changes later</td><td>Minimal</td><td>Replication lag window (ms to seconds)</td><td>Analytics replicas, reporting, global read replicas</td></tr>
+      <tr><td><strong>Semi-synchronous</strong></td><td>Wait for at least one replica; others async</td><td>Medium</td><td>At most one node's lag</td><td>Balance between durability and write performance</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Replication Lag &amp; Read-Your-Writes</h3>
+  <p>Replication lag — the delay between a write on the primary and its appearance on replicas — causes the most subtle bugs in production. A user creates a resource; they are redirected to a page that reads from a replica; the resource appears missing. The user refreshes — it appears. This is replication lag at human timescales.</p>
+  <p>Solutions: <strong>read-your-writes consistency</strong> routes reads for a user to the primary for a short window after that user's write. <strong>Monotonic reads</strong> ensure a user never sees older data on a second read than on the first — implemented by tagging reads with a "read position" and routing to a replica at or ahead of that position.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Routing reads: primary vs replica by context</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">class</span> <span class="ty">DbRouter</span> <span class="pu">{</span>
+  <span class="fn">constructor</span><span class="pu">(</span>
+    <span class="kw">private</span> primary<span class="op">:</span> <span class="ty">Pool</span><span class="pu">,</span>
+    <span class="kw">private</span> replicas<span class="op">:</span> <span class="ty">Pool</span><span class="pu">[]</span>
+  <span class="pu">) {}</span>
+
+  <span class="cm">// Read-your-writes: use primary for N seconds after a write</span>
+  <span class="kw">async</span> <span class="fn">read</span><span class="pu">(</span>userId<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span> sql<span class="op">:</span> <span class="ty">string</span><span class="pu">) {</span>
+    <span class="kw">const</span> wrote = <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">`wrote:</span><span class="pu">${</span>userId<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+    <span class="kw">const</span> pool  <span class="op">=</span> wrote <span class="op">?</span> <span class="kw">this</span><span class="pu">.</span>primary <span class="op">:</span> <span class="kw">this</span><span class="pu">.</span><span class="fn">nextReplica</span><span class="pu">()</span>
+    <span class="kw">return</span> pool<span class="pu">.</span><span class="fn">query</span><span class="pu">(</span>sql<span class="pu">)</span>
+  <span class="pu">}</span>
+
+  <span class="kw">async</span> <span class="fn">write</span><span class="pu">(</span>userId<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span> sql<span class="op">:</span> <span class="ty">string</span><span class="pu">) {</span>
+    <span class="kw">const</span> result <span class="op">=</span> <span class="kw">await</span> <span class="kw">this</span><span class="pu">.</span>primary<span class="pu">.</span><span class="fn">query</span><span class="pu">(</span>sql<span class="pu">)</span>
+    <span class="cm">// Mark this user as "just wrote" for 5 seconds</span>
+    <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">setex</span><span class="pu">(</span><span class="st">`wrote:</span><span class="pu">${</span>userId<span class="pu">}</span><span class="st">`</span><span class="pu">,</span> <span class="nm">5</span><span class="pu">,</span> <span class="st">'1'</span><span class="pu">)</span>
+    <span class="kw">return</span> result
+  <span class="pu">}</span>
+
+  <span class="kw">private</span> <span class="fn">nextReplica</span><span class="pu">() {</span>
+    <span class="kw">return</span> <span class="kw">this</span><span class="pu">.</span>replicas<span class="pu">[</span>Math<span class="pu">.</span><span class="fn">floor</span><span class="pu">(</span>Math<span class="pu">.</span><span class="fn">random</span><span class="pu">()</span> <span class="op">*</span> <span class="kw">this</span><span class="pu">.</span>replicas<span class="pu">.</span>length<span class="pu">)]</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── 09 SHARDING ─── -->
+<div class="section" id="sharding">
+  <div class="section-label">09 &mdash; Horizontal Data Scale</div>
+  <h2>Sharding</h2>
+  <p class="lead">Sharding splits data across multiple database nodes so no single node holds the entire dataset. It is the last resort for data scaling — resort to it only after vertical scaling, read replicas, and caching are exhausted.</p>
+  <p>Every sharding strategy must answer two questions: <strong>how is a row assigned to a shard?</strong> and <strong>how does a query find the right shard?</strong> The answers determine the trade-offs you inherit.</p>
+
+  <h3>Sharding Strategies</h3>
+  <table>
+    <thead><tr><th>Strategy</th><th>Assignment rule</th><th>Advantage</th><th>Problem</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Range</strong></td><td>Shard 1: user_id 1–1M, Shard 2: 1M–2M…</td><td>Simple; range queries stay on one shard</td><td>Hotspots — newest users all land on the last shard</td></tr>
+      <tr><td><strong>Hash</strong></td><td><code>shard = hash(user_id) % N</code></td><td>Even distribution; no hotspots</td><td>Range queries scatter across all shards; resharding changes every key</td></tr>
+      <tr><td><strong>Consistent Hash</strong></td><td>Keys and shards placed on a ring; key goes to next shard clockwise</td><td>Adding/removing shards only remaps ~1/N keys</td><td>More complex; requires virtual nodes for even distribution</td></tr>
+      <tr><td><strong>Directory</strong></td><td>Lookup table maps entity → shard</td><td>Fully flexible; can move entities between shards</td><td>Lookup table is a bottleneck and single point of failure</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>Cross-shard queries</strong> are the defining cost of sharding. A query joining users across shards requires scatter-gather: send the query to all shards in parallel, merge results in the application layer. This is expensive and complex. Design your sharding key so that your most common queries live within a single shard. In a multi-tenant SaaS, sharding by <code>tenant_id</code> keeps all a tenant's data on one shard — all tenant-scoped queries are single-shard.</p>
+
+  <div class="warn"><div class="warn-label">Shard before you need to</div>Retrofitting sharding onto an existing schema is extremely painful. If you know you will need to shard (because your data growth trajectory makes it inevitable), design the sharding key into your schema from day one — even if you start with a single shard. The column exists; the routing logic is a no-op. Adding shards later is an operational exercise, not a schema migration.</div>
+</div>
+
+<!-- ─── 10 RATE LIMITING ─── -->
+<div class="section" id="ratelimit">
+  <div class="section-label">10 &mdash; Traffic Control</div>
+  <h2>Rate Limiting</h2>
+  <p class="lead">Rate limiting protects a system from being overwhelmed by any single client — malicious or otherwise. Without it, one runaway API consumer can degrade service for all others. With it, you guarantee minimum quality of service across the board.</p>
+
+  <h3>Algorithms</h3>
+  <table>
+    <thead><tr><th>Algorithm</th><th>How it works</th><th>Burst handling</th><th>Best for</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Token Bucket</strong></td><td>Bucket fills at rate R; each request consumes one token. Burst allowed up to bucket capacity.</td><td>✅ Allows bursts</td><td>API rate limiting where short bursts are acceptable</td></tr>
+      <tr><td><strong>Leaky Bucket</strong></td><td>Requests enter a queue; processed at fixed rate. Queue overflow = rejected.</td><td>❌ No bursts — smooths traffic</td><td>Outbound rate limiting to protect downstream services</td></tr>
+      <tr><td><strong>Fixed Window</strong></td><td>Count requests in current time window (e.g. 1 min). Reset at window boundary.</td><td>✅ Burst at window boundary</td><td>Simple to implement; acceptable for coarse limits</td></tr>
+      <tr><td><strong>Sliding Window</strong></td><td>Count requests in a rolling window. No boundary spike.</td><td>✅ Smooth</td><td>Accurate per-user rate limits; higher implementation cost</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Sliding window rate limiter with Redis</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// Sliding window: count requests in last 60 seconds using sorted set</span>
+<span class="kw">async function</span> <span class="fn">isRateLimited</span><span class="pu">(</span>
+  userId<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span>
+  limit<span class="op">:</span> <span class="ty">number</span> <span class="op">=</span> <span class="nm">100</span><span class="pu">,</span>   <span class="cm">// max requests</span>
+  window<span class="op">:</span> <span class="ty">number</span> <span class="op">=</span> <span class="nm">60</span>    <span class="cm">// per N seconds</span>
+<span class="pu">):</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="pu">{</span> limited<span class="op">:</span> <span class="ty">boolean</span><span class="pu">;</span> remaining<span class="op">:</span> <span class="ty">number</span> <span class="pu">}></span> <span class="pu">{</span>
+  <span class="kw">const</span> now     <span class="op">=</span> Date<span class="pu">.</span><span class="fn">now</span><span class="pu">()</span>
+  <span class="kw">const</span> cutoff  <span class="op">=</span> now <span class="op">-</span> window <span class="op">*</span> <span class="nm">1000</span>
+  <span class="kw">const</span> key     <span class="op">=</span> <span class="st">`rl:</span><span class="pu">${</span>userId<span class="pu">}</span><span class="st">`</span>
+
+  <span class="kw">const</span> <span class="pu">[,</span> count<span class="pu">]</span> <span class="op">=</span> <span class="kw">await</span> redis
+    <span class="pu">.</span><span class="fn">multi</span><span class="pu">()</span>
+    <span class="pu">.</span><span class="fn">zremrangebyscore</span><span class="pu">(</span>key<span class="pu">,</span> <span class="nm">0</span><span class="pu">,</span> cutoff<span class="pu">)</span>        <span class="cm">// remove old entries</span>
+    <span class="pu">.</span><span class="fn">zcard</span><span class="pu">(</span>key<span class="pu">)</span>                               <span class="cm">// count remaining</span>
+    <span class="pu">.</span><span class="fn">zadd</span><span class="pu">(</span>key<span class="pu">,</span> now<span class="pu">,</span> <span class="st">`</span><span class="pu">${</span>now<span class="pu">}</span><span class="st">-</span><span class="pu">${</span>Math<span class="pu">.</span><span class="fn">random</span><span class="pu">()}</span><span class="st">`</span><span class="pu">)</span>  <span class="cm">// record this request</span>
+    <span class="pu">.</span><span class="fn">expire</span><span class="pu">(</span>key<span class="pu">,</span> window<span class="pu">)</span>                      <span class="cm">// auto-cleanup</span>
+    <span class="pu">.</span><span class="fn">exec</span><span class="pu">()</span>
+
+  <span class="kw">const</span> c <span class="op">=</span> count <span class="kw">as</span> <span class="ty">number</span>
+  <span class="kw">return</span> <span class="pu">{</span> limited<span class="op">:</span> c <span class="op">></span> limit<span class="pu">,</span> remaining<span class="op">:</span> Math<span class="pu">.</span><span class="fn">max</span><span class="pu">(</span><span class="nm">0</span><span class="pu">,</span> limit <span class="op">-</span> c<span class="pu">)</span> <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// Return rate limit headers so clients can self-throttle</span>
+<span class="kw">const</span> <span class="pu">{</span> limited<span class="pu">,</span> remaining <span class="pu">}</span> <span class="op">=</span> <span class="kw">await</span> <span class="fn">isRateLimited</span><span class="pu">(</span>userId<span class="pu">)</span>
+res<span class="pu">.</span><span class="fn">setHeader</span><span class="pu">(</span><span class="st">'X-RateLimit-Remaining'</span><span class="pu">,</span> remaining<span class="pu">)</span>
+<span class="kw">if</span> <span class="pu">(</span>limited<span class="pu">)</span> <span class="kw">return</span> res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">429</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="op">:</span> <span class="st">'Too Many Requests'</span> <span class="pu">})</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── 11 DISTRIBUTED LOCKS ─── -->
+<div class="section" id="locks">
+  <div class="section-label">11 &mdash; Coordination</div>
+  <h2>Distributed Locks</h2>
+  <p class="lead">A distributed lock prevents multiple processes from executing a critical section simultaneously — across a fleet of servers where in-process mutexes have no reach. It is the solution to the distributed read-modify-write problem.</p>
+  <p>Classic scenarios: only one server should send a scheduled report at 9am; only one worker should process a given order; only one node should run a database migration. Without a distributed lock, all of them try simultaneously — duplicates, data corruption, or worse.</p>
+
+  <h3>Redis Redlock Algorithm</h3>
+  <p>The Redlock algorithm acquires a lock by setting a key with <code>SET key value NX PX ttl</code> — set only if not exists, with a TTL so locks expire if the holder crashes. The TTL must be longer than the critical section takes to execute, but short enough that a crashed holder doesn't block for too long.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Distributed lock with fencing token</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> randomUUID <span class="pu">}</span> <span class="kw">from</span> <span class="st">'crypto'</span>
+
+<span class="kw">async function</span> <span class="fn">withLock</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span><span class="pu">(</span>
+  resource<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span>
+  ttlMs<span class="op">:</span> <span class="ty">number</span><span class="pu">,</span>
+  fn<span class="op">:</span> <span class="pu">() =&gt;</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span>
+<span class="pu">):</span> <span class="ty">Promise</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span> <span class="pu">{</span>
+  <span class="kw">const</span> token <span class="op">=</span> <span class="fn">randomUUID</span><span class="pu">()</span>  <span class="cm">// unique — only holder can release</span>
+  <span class="kw">const</span> key   <span class="op">=</span> <span class="st">`lock:</span><span class="pu">${</span>resource<span class="pu">}</span><span class="st">`</span>
+
+  <span class="cm">// Acquire: SET NX PX — atomic, no race condition</span>
+  <span class="kw">const</span> acquired <span class="op">=</span> <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">set</span><span class="pu">(</span>key<span class="pu">,</span> token<span class="pu">,</span> <span class="st">'PX'</span><span class="pu">,</span> ttlMs<span class="pu">,</span> <span class="st">'NX'</span><span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(!</span>acquired<span class="pu">)</span> <span class="kw">throw new</span> <span class="fn">Error</span><span class="pu">(</span><span class="st">`Resource </span><span class="pu">${</span>resource<span class="pu">}</span><span class="st"> is locked`</span><span class="pu">)</span>
+
+  <span class="kw">try</span> <span class="pu">{</span>
+    <span class="kw">return</span> <span class="kw">await</span> <span class="fn">fn</span><span class="pu">()</span>
+  <span class="pu">}</span> <span class="kw">finally</span> <span class="pu">{</span>
+    <span class="cm">// Release: only if WE still hold it (Lua script — atomic)</span>
+    <span class="kw">await</span> redis<span class="pu">.</span><span class="fn">eval</span><span class="pu">(</span>
+      <span class="st">`if redis.call("get",KEYS[1])==ARGV[1]
+         then return redis.call("del",KEYS[1])
+         else return 0 end`</span><span class="pu">,</span>
+      <span class="nm">1</span><span class="pu">,</span> key<span class="pu">,</span> token
+    <span class="pu">)</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// Usage: safe scheduled job — only one instance runs</span>
+<span class="kw">await</span> <span class="fn">withLock</span><span class="pu">(</span><span class="st">'daily-report'</span><span class="pu">,</span> <span class="nm">60_000</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">() =&gt; {</span>
+  <span class="kw">await</span> <span class="fn">generateAndSendDailyReport</span><span class="pu">()</span>
+<span class="pu">})</span></code></pre>
+  </div>
+  <div class="warn"><div class="warn-label">Lock TTL must exceed critical section duration</div>If the critical section takes longer than the TTL, the lock expires while the holder is still running. Another process acquires the lock. Now two processes are in the critical section simultaneously — the failure mode you were trying to prevent. Set TTL to 5–10× the expected duration, and monitor for lock expiry events as an alert signal.</div>
+</div>
+
+<!-- ─── 12 OBSERVABILITY ─── -->
+<div class="section" id="observability">
+  <div class="section-label">12 &mdash; Understanding Running Systems</div>
+  <h2>Observability</h2>
+  <p class="lead">A system you cannot observe is a system you cannot operate. Observability is the property that lets you answer "what is happening inside my system right now?" from its external outputs alone.</p>
+  <p>The three pillars — logs, metrics, and traces — are not redundant. Each answers a different question. Metrics tell you <em>something is wrong</em>. Logs tell you <em>what happened</em>. Traces tell you <em>where in the request path it happened</em>. You need all three.</p>
+
+  <h3>Logs</h3>
+  <p>Structured JSON logs are searchable; freeform text is not. Every log entry must include a correlation ID tying it to the originating request. Log at the right level — ERROR for failures requiring human attention, WARN for recoverable anomalies, INFO for significant business events, DEBUG for development only. Never log PII or secrets.</p>
+
+  <h3>Metrics &amp; the Four Golden Signals</h3>
+  <table>
+    <thead><tr><th>Signal</th><th>What it measures</th><th>Alert threshold example</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Latency</strong></td><td>How long requests take — track p50, p95, p99 (not average)</td><td>p99 &gt; 2s for 5 consecutive minutes</td></tr>
+      <tr><td><strong>Traffic</strong></td><td>Requests per second — rate of demand on the system</td><td>Traffic drops &gt;30% vs 7-day baseline</td></tr>
+      <tr><td><strong>Errors</strong></td><td>Fraction of requests resulting in errors</td><td>5xx error rate &gt; 1% for 2 minutes</td></tr>
+      <tr><td><strong>Saturation</strong></td><td>How full the system is — CPU, memory, queue depth, connection pool</td><td>DB connection pool &gt; 90% utilisation</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Distributed Tracing</h3>
+  <p>A trace represents the entire journey of one request through all services. Each service adds a span with its start time, duration, and any errors. The full trace shows you which service contributed which latency — making performance investigations in microservices tractable. OpenTelemetry is the standard instrumentation library; backends include Jaeger, Tempo, and Honeycomb.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — OpenTelemetry trace + structured log with correlation ID</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> trace<span class="pu">,</span> context <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@opentelemetry/api'</span>
+<span class="kw">import</span> pino <span class="kw">from</span> <span class="st">'pino'</span>
+
+<span class="kw">const</span> logger <span class="op">=</span> <span class="fn">pino</span><span class="pu">({</span> level<span class="op">:</span> <span class="st">'info'</span> <span class="pu">})</span>
+
+<span class="kw">function</span> <span class="fn">logWithTrace</span><span class="pu">(</span>level<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span> msg<span class="op">:</span> <span class="ty">string</span><span class="pu">,</span> extra<span class="op">?:</span> <span class="kw">object</span><span class="pu">) {</span>
+  <span class="kw">const</span> span    <span class="op">=</span> trace<span class="pu">.</span><span class="fn">getActiveSpan</span><span class="pu">()</span>
+  <span class="kw">const</span> spanCtx <span class="op">=</span> span<span class="op">?.</span><span class="fn">spanContext</span><span class="pu">()</span>
+
+  logger<span class="pu">[</span>level<span class="pu">]({</span>
+    <span class="op">...</span>extra<span class="pu">,</span>
+    traceId<span class="op">:</span> spanCtx<span class="op">?.</span>traceId<span class="pu">,</span>   <span class="cm">// ties log to Jaeger trace</span>
+    spanId<span class="op">:</span>  spanCtx<span class="op">?.</span>spanId<span class="pu">,</span>
+  <span class="pu">},</span> msg<span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// In a request handler:</span>
+<span class="kw">const</span> tracer <span class="op">=</span> trace<span class="pu">.</span><span class="fn">getTracer</span><span class="pu">(</span><span class="st">'api'</span><span class="pu">)</span>
+
+<span class="kw">app</span><span class="pu">.</span><span class="fn">get</span><span class="pu">(</span><span class="st">'/orders/:id'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span>req<span class="pu">,</span> res<span class="pu">) =&gt; {</span>
+  <span class="kw">await</span> tracer<span class="pu">.</span><span class="fn">startActiveSpan</span><span class="pu">(</span><span class="st">'get-order'</span><span class="pu">,</span> <span class="kw">async</span> <span class="pu">(</span>span<span class="pu">) =&gt; {</span>
+    span<span class="pu">.</span><span class="fn">setAttributes</span><span class="pu">({</span> <span class="st">'order.id'</span><span class="op">:</span> req<span class="pu">.</span>params<span class="pu">.</span>id <span class="pu">})</span>
+    <span class="kw">try</span> <span class="pu">{</span>
+      <span class="kw">const</span> order <span class="op">=</span> <span class="kw">await</span> <span class="fn">fetchOrder</span><span class="pu">(</span>req<span class="pu">.</span>params<span class="pu">.</span>id<span class="pu">)</span>
+      <span class="fn">logWithTrace</span><span class="pu">(</span><span class="st">'info'</span><span class="pu">,</span> <span class="st">'Order fetched'</span><span class="pu">,</span> <span class="pu">{</span> orderId<span class="op">:</span> order<span class="pu">.</span>id <span class="pu">})</span>
+      res<span class="pu">.</span><span class="fn">json</span><span class="pu">(</span>order<span class="pu">)</span>
+    <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">(</span>err<span class="pu">) {</span>
+      span<span class="pu">.</span><span class="fn">recordException</span><span class="pu">(</span>err <span class="kw">as</span> <span class="ty">Error</span><span class="pu">)</span>
+      <span class="fn">logWithTrace</span><span class="pu">(</span><span class="st">'error'</span><span class="pu">,</span> <span class="st">'Order fetch failed'</span><span class="pu">,</span> <span class="pu">{</span> err <span class="pu">})</span>
+      res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">500</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> error<span class="op">:</span> <span class="st">'Internal error'</span> <span class="pu">})</span>
+    <span class="pu">}</span> <span class="kw">finally</span> <span class="pu">{</span>
+      span<span class="pu">.</span><span class="fn">end</span><span class="pu">()</span>
+    <span class="pu">}</span>
+  <span class="pu">})</span>
+<span class="pu">})</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── ASSEMBLY ─── -->
+<div class="section" id="assembly">
+  <div class="section-label">Synthesis &mdash; Putting It Together</div>
+  <h2>How These Building Blocks Assemble</h2>
+  <p class="lead">No building block operates in isolation. Understanding how they compose — and how the choice in one constrains the choices in others — is the final skill.</p>
+
+  <div class="arch-box">
+<span class="dim">Client</span>
+  <span class="dim">↓</span>
+<span class="hl">[ CDN ]</span> <span class="dim">→ static assets, cached public pages (Caching Layer 1)</span>
+  <span class="dim">↓</span>
+<span class="hl">[ Load Balancer ]</span> <span class="dim">→ L7, weighted routing, health checks, canary</span>
+  <span class="dim">↓</span>
+<span class="hl">[ Rate Limiter ]</span> <span class="dim">→ sliding window per user/API key (Redis)</span>
+  <span class="dim">↓</span>
+<span class="hl">[ API Servers ]</span> <span class="dim">→ stateless, horizontally scaled</span>
+  <span class="dim">↓                ↓                  ↓</span>
+<span class="hl">[ App Cache ]</span>  <span class="hl">[ Queue ]</span>        <span class="hl">[ Search ]</span>
+<span class="dim">(Redis L2)    (BullMQ/Kafka)   (Typesense/ES)</span>
+  <span class="dim">↓</span>
+<span class="hl">[ Primary DB ]</span> <span class="dim">→ sharded by tenant_id, indexed, ACID</span>
+  <span class="dim">↓</span>
+<span class="hl">[ Replica(s) ]</span> <span class="dim">→ read scale, async replication, lag monitored</span>
+  <span class="dim">↓</span>
+<span class="hl">[ Distributed Lock ]</span> <span class="dim">→ Redis, guards scheduled jobs + critical sections</span>
+  <span class="dim">↓</span>
+<span class="hl">[ Observability ]</span> <span class="dim">→ OTel traces + Pino logs + Prometheus metrics</span>
+  </div>
+
+  <p>The assembly above is not a prescription — it is a starting point. A banking platform would promote Distributed Locks and Replication to first-class concerns and constrain Caching aggressively (stale balances are unacceptable). A social network would promote Caching and Sharding, and accept eventual consistency broadly. An e-commerce marketplace would promote Search and Queues. The building blocks are universal; the emphasis is domain-specific.</p>
+
+  <div class="pullquote">"A senior engineer's job is not to memorise architectures. It is to understand the trade-offs behind these building blocks and assemble them into a system that satisfies the unique requirements of the business domain."</div>
+
+  <h3>The Decision Checklist</h3>
+  <ul class="checklist">
+    <li><span class="check-icon">⚖️</span><span><strong>Load Balancing:</strong> Are my servers stateless? Which algorithm matches my traffic pattern? Do my health checks validate real dependencies?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Caching:</strong> What is the consistency requirement? Which layer is appropriate? How do I invalidate on write?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Databases:</strong> What is the access pattern? Which consistency model is required? Am I fitting the data to the right store?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Indexes:</strong> Have I read the execution plan? Am I indexing queries — not tables? Am I paying attention to write overhead?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Queues:</strong> Do consumers need to be idempotent? What is my backpressure strategy? Is the DLQ monitored?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Events:</strong> Am I using events for facts (past tense) and commands for intentions? Is my consumer decoupled from the producer?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Search:</strong> Is the search index a secondary store, not a primary? Is the sync pipeline monitored for lag?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Replication:</strong> Have I handled replication lag in my read paths? Are financial writes synchronous?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Sharding:</strong> Is sharding actually needed? Is the shard key in the schema even before I need it? Can common queries stay single-shard?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Rate Limiting:</strong> Am I returning standard 429 headers? Is the limiter distributed (Redis) not per-server?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Distributed Locks:</strong> Is the TTL longer than the critical section? Is the release atomic (Lua script)?</span></li>
+    <li><span class="check-icon">⚖️</span><span><strong>Observability:</strong> Can I answer "is the system healthy?" from dashboards alone? Are alerts on symptoms, not causes? Do traces span all services?</span></li>
+  </ul>
+</div>
+
+</div><!-- /content -->
+
+<footer>
+  <p><strong>The 12 Building Blocks of Large-Scale Systems</strong></p>
+  <p style="margin-top:8px;font-size:13px">Load Balancing · Caching · Databases · Indexes · Queues · Events · Search · Replication · Sharding · Rate Limiting · Distributed Locks · Observability</p>
+</footer>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre')
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      btn.textContent = 'Copied!'
+      setTimeout(() => btn.textContent = 'Copy', 2000)
+    })
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(a =>
+    a.addEventListener('click', e => {
+      e.preventDefault()
+      document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' })
+    })
+  )
+</script>
+</body>
+</html>
