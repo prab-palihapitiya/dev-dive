@@ -42,6 +42,59 @@
         --c-guidelines-bg: #f0fdfa;
         --c-ai: #7c3aed;
         --c-ai-bg: #f5f3ff;
+
+        /* Individual article colours */
+        --article-ts: #2563eb;
+        --article-ts-bg: #eff6ff;
+        --article-ts-light: #dbeafe;
+        --article-js-adv: #d97706;
+        --article-js-adv-bg: #fffbeb;
+        --article-js-adv-light: #fef3c7;
+        --article-ai: #7c3aed;
+        --article-ai-bg: #f5f3ff;
+        --article-ai-light: #ede9fe;
+        --article-sec: #dc2626;
+        --article-sec-bg: #fff1f2;
+        --article-sec-light: #fee2e2;
+        --article-node: #16a34a;
+        --article-node-bg: #f0fdf4;
+        --article-node-light: #dcfce7;
+        --article-pg: #1e40af;
+        --article-pg-bg: #eff6ff;
+        --article-pg-light: #dbeafe;
+        --article-mdb: #059669;
+        --article-mdb-bg: #f0fdf4;
+        --article-mdb-light: #dcfce7;
+        --article-cloud: #0891b2;
+        --article-cloud-bg: #ecfeff;
+        --article-cloud-light: #cffafe;
+        --article-bp: #b45309;
+        --article-bp-bg: #fffbeb;
+        --article-bp-light: #fef3c7;
+        --article-php: #4f46e5;
+        --article-php-bg: #eef2ff;
+        --article-php-light: #e0e7ff;
+        --article-jsfw: #ea580c;
+        --article-jsfw-bg: #ffedd5;
+        --article-jsfw-light: #fed7aa;
+        --article-state: #ec4899;
+        --article-state-bg: #fce7f3;
+        --article-state-light: #fbcfe8;
+        --article-a11y: #92400e;
+        --article-a11y-bg: #fef3c7;
+        --article-a11y-light: #fde68a;
+        --article-ds: #be185d;
+        --article-ds-bg: #ffe4e6;
+        --article-ds-light: #ffc2d1;
+        --article-ng: #0d9488;
+        --article-ng-bg: #ccfbf1;
+        --article-ng-light: #99f6e4;
+        --article-senior: #d97706;
+        --article-senior-bg: #fef3c7;
+        --article-senior-light: #fde68a;
+        --article-sys: #475569;
+        --article-sys-bg: #f1f5f9;
+        --article-sys-light: #e2e8f0;
       }
 
       * {
@@ -435,6 +488,59 @@
         background: linear-gradient(140deg, #451a03, #b45309 60%, #fbbf24);
       }
 
+      /* Individual article gradients */
+      .card[data-article="ts-mastery"] .card-cover {
+        background: linear-gradient(140deg, #1e3a8a, #2563eb 60%, #60a5fa);
+      }
+      .card[data-article="js-advanced"] .card-cover {
+        background: linear-gradient(140deg, #78350f, #d97706 60%, #fbbf24);
+      }
+      .card[data-article="ai-eng"] .card-cover {
+        background: linear-gradient(140deg, #2e1065, #7c3aed 60%, #a78bfa);
+      }
+      .card[data-article="cybersec"] .card-cover {
+        background: linear-gradient(140deg, #450a0a, #dc2626 60%, #f87171);
+      }
+      .card[data-article="nodejs"] .card-cover {
+        background: linear-gradient(140deg, #14532d, #16a34a 60%, #4ade80);
+      }
+      .card[data-article="postgres"] .card-cover {
+        background: linear-gradient(140deg, #1e3a8a, #1e40af 60%, #3b82f6);
+      }
+      .card[data-article="mongodb"] .card-cover {
+        background: linear-gradient(140deg, #064e3b, #059669 60%, #34d399);
+      }
+      .card[data-article="cloud"] .card-cover {
+        background: linear-gradient(140deg, #082032, #0891b2 60%, #38bdf8);
+      }
+      .card[data-article="bestpractices"] .card-cover {
+        background: linear-gradient(140deg, #451a03, #b45309 60%, #fbbf24);
+      }
+      .card[data-article="php"] .card-cover {
+        background: linear-gradient(140deg, #3730a3, #4f46e5 60%, #818cf8);
+      }
+      .card[data-article="jsfw"] .card-cover {
+        background: linear-gradient(140deg, #7c2d12, #ea580c 60%, #f97316);
+      }
+      .card[data-article="state"] .card-cover {
+        background: linear-gradient(140deg, #831843, #ec4899 60%, #f472b6);
+      }
+      .card[data-article="a11y"] .card-cover {
+        background: linear-gradient(140deg, #78350f, #92400e 60%, #d97706);
+      }
+      .card[data-article="ds"] .card-cover {
+        background: linear-gradient(140deg, #831843, #be185d 60%, #ec4899);
+      }
+      .card[data-article="angular"] .card-cover {
+        background: linear-gradient(140deg, #134e4a, #0d9488 60%, #2dd4bf);
+      }
+      .card[data-article="senior"] .card-cover {
+        background: linear-gradient(140deg, #b45309, #d97706 60%, #fb923c);
+      }
+      .card[data-article="systems"] .card-cover {
+        background: linear-gradient(140deg, #1e293b, #475569 60%, #94a3b8);
+      }
+
       .cover-bg-text {
         position: absolute;
         right: -6px;
@@ -607,6 +713,180 @@
       }
       .card[data-cat="practices"] .read-link:hover {
         background: #fef3c7;
+      }
+
+      /* Individual article read-link colors */
+      .card[data-article="ts-mastery"] .read-link {
+        background: #eff6ff;
+        color: #2563eb;
+      }
+      .card[data-article="ts-mastery"] .read-link:hover {
+        background: #dbeafe;
+      }
+      .card[data-article="js-advanced"] .read-link {
+        background: #fffbeb;
+        color: #d97706;
+      }
+      .card[data-article="js-advanced"] .read-link:hover {
+        background: #fef3c7;
+      }
+      .card[data-article="ai-eng"] .read-link {
+        background: #f5f3ff;
+        color: #7c3aed;
+      }
+      .card[data-article="ai-eng"] .read-link:hover {
+        background: #ede9fe;
+      }
+      .card[data-article="cybersec"] .read-link {
+        background: #fff1f2;
+        color: #dc2626;
+      }
+      .card[data-article="cybersec"] .read-link:hover {
+        background: #fee2e2;
+      }
+      .card[data-article="nodejs"] .read-link {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .card[data-article="nodejs"] .read-link:hover {
+        background: #dcfce7;
+      }
+      .card[data-article="postgres"] .read-link {
+        background: #eff6ff;
+        color: #1e40af;
+      }
+      .card[data-article="postgres"] .read-link:hover {
+        background: #dbeafe;
+      }
+      .card[data-article="mongodb"] .read-link {
+        background: #f0fdf4;
+        color: #059669;
+      }
+      .card[data-article="mongodb"] .read-link:hover {
+        background: #dcfce7;
+      }
+      .card[data-article="cloud"] .read-link {
+        background: #ecfeff;
+        color: #0891b2;
+      }
+      .card[data-article="cloud"] .read-link:hover {
+        background: #cffafe;
+      }
+      .card[data-article="bestpractices"] .read-link {
+        background: #fffbeb;
+        color: #b45309;
+      }
+      .card[data-article="bestpractices"] .read-link:hover {
+        background: #fef3c7;
+      }
+      .card[data-article="php"] .read-link {
+        background: #eef2ff;
+        color: #4f46e5;
+      }
+      .card[data-article="php"] .read-link:hover {
+        background: #e0e7ff;
+      }
+      .card[data-article="jsfw"] .read-link {
+        background: #ffedd5;
+        color: #ea580c;
+      }
+      .card[data-article="jsfw"] .read-link:hover {
+        background: #fed7aa;
+      }
+      .card[data-article="state"] .read-link {
+        background: #fce7f3;
+        color: #ec4899;
+      }
+      .card[data-article="state"] .read-link:hover {
+        background: #fbcfe8;
+      }
+      .card[data-article="a11y"] .read-link {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .card[data-article="a11y"] .read-link:hover {
+        background: #fde68a;
+      }
+      .card[data-article="ds"] .read-link {
+        background: #ffe4e6;
+        color: #be185d;
+      }
+      .card[data-article="ds"] .read-link:hover {
+        background: #ffc2d1;
+      }
+      .card[data-article="angular"] .read-link {
+        background: #ccfbf1;
+        color: #0d9488;
+      }
+      .card[data-article="angular"] .read-link:hover {
+        background: #99f6e4;
+      }
+      .card[data-article="senior"] .read-link {
+        background: #fef3c7;
+        color: #d97706;
+      }
+      .card[data-article="senior"] .read-link:hover {
+        background: #fde68a;
+      }
+      .card[data-article="systems"] .read-link {
+        background: #f1f5f9;
+        color: #475569;
+      }
+      .card[data-article="systems"] .read-link:hover {
+        background: #e2e8f0;
+      }
+
+      /* Hover states for individual articles */
+      .card[data-article="ts-mastery"]:hover {
+        border-color: #93c5fd;
+      }
+      .card[data-article="js-advanced"]:hover {
+        border-color: #fcd34d;
+      }
+      .card[data-article="ai-eng"]:hover {
+        border-color: #c4b5fd;
+      }
+      .card[data-article="cybersec"]:hover {
+        border-color: #fca5a5;
+      }
+      .card[data-article="nodejs"]:hover {
+        border-color: #86efac;
+      }
+      .card[data-article="postgres"]:hover {
+        border-color: #93c5fd;
+      }
+      .card[data-article="mongodb"]:hover {
+        border-color: #86efac;
+      }
+      .card[data-article="cloud"]:hover {
+        border-color: #a5f3fc;
+      }
+      .card[data-article="bestpractices"]:hover {
+        border-color: #fcd34d;
+      }
+      .card[data-article="php"]:hover {
+        border-color: #c7d2fe;
+      }
+      .card[data-article="jsfw"]:hover {
+        border-color: #fed7aa;
+      }
+      .card[data-article="state"]:hover {
+        border-color: #fbcfe8;
+      }
+      .card[data-article="a11y"]:hover {
+        border-color: #fcd34d;
+      }
+      .card[data-article="ds"]:hover {
+        border-color: #ffc2d1;
+      }
+      .card[data-article="angular"]:hover {
+        border-color: #99f6e4;
+      }
+      .card[data-article="senior"]:hover {
+        border-color: #fcd34d;
+      }
+      .card[data-article="systems"]:hover {
+        border-color: #cbd5e1;
       }
       .card-rt {
         font-size: 12px;
@@ -1016,25 +1296,38 @@
             <span class="prop">status</span><span class="op">:</span>
             <span class="st">"live"</span> <span class="pu">}</span>,
             <span class="pu">{</span> <span class="prop">name</span
-            ><span class="op">:</span> <span class="st">"Cloud"</span>,
+            ><span class="op">:</span>
+            <span class="st">"Cloud Computing"</span>,
             <span class="prop">status</span><span class="op">:</span>
-            <span class="st">"soon"</span> <span class="pu">}</span>,
+            <span class="st">"live"</span> <span class="pu">}</span>,
             <span class="pu">{</span> <span class="prop">name</span
             ><span class="op">:</span> <span class="st">"Cyber Security"</span>,
             <span class="prop">status</span><span class="op">:</span>
-            <span class="st">"soon"</span> <span class="pu">}</span>,
+            <span class="st">"live"</span> <span class="pu">}</span>,
+            <span class="pu">{</span> <span class="prop">name</span
+            ><span class="op">:</span> <span class="st">"AI Engineering"</span>,
+            <span class="prop">status</span><span class="op">:</span>
+            <span class="st">"live"</span> <span class="pu">}</span>,
+            <span class="pu">{</span> <span class="prop">name</span
+            ><span class="op">:</span> <span class="st">"Backend"</span>,
+            <span class="prop">status</span><span class="op">:</span>
+            <span class="st">"live"</span> <span class="pu">}</span>,
+            <span class="pu">{</span> <span class="prop">name</span
+            ><span class="op">:</span> <span class="st">"Best Practices"</span>,
+            <span class="prop">status</span><span class="op">:</span>
+            <span class="st">"live"</span> <span class="pu">}</span>,
+            <span class="pu">{</span> <span class="prop">name</span
+            ><span class="op">:</span> <span class="st">"Accessibility"</span>,
+            <span class="prop">status</span><span class="op">:</span>
+            <span class="st">"live"</span> <span class="pu">}</span>,
+            <span class="pu">{</span> <span class="prop">name</span
+            ><span class="op">:</span> <span class="st">"Design Systems"</span>,
+            <span class="prop">status</span><span class="op">:</span>
+            <span class="st">"live"</span> <span class="pu">}</span>,
             <span class="pu">{</span> <span class="prop">name</span
             ><span class="op">:</span> <span class="st">"DevOps"</span>,
             <span class="prop">status</span><span class="op">:</span>
             <span class="st">"soon"</span> <span class="pu">}</span>,
-            <span class="pu">{</span> <span class="prop">name</span
-            ><span class="op">:</span> <span class="st">"Backend"</span>,
-            <span class="prop">status</span><span class="op">:</span>
-            <span class="st">"soon"</span> <span class="pu">}</span>,
-            <span class="pu">{</span> <span class="prop">name</span
-            ><span class="op">:</span> <span class="st">"Best Practices"</span>,
-            <span class="prop">status</span><span class="op">:</span>
-            <span class="st">"planned"</span> <span class="pu">}</span>,
             <span class="pu">{</span> <span class="prop">name</span
             ><span class="op">:</span> <span class="st">"Guidelines"</span>,
             <span class="prop">status</span><span class="op">:</span>
@@ -1047,7 +1340,7 @@
             <span class="op">=&gt;</span> t<span class="pu">.</span>status
             <span class="op">===</span> <span class="st">"live"</span>
             <span class="pu">)</span>
-            <span class="cm">// → TypeScript, JavaScript</span>
+            <span class="cm">// → 9 topics live</span>
           </div>
         </div>
       </div>
@@ -1167,6 +1460,7 @@
         <a
           class="card"
           data-cat="typescript"
+          data-article="ts-mastery"
           href="typescript-mastery-article.html"
         >
           <div class="card-cover">
@@ -1189,7 +1483,7 @@
               <span class="card-sections">10 sections</span>
             </div>
             <div class="card-title">
-              TypeScript Mastery: Every Concept You Need to Know
+              TypeScript Mastery: Deep Dive Into Type System & Advanced Patterns
             </div>
             <p class="card-desc">
               From primitive types to advanced generics, utility types,
@@ -1217,6 +1511,7 @@
         <a
           class="card"
           data-cat="javascript"
+          data-article="js-advanced"
           href="advanced-javascript-article.html"
         >
           <div class="card-cover">
@@ -1239,7 +1534,7 @@
               <span class="card-sections">12 sections</span>
             </div>
             <div class="card-title">
-              Advanced JavaScript: Concepts Every Senior Developer Must Know
+              JavaScript Internals: From Event Loop to Performance Mastery
             </div>
             <p class="card-desc">
               Closures, prototypes, async patterns, the event loop, memory
@@ -1263,7 +1558,12 @@
         </a>
 
         <!-- AI Engineering Card -->
-        <a class="card" data-cat="ai" href="ai-engineering-guide.html">
+        <a
+          class="card"
+          data-cat="ai"
+          data-article="ai-eng"
+          href="ai-engineering-guide.html"
+        >
           <div class="card-cover">
             <div class="cover-bg-text">AI</div>
             <div class="cover-badge">
@@ -1284,7 +1584,9 @@
               >
               <span class="card-sections">12 sections</span>
             </div>
-            <div class="card-title">AI-Augmented Engineering</div>
+            <div class="card-title">
+              AI-Augmented Development: LLM Patterns & Production Systems
+            </div>
             <p class="card-desc">
               Prompt engineering, context engineering, AI-assisted coding, RAG,
               agents & tool calling, AI security, system design, cost
@@ -1307,11 +1609,16 @@
         </a>
 
         <!-- Cyber Security Card -->
-        <a class="card" data-cat="security" href="cybersecurity-guide.html">
+        <a
+          class="card"
+          data-cat="security"
+          data-article="cybersec"
+          href="cybersecurity-guide.html"
+        >
           <div class="card-cover">
             <div class="cover-bg-text">SEC</div>
             <div class="cover-badge">
-              <span class="cover-badge-lang">🔐</span>
+              <span class="cover-badge-lang">🔐 Cyber Security</span>
               <span class="cover-badge-sub">Security Guide</span>
             </div>
             <div class="cover-pills">
@@ -1329,7 +1636,7 @@
               <span class="card-sections">12 sections</span>
             </div>
             <div class="card-title">
-              Cyber Security for JavaScript Engineers
+              Web Security Fundamentals: OWASP, Authentication & Zero-Trust
             </div>
             <p class="card-desc">
               Authentication, OWASP Top 10, XSS/CSRF/CORS, secure API design,
@@ -1353,18 +1660,13 @@
         </a>
 
         <!-- Node.js Card -->
-        <a class="card" data-cat="backend" href="nodejs-complete-guide.html">
-          <div
-            class="card-cover"
-            style="
-              background: linear-gradient(
-                140deg,
-                #14532d,
-                #16a34a 60%,
-                #4ade80
-              );
-            "
-          >
+        <a
+          class="card"
+          data-cat="backend"
+          data-article="nodejs"
+          href="nodejs-complete-guide.html"
+        >
+          <div class="card-cover">
             <div class="cover-bg-text" style="color: rgba(255, 255, 255, 0.1)">
               Node
             </div>
@@ -1387,7 +1689,7 @@
               <span class="card-sections">14 sections</span>
             </div>
             <div class="card-title">
-              Node.js: The Complete Developer's Guide
+              Node.js Runtime: Architecture, Streams & Production Deployment
             </div>
             <p class="card-desc">
               Architecture, core modules, async patterns, streams, HTTP servers,
@@ -1415,19 +1717,10 @@
         <a
           class="card"
           data-cat="backend"
+          data-article="postgres"
           href="postgresql-query-optimisation.html"
         >
-          <div
-            class="card-cover"
-            style="
-              background: linear-gradient(
-                140deg,
-                #1e3a8a,
-                #1e40af 60%,
-                #3b82f6
-              );
-            "
-          >
+          <div class="card-cover">
             <div class="cover-bg-text" style="color: rgba(255, 255, 255, 0.1)">
               PG
             </div>
@@ -1450,7 +1743,7 @@
               <span class="card-sections">12 sections</span>
             </div>
             <div class="card-title">
-              PostgreSQL Query Optimisation: Zero to Expert
+              PostgreSQL Mastery: Query Tuning, Indexing & Performance
             </div>
             <p class="card-desc">
               Master the query planner, read EXPLAIN output like a pro, write
@@ -1475,18 +1768,13 @@
         </a>
 
         <!-- MongoDB & NoSQL Card -->
-        <a class="card" data-cat="backend" href="mongodb-nosql-guide.html">
-          <div
-            class="card-cover"
-            style="
-              background: linear-gradient(
-                140deg,
-                #052e16,
-                #057a55 60%,
-                #34d399
-              );
-            "
-          >
+        <a
+          class="card"
+          data-cat="backend"
+          data-article="mongodb"
+          href="mongodb-nosql-guide.html"
+        >
+          <div class="card-cover">
             <div class="cover-bg-text" style="color: rgba(255, 255, 255, 0.1)">
               MDB
             </div>
@@ -1508,7 +1796,9 @@
               >
               <span class="card-sections">12 sections</span>
             </div>
-            <div class="card-title">MongoDB &amp; NoSQL Databases</div>
+            <div class="card-title">
+              MongoDB & NoSQL: Design, Aggregation & Scaling Patterns
+            </div>
             <p class="card-desc">
               Data modelling, CRUD, the aggregation pipeline, indexes,
               transactions, Mongoose ODM, Redis caching &amp; pub/sub,
@@ -1532,7 +1822,12 @@
         </a>
 
         <!-- Cloud Engineering Card -->
-        <a class="card" data-cat="cloud" href="cloud-guide.html">
+        <a
+          class="card"
+          data-cat="cloud"
+          data-article="cloud"
+          href="cloud-guide.html"
+        >
           <div class="card-cover">
             <div class="cover-bg-text">CLD</div>
             <div class="cover-badge">
@@ -1553,7 +1848,9 @@
               >
               <span class="card-sections">14 sections</span>
             </div>
-            <div class="card-title">Cloud Engineering: AWS vs GCP vs Azure</div>
+            <div class="card-title">
+              Cloud Architecture: Kubernetes, Terraform & Infrastructure as Code
+            </div>
             <p class="card-desc">
               VPCs, containers, Kubernetes, compute & load balancers, managed
               databases, messaging, IAM & secrets, observability, CI/CD,
@@ -1578,7 +1875,12 @@
         </a>
 
         <!-- Best Practices Card -->
-        <a class="card" data-cat="practices" href="best-practices-guide.html">
+        <a
+          class="card"
+          data-cat="practices"
+          data-article="bestpractices"
+          href="best-practices-guide.html"
+        >
           <div class="card-cover">
             <div class="cover-bg-text">BP</div>
             <div class="cover-badge">
@@ -1599,7 +1901,9 @@
               >
               <span class="card-sections">12 sections</span>
             </div>
-            <div class="card-title">Engineering Best Practices</div>
+            <div class="card-title">
+              Code Craftsmanship: SOLID, Design Patterns & Clean Architecture
+            </div>
             <p class="card-desc">
               Code review techniques, testing pyramid, SOLID principles,
               refactoring patterns, API design, clean architecture, design
@@ -1623,18 +1927,13 @@
         </a>
 
         <!-- PHP Senior Guide Card -->
-        <a class="card" data-cat="backend" href="php-guide.html">
-          <div
-            class="card-cover"
-            style="
-              background: linear-gradient(
-                140deg,
-                #1e1b4b,
-                #4f46e5 60%,
-                #818cf8
-              );
-            "
-          >
+        <a
+          class="card"
+          data-cat="backend"
+          data-article="php"
+          href="php-guide.html"
+        >
+          <div class="card-cover">
             <div class="cover-bg-text" style="color: rgba(255, 255, 255, 0.1)">
               PHP
             </div>
@@ -1657,7 +1956,7 @@
               <span class="card-sections">12 sections</span>
             </div>
             <div class="card-title">
-              What a Senior Engineer Should Know About PHP
+              PHP 8.3 & Runtime: Zend Engine, Performance & Modern Architecture
             </div>
             <p class="card-desc">
               Zend Engine architecture, request lifecycle, PHP-FPM, OPcache,
@@ -1685,6 +1984,7 @@
         <a
           class="card"
           data-cat="javascript"
+          data-article="jsfw"
           href="js-frameworks-evolution.html"
         >
           <div class="card-cover">
@@ -1707,7 +2007,9 @@
               >
               <span class="card-sections">17 sections</span>
             </div>
-            <div class="card-title">The Evolution of JavaScript Frameworks</div>
+            <div class="card-title">
+              Frontend Frameworks Evolution: React, Vue, Angular & Beyond
+            </div>
             <p class="card-desc">
               Twenty years of frontend architecture — from vanilla DOM
               manipulation and jQuery through MVC, AngularJS, React, component
@@ -1735,6 +2037,7 @@
         <a
           class="card"
           data-cat="javascript"
+          data-article="state"
           href="state-management-guide.html"
         >
           <div class="card-cover">
@@ -1758,7 +2061,7 @@
               <span class="card-sections">21 sections</span>
             </div>
             <div class="card-title">
-              The Evolution of Global State Management
+              State Management Architecture: Redux, Zustand & Server State
             </div>
             <p class="card-desc">
               From DOM as state through MVC, two-way binding, React's
@@ -1784,7 +2087,12 @@
         </a>
 
         <!-- Accessibility Guide Card -->
-        <a class="card" data-cat="practices" href="accessibility-guide.html">
+        <a
+          class="card"
+          data-cat="practices"
+          data-article="a11y"
+          href="accessibility-guide.html"
+        >
           <div class="card-cover">
             <div class="cover-bg-text">A11Y</div>
             <div class="cover-badge">
@@ -1806,7 +2114,7 @@
               <span class="card-sections">8 sections</span>
             </div>
             <div class="card-title">
-              Frontend Accessibility: Building Interfaces Everyone Can Use
+              Web Accessibility: WCAG 2.2, ARIA & Inclusive Design Patterns
             </div>
             <p class="card-desc">
               Semantic HTML and the accessibility tree, dynamic focus management
@@ -1831,7 +2139,12 @@
         </a>
 
         <!-- Design Systems Card -->
-        <a class="card" data-cat="practices" href="design-systems.html">
+        <a
+          class="card"
+          data-cat="practices"
+          data-article="ds"
+          href="design-systems.html"
+        >
           <div class="card-cover">
             <div class="cover-bg-text">DS</div>
             <div class="cover-badge">
@@ -1853,8 +2166,7 @@
               <span class="card-sections">8 sections</span>
             </div>
             <div class="card-title">
-              Frontend Design Systems: Architecture, Tokens &amp; Scalable
-              Components
+              Design Systems: Design Tokens, Components & Brand Scaling
             </div>
             <p class="card-desc">
               Three-layer architecture, W3C design tokens with Style Dictionary,
@@ -1879,7 +2191,12 @@
         </a>
 
         <!-- Angular Guide Card -->
-        <a class="card" data-cat="javascript" href="angular-guide.html">
+        <a
+          class="card"
+          data-cat="javascript"
+          data-article="angular"
+          href="angular-guide.html"
+        >
           <div class="card-cover">
             <div class="cover-bg-text">NG</div>
             <div class="cover-badge">
@@ -1901,8 +2218,7 @@
               <span class="card-sections">9 sections</span>
             </div>
             <div class="card-title">
-              Angular In Depth: Architecture, Patterns &amp; Comparison with
-              React/Next.js
+              Angular 17+: Signals, DI & Full-Stack Framework Comparison
             </div>
             <p class="card-desc">
               Component architecture, Angular Signals vs React hooks,
@@ -1927,7 +2243,12 @@
           </div>
         </a>
         <!-- Senior Full-Stack Guide Card -->
-        <a class="card" data-cat="practices" href="senior-fullstack.html">
+        <a
+          class="card"
+          data-cat="practices"
+          data-article="senior"
+          href="senior-fullstack.html"
+        >
           <div class="card-cover">
             <div class="cover-bg-text">SR</div>
             <div class="cover-badge">
@@ -1949,8 +2270,7 @@
               <span class="card-sections">50 chapters · 12 parts</span>
             </div>
             <div class="card-title">
-              The Senior Full-Stack Engineer Checklist: 50 Chapters to
-              Engineering Mastery
+              Senior Full-Stack Engineering: From Architecture to AI Mastery
             </div>
             <p class="card-desc">
               From mid-level to senior thinking — mindset &amp; ownership, CS
@@ -1975,7 +2295,12 @@
           </div>
         </a>
         <!-- System Building Blocks Card -->
-        <a class="card" data-cat="practices" href="system-building-blocks.html">
+        <a
+          class="card"
+          data-cat="practices"
+          data-article="systems"
+          href="system-building-blocks.html"
+        >
           <div class="card-cover">
             <div class="cover-bg-text">12</div>
             <div class="cover-badge">
@@ -1997,7 +2322,7 @@
               <span class="card-sections">12 building blocks</span>
             </div>
             <div class="card-title">
-              The 12 Building Blocks of Large-Scale Systems
+              Large-Scale Systems: 12 Foundational Building Blocks
             </div>
             <p class="card-desc">
               Every large-scale system is assembled from the same 12
