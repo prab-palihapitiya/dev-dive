@@ -1,238 +1,941 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PostgreSQL Query Optimisation: Zero to Expert — DevDive</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg:#f4f6fb; --surface:#fff; --surface-2:#eaeff8;
-    --text-primary:#0c1220; --text-secondary:#475569; --text-muted:#94a3b8;
-    --accent:#1e40af; --accent-dark:#1e3a8a; --accent-mid:#3b82f6;
-    --accent-light:#dbeafe; --accent-subtle:#eff6ff;
-    --border:#cbd5e1; --border-soft:#dde6f5;
-    --code-bg:#080f1e;
-    --tag-bg:#eef2fb;
-    --stripe:linear-gradient(90deg,#1e3a8a,#1e40af,#2563eb,#3b82f6,#60a5fa);
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.8;}
-  .stripe{height:4px;background:var(--stripe);}
-  nav{position:sticky;top:0;z-index:100;background:rgba(244,246,251,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border-soft);padding:0 clamp(1.2rem,4vw,3rem);display:flex;align-items:center;justify-content:space-between;height:58px;}
-  .nav-left{display:flex;align-items:center;gap:12px;}
-  .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;transition:color .15s;display:flex;align-items:center;gap:5px;}
-  .nav-back:hover{color:var(--accent);}
-  .nav-pipe{color:var(--border);font-size:18px;}
-  .nav-brand{font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-.3px;}
-  .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent-dark);border-radius:100px;letter-spacing:.3px;}
-  .nav-links{display:flex;gap:2px;}
-  .nav-links a{font-size:12.5px;color:var(--text-secondary);text-decoration:none;padding:4px 9px;border-radius:6px;transition:all .15s;white-space:nowrap;}
-  .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary);}
-  .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0;}
-  .hero{max-width:840px;margin:0 auto;padding:60px clamp(1.2rem,4vw,3rem) 44px;}
-  .hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
-  .ey-cat{font-size:12px;font-weight:600;padding:3px 12px;border-radius:100px;background:var(--accent-light);color:var(--accent-dark);}
-  .ey-level{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;}
-  .ey-level::before{content:'·';}
-  .hero h1{font-family:'Lora',serif;font-size:clamp(30px,4.5vw,52px);font-weight:600;line-height:1.1;letter-spacing:-1px;margin-bottom:12px;}
-  .hero-sub{font-family:'Lora',serif;font-style:italic;font-size:clamp(17px,2.2vw,22px);color:var(--text-secondary);margin-bottom:18px;line-height:1.35;}
-  .hero-desc{font-size:17.5px;color:var(--text-secondary);font-weight:300;line-height:1.65;max-width:640px;margin-bottom:28px;}
-  .hero-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:26px;border-bottom:1px solid var(--border-soft);}
-  .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1e3a8a,#2563eb,#60a5fa);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;font-family:'JetBrains Mono',monospace;flex-shrink:0;}
-  .meta-info strong{font-size:14px;color:var(--text-primary);display:block;}
-  .meta-info span{font-size:13px;color:var(--text-muted);}
-  .meta-pills{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;}
-  .meta-pill{font-size:12px;color:var(--text-muted);border:1px solid var(--border-soft);border-radius:100px;padding:3px 12px;}
-  .toc-wrap{max-width:840px;margin:0 auto;padding:0 clamp(1.2rem,4vw,3rem) 8px;}
-  .toc{background:var(--surface);border:1px solid var(--border-soft);border-radius:14px;padding:24px 28px;margin-bottom:44px;}
-  .toc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-  .toc-head h3{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);font-weight:600;}
-  .toc-head span{font-size:12px;color:var(--text-muted);}
-  .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 28px;}
-  .toc a{font-size:14px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:flex-start;gap:10px;padding:5px 0;transition:color .15s;line-height:1.4;}
-  .toc a:hover{color:var(--accent);}
-  .toc-n{font-size:11px;color:var(--text-muted);font-weight:700;min-width:22px;padding-top:1px;font-family:'JetBrains Mono',monospace;}
-  .content{max-width:840px;margin:0 auto;padding:0 clamp(1.2rem,4vw,3rem) 80px;}
-  .section{margin-bottom:72px;scroll-margin-top:68px;}
-  .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
-  .section-label::after{content:'';flex:1;height:1px;background:var(--accent-light);}
-  h2{font-family:'Lora',serif;font-size:clamp(24px,3vw,33px);font-weight:600;letter-spacing:-.5px;margin-bottom:14px;line-height:1.2;}
-  h3{font-size:20px;font-weight:600;margin:36px 0 12px;letter-spacing:-.2px;}
-  h4{font-size:16px;font-weight:600;margin:24px 0 8px;color:var(--text-secondary);}
-  p{margin-bottom:18px;color:#18243a;line-height:1.8;}
-  .lead{font-size:19px;color:var(--text-secondary);font-weight:300;margin-bottom:22px;}
-  ul,ol{padding-left:24px;margin-bottom:18px;}
-  li{margin-bottom:7px;color:#18243a;font-size:16px;line-height:1.65;}
-  li strong{color:var(--text-primary);}
-  .code-block{background:var(--code-bg);border-radius:12px;margin:26px 0;overflow:hidden;border:1px solid rgba(255,255,255,0.05);box-shadow:0 2px 24px rgba(0,0,0,.18);}
-  .code-header{display:flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05);}
-  .code-dots{display:flex;gap:5px;}
-  .cd{width:10px;height:10px;border-radius:50%;}
-  .cd-r{background:#ff5f56;}.cd-y{background:#ffbd2e;}.cd-g{background:#27c93f;}
-  .code-fname{font-size:12px;color:#3a5a9a;font-family:'JetBrains Mono',monospace;margin-left:4px;}
-  .copy-btn{margin-left:auto;font-size:12px;color:#2a4a8a;background:none;border:none;cursor:pointer;padding:2px 9px;border-radius:4px;font-family:'Outfit',sans-serif;transition:all .15s;}
-  .copy-btn:hover{background:rgba(255,255,255,.07);color:#6a9ae0;}
-  pre{padding:22px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.8;color:#c0d0f0;tab-size:2;}
-  pre code{background:none;padding:0;}
-  code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#e6eef8;color:#1e40af;padding:2px 7px;border-radius:4px;}
-  .sk{color:#7dd3fc;font-weight:500;}.sf{color:#a5b4fc;}.ss{color:#fde68a;}.sn{color:#fb923c;}
-  .sc{color:#2a4a7a;font-style:italic;}.st{color:#67e8f9;}.so{color:#6b8aaa;}.sp{color:#c0d0f0;}
-  .sa{color:#f9a8d4;}.sh{color:#86efac;}.si{color:#fbbf24;}
-  .callout{border-radius:0 10px 10px 0;padding:18px 22px;margin:26px 0;font-size:15.5px;line-height:1.65;}
-  .callout-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
-  .callout.tip{background:#f0fdf4;border-left:3px solid #16a34a;}.callout.tip .callout-label{color:#16a34a;}
-  .callout.warn{background:#fff7ed;border-left:3px solid #ea580c;}.callout.warn .callout-label{color:#ea580c;}
-  .callout.info{background:#eff6ff;border-left:3px solid #2563eb;}.callout.info .callout-label{color:#2563eb;}
-  .callout.danger{background:#fff1f2;border-left:3px solid #e11d48;}.callout.danger .callout-label{color:#e11d48;}
-  .callout.note{background:#faf5ff;border-left:3px solid #9333ea;}.callout.note .callout-label{color:#9333ea;}
-  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px 0;}
-  .compare-card{border-radius:10px;overflow:hidden;border:1px solid var(--border-soft);}
-  .compare-header{padding:9px 16px;font-size:13px;font-weight:600;}
-  .compare-header.bad{background:#fff1f2;color:#e11d48;}
-  .compare-header.good{background:#f0fdf4;color:#15803d;}
-  .compare-card .code-block{border-radius:0;margin:0;border:none;box-shadow:none;}
-  .table-wrap{overflow-x:auto;margin:26px 0;border-radius:10px;border:1px solid var(--border-soft);}
-  table{width:100%;border-collapse:collapse;font-size:15px;}
-  th{background:var(--tag-bg);padding:11px 14px;text-align:left;font-weight:600;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border-soft);}
-  td{padding:11px 14px;border-bottom:1px solid var(--border-soft);line-height:1.5;}
-  tr:last-child td{border-bottom:none;}
-  tr:hover td{background:var(--accent-subtle);}
-  .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin:26px 0;}
-  .concept-card{background:var(--surface);border:1px solid var(--border-soft);border-radius:12px;padding:20px;transition:border-color .15s;}
-  .concept-card:hover{border-color:var(--accent-light);}
-  .concept-icon{font-size:24px;margin-bottom:12px;}
-  .concept-card h4{font-size:15px;font-weight:600;margin-bottom:6px;}
-  .concept-card p{font-size:13.5px;color:var(--text-secondary);margin:0;line-height:1.55;}
-  .pullquote{font-family:'Lora',serif;font-style:italic;font-size:21px;line-height:1.5;color:var(--text-secondary);border-left:4px solid var(--accent);padding:14px 26px;margin:40px 0;}
-  .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;vertical-align:middle;letter-spacing:.3px;}
-  .badge-blue{background:#dbeafe;color:#1d4ed8;}.badge-green{background:#dcfce7;color:#15803d;}
-  .badge-amber{background:#fef3c7;color:#92400e;}.badge-red{background:#fee2e2;color:#b91c1c;}
-  .badge-purple{background:#f3e8ff;color:#7c3aed;}.badge-gray{background:#f1f5f9;color:#475569;}
-  .phase-list{list-style:none;padding:0;margin:20px 0;}
-  .phase-item{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border-soft);align-items:flex-start;}
-  .phase-item:last-child{border-bottom:none;}
-  .phase-badge{min-width:90px;text-align:center;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.3px;flex-shrink:0;margin-top:2px;}
-  .phase-content strong{font-size:15px;display:block;margin-bottom:4px;}
-  .phase-content span{font-size:14px;color:var(--text-secondary);line-height:1.5;display:block;}
-  .arch-diagram{border:1px solid var(--border-soft);border-radius:12px;overflow:hidden;margin:26px 0;box-shadow:0 2px 12px rgba(0,0,0,.04);}
-  .arch-title{background:var(--tag-bg);padding:10px 18px;font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border-soft);}
-  .arch-row{display:flex;align-items:stretch;border-bottom:1px solid var(--border-soft);}
-  .arch-row:last-child{border-bottom:none;}
-  .arch-label{min-width:160px;padding:14px 18px;font-size:13px;font-weight:700;color:white;display:flex;align-items:center;flex-shrink:0;line-height:1.3;}
-  .arch-body{padding:14px 18px;font-size:14px;color:var(--text-secondary);line-height:1.6;flex:1;border-left:1px solid var(--border-soft);}
-  .arch-body strong{color:var(--text-primary);}
-  .divider{border:none;border-top:1px solid var(--border-soft);margin:60px 0;}
-  footer{background:#080f1e;color:rgba(255,255,255,.45);text-align:center;padding:44px 2rem;font-size:14px;}
-  footer strong{color:rgba(255,255,255,.85);}
-  footer a{color:rgba(255,255,255,.4);text-decoration:none;}
-  footer a:hover{color:rgba(255,255,255,.7);}
-  @media(max-width:640px){.toc-grid,.compare-grid{grid-template-columns:1fr;}.nav-links{display:none;}.meta-pills{display:none;}}
-</style>
-</head>
-<body>
-<div class="stripe"></div>
-<nav>
-  <div class="nav-left">
-    <a class="nav-back" href="index.html">← DevDive</a>
-    <span class="nav-pipe">|</span>
-    <span class="nav-brand">PostgreSQL</span>
-    <span class="nav-badge">Query Optimisation</span>
-  </div>
-  <div class="nav-links">
-    <a href="#planner">Planner</a>
-    <a href="#explain">EXPLAIN</a>
-    <a href="#indexes">Indexes</a>
-    <a href="#rewrites">Rewrites</a>
-    <a href="#joins">Joins</a>
-    <a href="#partitioning">Partitioning</a>
-    <a href="#monitoring">Monitoring</a>
-  </div>
-  <span class="nav-rt">~40 min read</span>
-</nav>
-<div class="hero">
-  <div class="hero-eyebrow">
-    <span class="ey-cat">Database</span>
-    <span class="ey-level">Advanced · PostgreSQL 16</span>
-  </div>
-  <h1>PostgreSQL Query Optimisation</h1>
-  <div class="hero-sub">From slow scans to sub-millisecond responses — a complete engineer's guide</div>
-  <p class="hero-desc">Understand how the PostgreSQL query planner works, master EXPLAIN output, write indexes that actually get used, rewrite anti-pattern queries, tune configuration, and build a monitoring pipeline that catches regressions before users do.</p>
-  <div class="hero-meta">
-    <div class="avatar">PG</div>
-    <div class="meta-info">
-      <strong>PostgreSQL Query Optimisation</strong>
-      <span>PostgreSQL 16 — May 2026</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PostgreSQL Query Optimisation: Zero to Expert — DevDive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <style>
+      :root {
+        --bg: #f4f6fb;
+        --surface: #fff;
+        --surface-2: #eaeff8;
+        --text-primary: #0c1220;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --accent: #1e40af;
+        --accent-dark: #1e3a8a;
+        --accent-mid: #3b82f6;
+        --accent-light: #dbeafe;
+        --accent-subtle: #eff6ff;
+        --border: #cbd5e1;
+        --border-soft: #dde6f5;
+        --code-bg: #080f1e;
+        --tag-bg: #eef2fb;
+        --stripe: linear-gradient(
+          90deg,
+          #1e3a8a,
+          #1e40af,
+          #2563eb,
+          #3b82f6,
+          #60a5fa
+        );
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.8;
+      }
+      .stripe {
+        height: 4px;
+        background: var(--stripe);
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(244, 246, 251, 0.95);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border-soft);
+        padding: 0 clamp(1.2rem, 4vw, 3rem);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 58px;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover {
+        color: var(--accent);
+      }
+      .nav-pipe {
+        color: var(--border);
+        font-size: 18px;
+      }
+      .nav-brand {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: var(--accent-light);
+        color: var(--accent-dark);
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2px;
+      }
+      .nav-links a {
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 4px 9px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--tag-bg);
+        color: var(--text-primary);
+      }
+      .nav-rt {
+        font-size: 13px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .hero {
+        max-width: 840px;
+        margin: 0 auto;
+        padding: 60px clamp(1.2rem, 4vw, 3rem) 44px;
+      }
+      .hero-eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .ey-cat {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 3px 12px;
+        border-radius: 100px;
+        background: var(--accent-light);
+        color: var(--accent-dark);
+      }
+      .ey-level {
+        font-size: 12px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .ey-level::before {
+        content: "·";
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(30px, 4.5vw, 52px);
+        font-weight: 600;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        margin-bottom: 12px;
+      }
+      .hero-sub {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: clamp(17px, 2.2vw, 22px);
+        color: var(--text-secondary);
+        margin-bottom: 18px;
+        line-height: 1.35;
+      }
+      .hero-desc {
+        font-size: 17.5px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.65;
+        max-width: 640px;
+        margin-bottom: 28px;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding-bottom: 26px;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1e3a8a, #2563eb, #60a5fa);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+        color: white;
+        font-family: "JetBrains Mono", monospace;
+        flex-shrink: 0;
+      }
+      .meta-info strong {
+        font-size: 14px;
+        color: var(--text-primary);
+        display: block;
+      }
+      .meta-info span {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .meta-pills {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-left: auto;
+      }
+      .meta-pill {
+        font-size: 12px;
+        color: var(--text-muted);
+        border: 1px solid var(--border-soft);
+        border-radius: 100px;
+        padding: 3px 12px;
+      }
+      .toc-wrap {
+        max-width: 840px;
+        margin: 0 auto;
+        padding: 0 clamp(1.2rem, 4vw, 3rem) 8px;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 14px;
+        padding: 24px 28px;
+        margin-bottom: 44px;
+      }
+      .toc-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .toc-head h3 {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+      .toc-head span {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 28px;
+      }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 5px 0;
+        transition: color 0.15s;
+        line-height: 1.4;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc-n {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 700;
+        min-width: 22px;
+        padding-top: 1px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .content {
+        max-width: 840px;
+        margin: 0 auto;
+        padding: 0 clamp(1.2rem, 4vw, 3rem) 80px;
+      }
+      .section {
+        margin-bottom: 72px;
+        scroll-margin-top: 68px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--accent-light);
+      }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(24px, 3vw, 33px);
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        margin-bottom: 14px;
+        line-height: 1.2;
+      }
+      h3 {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 36px 0 12px;
+        letter-spacing: -0.2px;
+      }
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 24px 0 8px;
+        color: var(--text-secondary);
+      }
+      p {
+        margin-bottom: 18px;
+        color: #18243a;
+        line-height: 1.8;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        margin-bottom: 22px;
+      }
+      ul,
+      ol {
+        padding-left: 24px;
+        margin-bottom: 18px;
+      }
+      li {
+        margin-bottom: 7px;
+        color: #18243a;
+        font-size: 16px;
+        line-height: 1.65;
+      }
+      li strong {
+        color: var(--text-primary);
+      }
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 12px;
+        margin: 26px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 2px 24px rgba(0, 0, 0, 0.18);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-dots {
+        display: flex;
+        gap: 5px;
+      }
+      .cd {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .cd-r {
+        background: #ff5f56;
+      }
+      .cd-y {
+        background: #ffbd2e;
+      }
+      .cd-g {
+        background: #27c93f;
+      }
+      .code-fname {
+        font-size: 12px;
+        color: #3a5a9a;
+        font-family: "JetBrains Mono", monospace;
+        margin-left: 4px;
+      }
+      .copy-btn {
+        margin-left: auto;
+        font-size: 12px;
+        color: #2a4a8a;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 9px;
+        border-radius: 4px;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #6a9ae0;
+      }
+      pre {
+        padding: 22px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.8;
+        color: #c0d0f0;
+        tab-size: 2;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        background: #e6eef8;
+        color: #1e40af;
+        padding: 2px 7px;
+        border-radius: 4px;
+      }
+      .sk {
+        color: #7dd3fc;
+        font-weight: 500;
+      }
+      .sf {
+        color: #a5b4fc;
+      }
+      .ss {
+        color: #fde68a;
+      }
+      .sn {
+        color: #fb923c;
+      }
+      .sc {
+        color: #2a4a7a;
+        font-style: italic;
+      }
+      .st {
+        color: #67e8f9;
+      }
+      .so {
+        color: #6b8aaa;
+      }
+      .sp {
+        color: #c0d0f0;
+      }
+      .sa {
+        color: #f9a8d4;
+      }
+      .sh {
+        color: #86efac;
+      }
+      .si {
+        color: #fbbf24;
+      }
+      .callout {
+        border-radius: 0 10px 10px 0;
+        padding: 18px 22px;
+        margin: 26px 0;
+        font-size: 15.5px;
+        line-height: 1.65;
+      }
+      .callout-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .callout.tip {
+        background: #f0fdf4;
+        border-left: 3px solid #16a34a;
+      }
+      .callout.tip .callout-label {
+        color: #16a34a;
+      }
+      .callout.warn {
+        background: #fff7ed;
+        border-left: 3px solid #ea580c;
+      }
+      .callout.warn .callout-label {
+        color: #ea580c;
+      }
+      .callout.info {
+        background: #eff6ff;
+        border-left: 3px solid #2563eb;
+      }
+      .callout.info .callout-label {
+        color: #2563eb;
+      }
+      .callout.danger {
+        background: #fff1f2;
+        border-left: 3px solid #e11d48;
+      }
+      .callout.danger .callout-label {
+        color: #e11d48;
+      }
+      .callout.note {
+        background: #faf5ff;
+        border-left: 3px solid #9333ea;
+      }
+      .callout.note .callout-label {
+        color: #9333ea;
+      }
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 26px 0;
+      }
+      .compare-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border-soft);
+      }
+      .compare-header {
+        padding: 9px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .compare-header.bad {
+        background: #fff1f2;
+        color: #e11d48;
+      }
+      .compare-header.good {
+        background: #f0fdf4;
+        color: #15803d;
+      }
+      .compare-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        margin: 26px 0;
+        border-radius: 10px;
+        border: 1px solid var(--border-soft);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+      }
+      th {
+        background: var(--tag-bg);
+        padding: 11px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border-soft);
+      }
+      td {
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--border-soft);
+        line-height: 1.5;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--accent-subtle);
+      }
+      .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 16px;
+        margin: 26px 0;
+      }
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-radius: 12px;
+        padding: 20px;
+        transition: border-color 0.15s;
+      }
+      .concept-card:hover {
+        border-color: var(--accent-light);
+      }
+      .concept-icon {
+        font-size: 24px;
+        margin-bottom: 12px;
+      }
+      .concept-card h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .concept-card p {
+        font-size: 13.5px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.55;
+      }
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 21px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 14px 26px;
+        margin: 40px 0;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+        vertical-align: middle;
+        letter-spacing: 0.3px;
+      }
+      .badge-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-green {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-red {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .badge-purple {
+        background: #f3e8ff;
+        color: #7c3aed;
+      }
+      .badge-gray {
+        background: #f1f5f9;
+        color: #475569;
+      }
+      .phase-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+      }
+      .phase-item {
+        display: flex;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border-soft);
+        align-items: flex-start;
+      }
+      .phase-item:last-child {
+        border-bottom: none;
+      }
+      .phase-badge {
+        min-width: 90px;
+        text-align: center;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .phase-content strong {
+        font-size: 15px;
+        display: block;
+        margin-bottom: 4px;
+      }
+      .phase-content span {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        display: block;
+      }
+      .arch-diagram {
+        border: 1px solid var(--border-soft);
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 26px 0;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      }
+      .arch-title {
+        background: var(--tag-bg);
+        padding: 10px 18px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .arch-row {
+        display: flex;
+        align-items: stretch;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .arch-row:last-child {
+        border-bottom: none;
+      }
+      .arch-label {
+        min-width: 160px;
+        padding: 14px 18px;
+        font-size: 13px;
+        font-weight: 700;
+        color: white;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        line-height: 1.3;
+      }
+      .arch-body {
+        padding: 14px 18px;
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        flex: 1;
+        border-left: 1px solid var(--border-soft);
+      }
+      .arch-body strong {
+        color: var(--text-primary);
+      }
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border-soft);
+        margin: 60px 0;
+      }
+      footer {
+        background: #080f1e;
+        color: rgba(255, 255, 255, 0.45);
+        text-align: center;
+        padding: 44px 2rem;
+        font-size: 14px;
+      }
+      footer strong {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      footer a {
+        color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+      }
+      footer a:hover {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      @media (max-width: 640px) {
+        .toc-grid,
+        .compare-grid {
+          grid-template-columns: 1fr;
+        }
+        .nav-links {
+          display: none;
+        }
+        .meta-pills {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stripe"></div>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">← DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">PostgreSQL</span>
+        <span class="nav-badge">Query Optimisation</span>
+      </div>
+      <div class="nav-links">
+        <a href="#planner">Planner</a>
+        <a href="#explain">EXPLAIN</a>
+        <a href="#indexes">Indexes</a>
+        <a href="#rewrites">Rewrites</a>
+        <a href="#joins">Joins</a>
+        <a href="#partitioning">Partitioning</a>
+        <a href="#monitoring">Monitoring</a>
+      </div>
+      <span class="nav-rt">~40 min read</span>
+    </nav>
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span class="ey-cat">Database</span>
+        <span class="ey-level">Advanced · PostgreSQL 16</span>
+      </div>
+      <h1>PostgreSQL Query Optimisation</h1>
+      <div class="hero-sub">
+        From slow scans to sub-millisecond responses — a complete engineer's
+        guide
+      </div>
+      <p class="hero-desc">
+        Understand how the PostgreSQL query planner works, master EXPLAIN
+        output, write indexes that actually get used, rewrite anti-pattern
+        queries, tune configuration, and build a monitoring pipeline that
+        catches regressions before users do.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">PG</div>
+        <div class="meta-info">
+          <strong>PostgreSQL Query Optimisation</strong>
+          <span>PostgreSQL 16 — May 2026</span>
+        </div>
+        <div class="meta-pills">
+          <span class="meta-pill">🐘 PostgreSQL 16</span>
+          <span class="meta-pill">⏱ ~40 min</span>
+          <span class="meta-pill">12 sections</span>
+        </div>
+      </div>
     </div>
-    <div class="meta-pills">
-      <span class="meta-pill">🐘 PostgreSQL 16</span>
-      <span class="meta-pill">⏱ ~40 min</span>
-      <span class="meta-pill">12 sections</span>
+    <div class="toc-wrap">
+      <div class="toc">
+        <div class="toc-head">
+          <h3>Table of Contents</h3>
+          <span>12 sections</span>
+        </div>
+        <div class="toc-grid">
+          <a href="#planner"
+            ><span class="toc-n">01</span> How the Query Planner Works</a
+          >
+          <a href="#rewrites"
+            ><span class="toc-n">07</span> Query Rewriting Patterns</a
+          >
+          <a href="#explain"><span class="toc-n">02</span> EXPLAIN Deep Dive</a>
+          <a href="#joins"><span class="toc-n">08</span> Join Optimisation</a>
+          <a href="#stats"
+            ><span class="toc-n">03</span> Statistics & the Planner</a
+          >
+          <a href="#partitioning"
+            ><span class="toc-n">09</span> Table Partitioning</a
+          >
+          <a href="#indexes"
+            ><span class="toc-n">04</span> Index Optimisation</a
+          >
+          <a href="#matviews"
+            ><span class="toc-n">10</span> Materialized Views</a
+          >
+          <a href="#anti"
+            ><span class="toc-n">05</span> Anti-patterns & Fixes</a
+          >
+          <a href="#config"
+            ><span class="toc-n">11</span> Configuration Tuning</a
+          >
+          <a href="#parallel"><span class="toc-n">06</span> Parallel Query</a>
+          <a href="#monitoring"
+            ><span class="toc-n">12</span> Monitoring & Profiling</a
+          >
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<div class="toc-wrap">
-  <div class="toc">
-    <div class="toc-head">
-      <h3>Table of Contents</h3>
-      <span>12 sections</span>
-    </div>
-    <div class="toc-grid">
-      <a href="#planner"><span class="toc-n">01</span> How the Query Planner Works</a>
-      <a href="#rewrites"><span class="toc-n">07</span> Query Rewriting Patterns</a>
-      <a href="#explain"><span class="toc-n">02</span> EXPLAIN Deep Dive</a>
-      <a href="#joins"><span class="toc-n">08</span> Join Optimisation</a>
-      <a href="#stats"><span class="toc-n">03</span> Statistics & the Planner</a>
-      <a href="#partitioning"><span class="toc-n">09</span> Table Partitioning</a>
-      <a href="#indexes"><span class="toc-n">04</span> Index Optimisation</a>
-      <a href="#matviews"><span class="toc-n">10</span> Materialized Views</a>
-      <a href="#anti"><span class="toc-n">05</span> Anti-patterns & Fixes</a>
-      <a href="#config"><span class="toc-n">11</span> Configuration Tuning</a>
-      <a href="#parallel"><span class="toc-n">06</span> Parallel Query</a>
-      <a href="#monitoring"><span class="toc-n">12</span> Monitoring & Profiling</a>
-    </div>
-  </div>
-</div>
-<div class="content">
+    <div class="content">
+      <!-- ══════ 01 PLANNER -->
+      <div class="section" id="planner">
+        <div class="section-label">01 — The Foundation</div>
+        <h2>How the Query Planner Works</h2>
+        <p class="lead">
+          The PostgreSQL query planner is a cost-based optimiser. It enumerates
+          possible execution plans, estimates the cost of each using table
+          statistics, and picks the cheapest one. Understanding this process is
+          the key to every optimisation technique.
+        </p>
 
-<!-- ══════ 01 PLANNER -->
-<div class="section" id="planner">
-  <div class="section-label">01 — The Foundation</div>
-  <h2>How the Query Planner Works</h2>
-  <p class="lead">The PostgreSQL query planner is a cost-based optimiser. It enumerates possible execution plans, estimates the cost of each using table statistics, and picks the cheapest one. Understanding this process is the key to every optimisation technique.</p>
+        <div class="arch-diagram">
+          <div class="arch-title">Query Execution Pipeline</div>
+          <div class="arch-row">
+            <div class="arch-label" style="background: #1e3a8a">Parser</div>
+            <div class="arch-body">
+              <strong>SQL text → Parse Tree.</strong> Checks syntax. Converts
+              your SQL string into an internal tree structure. Syntax errors are
+              caught here. Fast — no table lookups yet.
+            </div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label" style="background: #1e40af">Analyser</div>
+            <div class="arch-body">
+              <strong>Parse Tree → Query Tree.</strong> Resolves names against
+              the catalog: does the table exist? Are columns valid? What are the
+              data types? Attaches OIDs and type information.
+            </div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label" style="background: #2563eb">Rewriter</div>
+            <div class="arch-body">
+              <strong>Query Tree → Query Tree.</strong> Applies rewrite rules —
+              most importantly, expands VIEWs into their underlying SQL.
+              Rule-based, deterministic.
+            </div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label" style="background: #3b82f6">Planner</div>
+            <div class="arch-body">
+              <strong>Query Tree → Plan Tree.</strong> The heart. Generates
+              candidate plans (scan types, join orders, join methods), estimates
+              cost for each using pg_statistic data, selects the cheapest. Most
+              of the optimisation happens here.
+            </div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label" style="background: #60a5fa; color: #1e3a8a">
+              Executor
+            </div>
+            <div class="arch-body">
+              <strong>Plan Tree → Result Rows.</strong> Walks the plan tree
+              top-down, pulls rows from leaf nodes (scans), feeds them through
+              operators (filters, joins, sorts, aggregates), returns results to
+              the client.
+            </div>
+          </div>
+        </div>
 
-  <div class="arch-diagram">
-    <div class="arch-title">Query Execution Pipeline</div>
-    <div class="arch-row">
-      <div class="arch-label" style="background:#1e3a8a">Parser</div>
-      <div class="arch-body"><strong>SQL text → Parse Tree.</strong> Checks syntax. Converts your SQL string into an internal tree structure. Syntax errors are caught here. Fast — no table lookups yet.</div>
-    </div>
-    <div class="arch-row">
-      <div class="arch-label" style="background:#1e40af">Analyser</div>
-      <div class="arch-body"><strong>Parse Tree → Query Tree.</strong> Resolves names against the catalog: does the table exist? Are columns valid? What are the data types? Attaches OIDs and type information.</div>
-    </div>
-    <div class="arch-row">
-      <div class="arch-label" style="background:#2563eb">Rewriter</div>
-      <div class="arch-body"><strong>Query Tree → Query Tree.</strong> Applies rewrite rules — most importantly, expands VIEWs into their underlying SQL. Rule-based, deterministic.</div>
-    </div>
-    <div class="arch-row">
-      <div class="arch-label" style="background:#3b82f6">Planner</div>
-      <div class="arch-body"><strong>Query Tree → Plan Tree.</strong> The heart. Generates candidate plans (scan types, join orders, join methods), estimates cost for each using pg_statistic data, selects the cheapest. Most of the optimisation happens here.</div>
-    </div>
-    <div class="arch-row">
-      <div class="arch-label" style="background:#60a5fa;color:#1e3a8a">Executor</div>
-      <div class="arch-body"><strong>Plan Tree → Result Rows.</strong> Walks the plan tree top-down, pulls rows from leaf nodes (scans), feeds them through operators (filters, joins, sorts, aggregates), returns results to the client.</div>
-    </div>
-  </div>
+        <h3>Cost Units — What "Cost" Actually Means</h3>
+        <p>
+          PostgreSQL expresses plan cost in abstract "cost units" — not
+          milliseconds. The units are calibrated around two constants: reading a
+          sequential page costs <strong>1.0</strong>, reading a random page
+          costs <strong>4.0</strong> (on spinning disks — set to
+          <code>1.1</code> for SSDs). CPU operations are tiny fractions.
+        </p>
 
-  <h3>Cost Units — What "Cost" Actually Means</h3>
-  <p>PostgreSQL expresses plan cost in abstract "cost units" — not milliseconds. The units are calibrated around two constants: reading a sequential page costs <strong>1.0</strong>, reading a random page costs <strong>4.0</strong> (on spinning disks — set to <code>1.1</code> for SSDs). CPU operations are tiny fractions.</p>
-
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">cost-constants.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- Key planner cost constants (postgresql.conf)</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">cost-constants.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- Key planner cost constants (postgresql.conf)</span>
 <span class="sc">-- seq_page_cost       = 1.0  (baseline — sequential disk read)</span>
 <span class="sc">-- random_page_cost    = 4.0  (random disk read — SET TO 1.1 FOR SSD!)</span>
 <span class="sc">-- cpu_tuple_cost      = 0.01 (processing one row)</span>
@@ -249,52 +952,105 @@
 <span class="sk">ALTER SYSTEM SET</span> random_page_cost <span class="so">=</span> <span class="sn">1.1</span>;
 <span class="sk">ALTER SYSTEM SET</span> effective_cache_size <span class="so">=</span> <span class="ss">'12GB'</span>; <span class="sc">-- hint: how much OS cache exists</span>
 <span class="sk">SELECT</span> pg_reload_conf();</code></pre>
-  </div>
+        </div>
 
-  <h3>The Three Scan Types</h3>
-  <ul class="phase-list">
-    <li class="phase-item">
-      <span class="phase-badge" style="background:#fee2e2;color:#b91c1c">Seq Scan</span>
-      <div class="phase-content">
-        <strong>Sequential Scan — reads every page of the table</strong>
-        <span>O(n) where n = table pages. Optimal when fetching a large fraction of the table (&gt;5–10%). The planner prefers it over an index scan when the table is small or when many rows match. Fast I/O thanks to prefetching.</span>
+        <h3>The Three Scan Types</h3>
+        <ul class="phase-list">
+          <li class="phase-item">
+            <span
+              class="phase-badge"
+              style="background: #fee2e2; color: #b91c1c"
+              >Seq Scan</span
+            >
+            <div class="phase-content">
+              <strong>Sequential Scan — reads every page of the table</strong>
+              <span
+                >O(n) where n = table pages. Optimal when fetching a large
+                fraction of the table (&gt;5–10%). The planner prefers it over
+                an index scan when the table is small or when many rows match.
+                Fast I/O thanks to prefetching.</span
+              >
+            </div>
+          </li>
+          <li class="phase-item">
+            <span
+              class="phase-badge"
+              style="background: #dbeafe; color: #1d4ed8"
+              >Index Scan</span
+            >
+            <div class="phase-content">
+              <strong
+                >Index Scan — traverses index B-tree, fetches heap rows</strong
+              >
+              <span
+                >O(log n + k) where k = matching rows. Optimal for fetching a
+                small fraction of the table. Each index entry requires a random
+                heap page fetch — expensive on HDDs, cheap on SSDs.</span
+              >
+            </div>
+          </li>
+          <li class="phase-item">
+            <span
+              class="phase-badge"
+              style="background: #dcfce7; color: #15803d"
+              >Index Only</span
+            >
+            <div class="phase-content">
+              <strong>Index Only Scan — all data served from the index</strong>
+              <span
+                >The fastest possible scan when the index contains all needed
+                columns (via INCLUDE or natural coverage). No heap fetch.
+                Requires the visibility map to be up-to-date (VACUUM helps).
+                Check for these with EXPLAIN ANALYZE — "Heap Fetches: 0" is
+                ideal.</span
+              >
+            </div>
+          </li>
+          <li class="phase-item">
+            <span
+              class="phase-badge"
+              style="background: #fef3c7; color: #92400e"
+              >Bitmap</span
+            >
+            <div class="phase-content">
+              <strong
+                >Bitmap Heap Scan — batches index lookups, sorts by page</strong
+              >
+              <span
+                >Two-phase: first builds a bitmap of matching heap pages from
+                one or more indexes (Bitmap Index Scan), then fetches pages in
+                physical order (Bitmap Heap Scan). Eliminates duplicate page
+                fetches. Used for moderate result sets or when combining
+                multiple indexes with OR/AND.</span
+              >
+            </div>
+          </li>
+        </ul>
       </div>
-    </li>
-    <li class="phase-item">
-      <span class="phase-badge" style="background:#dbeafe;color:#1d4ed8">Index Scan</span>
-      <div class="phase-content">
-        <strong>Index Scan — traverses index B-tree, fetches heap rows</strong>
-        <span>O(log n + k) where k = matching rows. Optimal for fetching a small fraction of the table. Each index entry requires a random heap page fetch — expensive on HDDs, cheap on SSDs.</span>
-      </div>
-    </li>
-    <li class="phase-item">
-      <span class="phase-badge" style="background:#dcfce7;color:#15803d">Index Only</span>
-      <div class="phase-content">
-        <strong>Index Only Scan — all data served from the index</strong>
-        <span>The fastest possible scan when the index contains all needed columns (via INCLUDE or natural coverage). No heap fetch. Requires the visibility map to be up-to-date (VACUUM helps). Check for these with EXPLAIN ANALYZE — "Heap Fetches: 0" is ideal.</span>
-      </div>
-    </li>
-    <li class="phase-item">
-      <span class="phase-badge" style="background:#fef3c7;color:#92400e">Bitmap</span>
-      <div class="phase-content">
-        <strong>Bitmap Heap Scan — batches index lookups, sorts by page</strong>
-        <span>Two-phase: first builds a bitmap of matching heap pages from one or more indexes (Bitmap Index Scan), then fetches pages in physical order (Bitmap Heap Scan). Eliminates duplicate page fetches. Used for moderate result sets or when combining multiple indexes with OR/AND.</span>
-      </div>
-    </li>
-  </ul>
-</div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 02 EXPLAIN -->
-<div class="section" id="explain">
-  <div class="section-label">02 — Reading Plans</div>
-  <h2>EXPLAIN Deep Dive — Reading Every Node</h2>
-  <p class="lead">EXPLAIN is the most important tool a PostgreSQL developer has. Most developers only read the top-level numbers. Learning to read the full plan tree transforms your ability to diagnose slow queries.</p>
+      <!-- ══════ 02 EXPLAIN -->
+      <div class="section" id="explain">
+        <div class="section-label">02 — Reading Plans</div>
+        <h2>EXPLAIN Deep Dive — Reading Every Node</h2>
+        <p class="lead">
+          EXPLAIN is the most important tool a PostgreSQL developer has. Most
+          developers only read the top-level numbers. Learning to read the full
+          plan tree transforms your ability to diagnose slow queries.
+        </p>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">explain-anatomy.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- Always use these options together:</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">explain-anatomy.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- Always use these options together:</span>
 <span class="sk">EXPLAIN</span> (
   <span class="sk">ANALYZE</span>,    <span class="sc">-- actually execute the query (WARNING: runs DML!)</span>
   <span class="sk">BUFFERS</span>,    <span class="sc">-- show cache hit/miss counts</span>
@@ -334,40 +1090,119 @@
 <span class="sc">--                     Buffers: shared hit=232</span>
 <span class="sc">-- Planning Time: 1.234 ms</span>
 <span class="sc">-- Execution Time: 16.012 ms</span></code></pre>
-  </div>
+        </div>
 
-  <h3>Decoding Every Number</h3>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Field</th><th>What It Means</th><th>What to Watch For</th></tr></thead>
-      <tbody>
-        <tr><td><code>cost=0.00..842.30</code></td><td>Estimated startup..total cost in planner units</td><td>High total cost relative to simple queries → missing index</td></tr>
-        <tr><td><code>rows=1000</code></td><td>Planner's estimated row count</td><td>If <em>actual rows</em> differs by 10x+, statistics are stale</td></tr>
-        <tr><td><code>actual time=15.2..15.9</code></td><td>Real wall-clock time: first row..last row (ms)</td><td>Large gap between first/last row → streaming vs materialisation</td></tr>
-        <tr><td><code>loops=1</code></td><td>How many times this node executed</td><td>In nested loops: <code>actual time</code> is PER LOOP. Multiply!</td></tr>
-        <tr><td><code>Buffers: shared hit=412</code></td><td>Pages read from shared_buffers (cache)</td><td>High <code>read=</code> count → pages not in cache → I/O bound</td></tr>
-        <tr><td><code>Buffers: shared read=50</code></td><td>Pages read from disk (cache miss)</td><td>Reduce with bigger shared_buffers or better access patterns</td></tr>
-        <tr><td><code>Heap Fetches: 0</code></td><td>Index Only Scan heap lookups</td><td>Non-zero means visibility map is stale → run VACUUM</td></tr>
-        <tr><td><code>Batches: 4</code></td><td>Hash join/aggregate spilled to disk</td><td>Spilling → increase work_mem for this query</td></tr>
-        <tr><td><code>Rows Removed by Filter</code></td><td>Rows scanned but discarded by a filter</td><td>High ratio → index on the filter column would help</td></tr>
-      </tbody>
-    </table>
-  </div>
+        <h3>Decoding Every Number</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>What It Means</th>
+                <th>What to Watch For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>cost=0.00..842.30</code></td>
+                <td>Estimated startup..total cost in planner units</td>
+                <td>
+                  High total cost relative to simple queries → missing index
+                </td>
+              </tr>
+              <tr>
+                <td><code>rows=1000</code></td>
+                <td>Planner's estimated row count</td>
+                <td>
+                  If <em>actual rows</em> differs by 10x+, statistics are stale
+                </td>
+              </tr>
+              <tr>
+                <td><code>actual time=15.2..15.9</code></td>
+                <td>Real wall-clock time: first row..last row (ms)</td>
+                <td>
+                  Large gap between first/last row → streaming vs
+                  materialisation
+                </td>
+              </tr>
+              <tr>
+                <td><code>loops=1</code></td>
+                <td>How many times this node executed</td>
+                <td>
+                  In nested loops: <code>actual time</code> is PER LOOP.
+                  Multiply!
+                </td>
+              </tr>
+              <tr>
+                <td><code>Buffers: shared hit=412</code></td>
+                <td>Pages read from shared_buffers (cache)</td>
+                <td>
+                  High <code>read=</code> count → pages not in cache → I/O bound
+                </td>
+              </tr>
+              <tr>
+                <td><code>Buffers: shared read=50</code></td>
+                <td>Pages read from disk (cache miss)</td>
+                <td>
+                  Reduce with bigger shared_buffers or better access patterns
+                </td>
+              </tr>
+              <tr>
+                <td><code>Heap Fetches: 0</code></td>
+                <td>Index Only Scan heap lookups</td>
+                <td>Non-zero means visibility map is stale → run VACUUM</td>
+              </tr>
+              <tr>
+                <td><code>Batches: 4</code></td>
+                <td>Hash join/aggregate spilled to disk</td>
+                <td>Spilling → increase work_mem for this query</td>
+              </tr>
+              <tr>
+                <td><code>Rows Removed by Filter</code></td>
+                <td>Rows scanned but discarded by a filter</td>
+                <td>High ratio → index on the filter column would help</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-  <div class="callout tip">
-    <div class="callout-label">💡 The Most Important Red Flags</div>
-    <ol style="margin:0;padding-left:20px">
-      <li><strong>Estimated rows vs actual rows off by 10x+</strong> → run ANALYZE or increase statistics target</li>
-      <li><strong>Seq Scan on a large table with a filter</strong> → missing index on filter column</li>
-      <li><strong>Nested Loop with high loop count</strong> → multiply actual time by loops — it's much worse than it looks</li>
-      <li><strong>Hash Join Batches &gt; 1</strong> → increase work_mem or the join is too large for memory</li>
-      <li><strong>Sort with external merge</strong> → increasing work_mem avoids disk spilling</li>
-    </ol>
-  </div>
+        <div class="callout tip">
+          <div class="callout-label">💡 The Most Important Red Flags</div>
+          <ol style="margin: 0; padding-left: 20px">
+            <li>
+              <strong>Estimated rows vs actual rows off by 10x+</strong> → run
+              ANALYZE or increase statistics target
+            </li>
+            <li>
+              <strong>Seq Scan on a large table with a filter</strong> → missing
+              index on filter column
+            </li>
+            <li>
+              <strong>Nested Loop with high loop count</strong> → multiply
+              actual time by loops — it's much worse than it looks
+            </li>
+            <li>
+              <strong>Hash Join Batches &gt; 1</strong> → increase work_mem or
+              the join is too large for memory
+            </li>
+            <li>
+              <strong>Sort with external merge</strong> → increasing work_mem
+              avoids disk spilling
+            </li>
+          </ol>
+        </div>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">explain-tricks.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ── Temporarily increase work_mem for one query ──</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">explain-tricks.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ── Temporarily increase work_mem for one query ──</span>
 <span class="sk">SET</span> work_mem <span class="so">=</span> <span class="ss">'256MB'</span>;
 <span class="sk">EXPLAIN ANALYZE</span> <span class="sk">SELECT</span> <span class="so">...</span>;  <span class="sc">-- does it go from Batches:4 to Batches:1?</span>
 <span class="sk">RESET</span> work_mem;
@@ -398,20 +1233,32 @@
 <span class="sc">-- After 5 calls, PG switches to a generic plan</span>
 <span class="sc">-- Force custom plan per execution:</span>
 <span class="sk">SET</span> plan_cache_mode <span class="so">=</span> <span class="ss">'force_custom_plan'</span>;</code></pre>
-  </div>
-</div>
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 03 STATISTICS -->
-<div class="section" id="stats">
-  <div class="section-label">03 — Planner Statistics</div>
-  <h2>Statistics — The Planner's Source of Truth</h2>
-  <p class="lead">The planner's cost estimates are only as good as its statistics. Stale or low-resolution statistics are the root cause of most bad plan choices. This section shows how to diagnose and fix them.</p>
+      <!-- ══════ 03 STATISTICS -->
+      <div class="section" id="stats">
+        <div class="section-label">03 — Planner Statistics</div>
+        <h2>Statistics — The Planner's Source of Truth</h2>
+        <p class="lead">
+          The planner's cost estimates are only as good as its statistics. Stale
+          or low-resolution statistics are the root cause of most bad plan
+          choices. This section shows how to diagnose and fix them.
+        </p>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">statistics.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ── What statistics does PG store? ───────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">statistics.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ── What statistics does PG store? ───────────────</span>
 <span class="sk">SELECT</span>
   attname                  <span class="sk">AS</span> <span class="sa">column</span>,
   n_distinct,              <span class="sc">-- estimated distinct values (-1 = all unique)</span>
@@ -462,19 +1309,27 @@
 <span class="sk">FROM</span>   pg_stat_user_tables
 <span class="sk">ORDER BY</span> n_dead_tup <span class="sk">DESC</span>
 <span class="sk">LIMIT</span>  <span class="sn">20</span>;</code></pre>
-  </div>
-</div>
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 04 INDEXES -->
-<div class="section" id="indexes">
-  <div class="section-label">04 — Index Mastery</div>
-  <h2>Index Optimisation In Depth</h2>
+      <!-- ══════ 04 INDEXES -->
+      <div class="section" id="indexes">
+        <div class="section-label">04 — Index Mastery</div>
+        <h2>Index Optimisation In Depth</h2>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">index-strategies.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ── Rule 1: Selectivity determines index value ───</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">index-strategies.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ── Rule 1: Selectivity determines index value ───</span>
 <span class="sc">-- An index is useful when it eliminates most rows.</span>
 <span class="sc">-- Low-cardinality columns (boolean, status with 3 values)</span>
 <span class="sc">-- are often NOT worth indexing alone. Combine them.</span>
@@ -552,22 +1407,26 @@
 <span class="sk">WHERE</span>  seq_scan <span class="so">&gt;</span> <span class="sn">100</span>
   <span class="sk">AND</span>  pg_total_relation_size(relid) <span class="so">&gt;</span> <span class="sn">10</span><span class="so">*</span><span class="sn">1024</span><span class="so">*</span><span class="sn">1024</span>  <span class="sc">-- &gt;10MB</span>
 <span class="sk">ORDER BY</span> seq_tup_read <span class="sk">DESC</span>;</code></pre>
-  </div>
-</div>
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 05 ANTI-PATTERNS -->
-<div class="section" id="anti">
-  <div class="section-label">05 — Anti-patterns</div>
-  <h2>Query Anti-patterns & Their Fixes</h2>
-  <p class="lead">These patterns appear in almost every production codebase. Each one can silently cause a 10x–1000x performance regression as data grows.</p>
+      <!-- ══════ 05 ANTI-PATTERNS -->
+      <div class="section" id="anti">
+        <div class="section-label">05 — Anti-patterns</div>
+        <h2>Query Anti-patterns & Their Fixes</h2>
+        <p class="lead">
+          These patterns appear in almost every production codebase. Each one
+          can silently cause a 10x–1000x performance regression as data grows.
+        </p>
 
-  <h3>1. Functions on Indexed Columns</h3>
-  <div class="compare-grid">
-    <div class="compare-card">
-      <div class="compare-header bad">❌ Index not used — full scan</div>
-      <div class="code-block"><pre><code><span class="sc">-- Wrapping a column in a function</span>
+        <h3>1. Functions on Indexed Columns</h3>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">❌ Index not used — full scan</div>
+            <div class="code-block">
+              <pre><code><span class="sc">-- Wrapping a column in a function</span>
 <span class="sc">-- prevents index use</span>
 <span class="sk">SELECT</span> * <span class="sk">FROM</span> users
 <span class="sk">WHERE</span> <span class="sf">DATE</span>(created_at) <span class="so">=</span> <span class="ss">'2026-01-15'</span>;
@@ -577,11 +1436,13 @@
 
 <span class="sk">SELECT</span> * <span class="sk">FROM</span> users
 <span class="sk">WHERE</span> <span class="sf">LOWER</span>(email) <span class="so">=</span> <span class="ss">'alice@example.com'</span>;
-<span class="sc">-- All do seq scan despite index on created_at/email</span></code></pre></div>
-    </div>
-    <div class="compare-card">
-      <div class="compare-header good">✅ Index used — range scan</div>
-      <div class="code-block"><pre><code><span class="sc">-- Rewrite to keep the column bare</span>
+<span class="sc">-- All do seq scan despite index on created_at/email</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">✅ Index used — range scan</div>
+            <div class="code-block">
+              <pre><code><span class="sc">-- Rewrite to keep the column bare</span>
 <span class="sk">SELECT</span> * <span class="sk">FROM</span> users
 <span class="sk">WHERE</span> created_at <span class="sk">BETWEEN</span>
   <span class="ss">'2026-01-15'</span> <span class="sk">AND</span> <span class="ss">'2026-01-16'</span>;
@@ -592,26 +1453,32 @@
 
 <span class="sk">SELECT</span> * <span class="sk">FROM</span> users
 <span class="sk">WHERE</span> email <span class="so">=</span> <span class="sf">LOWER</span>($1);
-<span class="sc">-- Or create: INDEX ON users(LOWER(email))</span></code></pre></div>
-    </div>
-  </div>
+<span class="sc">-- Or create: INDEX ON users(LOWER(email))</span></code></pre>
+            </div>
+          </div>
+        </div>
 
-  <h3>2. SELECT * in Production</h3>
-  <div class="compare-grid">
-    <div class="compare-card">
-      <div class="compare-header bad">❌ Fetches everything including blobs</div>
-      <div class="code-block"><pre><code><span class="sc">-- SELECT * fetches every column:</span>
+        <h3>2. SELECT * in Production</h3>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">
+              ❌ Fetches everything including blobs
+            </div>
+            <div class="code-block">
+              <pre><code><span class="sc">-- SELECT * fetches every column:</span>
 <span class="sc">-- - prevents index-only scans</span>
 <span class="sc">-- - wastes network bandwidth</span>
 <span class="sc">-- - fetches large TEXT/JSONB/bytea cols</span>
 <span class="sc">-- - breaks when columns are added/reordered</span>
 <span class="sk">SELECT</span> * <span class="sk">FROM</span> posts
 <span class="sk">WHERE</span> author_id <span class="so">=</span> $1
-<span class="sk">LIMIT</span> <span class="sn">20</span>;</code></pre></div>
-    </div>
-    <div class="compare-card">
-      <div class="compare-header good">✅ Fetch only what you need</div>
-      <div class="code-block"><pre><code><span class="sc">-- Explicit columns enable:</span>
+<span class="sk">LIMIT</span> <span class="sn">20</span>;</code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">✅ Fetch only what you need</div>
+            <div class="code-block">
+              <pre><code><span class="sc">-- Explicit columns enable:</span>
 <span class="sc">-- - index-only scans (if in INCLUDE)</span>
 <span class="sc">-- - smaller result sets</span>
 <span class="sc">-- - explicit contracts in code</span>
@@ -620,15 +1487,17 @@
 <span class="sk">FROM</span>   posts
 <span class="sk">WHERE</span>  author_id <span class="so">=</span> $1
 <span class="sk">ORDER BY</span> published_at <span class="sk">DESC</span>
-<span class="sk">LIMIT</span>  <span class="sn">20</span>;</code></pre></div>
-    </div>
-  </div>
+<span class="sk">LIMIT</span>  <span class="sn">20</span>;</code></pre>
+            </div>
+          </div>
+        </div>
 
-  <h3>3. N+1 Queries</h3>
-  <div class="compare-grid">
-    <div class="compare-card">
-      <div class="compare-header bad">❌ N+1 — one query per row</div>
-      <div class="code-block"><pre><code><span class="sc">-- Application code (pseudocode):</span>
+        <h3>3. N+1 Queries</h3>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">❌ N+1 — one query per row</div>
+            <div class="code-block">
+              <pre><code><span class="sc">-- Application code (pseudocode):</span>
 <span class="sc">-- 1 query to get posts</span>
 posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"SELECT * FROM posts LIMIT 20"</span>)
 
@@ -638,11 +1507,13 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
     <span class="ss">"SELECT * FROM users WHERE id=$1"</span>,
     post.author_id
   )
-<span class="sc">-- Total: 21 round-trips to DB</span></code></pre></div>
-    </div>
-    <div class="compare-card">
-      <div class="compare-header good">✅ Single join — one query</div>
-      <div class="code-block"><pre><code><span class="sc">-- One query with a join:</span>
+<span class="sc">-- Total: 21 round-trips to DB</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">✅ Single join — one query</div>
+            <div class="code-block">
+              <pre><code><span class="sc">-- One query with a join:</span>
 <span class="sk">SELECT</span>
   p.id, p.title, p.created_at,
   u.id   <span class="sk">AS</span> <span class="sa">author_id</span>,
@@ -652,15 +1523,19 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
   <span class="sk">ON</span>   u.id <span class="so">=</span> p.author_id
 <span class="sk">ORDER BY</span> p.created_at <span class="sk">DESC</span>
 <span class="sk">LIMIT</span>  <span class="sn">20</span>;
-<span class="sc">-- Total: 1 round-trip</span></code></pre></div>
-    </div>
-  </div>
+<span class="sc">-- Total: 1 round-trip</span></code></pre>
+            </div>
+          </div>
+        </div>
 
-  <h3>4. OFFSET Pagination on Large Tables</h3>
-  <div class="compare-grid">
-    <div class="compare-card">
-      <div class="compare-header bad">❌ OFFSET — gets slower on every page</div>
-      <div class="code-block"><pre><code><span class="sc">-- Page 1: reads rows 1-20</span>
+        <h3>4. OFFSET Pagination on Large Tables</h3>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">
+              ❌ OFFSET — gets slower on every page
+            </div>
+            <div class="code-block">
+              <pre><code><span class="sc">-- Page 1: reads rows 1-20</span>
 <span class="sk">SELECT</span> * <span class="sk">FROM</span> posts
 <span class="sk">ORDER BY</span> created_at <span class="sk">DESC</span>
 <span class="sk">LIMIT</span> <span class="sn">20</span> <span class="sk">OFFSET</span> <span class="sn">0</span>;
@@ -668,11 +1543,15 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
 <span class="sc">-- Page 500: reads rows 1-10020, discards 10000</span>
 <span class="sk">SELECT</span> * <span class="sk">FROM</span> posts
 <span class="sk">ORDER BY</span> created_at <span class="sk">DESC</span>
-<span class="sk">LIMIT</span> <span class="sn">20</span> <span class="sk">OFFSET</span> <span class="sn">10000</span>; <span class="sc">-- ← very slow!</span></code></pre></div>
-    </div>
-    <div class="compare-card">
-      <div class="compare-header good">✅ Keyset — O(log n) on any page</div>
-      <div class="code-block"><pre><code><span class="sc">-- First page (no cursor)</span>
+<span class="sk">LIMIT</span> <span class="sn">20</span> <span class="sk">OFFSET</span> <span class="sn">10000</span>; <span class="sc">-- ← very slow!</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">
+              ✅ Keyset — O(log n) on any page
+            </div>
+            <div class="code-block">
+              <pre><code><span class="sc">-- First page (no cursor)</span>
 <span class="sk">SELECT</span> id, title, created_at
 <span class="sk">FROM</span>   posts
 <span class="sk">ORDER BY</span> created_at <span class="sk">DESC</span>, id <span class="sk">DESC</span>
@@ -683,14 +1562,23 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
 <span class="sk">FROM</span>   posts
 <span class="sk">WHERE</span> (created_at, id) <span class="so">&lt;</span> ($last_ts, $last_id)
 <span class="sk">ORDER BY</span> created_at <span class="sk">DESC</span>, id <span class="sk">DESC</span>
-<span class="sk">LIMIT</span>  <span class="sn">20</span>; <span class="sc">-- always fast!</span></code></pre></div>
-    </div>
-  </div>
+<span class="sk">LIMIT</span>  <span class="sn">20</span>; <span class="sc">-- always fast!</span></code></pre>
+            </div>
+          </div>
+        </div>
 
-  <h3>5. COUNT(*) on Large Tables</h3>
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">count-alternatives.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ❌ Exact COUNT(*) on a 100M row table = full scan = slow</span>
+        <h3>5. COUNT(*) on Large Tables</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">count-alternatives.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ❌ Exact COUNT(*) on a 100M row table = full scan = slow</span>
 <span class="sk">SELECT</span> <span class="sf">COUNT</span>(*) <span class="sk">FROM</span> events;  <span class="sc">-- sequential scan every time</span>
 
 <span class="sc">-- ✅ Option 1: Fast approximate count from statistics</span>
@@ -724,12 +1612,20 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
 <span class="sc">-- CREATE INDEX idx_events_active ON events(id) WHERE deleted_at IS NULL;</span>
 <span class="sk">SELECT</span> <span class="sf">COUNT</span>(*) <span class="sk">FROM</span> events <span class="sk">WHERE</span> deleted_at <span class="sk">IS NULL</span>;
 <span class="sc">-- Uses the partial index — much faster than full scan</span></code></pre>
-  </div>
+        </div>
 
-  <h3>6. IN vs EXISTS vs ANY</h3>
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">in-vs-exists.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- IN with subquery — can be slow (executes subquery for each row)</span>
+        <h3>6. IN vs EXISTS vs ANY</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">in-vs-exists.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- IN with subquery — can be slow (executes subquery for each row)</span>
 <span class="sk">SELECT</span> * <span class="sk">FROM</span> users
 <span class="sk">WHERE</span> id <span class="sk">IN</span> (<span class="sk">SELECT</span> author_id <span class="sk">FROM</span> posts <span class="sk">WHERE</span> status <span class="so">=</span> <span class="ss">'published'</span>);
 
@@ -756,20 +1652,32 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
 <span class="sk">FROM</span>   users <span class="sa">u</span>
 <span class="sk">LEFT JOIN</span> posts <span class="sa">p</span> <span class="sk">ON</span> p.author_id <span class="so">=</span> u.id
 <span class="sk">WHERE</span>  p.id <span class="sk">IS NULL</span>;  <span class="sc">-- users with no posts</span></code></pre>
-  </div>
-</div>
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 06 PARALLEL -->
-<div class="section" id="parallel">
-  <div class="section-label">06 — Parallel Query</div>
-  <h2>Parallel Query Execution</h2>
-  <p class="lead">PostgreSQL 9.6+ can use multiple CPU cores for a single query. On large analytical queries this can give 4–8x speedups. Understanding when and how it kicks in lets you tune it effectively.</p>
+      <!-- ══════ 06 PARALLEL -->
+      <div class="section" id="parallel">
+        <div class="section-label">06 — Parallel Query</div>
+        <h2>Parallel Query Execution</h2>
+        <p class="lead">
+          PostgreSQL 9.6+ can use multiple CPU cores for a single query. On
+          large analytical queries this can give 4–8x speedups. Understanding
+          when and how it kicks in lets you tune it effectively.
+        </p>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">parallel-query.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ── Configuration ─────────────────────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">parallel-query.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ── Configuration ─────────────────────────────────</span>
 <span class="sc">-- max_parallel_workers_per_gather = 4  (workers per query node)</span>
 <span class="sc">-- max_parallel_workers             = 8  (total across all queries)</span>
 <span class="sc">-- max_worker_processes             = 16 (total background workers)</span>
@@ -813,19 +1721,27 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
 <span class="sk">IMMUTABLE AS</span> <span class="ss">$$</span>
   <span class="sk">SELECT CASE WHEN</span> b <span class="so">=</span> <span class="sn">0</span> <span class="sk">THEN NULL ELSE</span> a<span class="so">/</span>b <span class="sk">END</span>
 <span class="ss">$$</span>;</code></pre>
-  </div>
-</div>
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 07 REWRITES -->
-<div class="section" id="rewrites">
-  <div class="section-label">07 — Query Rewriting</div>
-  <h2>Query Rewriting for Performance</h2>
+      <!-- ══════ 07 REWRITES -->
+      <div class="section" id="rewrites">
+        <div class="section-label">07 — Query Rewriting</div>
+        <h2>Query Rewriting for Performance</h2>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">query-rewrites.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ── 1. DISTINCT vs GROUP BY ───────────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">query-rewrites.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ── 1. DISTINCT vs GROUP BY ───────────────────────</span>
 <span class="sc">-- DISTINCT often performs worse than GROUP BY for deduplication:</span>
 <span class="sk">SELECT DISTINCT</span> author_id <span class="sk">FROM</span> posts;   <span class="sc">-- sort-based dedup</span>
 <span class="sk">SELECT</span> author_id <span class="sk">FROM</span> posts <span class="sk">GROUP BY</span> author_id; <span class="sc">-- hash-based, faster</span>
@@ -897,31 +1813,65 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
 <span class="sk">FROM</span>   posts
 <span class="sk">ORDER BY</span> author_id, created_at <span class="sk">DESC</span>;
 <span class="sc">-- One index scan on (author_id, created_at DESC) = very fast</span></code></pre>
-  </div>
-</div>
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 08 JOINS -->
-<div class="section" id="joins">
-  <div class="section-label">08 — Join Algorithms</div>
-  <h2>Join Optimisation</h2>
-  <p class="lead">PostgreSQL has three join algorithms. The planner chooses based on row counts and available indexes. Knowing when each is appropriate lets you guide the planner when it goes wrong.</p>
+      <!-- ══════ 08 JOINS -->
+      <div class="section" id="joins">
+        <div class="section-label">08 — Join Algorithms</div>
+        <h2>Join Optimisation</h2>
+        <p class="lead">
+          PostgreSQL has three join algorithms. The planner chooses based on row
+          counts and available indexes. Knowing when each is appropriate lets
+          you guide the planner when it goes wrong.
+        </p>
 
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Algorithm</th><th>Best When</th><th>Memory</th><th>Requires</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Nested Loop</strong></td><td>Small outer set + indexed inner</td><td>O(1)</td><td>Index on inner join column</td></tr>
-        <tr><td><strong>Hash Join</strong></td><td>Medium/large sets, no useful sort</td><td>O(smaller table)</td><td>work_mem for hash table</td></tr>
-        <tr><td><strong>Merge Join</strong></td><td>Both sides already sorted</td><td>O(1)</td><td>Both sides sorted on join key</td></tr>
-      </tbody>
-    </table>
-  </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Algorithm</th>
+                <th>Best When</th>
+                <th>Memory</th>
+                <th>Requires</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Nested Loop</strong></td>
+                <td>Small outer set + indexed inner</td>
+                <td>O(1)</td>
+                <td>Index on inner join column</td>
+              </tr>
+              <tr>
+                <td><strong>Hash Join</strong></td>
+                <td>Medium/large sets, no useful sort</td>
+                <td>O(smaller table)</td>
+                <td>work_mem for hash table</td>
+              </tr>
+              <tr>
+                <td><strong>Merge Join</strong></td>
+                <td>Both sides already sorted</td>
+                <td>O(1)</td>
+                <td>Both sides sorted on join key</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">join-tuning.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ── Help the planner with join order ──────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">join-tuning.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ── Help the planner with join order ──────────────</span>
 <span class="sc">-- join_collapse_limit controls how many tables the planner</span>
 <span class="sc">-- considers reordering. Default 8. With 12+ tables it may give up.</span>
 <span class="sk">SET</span> join_collapse_limit <span class="so">=</span> <span class="sn">12</span>;
@@ -957,20 +1907,33 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
 <span class="sc">-- If you must join on an expression, create an expression index:</span>
 <span class="sk">CREATE INDEX</span> idx_posts_author_text <span class="sk">ON</span> posts(author_id<span class="so">::</span><span class="st">TEXT</span>);
 <span class="sc">-- Then: JOIN ON users.id::TEXT = posts.author_id::TEXT uses it</span></code></pre>
-  </div>
-</div>
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 09 PARTITIONING -->
-<div class="section" id="partitioning">
-  <div class="section-label">09 — Partitioning</div>
-  <h2>Table Partitioning</h2>
-  <p class="lead">Partitioning splits one logical table into multiple physical tables (partitions). Done right, it enables partition pruning — the planner skips irrelevant partitions entirely, turning a billion-row scan into a million-row scan.</p>
+      <!-- ══════ 09 PARTITIONING -->
+      <div class="section" id="partitioning">
+        <div class="section-label">09 — Partitioning</div>
+        <h2>Table Partitioning</h2>
+        <p class="lead">
+          Partitioning splits one logical table into multiple physical tables
+          (partitions). Done right, it enables partition pruning — the planner
+          skips irrelevant partitions entirely, turning a billion-row scan into
+          a million-row scan.
+        </p>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">partitioning.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ── Range partitioning by month ───────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">partitioning.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ── Range partitioning by month ───────────────────</span>
 <span class="sk">CREATE TABLE</span> events (
   id         <span class="st">BIGINT GENERATED ALWAYS AS IDENTITY</span>,
   user_id    <span class="st">UUID        NOT NULL</span>,
@@ -1025,20 +1988,32 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
 <span class="sk">SELECT</span> * <span class="sk">FROM</span> pg_partition_tree(<span class="ss">'events'</span>);
 <span class="sk">EXPLAIN SELECT</span> * <span class="sk">FROM</span> events <span class="sk">WHERE</span> created_at <span class="so">=</span> <span class="sf">NOW</span>();
 <span class="sc">-- Should show only 1 partition in the plan, not all of them</span></code></pre>
-  </div>
-</div>
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 10 MAT VIEWS -->
-<div class="section" id="matviews">
-  <div class="section-label">10 — Materialised Views</div>
-  <h2>Materialized Views for Pre-computation</h2>
-  <p class="lead">A materialised view stores the result of a query on disk — like a cached query result. For expensive aggregations or dashboards that don't need real-time data, they're a game-changer.</p>
+      <!-- ══════ 10 MAT VIEWS -->
+      <div class="section" id="matviews">
+        <div class="section-label">10 — Materialised Views</div>
+        <h2>Materialized Views for Pre-computation</h2>
+        <p class="lead">
+          A materialised view stores the result of a query on disk — like a
+          cached query result. For expensive aggregations or dashboards that
+          don't need real-time data, they're a game-changer.
+        </p>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">materialized-views.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ── Create a materialised view ────────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">materialized-views.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ── Create a materialised view ────────────────────</span>
 <span class="sc">-- This expensive aggregation runs once:</span>
 <span class="sk">CREATE MATERIALIZED VIEW</span> author_stats <span class="sk">AS</span>
 <span class="sk">SELECT</span>
@@ -1091,19 +2066,27 @@ posts <span class="so">=</span> <span class="sf">query</span>(<span class="ss">"
 <span class="sk">CREATE TRIGGER</span> posts_dirty
 <span class="sk">AFTER INSERT OR UPDATE OR DELETE ON</span> posts
 <span class="sk">FOR EACH ROW EXECUTE FUNCTION</span> mark_author_dirty();</code></pre>
-  </div>
-</div>
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 11 CONFIG -->
-<div class="section" id="config">
-  <div class="section-label">11 — Configuration</div>
-  <h2>Configuration Tuning for Performance</h2>
+      <!-- ══════ 11 CONFIG -->
+      <div class="section" id="config">
+        <div class="section-label">11 — Configuration</div>
+        <h2>Configuration Tuning for Performance</h2>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">postgresql.conf — production settings</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc"># ── Memory (most impactful settings) ─────────────────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">postgresql.conf — production settings</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc"># ── Memory (most impactful settings) ─────────────────────────────</span>
 
 <span class="sc"># shared_buffers: PostgreSQL's own page cache</span>
 <span class="sc"># Rule: 25% of total RAM. Don't set higher — OS cache does the rest.</span>
@@ -1153,24 +2136,37 @@ log_min_duration_statement = <span class="sn">100</span>   <span class="sc"># lo
 log_autovacuum_min_duration = <span class="sn">0</span>    <span class="sc"># log all autovacuum runs (for tuning)</span>
 log_lock_waits = <span class="si">on</span>                <span class="sc"># log when queries wait on locks</span>
 log_temp_files = <span class="sn">0</span>                 <span class="sc"># log all temp file creation (work_mem spills)</span></code></pre>
-  </div>
+        </div>
 
-  <div class="callout warn">
-    <div class="callout-label">⚠ work_mem is Per Node, Not Per Query</div>
-    A complex query with 3 sort nodes can use <code>3 × work_mem</code> — and each connection can have a separate query running. <code>200 connections × 3 nodes × 64MB = 38GB</code>. Set it conservatively globally and increase per-query with <code>SET LOCAL work_mem = '256MB'</code> inside a transaction when needed.
-  </div>
-</div>
+        <div class="callout warn">
+          <div class="callout-label">⚠ work_mem is Per Node, Not Per Query</div>
+          A complex query with 3 sort nodes can use <code>3 × work_mem</code> —
+          and each connection can have a separate query running.
+          <code>200 connections × 3 nodes × 64MB = 38GB</code>. Set it
+          conservatively globally and increase per-query with
+          <code>SET LOCAL work_mem = '256MB'</code> inside a transaction when
+          needed.
+        </div>
+      </div>
 
-<hr class="divider">
+      <hr class="divider" />
 
-<!-- ══════ 12 MONITORING -->
-<div class="section" id="monitoring">
-  <div class="section-label">12 — Monitoring</div>
-  <h2>Monitoring, Profiling & the Query Optimisation Workflow</h2>
+      <!-- ══════ 12 MONITORING -->
+      <div class="section" id="monitoring">
+        <div class="section-label">12 — Monitoring</div>
+        <h2>Monitoring, Profiling & the Query Optimisation Workflow</h2>
 
-  <div class="code-block">
-    <div class="code-header"><div class="code-dots"><div class="cd cd-r"></div><div class="cd cd-y"></div><div class="cd cd-g"></div></div><span class="code-fname">monitoring.sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-    <pre><code><span class="sc">-- ── pg_stat_statements — your #1 tool ────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <div class="cd cd-r"></div>
+              <div class="cd cd-y"></div>
+              <div class="cd cd-g"></div>
+            </div>
+            <span class="code-fname">monitoring.sql</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="sc">-- ── pg_stat_statements — your #1 tool ────────────</span>
 <span class="sc">-- Install once per database:</span>
 <span class="sk">CREATE EXTENSION IF NOT EXISTS</span> pg_stat_statements;
 <span class="sc">-- Add to postgresql.conf: shared_preload_libraries = 'pg_stat_statements'</span>
@@ -1244,71 +2240,123 @@ log_temp_files = <span class="sn">0</span>                 <span class="sc"># lo
 <span class="sk">FROM</span>   pg_stat_user_tables
 <span class="sk">WHERE</span>  n_dead_tup <span class="so">&gt;</span> <span class="sn">10000</span>
 <span class="sk">ORDER BY</span> n_dead_tup <span class="sk">DESC</span>;</code></pre>
-  </div>
+        </div>
 
-  <h3>The Optimisation Workflow</h3>
-  <ul class="phase-list">
-    <li class="phase-item">
-      <span class="phase-badge" style="background:#dbeafe;color:#1d4ed8">Step 1</span>
-      <div class="phase-content">
-        <strong>Identify — find the slow query</strong>
-        <span>Use <code>pg_stat_statements</code> to find queries with the highest total time or most disk reads. Use <code>log_min_duration_statement = 100</code> to capture slow queries in your log file.</span>
-      </div>
-    </li>
-    <li class="phase-item">
-      <span class="phase-badge" style="background:#f3e8ff;color:#7c3aed">Step 2</span>
-      <div class="phase-content">
-        <strong>Diagnose — read the query plan</strong>
-        <span>Run <code>EXPLAIN (ANALYZE, BUFFERS)</code> on the slow query. Paste the JSON output to <a href="https://explain.dalibo.com" style="color:#2563eb">explain.dalibo.com</a> for a visual plan. Identify the slowest node and the root cause.</span>
-      </div>
-    </li>
-    <li class="phase-item">
-      <span class="phase-badge" style="background:#dcfce7;color:#15803d">Step 3</span>
-      <div class="phase-content">
-        <strong>Fix — apply the right technique</strong>
-        <span>Missing index? Seq scan on filtered column? → Add index. Stale stats? Estimates wildly off? → ANALYZE or increase statistics_target. Large sort spilling? → Increase work_mem. Bad query pattern? → Rewrite.</span>
-      </div>
-    </li>
-    <li class="phase-item">
-      <span class="phase-badge" style="background:#fef3c7;color:#92400e">Step 4</span>
-      <div class="phase-content">
-        <strong>Verify — measure the improvement</strong>
-        <span>Run EXPLAIN ANALYZE again and compare the plans. Check <code>pg_stat_statements</code> after the fix is live to confirm the improvement in production. Track query performance over time with a monitoring tool.</span>
-      </div>
-    </li>
-    <li class="phase-item">
-      <span class="phase-badge" style="background:#fff1f2;color:#e11d48">Step 5</span>
-      <div class="phase-content">
-        <strong>Monitor — prevent regressions</strong>
-        <span>Set up <code>log_min_duration_statement</code>, alerting on p99 query latency, and a weekly review of the top 20 slowest queries from <code>pg_stat_statements</code>. Catch regressions before users do.</span>
-      </div>
-    </li>
-  </ul>
+        <h3>The Optimisation Workflow</h3>
+        <ul class="phase-list">
+          <li class="phase-item">
+            <span
+              class="phase-badge"
+              style="background: #dbeafe; color: #1d4ed8"
+              >Step 1</span
+            >
+            <div class="phase-content">
+              <strong>Identify — find the slow query</strong>
+              <span
+                >Use <code>pg_stat_statements</code> to find queries with the
+                highest total time or most disk reads. Use
+                <code>log_min_duration_statement = 100</code> to capture slow
+                queries in your log file.</span
+              >
+            </div>
+          </li>
+          <li class="phase-item">
+            <span
+              class="phase-badge"
+              style="background: #f3e8ff; color: #7c3aed"
+              >Step 2</span
+            >
+            <div class="phase-content">
+              <strong>Diagnose — read the query plan</strong>
+              <span
+                >Run <code>EXPLAIN (ANALYZE, BUFFERS)</code> on the slow query.
+                Paste the JSON output to
+                <a href="https://explain.dalibo.com" style="color: #2563eb"
+                  >explain.dalibo.com</a
+                >
+                for a visual plan. Identify the slowest node and the root
+                cause.</span
+              >
+            </div>
+          </li>
+          <li class="phase-item">
+            <span
+              class="phase-badge"
+              style="background: #dcfce7; color: #15803d"
+              >Step 3</span
+            >
+            <div class="phase-content">
+              <strong>Fix — apply the right technique</strong>
+              <span
+                >Missing index? Seq scan on filtered column? → Add index. Stale
+                stats? Estimates wildly off? → ANALYZE or increase
+                statistics_target. Large sort spilling? → Increase work_mem. Bad
+                query pattern? → Rewrite.</span
+              >
+            </div>
+          </li>
+          <li class="phase-item">
+            <span
+              class="phase-badge"
+              style="background: #fef3c7; color: #92400e"
+              >Step 4</span
+            >
+            <div class="phase-content">
+              <strong>Verify — measure the improvement</strong>
+              <span
+                >Run EXPLAIN ANALYZE again and compare the plans. Check
+                <code>pg_stat_statements</code> after the fix is live to confirm
+                the improvement in production. Track query performance over time
+                with a monitoring tool.</span
+              >
+            </div>
+          </li>
+          <li class="phase-item">
+            <span
+              class="phase-badge"
+              style="background: #fff1f2; color: #e11d48"
+              >Step 5</span
+            >
+            <div class="phase-content">
+              <strong>Monitor — prevent regressions</strong>
+              <span
+                >Set up <code>log_min_duration_statement</code>, alerting on p99
+                query latency, and a weekly review of the top 20 slowest queries
+                from <code>pg_stat_statements</code>. Catch regressions before
+                users do.</span
+              >
+            </div>
+          </li>
+        </ul>
 
-  <div class="pullquote">"Every slow query has an explanation. EXPLAIN tells you what it is — the skill is knowing how to read it."</div>
-
-</div>
-
-</div><!-- end .content -->
-<footer>
-  <p><strong>PostgreSQL Query Optimisation</strong> — DevDive</p>
-  <p style="margin-top:8px">PostgreSQL 16 · May 2026 · <a href="index.html">← Back to DevDive</a></p>
-</footer>
-<script>
-  function copyCode(btn) {
-    const pre = btn.closest('.code-block').querySelector('pre')
-    navigator.clipboard.writeText(pre.textContent).then(() => {
-      btn.textContent = 'Copied!'
-      setTimeout(() => btn.textContent = 'Copy', 2000)
-    })
-  }
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      e.preventDefault()
-      const t = document.querySelector(a.getAttribute('href'))
-      if (t) t.scrollIntoView({ behavior: 'smooth' })
-    })
-  })
-</script>
-</body>
+        <div class="pullquote">
+          "Every slow query has an explanation. EXPLAIN tells you what it is —
+          the skill is knowing how to read it."
+        </div>
+      </div>
+    </div>
+    <!-- end .content -->
+    <footer>
+      <p><strong>PostgreSQL Query Optimisation</strong> — DevDive</p>
+      <p style="margin-top: 8px">
+        PostgreSQL 16 · May 2026 · <a href="index.html">← Back to DevDive</a>
+      </p>
+    </footer>
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest(".code-block").querySelector("pre");
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = "Copy"), 2000);
+        });
+      }
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          const t = document.querySelector(a.getAttribute("href"));
+          if (t) t.scrollIntoView({ behavior: "smooth" });
+        });
+      });
+    </script>
+  </body>
 </html>

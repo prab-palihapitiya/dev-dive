@@ -1,194 +1,867 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Engineering Best Practices — The Complete Guide for Senior JavaScript Engineers</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg:#fdf9f2;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
-  --text-muted:#9a9a9a;--accent:#b45309;--accent-light:#fffbeb;--accent-subtle:#fef3c7;
-  --border:#ede5d0;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#fef8ec;
-  --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
-  --danger-bg:#fff1f2;--danger-border:#dc2626;--info-bg:#eff6ff;--info-border:#2563eb;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.75}
-nav{position:sticky;top:0;z-index:100;background:rgba(253,249,242,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
-.nav-left{display:flex;align-items:center;gap:12px}
-.nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;transition:color 0.15s;display:flex;align-items:center;gap:5px}
-.nav-back:hover{color:var(--accent)}
-.nav-pipe{color:var(--border);font-size:18px}
-.nav-brand{font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-0.3px}
-.nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:100px;letter-spacing:0.3px}
-.nav-links{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}.nav-links::-webkit-scrollbar{display:none}
-.nav-links a{font-size:12.5px;color:var(--text-secondary);text-decoration:none;padding:5px 9px;border-radius:6px;transition:all .15s;white-space:nowrap}
-.nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
-.nav-read-time{font-size:13px;color:var(--text-muted);flex-shrink:0}
-.hero{max-width:780px;margin:0 auto;padding:64px 2rem 48px}
-.hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;margin-bottom:24px;letter-spacing:.3px;text-transform:uppercase}
-.hero h1{font-family:'Lora',serif;font-size:clamp(32px,5vw,50px);font-weight:600;line-height:1.12;letter-spacing:-.5px;margin-bottom:20px}
-.hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
-.hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#b45309,#78350f);display:flex;align-items:center;justify-content:center;font-size:16px}
-.meta-text{font-size:14px;color:var(--text-secondary)}.meta-text strong{color:var(--text-primary)}
-.hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
-.toc-wrapper{max-width:780px;margin:0 auto;padding:0 2rem 8px}
-.toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:40px}
-.toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
-.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
-.toc a{font-size:14px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
-.toc a:hover{color:var(--accent)}.toc-num{font-size:12px;color:var(--text-muted);font-weight:500;min-width:20px}
-.content{max-width:780px;margin:0 auto;padding:0 2rem 80px}
-.section{margin-bottom:72px;scroll-margin-top:72px}
-.section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section-label::after{content:'';flex:1;height:1px;background:var(--accent-subtle)}
-h2{font-family:'Lora',serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:16px}
-h3{font-size:19px;font-weight:600;margin:32px 0 12px}
-p{margin-bottom:18px;color:#2d2d2d}.lead{font-size:19px;color:var(--text-secondary);font-weight:300;margin-bottom:24px}
-.code-block{background:var(--code-bg);border-radius:10px;margin:24px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
-.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
-.code-lang{font-size:12px;color:#6e7681;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
-.copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:'Outfit',sans-serif;transition:all .15s}
-.copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
-pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.7;color:var(--code-text)}
-pre code{background:none;padding:0;font-size:inherit}
-code{font-family:'JetBrains Mono',monospace;font-size:13.5px;background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:4px}
-.kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
-.cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
-.pu{color:#e6edf3}.bi{color:#ffa657}.str2{color:#7ee787}
-.tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-.warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-.danger{background:var(--danger-bg);border-left:3px solid var(--danger-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-.info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-.tip-label{font-size:12px;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.warn-label{font-size:12px;font-weight:600;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.danger-label{font-size:12px;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.info-label{font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
-.compare-card{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
-.compare-header{padding:10px 16px;font-size:13px;font-weight:600}
-.compare-header.bad{background:#fef2f2;color:#dc2626}.compare-header.good{background:#f0fdf4;color:#16a34a}
-.compare-header.before{background:#f8f8f8;color:#555}.compare-header.after{background:#fef9ec;color:#92400e}
-.compare-card .code-block{border-radius:0;margin:0;border:none}
-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px}
-th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
-td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
-tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg)}
-.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;letter-spacing:.3px;vertical-align:middle}
-.badge-green{background:#dcfce7;color:#15803d}.badge-amber{background:#fef3c7;color:#b45309}
-.badge-red{background:#fee2e2;color:#b91c1c}.badge-blue{background:#dbeafe;color:#1d4ed8}
-.badge-violet{background:#ede9fe;color:#5b21b6}
-.pullquote{font-family:'Lora',serif;font-style:italic;font-size:22px;line-height:1.5;color:var(--text-secondary);border-left:4px solid var(--accent);padding:12px 24px;margin:36px 0}
-.concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin:24px 0}
-.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
-.concept-card h4{font-size:15px;font-weight:600;margin-bottom:6px;margin-top:0}
-.concept-card p{font-size:14px;color:var(--text-secondary);margin:0;line-height:1.5}
-.concept-icon{font-size:22px;margin-bottom:10px}
-.phase-list{list-style:none;margin:16px 0}
-.phase-list li{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--border);font-size:15px}
-.phase-list li:last-child{border-bottom:none}
-.phase-num{min-width:28px;height:28px;border-radius:50%;background:var(--accent-subtle);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
-.checklist{list-style:none;margin:16px 0;padding:0}
-.checklist li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:15px}
-.checklist li:last-child{border-bottom:none}
-.check-icon{font-size:14px;flex-shrink:0;margin-top:3px}
-.principle-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
-.principle-letter{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:6px}
-.principle-title{font-size:17px;font-weight:600;margin-bottom:8px}
-.principle-desc{font-size:14px;color:var(--text-secondary);margin:0;line-height:1.6}
-.divider{border:none;border-top:1px solid var(--border);margin:56px 0}
-footer{background:#1c0a00;color:rgba(255,255,255,.6);text-align:center;padding:40px 2rem;font-size:14px}
-footer strong{color:#fff}footer a{color:#fcd34d;text-decoration:none}footer a:hover{text-decoration:underline}
-@media(max-width:640px){.toc-grid,.compare-grid{grid-template-columns:1fr}.nav-links{display:none}}
-</style>
-</head>
-<body>
-<nav>
-  <div class="nav-left">
-    <a class="nav-back" href="index.html">← DevDive</a>
-    <span class="nav-pipe">|</span>
-    <span class="nav-brand">Best Practices</span>
-    <span class="nav-badge">Complete Guide</span>
-  </div>
-  <div class="nav-links">
-    <a href="#reviews">Code Review</a>
-    <a href="#testing">Testing</a>
-    <a href="#solid">SOLID</a>
-    <a href="#refactoring">Refactoring</a>
-    <a href="#api">API Design</a>
-    <a href="#architecture">Clean Architecture</a>
-    <a href="#patterns">Design Patterns</a>
-    <a href="#dependencies">Dependencies</a>
-    <a href="#documentation">Docs & ADRs</a>
-    <a href="#decisions">Tech Decisions</a>
-    <a href="#ownership">Code Ownership</a>
-    <a href="#checklist">Readiness Checklist</a>
-  </div>
-  <div class="nav-read-time">~45 min read</div>
-</nav>
-<div class="hero">
-  <div class="hero-tag">📋 Complete Guide</div>
-  <h1>Engineering Best Practices</h1>
-  <p class="hero-sub">Code review techniques, testing pyramid, SOLID principles, refactoring patterns, API design, clean architecture, design patterns, dependency management, documentation, ADRs, and technical decision-making — the engineering discipline that separates good from great.</p>
-  <div class="hero-meta">
-    <div class="avatar">📋</div>
-    <div class="meta-text">
-      <strong>Engineering Craft — Senior JavaScript Edition</strong><br>
-      Language-agnostic principles · JavaScript/TypeScript examples — June 2026
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Engineering Best Practices — The Complete Guide for Senior JavaScript
+      Engineers
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <style>
+      :root {
+        --bg: #fdf9f2;
+        --surface: #fff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b6b6b;
+        --text-muted: #9a9a9a;
+        --accent: #b45309;
+        --accent-light: #fffbeb;
+        --accent-subtle: #fef3c7;
+        --border: #ede5d0;
+        --code-bg: #0d1117;
+        --code-text: #e6edf3;
+        --tag-bg: #fef8ec;
+        --tip-bg: #f0fdf4;
+        --tip-border: #16a34a;
+        --warn-bg: #fff7ed;
+        --warn-border: #ea580c;
+        --danger-bg: #fff1f2;
+        --danger-border: #dc2626;
+        --info-bg: #eff6ff;
+        --info-border: #2563eb;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.75;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(253, 249, 242, 0.94);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover {
+        color: var(--accent);
+      }
+      .nav-pipe {
+        color: var(--border);
+        font-size: 18px;
+      }
+      .nav-brand {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: var(--accent-light);
+        color: var(--accent);
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+      .nav-links a {
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 5px 9px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--tag-bg);
+        color: var(--text-primary);
+      }
+      .nav-read-time {
+        font-size: 13px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 2rem 48px;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(32px, 5vw, 50px);
+        font-weight: 600;
+        line-height: 1.12;
+        letter-spacing: -0.5px;
+        margin-bottom: 20px;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #b45309, #78350f);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .meta-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .meta-text strong {
+        color: var(--text-primary);
+      }
+      .hero-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin-top: 32px;
+      }
+      .toc-wrapper {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 8px;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 40px;
+      }
+      .toc h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 24px;
+      }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+        transition: color 0.15s;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc-num {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+        min-width: 20px;
+      }
+      .content {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 80px;
+      }
+      .section {
+        margin-bottom: 72px;
+        scroll-margin-top: 72px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--accent-subtle);
+      }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+      }
+      h3 {
+        font-size: 19px;
+        font-weight: 600;
+        margin: 32px 0 12px;
+      }
+      p {
+        margin-bottom: 18px;
+        color: #2d2d2d;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        margin-bottom: 24px;
+      }
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 10px;
+        margin: 24px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-lang {
+        font-size: 12px;
+        color: #6e7681;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .copy-btn {
+        font-size: 12px;
+        color: #484f58;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #8b949e;
+      }
+      pre {
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--code-text);
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        background: #fef3c7;
+        color: #92400e;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .kw {
+        color: #ff7b72;
+      }
+      .ty {
+        color: #79c0ff;
+      }
+      .st {
+        color: #a5d6ff;
+      }
+      .nm {
+        color: #f0883e;
+      }
+      .cm {
+        color: #8b949e;
+        font-style: italic;
+      }
+      .fn {
+        color: #d2a8ff;
+      }
+      .op {
+        color: #c9d1d9;
+      }
+      .pu {
+        color: #e6edf3;
+      }
+      .bi {
+        color: #ffa657;
+      }
+      .str2 {
+        color: #7ee787;
+      }
+      .tip {
+        background: var(--tip-bg);
+        border-left: 3px solid var(--tip-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .warn {
+        background: var(--warn-bg);
+        border-left: 3px solid var(--warn-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .danger {
+        background: var(--danger-bg);
+        border-left: 3px solid var(--danger-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .info {
+        background: var(--info-bg);
+        border-left: 3px solid var(--info-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .tip-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #16a34a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .warn-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #ea580c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .danger-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #dc2626;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2563eb;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .compare-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .compare-header {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .compare-header.bad {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+      .compare-header.good {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .compare-header.before {
+        background: #f8f8f8;
+        color: #555;
+      }
+      .compare-header.after {
+        background: #fef9ec;
+        color: #92400e;
+      }
+      .compare-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      th {
+        background: var(--tag-bg);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+        vertical-align: middle;
+      }
+      .badge-green {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .badge-red {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .badge-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-violet {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 12px 24px;
+        margin: 36px 0;
+      }
+      .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+      }
+      .concept-card h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        margin-top: 0;
+      }
+      .concept-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .concept-icon {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
+      .phase-list {
+        list-style: none;
+        margin: 16px 0;
+      }
+      .phase-list li {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+      }
+      .phase-list li:last-child {
+        border-bottom: none;
+      }
+      .phase-num {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .checklist {
+        list-style: none;
+        margin: 16px 0;
+        padding: 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .check-icon {
+        font-size: 14px;
+        flex-shrink: 0;
+        margin-top: 3px;
+      }
+      .principle-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        border-radius: 0 10px 10px 0;
+        padding: 18px 22px;
+        margin: 16px 0;
+      }
+      .principle-letter {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--accent);
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+      .principle-title {
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .principle-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.6;
+      }
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 56px 0;
+      }
+      footer {
+        background: #1c0a00;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+        padding: 40px 2rem;
+        font-size: 14px;
+      }
+      footer strong {
+        color: #fff;
+      }
+      footer a {
+        color: #fcd34d;
+        text-decoration: none;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 640px) {
+        .toc-grid,
+        .compare-grid {
+          grid-template-columns: 1fr;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">
+        <a class="nav-back" href="index.html">← DevDive</a>
+        <span class="nav-pipe">|</span>
+        <span class="nav-brand">Best Practices</span>
+        <span class="nav-badge">Complete Guide</span>
+      </div>
+      <div class="nav-links">
+        <a href="#reviews">Code Review</a>
+        <a href="#testing">Testing</a>
+        <a href="#solid">SOLID</a>
+        <a href="#refactoring">Refactoring</a>
+        <a href="#api">API Design</a>
+        <a href="#architecture">Clean Architecture</a>
+        <a href="#patterns">Design Patterns</a>
+        <a href="#dependencies">Dependencies</a>
+        <a href="#documentation">Docs & ADRs</a>
+        <a href="#decisions">Tech Decisions</a>
+        <a href="#ownership">Code Ownership</a>
+        <a href="#checklist">Readiness Checklist</a>
+      </div>
+      <div class="nav-read-time">~45 min read</div>
+    </nav>
+    <div class="hero">
+      <div class="hero-tag">📋 Complete Guide</div>
+      <h1>Engineering Best Practices</h1>
+      <p class="hero-sub">
+        Code review techniques, testing pyramid, SOLID principles, refactoring
+        patterns, API design, clean architecture, design patterns, dependency
+        management, documentation, ADRs, and technical decision-making — the
+        engineering discipline that separates good from great.
+      </p>
+      <div class="hero-meta">
+        <div class="avatar">📋</div>
+        <div class="meta-text">
+          <strong>Engineering Craft — Senior JavaScript Edition</strong><br />
+          Language-agnostic principles · JavaScript/TypeScript examples — June
+          2026
+        </div>
+      </div>
+      <hr class="hero-divider" />
     </div>
-  </div>
-  <hr class="hero-divider">
-</div>
-<div class="toc-wrapper">
-  <div class="toc">
-    <h3>Table of Contents</h3>
-    <div class="toc-grid">
-      <a href="#reviews"><span class="toc-num">01</span> Code Review Techniques</a>
-      <a href="#patterns"><span class="toc-num">07</span> Design Patterns</a>
-      <a href="#testing"><span class="toc-num">02</span> Testing Pyramid & Test Design</a>
-      <a href="#dependencies"><span class="toc-num">08</span> Dependency Management</a>
-      <a href="#solid"><span class="toc-num">03</span> SOLID Principles</a>
-      <a href="#documentation"><span class="toc-num">09</span> Documentation & ADRs</a>
-      <a href="#refactoring"><span class="toc-num">04</span> Refactoring Patterns</a>
-      <a href="#decisions"><span class="toc-num">10</span> Technical Decision Making</a>
-      <a href="#api"><span class="toc-num">05</span> API Design</a>
-      <a href="#ownership"><span class="toc-num">11</span> Code Ownership & Team Practices</a>
-      <a href="#architecture"><span class="toc-num">06</span> Clean Architecture</a>
-      <a href="#checklist"><span class="toc-num">12</span> Production Readiness Checklist</a>
+    <div class="toc-wrapper">
+      <div class="toc">
+        <h3>Table of Contents</h3>
+        <div class="toc-grid">
+          <a href="#reviews"
+            ><span class="toc-num">01</span> Code Review Techniques</a
+          >
+          <a href="#patterns"
+            ><span class="toc-num">07</span> Design Patterns</a
+          >
+          <a href="#testing"
+            ><span class="toc-num">02</span> Testing Pyramid & Test Design</a
+          >
+          <a href="#dependencies"
+            ><span class="toc-num">08</span> Dependency Management</a
+          >
+          <a href="#solid"><span class="toc-num">03</span> SOLID Principles</a>
+          <a href="#documentation"
+            ><span class="toc-num">09</span> Documentation & ADRs</a
+          >
+          <a href="#refactoring"
+            ><span class="toc-num">04</span> Refactoring Patterns</a
+          >
+          <a href="#decisions"
+            ><span class="toc-num">10</span> Technical Decision Making</a
+          >
+          <a href="#api"><span class="toc-num">05</span> API Design</a>
+          <a href="#ownership"
+            ><span class="toc-num">11</span> Code Ownership & Team Practices</a
+          >
+          <a href="#architecture"
+            ><span class="toc-num">06</span> Clean Architecture</a
+          >
+          <a href="#checklist"
+            ><span class="toc-num">12</span> Production Readiness Checklist</a
+          >
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<div class="content">
+    <div class="content">
+      <!-- ═══ 01 CODE REVIEW ═══ -->
+      <div class="section" id="reviews">
+        <div class="section-label">01 — The First Gate</div>
+        <h2>Code Review Techniques</h2>
+        <p class="lead">
+          Code review is not a quality gate — it is a knowledge-sharing,
+          mentoring, and design-alignment ritual. The best reviews catch
+          architectural issues, not missing semicolons. Leave that to linters.
+        </p>
 
-  <!-- ═══ 01 CODE REVIEW ═══ -->
-  <div class="section" id="reviews">
-    <div class="section-label">01 — The First Gate</div>
-    <h2>Code Review Techniques</h2>
-    <p class="lead">Code review is not a quality gate — it is a knowledge-sharing, mentoring, and design-alignment ritual. The best reviews catch architectural issues, not missing semicolons. Leave that to linters.</p>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🎯</div>
+            <h4>Review the Right Things</h4>
+            <p>
+              Logic correctness, security implications, performance at scale,
+              error handling completeness, test coverage.
+              <em>Not</em> formatting — automate that with Prettier/ESLint.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔍</div>
+            <h4>Understand Before Commenting</h4>
+            <p>
+              Read the linked ticket, understand the intent. Don't comment on
+              style choices that are valid alternatives. Ask questions before
+              making assertions.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📖</div>
+            <h4>Review in Layers</h4>
+            <p>
+              First pass: architecture and design (10 min). Second pass: logic
+              and edge cases. Third pass: tests. Don't mix these — you'll miss
+              macro issues chasing micro ones.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">💬</div>
+            <h4>Comment with Context</h4>
+            <p>
+              Explain the <em>why</em>, not the <em>what</em>. "This will cause
+              N+1 queries at scale because..." is useful. "Bad" is not.
+            </p>
+          </div>
+        </div>
 
-    <div class="concept-grid">
-      <div class="concept-card"><div class="concept-icon">🎯</div><h4>Review the Right Things</h4><p>Logic correctness, security implications, performance at scale, error handling completeness, test coverage. <em>Not</em> formatting — automate that with Prettier/ESLint.</p></div>
-      <div class="concept-card"><div class="concept-icon">🔍</div><h4>Understand Before Commenting</h4><p>Read the linked ticket, understand the intent. Don't comment on style choices that are valid alternatives. Ask questions before making assertions.</p></div>
-      <div class="concept-card"><div class="concept-icon">📖</div><h4>Review in Layers</h4><p>First pass: architecture and design (10 min). Second pass: logic and edge cases. Third pass: tests. Don't mix these — you'll miss macro issues chasing micro ones.</p></div>
-      <div class="concept-card"><div class="concept-icon">💬</div><h4>Comment with Context</h4><p>Explain the <em>why</em>, not the <em>what</em>. "This will cause N+1 queries at scale because..." is useful. "Bad" is not.</p></div>
-    </div>
+        <h3>The Code Review Checklist</h3>
+        <ul class="phase-list">
+          <li>
+            <div class="phase-num">1</div>
+            <div>
+              <strong>Does it solve the right problem?</strong> Re-read the
+              ticket. Is the implementation aligned with the requirement, or has
+              scope crept in? Is there an over-engineered solution to a simple
+              problem?
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">2</div>
+            <div>
+              <strong>Is it correct?</strong> Walk through edge cases mentally:
+              empty inputs, null/undefined, race conditions, integer overflow,
+              off-by-one. What happens when a downstream service fails?
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">3</div>
+            <div>
+              <strong>Is it secure?</strong> Scan for unvalidated inputs,
+              SQL/NoSQL injection, hardcoded secrets, broken auth checks, IDOR,
+              missing rate limits. Security issues in review cost 10× less than
+              in production.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">4</div>
+            <div>
+              <strong>Will it scale?</strong> Identify N+1 queries, unbounded
+              loops, missing pagination, synchronous I/O in hot paths, memory
+              leaks (event listeners not removed, closures holding references).
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">5</div>
+            <div>
+              <strong>Is it tested properly?</strong> Are happy paths, error
+              paths, and edge cases covered? Are tests testing behaviour or
+              implementation details? Would the tests catch a real regression?
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">6</div>
+            <div>
+              <strong>Is it maintainable?</strong> Will the next engineer
+              understand this in 6 months? Complex logic needs comments
+              explaining intent. Long functions need extraction. Magic numbers
+              need named constants.
+            </div>
+          </li>
+        </ul>
 
-    <h3>The Code Review Checklist</h3>
-    <ul class="phase-list">
-      <li><div class="phase-num">1</div><div><strong>Does it solve the right problem?</strong> Re-read the ticket. Is the implementation aligned with the requirement, or has scope crept in? Is there an over-engineered solution to a simple problem?</div></li>
-      <li><div class="phase-num">2</div><div><strong>Is it correct?</strong> Walk through edge cases mentally: empty inputs, null/undefined, race conditions, integer overflow, off-by-one. What happens when a downstream service fails?</div></li>
-      <li><div class="phase-num">3</div><div><strong>Is it secure?</strong> Scan for unvalidated inputs, SQL/NoSQL injection, hardcoded secrets, broken auth checks, IDOR, missing rate limits. Security issues in review cost 10× less than in production.</div></li>
-      <li><div class="phase-num">4</div><div><strong>Will it scale?</strong> Identify N+1 queries, unbounded loops, missing pagination, synchronous I/O in hot paths, memory leaks (event listeners not removed, closures holding references).</div></li>
-      <li><div class="phase-num">5</div><div><strong>Is it tested properly?</strong> Are happy paths, error paths, and edge cases covered? Are tests testing behaviour or implementation details? Would the tests catch a real regression?</div></li>
-      <li><div class="phase-num">6</div><div><strong>Is it maintainable?</strong> Will the next engineer understand this in 6 months? Complex logic needs comments explaining intent. Long functions need extraction. Magic numbers need named constants.</div></li>
-    </ul>
-
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Markdown — Review Comment Templates</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">## Constructive review comment anatomy</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">Markdown — Review Comment Templates</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">## Constructive review comment anatomy</span>
 
 <span class="cm">## ✅ Actionable suggestion</span>
 <span class="str2">**Suggestion**: This could cause a race condition if two requests arrive simultaneously.
@@ -213,50 +886,101 @@ would make the intent clearer at a glance. Up to you.</span>
 <span class="str2">**Blocking**: This logs `req.body` on line 23 which may contain passwords
 and card numbers. We must never log raw request bodies. Please redact
 sensitive fields before logging or remove this line.</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Reviewing as an Author</h3>
-    <div class="compare-grid">
-      <div class="compare-card">
-        <div class="compare-header bad">❌ Makes reviewing hard</div>
-        <div class="code-block"><pre><code><span class="cm">- 47 files changed, 2,400 additions
+        <h3>Reviewing as an Author</h3>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">❌ Makes reviewing hard</div>
+            <div class="code-block">
+              <pre><code><span class="cm">- 47 files changed, 2,400 additions
 - Mix of refactor + feature + bugfix
 - No description in PR body
 - Force-pushed over reviewer comments
-- "LGTM" as self-approval</span></code></pre></div>
-      </div>
-      <div class="compare-card">
-        <div class="compare-header good">✅ Makes reviewing easy</div>
-        <div class="code-block"><pre><code><span class="cm">- < 400 lines of meaningful diff
+- "LGTM" as self-approval</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">✅ Makes reviewing easy</div>
+            <div class="code-block">
+              <pre><code><span class="cm">- < 400 lines of meaningful diff
 - Single concern per PR
 - PR body: why, what, how to test
 - Responds to each comment
 - Marks conversations resolved
-- Links to ticket + relevant context</span></code></pre></div>
+- Links to ticket + relevant context</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">💡 The 200-Line Rule</div>
+          Research from SmartBear shows review effectiveness drops sharply after
+          400 lines of diff, with the steepest drop at 200. Above 400 lines,
+          reviewers miss up to 60% of defects. Break large features into stacked
+          PRs: data model → business logic → API → UI. Each review stays sharp.
+        </div>
       </div>
-    </div>
 
-    <div class="tip"><div class="tip-label">💡 The 200-Line Rule</div>Research from SmartBear shows review effectiveness drops sharply after 400 lines of diff, with the steepest drop at 200. Above 400 lines, reviewers miss up to 60% of defects. Break large features into stacked PRs: data model → business logic → API → UI. Each review stays sharp.</div>
-  </div>
+      <hr class="divider" />
 
-  <hr class="divider">
+      <!-- ═══ 02 TESTING ═══ -->
+      <div class="section" id="testing">
+        <div class="section-label">02 — Confidence at Every Layer</div>
+        <h2>Testing Pyramid & Test Design</h2>
+        <p class="lead">
+          The testing pyramid is not a bureaucratic rule — it is an economic
+          model. Fast, cheap unit tests at the base; fewer, slower integration
+          tests in the middle; a handful of E2E tests at the top. Inverting the
+          pyramid means slow, flaky, expensive CI.
+        </p>
 
-  <!-- ═══ 02 TESTING ═══ -->
-  <div class="section" id="testing">
-    <div class="section-label">02 — Confidence at Every Layer</div>
-    <h2>Testing Pyramid & Test Design</h2>
-    <p class="lead">The testing pyramid is not a bureaucratic rule — it is an economic model. Fast, cheap unit tests at the base; fewer, slower integration tests in the middle; a handful of E2E tests at the top. Inverting the pyramid means slow, flaky, expensive CI.</p>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🔬</div>
+            <h4>Unit Tests</h4>
+            <p>
+              Test one function or class in isolation. All dependencies mocked.
+              Run in milliseconds. Should cover every logic branch. The
+              foundation — aim for 70%+ of your test suite.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔗</div>
+            <h4>Integration Tests</h4>
+            <p>
+              Test that components work together correctly: API handler +
+              middleware + DB. Real database (testcontainers). Slower (~100ms
+              each) but catches wiring bugs unit tests miss.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🌐</div>
+            <h4>E2E Tests</h4>
+            <p>
+              Drive the full application via the browser or API gateway.
+              Extremely valuable but slow and flaky. Keep to critical user
+              journeys: signup, checkout, login.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">📸</div>
+            <h4>Contract Tests</h4>
+            <p>
+              Verify that a consumer and provider agree on an API contract
+              (Pact). Catches breaking changes before they reach production.
+              Essential in microservice architectures.
+            </p>
+          </div>
+        </div>
 
-    <div class="concept-grid">
-      <div class="concept-card"><div class="concept-icon">🔬</div><h4>Unit Tests</h4><p>Test one function or class in isolation. All dependencies mocked. Run in milliseconds. Should cover every logic branch. The foundation — aim for 70%+ of your test suite.</p></div>
-      <div class="concept-card"><div class="concept-icon">🔗</div><h4>Integration Tests</h4><p>Test that components work together correctly: API handler + middleware + DB. Real database (testcontainers). Slower (~100ms each) but catches wiring bugs unit tests miss.</p></div>
-      <div class="concept-card"><div class="concept-icon">🌐</div><h4>E2E Tests</h4><p>Drive the full application via the browser or API gateway. Extremely valuable but slow and flaky. Keep to critical user journeys: signup, checkout, login.</p></div>
-      <div class="concept-card"><div class="concept-icon">📸</div><h4>Contract Tests</h4><p>Verify that a consumer and provider agree on an API contract (Pact). Catches breaking changes before they reach production. Essential in microservice architectures.</p></div>
-    </div>
-
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JavaScript — Test Design: Behaviour, Not Implementation</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="kw">import</span> <span class="pu">{</span> describe, it, expect, vi, beforeEach <span class="pu">}</span> <span class="kw">from</span> <span class="st">'vitest'</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — Test Design: Behaviour, Not Implementation</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="kw">import</span> <span class="pu">{</span> describe, it, expect, vi, beforeEach <span class="pu">}</span> <span class="kw">from</span> <span class="st">'vitest'</span>
 
 <span class="cm">// ── ❌ Testing implementation details ─────────────
 // Coupled to private method names; breaks on safe refactor</span>
@@ -311,70 +1035,119 @@ test<span class="pu">.</span><span class="fn">prop</span><span class="pu">([</sp
     expect<span class="pu">(</span>slug<span class="pu">).</span><span class="fn">toMatch</span><span class="pu">(</span><span class="st">/^[a-z0-9-]*$/</span><span class="pu">)</span>
   <span class="pu">}</span>
 <span class="pu">)</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Test Naming Convention</h3>
-    <div class="compare-grid">
-      <div class="compare-card">
-        <div class="compare-header bad">❌ Opaque test names</div>
-        <div class="code-block"><pre><code><span class="fn">it</span><span class="pu">(</span><span class="st">'works'</span><span class="pu">)</span>
+        <h3>Test Naming Convention</h3>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">❌ Opaque test names</div>
+            <div class="code-block">
+              <pre><code><span class="fn">it</span><span class="pu">(</span><span class="st">'works'</span><span class="pu">)</span>
 <span class="fn">it</span><span class="pu">(</span><span class="st">'test 1'</span><span class="pu">)</span>
 <span class="fn">it</span><span class="pu">(</span><span class="st">'UserService'</span><span class="pu">)</span>
-<span class="fn">it</span><span class="pu">(</span><span class="st">'handles error'</span><span class="pu">)</span></code></pre></div>
-      </div>
-      <div class="compare-card">
-        <div class="compare-header good">✅ Spec-style: subject + scenario + outcome</div>
-        <div class="code-block"><pre><code><span class="fn">it</span><span class="pu">(</span><span class="st">'returns 401 when no token is provided'</span><span class="pu">)</span>
+<span class="fn">it</span><span class="pu">(</span><span class="st">'handles error'</span><span class="pu">)</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">
+              ✅ Spec-style: subject + scenario + outcome
+            </div>
+            <div class="code-block">
+              <pre><code><span class="fn">it</span><span class="pu">(</span><span class="st">'returns 401 when no token is provided'</span><span class="pu">)</span>
 <span class="fn">it</span><span class="pu">(</span><span class="st">'sends welcome email after successful registration'</span><span class="pu">)</span>
 <span class="fn">it</span><span class="pu">(</span><span class="st">'throws DuplicateEmailError when email is taken'</span><span class="pu">)</span>
-<span class="fn">it</span><span class="pu">(</span><span class="st">'returns empty array when no products match filter'</span><span class="pu">)</span></code></pre></div>
+<span class="fn">it</span><span class="pu">(</span><span class="st">'returns empty array when no products match filter'</span><span class="pu">)</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip">
+          <div class="tip-label">💡 Testing Trophy</div>
+          Kent C. Dodds argues for the "Testing Trophy" — heavier emphasis on
+          <strong>integration tests</strong> than the classic pyramid, because
+          they give the best confidence-to-cost ratio for typical web apps. Unit
+          tests for pure logic; integration tests for service + DB; E2E for the
+          three most critical paths. Write tests that resemble how the software
+          is used.
+        </div>
       </div>
-    </div>
 
-    <div class="tip"><div class="tip-label">💡 Testing Trophy</div>Kent C. Dodds argues for the "Testing Trophy" — heavier emphasis on <strong>integration tests</strong> than the classic pyramid, because they give the best confidence-to-cost ratio for typical web apps. Unit tests for pure logic; integration tests for service + DB; E2E for the three most critical paths. Write tests that resemble how the software is used.</div>
-  </div>
+      <hr class="divider" />
 
-  <hr class="divider">
+      <!-- ═══ 03 SOLID ═══ -->
+      <div class="section" id="solid">
+        <div class="section-label">03 — Foundation of Design</div>
+        <h2>SOLID Principles</h2>
+        <p class="lead">
+          SOLID is not a checklist to follow religiously — it is a set of
+          heuristics for writing code that is easier to change. Apply them when
+          they reduce complexity, not to show architectural sophistication.
+        </p>
 
-  <!-- ═══ 03 SOLID ═══ -->
-  <div class="section" id="solid">
-    <div class="section-label">03 — Foundation of Design</div>
-    <h2>SOLID Principles</h2>
-    <p class="lead">SOLID is not a checklist to follow religiously — it is a set of heuristics for writing code that is easier to change. Apply them when they reduce complexity, not to show architectural sophistication.</p>
+        <div class="principle-card">
+          <div class="principle-letter">S</div>
+          <div class="principle-title">Single Responsibility Principle</div>
+          <div class="principle-desc">
+            A module should have one and only one reason to change. "Reason to
+            change" means one stakeholder or concern. A class that handles both
+            business logic and database persistence has two reasons — split it.
+            Fat controllers are the most common SRP violation in Node.js.
+          </div>
+        </div>
 
-    <div class="principle-card">
-      <div class="principle-letter">S</div>
-      <div class="principle-title">Single Responsibility Principle</div>
-      <div class="principle-desc">A module should have one and only one reason to change. "Reason to change" means one stakeholder or concern. A class that handles both business logic and database persistence has two reasons — split it. Fat controllers are the most common SRP violation in Node.js.</div>
-    </div>
+        <div class="principle-card">
+          <div class="principle-letter">O</div>
+          <div class="principle-title">Open/Closed Principle</div>
+          <div class="principle-desc">
+            Software entities should be open for extension, closed for
+            modification. Add new behaviour by adding new code (new classes, new
+            functions), not by changing existing, tested code. Strategy pattern
+            and composition over inheritance are the main mechanisms.
+          </div>
+        </div>
 
-    <div class="principle-card">
-      <div class="principle-letter">O</div>
-      <div class="principle-title">Open/Closed Principle</div>
-      <div class="principle-desc">Software entities should be open for extension, closed for modification. Add new behaviour by adding new code (new classes, new functions), not by changing existing, tested code. Strategy pattern and composition over inheritance are the main mechanisms.</div>
-    </div>
+        <div class="principle-card">
+          <div class="principle-letter">L</div>
+          <div class="principle-title">Liskov Substitution Principle</div>
+          <div class="principle-desc">
+            Subtypes must be substitutable for their base types without altering
+            correctness. If a function accepts a <code>Bird</code>, passing a
+            <code>Penguin</code> that throws on <code>.fly()</code> violates
+            LSP. Design inheritance so every override preserves the parent's
+            contract.
+          </div>
+        </div>
 
-    <div class="principle-card">
-      <div class="principle-letter">L</div>
-      <div class="principle-title">Liskov Substitution Principle</div>
-      <div class="principle-desc">Subtypes must be substitutable for their base types without altering correctness. If a function accepts a <code>Bird</code>, passing a <code>Penguin</code> that throws on <code>.fly()</code> violates LSP. Design inheritance so every override preserves the parent's contract.</div>
-    </div>
+        <div class="principle-card">
+          <div class="principle-letter">I</div>
+          <div class="principle-title">Interface Segregation Principle</div>
+          <div class="principle-desc">
+            No client should be forced to depend on methods it doesn't use. Fat
+            interfaces should be split into smaller, role-specific ones. In
+            TypeScript, prefer small focused interfaces over large, grab-bag
+            types.
+          </div>
+        </div>
 
-    <div class="principle-card">
-      <div class="principle-letter">I</div>
-      <div class="principle-title">Interface Segregation Principle</div>
-      <div class="principle-desc">No client should be forced to depend on methods it doesn't use. Fat interfaces should be split into smaller, role-specific ones. In TypeScript, prefer small focused interfaces over large, grab-bag types.</div>
-    </div>
+        <div class="principle-card">
+          <div class="principle-letter">D</div>
+          <div class="principle-title">Dependency Inversion Principle</div>
+          <div class="principle-desc">
+            High-level modules should not depend on low-level modules; both
+            should depend on abstractions. Depend on interfaces, not concrete
+            implementations. This is what makes code testable — you can inject
+            mocks because dependencies are injected, not instantiated
+            internally.
+          </div>
+        </div>
 
-    <div class="principle-card">
-      <div class="principle-letter">D</div>
-      <div class="principle-title">Dependency Inversion Principle</div>
-      <div class="principle-desc">High-level modules should not depend on low-level modules; both should depend on abstractions. Depend on interfaces, not concrete implementations. This is what makes code testable — you can inject mocks because dependencies are injected, not instantiated internally.</div>
-    </div>
-
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">TypeScript — SOLID in Practice: DIP + ISP</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── ❌ Violates DIP: hard dependency on concrete class ─</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — SOLID in Practice: DIP + ISP</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── ❌ Violates DIP: hard dependency on concrete class ─</span>
 <span class="kw">class</span> <span class="ty">OrderService</span> <span class="pu">{</span>
   <span class="kw">private</span> mailer <span class="op">=</span> <span class="kw">new</span> <span class="ty">SendGridMailer</span><span class="pu">()</span>        <span class="cm">// can't swap, can't test</span>
   <span class="kw">private</span> db     <span class="op">=</span> <span class="kw">new</span> <span class="fn">PrismaClient</span><span class="pu">()</span>          <span class="cm">// requires real DB in tests</span>
@@ -406,20 +1179,29 @@ test<span class="pu">.</span><span class="fn">prop</span><span class="pu">([</sp
 <span class="kw">const</span> service <span class="op">=</span> <span class="kw">new</span> <span class="fn">OrderService</span><span class="pu">(</span><span class="kw">new</span> <span class="fn">PrismaOrderRepo</span><span class="pu">(),</span> <span class="kw">new</span> <span class="fn">SendGridMailer</span><span class="pu">())</span>
 <span class="cm">// Test wiring</span>
 <span class="kw">const</span> svc     <span class="op">=</span> <span class="kw">new</span> <span class="fn">OrderService</span><span class="pu">(</span>mockOrderRepo<span class="pu">,</span> mockMailer<span class="pu">)</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 04 REFACTORING ═══ -->
-  <div class="section" id="refactoring">
-    <div class="section-label">04 — Continuous Improvement</div>
-    <h2>Refactoring Patterns</h2>
-    <p class="lead">Refactoring is changing the structure of code without changing its observable behaviour. The discipline: never refactor without tests. Never refactor and add features in the same commit. Small, safe steps.</p>
+      <!-- ═══ 04 REFACTORING ═══ -->
+      <div class="section" id="refactoring">
+        <div class="section-label">04 — Continuous Improvement</div>
+        <h2>Refactoring Patterns</h2>
+        <p class="lead">
+          Refactoring is changing the structure of code without changing its
+          observable behaviour. The discipline: never refactor without tests.
+          Never refactor and add features in the same commit. Small, safe steps.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">TypeScript — Extract Function & Replace Conditional with Polymorphism</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Refactor 1: Extract Function ──────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Extract Function & Replace Conditional with
+              Polymorphism</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Refactor 1: Extract Function ──────────────────</span>
 <span class="cm">// Before: long function doing too many things</span>
 <span class="kw">async function</span> <span class="fn">processOrder</span><span class="pu">(</span>order<span class="pu">:</span> <span class="ty">Order</span><span class="pu">)</span> <span class="pu">{</span>
   <span class="cm">// 20 lines calculating discount...</span>
@@ -462,34 +1244,80 @@ test<span class="pu">.</span><span class="fn">prop</span><span class="pu">([</sp
   <span class="kw">if</span> <span class="pu">(!</span>gen<span class="pu">)</span> <span class="kw">throw</span> <span class="kw">new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">`Unknown report type: ${type}`</span><span class="pu">)</span>
   <span class="kw">return</span> gen<span class="pu">.</span><span class="fn">generate</span><span class="pu">(</span>data<span class="pu">)</span>
 <span class="pu">}</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Common Code Smells & Their Cures</h3>
-    <table>
-      <tr><th>Code Smell</th><th>Symptom</th><th>Refactoring</th></tr>
-      <tr><td>Long Method</td><td>Function > 20–30 lines, does multiple things</td><td>Extract Function, Decompose Conditional</td></tr>
-      <tr><td>Large Class</td><td>Class > 200 lines, multiple responsibilities</td><td>Extract Class, Move Method</td></tr>
-      <tr><td>Long Parameter List</td><td>Function takes > 3–4 parameters</td><td>Introduce Parameter Object, Preserve Whole Object</td></tr>
-      <tr><td>Duplicate Code</td><td>Same logic in two places</td><td>Extract Function, Pull Up Method, Form Template Method</td></tr>
-      <tr><td>Feature Envy</td><td>Method uses another class's data more than its own</td><td>Move Method to the class it's most interested in</td></tr>
-      <tr><td>Primitive Obsession</td><td>Strings/numbers where domain objects belong</td><td>Replace Primitive with Object (<code>Money</code>, <code>Email</code>, <code>UserId</code>)</td></tr>
-      <tr><td>Switch Statements</td><td>Repeated switches on the same type</td><td>Replace Conditional with Polymorphism / Strategy</td></tr>
-      <tr><td>Comments Explaining Code</td><td>"This does X" instead of naming it X</td><td>Extract named function. Code should explain itself.</td></tr>
-    </table>
-  </div>
+        <h3>Common Code Smells & Their Cures</h3>
+        <table>
+          <tr>
+            <th>Code Smell</th>
+            <th>Symptom</th>
+            <th>Refactoring</th>
+          </tr>
+          <tr>
+            <td>Long Method</td>
+            <td>Function > 20–30 lines, does multiple things</td>
+            <td>Extract Function, Decompose Conditional</td>
+          </tr>
+          <tr>
+            <td>Large Class</td>
+            <td>Class > 200 lines, multiple responsibilities</td>
+            <td>Extract Class, Move Method</td>
+          </tr>
+          <tr>
+            <td>Long Parameter List</td>
+            <td>Function takes > 3–4 parameters</td>
+            <td>Introduce Parameter Object, Preserve Whole Object</td>
+          </tr>
+          <tr>
+            <td>Duplicate Code</td>
+            <td>Same logic in two places</td>
+            <td>Extract Function, Pull Up Method, Form Template Method</td>
+          </tr>
+          <tr>
+            <td>Feature Envy</td>
+            <td>Method uses another class's data more than its own</td>
+            <td>Move Method to the class it's most interested in</td>
+          </tr>
+          <tr>
+            <td>Primitive Obsession</td>
+            <td>Strings/numbers where domain objects belong</td>
+            <td>
+              Replace Primitive with Object (<code>Money</code>,
+              <code>Email</code>, <code>UserId</code>)
+            </td>
+          </tr>
+          <tr>
+            <td>Switch Statements</td>
+            <td>Repeated switches on the same type</td>
+            <td>Replace Conditional with Polymorphism / Strategy</td>
+          </tr>
+          <tr>
+            <td>Comments Explaining Code</td>
+            <td>"This does X" instead of naming it X</td>
+            <td>Extract named function. Code should explain itself.</td>
+          </tr>
+        </table>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 05 API DESIGN ═══ -->
-  <div class="section" id="api">
-    <div class="section-label">05 — Contract Design</div>
-    <h2>API Design</h2>
-    <p class="lead">An API is a contract between systems. Once published, breaking it is expensive — it breaks every consumer. Design for clarity, consistency, and evolvability from day one.</p>
+      <!-- ═══ 05 API DESIGN ═══ -->
+      <div class="section" id="api">
+        <div class="section-label">05 — Contract Design</div>
+        <h2>API Design</h2>
+        <p class="lead">
+          An API is a contract between systems. Once published, breaking it is
+          expensive — it breaks every consumer. Design for clarity, consistency,
+          and evolvability from day one.
+        </p>
 
-    <h3>RESTful Resource Design</h3>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">HTTP — REST API Design Principles</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm"># ── Resource naming — nouns, plural, lowercase ────────────────</span>
+        <h3>RESTful Resource Design</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">HTTP — REST API Design Principles</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># ── Resource naming — nouns, plural, lowercase ────────────────</span>
 GET    /api/v1/users           <span class="cm"># list users</span>
 POST   /api/v1/users           <span class="cm"># create user</span>
 GET    /api/v1/users/:id       <span class="cm"># get one user</span>
@@ -517,11 +1345,15 @@ GET  /api/v1/deleteUser?id=123
 422 Unprocessable   <span class="cm"># semantically invalid input (not just format)</span>
 429 Too Many Req    <span class="cm"># rate limit exceeded</span>
 500 Server Error    <span class="cm"># unexpected — never return stack traces</span></code></pre>
-    </div>
+        </div>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">TypeScript — Consistent Error & Response Envelopes</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── Consistent success envelope ───────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Consistent Error & Response Envelopes</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── Consistent success envelope ───────────────────</span>
 <span class="kw">interface</span> <span class="ty">ApiResponse</span><span class="pu">&lt;</span><span class="ty">T</span><span class="pu">&gt;</span> <span class="pu">{</span>
   data<span class="pu">:</span>       <span class="ty">T</span>
   meta<span class="pu">?:</span> <span class="pu">{</span>
@@ -562,27 +1394,67 @@ GET  /api/v1/deleteUser?id=123
 //   - changing a field type (string → number)
 //   - changing required request fields
 //   - changing resource URL structure</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 06 CLEAN ARCHITECTURE ═══ -->
-  <div class="section" id="architecture">
-    <div class="section-label">06 — Structural Thinking</div>
-    <h2>Clean Architecture</h2>
-    <p class="lead">Clean Architecture (Uncle Bob) organises code into concentric layers where dependencies only point inward. The core business logic has zero knowledge of the HTTP framework, the database, or any external library.</p>
+      <!-- ═══ 06 CLEAN ARCHITECTURE ═══ -->
+      <div class="section" id="architecture">
+        <div class="section-label">06 — Structural Thinking</div>
+        <h2>Clean Architecture</h2>
+        <p class="lead">
+          Clean Architecture (Uncle Bob) organises code into concentric layers
+          where dependencies only point inward. The core business logic has zero
+          knowledge of the HTTP framework, the database, or any external
+          library.
+        </p>
 
-    <div class="concept-grid">
-      <div class="concept-card"><div class="concept-icon">💠</div><h4>Entities (Domain)</h4><p>Pure business objects and rules. No framework imports. No database. The most stable layer — changes only when core business rules change.</p></div>
-      <div class="concept-card"><div class="concept-icon">⚙️</div><h4>Use Cases (Application)</h4><p>Orchestrate entities to fulfil one business scenario. <code>PlaceOrderUseCase</code>, <code>RegisterUserUseCase</code>. Depend on repository interfaces, not implementations.</p></div>
-      <div class="concept-card"><div class="concept-icon">🔌</div><h4>Interface Adapters</h4><p>Controllers, presenters, repository implementations. Convert data between use-case format and framework/DB format. Express handlers live here.</p></div>
-      <div class="concept-card"><div class="concept-icon">🌐</div><h4>Frameworks & Drivers</h4><p>Express, Prisma, Redis, S3. The outermost ring — swappable. Replacing Express with Fastify should not touch a single use case.</p></div>
-    </div>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-icon">💠</div>
+            <h4>Entities (Domain)</h4>
+            <p>
+              Pure business objects and rules. No framework imports. No
+              database. The most stable layer — changes only when core business
+              rules change.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">⚙️</div>
+            <h4>Use Cases (Application)</h4>
+            <p>
+              Orchestrate entities to fulfil one business scenario.
+              <code>PlaceOrderUseCase</code>, <code>RegisterUserUseCase</code>.
+              Depend on repository interfaces, not implementations.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🔌</div>
+            <h4>Interface Adapters</h4>
+            <p>
+              Controllers, presenters, repository implementations. Convert data
+              between use-case format and framework/DB format. Express handlers
+              live here.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="concept-icon">🌐</div>
+            <h4>Frameworks & Drivers</h4>
+            <p>
+              Express, Prisma, Redis, S3. The outermost ring — swappable.
+              Replacing Express with Fastify should not touch a single use case.
+            </p>
+          </div>
+        </div>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">TypeScript — Clean Architecture: Project Structure</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// src/
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Clean Architecture: Project Structure</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// src/
 // ├── domain/                   ← innermost: pure business logic
 // │   ├── entities/
 // │   │   └── Order.ts          ← Order value object, business rules
@@ -633,20 +1505,29 @@ router<span class="pu">.</span><span class="fn">post</span><span class="pu">(</s
   <span class="kw">const</span> order <span class="op">=</span> <span class="kw">await</span> placeOrderUseCase<span class="pu">.</span><span class="fn">execute</span><span class="pu">(</span>dto<span class="pu">)</span> <span class="cm">// delegate</span>
   res<span class="pu">.</span><span class="fn">status</span><span class="pu">(</span><span class="nm">201</span><span class="pu">).</span><span class="fn">json</span><span class="pu">({</span> data<span class="pu">:</span> order <span class="pu">})</span>               <span class="cm">// respond</span>
 <span class="pu">})</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 07 DESIGN PATTERNS ═══ -->
-  <div class="section" id="patterns">
-    <div class="section-label">07 — Reusable Solutions</div>
-    <h2>Design Patterns</h2>
-    <p class="lead">Design patterns are named solutions to recurring design problems. They give teams a shared vocabulary. The goal is never to implement patterns for the sake of it — it is to recognise when a problem matches a known solution.</p>
+      <!-- ═══ 07 DESIGN PATTERNS ═══ -->
+      <div class="section" id="patterns">
+        <div class="section-label">07 — Reusable Solutions</div>
+        <h2>Design Patterns</h2>
+        <p class="lead">
+          Design patterns are named solutions to recurring design problems. They
+          give teams a shared vocabulary. The goal is never to implement
+          patterns for the sake of it — it is to recognise when a problem
+          matches a known solution.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">TypeScript — Factory, Strategy & Adapter Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm">// ── FACTORY — centralise creation, hide complexity ─</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Factory, Strategy & Adapter Patterns</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm">// ── FACTORY — centralise creation, hide complexity ─</span>
 <span class="kw">interface</span> <span class="ty">StorageProvider</span> <span class="pu">{</span>
   <span class="fn">upload</span><span class="pu">(</span>key<span class="pu">:</span> <span class="ty">string</span><span class="pu">,</span> data<span class="pu">:</span> <span class="ty">Buffer</span><span class="pu">):</span> <span class="ty">Promise</span><span class="pu">&lt;</span><span class="ty">string</span><span class="pu">&gt;</span>
   <span class="fn">download</span><span class="pu">(</span>key<span class="pu">:</span> <span class="ty">string</span><span class="pu">):</span>               <span class="ty">Promise</span><span class="pu">&lt;</span><span class="ty">Buffer</span><span class="pu">&gt;</span>
@@ -711,20 +1592,28 @@ router<span class="pu">.</span><span class="fn">post</span><span class="pu">(</s
     <span class="kw">await</span> <span class="bi">Promise</span><span class="pu">.</span><span class="fn">all</span><span class="pu">(</span>fns<span class="pu">.</span><span class="fn">map</span><span class="pu">(</span>fn <span class="op">=></span> <span class="fn">fn</span><span class="pu">(</span>payload<span class="pu">)))</span>
   <span class="pu">}</span>
 <span class="pu">}</span></code></pre>
-    </div>
-  </div>
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 08 DEPENDENCIES ═══ -->
-  <div class="section" id="dependencies">
-    <div class="section-label">08 — Ecosystem Management</div>
-    <h2>Dependency Management</h2>
-    <p class="lead">Every dependency you add is code you didn't write, can't fully control, and are responsible for. The discipline of dependency management is knowing when to add, when to write your own, and how to keep what you have healthy.</p>
+      <!-- ═══ 08 DEPENDENCIES ═══ -->
+      <div class="section" id="dependencies">
+        <div class="section-label">08 — Ecosystem Management</div>
+        <h2>Dependency Management</h2>
+        <p class="lead">
+          Every dependency you add is code you didn't write, can't fully
+          control, and are responsible for. The discipline of dependency
+          management is knowing when to add, when to write your own, and how to
+          keep what you have healthy.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Shell / JSON — Dependency Hygiene</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm"># ── Before installing any package — ask: ─────────────────────</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">Shell / JSON — Dependency Hygiene</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># ── Before installing any package — ask: ─────────────────────</span>
 <span class="cm"># 1. Do I actually need this, or can I write 20 lines?</span>
 <span class="cm"># 2. Is it actively maintained? (last publish < 1 year)</span>
 <span class="cm"># 3. Is it widely used? (weekly downloads, stars)</span>
@@ -741,11 +1630,14 @@ npm install express zod               <span class="cm"># --save (production)</sp
 npm install -D vitest typescript eslint prettier  <span class="cm"># devDependencies</span>
 
 <span class="cm"># ── package.json: pin engines + enforce lockfile ──────────────</span></code></pre>
-    </div>
+        </div>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">JSON — package.json Best Practices</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="pu">{</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSON — package.json Best Practices</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="pu">{</span>
   <span class="st">"engines"</span><span class="op">:</span> <span class="pu">{</span>
     <span class="st">"node"</span><span class="op">:</span> <span class="st">">=22.0.0"</span><span class="pu">,</span>
     <span class="st">"npm"</span><span class="op">:</span>  <span class="st">">=10.0.0"</span>
@@ -765,33 +1657,75 @@ npm install -D vitest typescript eslint prettier  <span class="cm"># devDependen
     <span class="st">"npm"</span><span class="op">:</span>  <span class="st">"10.8.1"</span>
   <span class="pu">}</span>
 <span class="pu">}</span></code></pre>
-    </div>
+        </div>
 
-    <table>
-      <tr><th>Decision</th><th>Build it</th><th>Buy/npm install it</th></tr>
-      <tr><td>Core business logic</td><td><span class="badge badge-green">Always</span></td><td>Never — it's your competitive moat</td></tr>
-      <tr><td>Validation schemas</td><td>Only if very simple</td><td>Zod, Valibot — battle-tested, tiny</td></tr>
-      <tr><td>HTTP client</td><td>Almost never</td><td>Native fetch (Node 18+) or ky</td></tr>
-      <tr><td>Date manipulation</td><td>Simple formatting only</td><td>date-fns (tree-shakeable) or Temporal API</td></tr>
-      <tr><td>Utility functions</td><td>If it's 5–10 lines</td><td>Lodash for complex, native for simple</td></tr>
-      <tr><td>Crypto/hashing</td><td>Never — dangerous</td><td>Node crypto built-in, argon2 for passwords</td></tr>
-    </table>
-  </div>
+        <table>
+          <tr>
+            <th>Decision</th>
+            <th>Build it</th>
+            <th>Buy/npm install it</th>
+          </tr>
+          <tr>
+            <td>Core business logic</td>
+            <td><span class="badge badge-green">Always</span></td>
+            <td>Never — it's your competitive moat</td>
+          </tr>
+          <tr>
+            <td>Validation schemas</td>
+            <td>Only if very simple</td>
+            <td>Zod, Valibot — battle-tested, tiny</td>
+          </tr>
+          <tr>
+            <td>HTTP client</td>
+            <td>Almost never</td>
+            <td>Native fetch (Node 18+) or ky</td>
+          </tr>
+          <tr>
+            <td>Date manipulation</td>
+            <td>Simple formatting only</td>
+            <td>date-fns (tree-shakeable) or Temporal API</td>
+          </tr>
+          <tr>
+            <td>Utility functions</td>
+            <td>If it's 5–10 lines</td>
+            <td>Lodash for complex, native for simple</td>
+          </tr>
+          <tr>
+            <td>Crypto/hashing</td>
+            <td>Never — dangerous</td>
+            <td>Node crypto built-in, argon2 for passwords</td>
+          </tr>
+        </table>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 09 DOCUMENTATION ═══ -->
-  <div class="section" id="documentation">
-    <div class="section-label">09 — Institutional Memory</div>
-    <h2>Documentation & Architecture Decision Records</h2>
-    <p class="lead">The most valuable documentation explains decisions made and the context that drove them — not what the code does (it shows that), but <em>why it does it that way</em>. ADRs are the format that captures this permanently.</p>
+      <!-- ═══ 09 DOCUMENTATION ═══ -->
+      <div class="section" id="documentation">
+        <div class="section-label">09 — Institutional Memory</div>
+        <h2>Documentation & Architecture Decision Records</h2>
+        <p class="lead">
+          The most valuable documentation explains decisions made and the
+          context that drove them — not what the code does (it shows that), but
+          <em>why it does it that way</em>. ADRs are the format that captures
+          this permanently.
+        </p>
 
-    <h3>Architecture Decision Records (ADRs)</h3>
-    <p>An ADR is a short document capturing a significant architectural decision — what was decided, the context that led to it, the options considered, and the consequences. They go in <code>docs/decisions/</code> in version control alongside the code they describe.</p>
+        <h3>Architecture Decision Records (ADRs)</h3>
+        <p>
+          An ADR is a short document capturing a significant architectural
+          decision — what was decided, the context that led to it, the options
+          considered, and the consequences. They go in
+          <code>docs/decisions/</code> in version control alongside the code
+          they describe.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Markdown — ADR Template</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm"># ADR-0023: Use Cursor-Based Pagination for the Feed API</span>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">Markdown — ADR Template</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># ADR-0023: Use Cursor-Based Pagination for the Feed API</span>
 
 <span class="str2">## Status
 Accepted — 2026-05-14
@@ -825,64 +1759,187 @@ cursor encoding the last seen `(createdAt, id)` tuple.
 ## References
 - https://use-the-index-luke.com/no-offset
 - Spike branch: feature/cursor-pagination-spike</span></code></pre>
-    </div>
+        </div>
 
-    <h3>What to Document and What Not To</h3>
-    <table>
-      <tr><th>Document this</th><th>Don't document this</th></tr>
-      <tr><td>Why you chose library X over Y</td><td>What a function does (use clear naming)</td></tr>
-      <tr><td>Non-obvious business rules and constraints</td><td>How a for-loop iterates</td></tr>
-      <tr><td>Known limitations and TODOs with context</td><td>Comments that restate the code</td></tr>
-      <tr><td>External system integration quirks</td><td>Outdated docs that no one maintains</td></tr>
-      <tr><td>Runbook for on-call incidents</td><td>Auto-generated API docs (generate those)</td></tr>
-      <tr><td>Performance benchmarks and reasoning</td><td>Anything that changes faster than the docs</td></tr>
-    </table>
+        <h3>What to Document and What Not To</h3>
+        <table>
+          <tr>
+            <th>Document this</th>
+            <th>Don't document this</th>
+          </tr>
+          <tr>
+            <td>Why you chose library X over Y</td>
+            <td>What a function does (use clear naming)</td>
+          </tr>
+          <tr>
+            <td>Non-obvious business rules and constraints</td>
+            <td>How a for-loop iterates</td>
+          </tr>
+          <tr>
+            <td>Known limitations and TODOs with context</td>
+            <td>Comments that restate the code</td>
+          </tr>
+          <tr>
+            <td>External system integration quirks</td>
+            <td>Outdated docs that no one maintains</td>
+          </tr>
+          <tr>
+            <td>Runbook for on-call incidents</td>
+            <td>Auto-generated API docs (generate those)</td>
+          </tr>
+          <tr>
+            <td>Performance benchmarks and reasoning</td>
+            <td>Anything that changes faster than the docs</td>
+          </tr>
+        </table>
 
-    <div class="tip"><div class="tip-label">💡 Docs as Code</div>Store all documentation — ADRs, runbooks, architecture diagrams (Mermaid/PlantUML as text) — in the same Git repository as the code. They version together, get reviewed together, and die together (no orphaned Confluence pages from 2019).</div>
-  </div>
+        <div class="tip">
+          <div class="tip-label">💡 Docs as Code</div>
+          Store all documentation — ADRs, runbooks, architecture diagrams
+          (Mermaid/PlantUML as text) — in the same Git repository as the code.
+          They version together, get reviewed together, and die together (no
+          orphaned Confluence pages from 2019).
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 10 DECISIONS ═══ -->
-  <div class="section" id="decisions">
-    <div class="section-label">10 — Thinking Well Under Pressure</div>
-    <h2>Technical Decision Making</h2>
-    <p class="lead">Technical decisions are made under uncertainty, with incomplete information, and often with time pressure. A structured approach doesn't slow you down — it prevents you from having to reverse expensive mistakes six months later.</p>
+      <!-- ═══ 10 DECISIONS ═══ -->
+      <div class="section" id="decisions">
+        <div class="section-label">10 — Thinking Well Under Pressure</div>
+        <h2>Technical Decision Making</h2>
+        <p class="lead">
+          Technical decisions are made under uncertainty, with incomplete
+          information, and often with time pressure. A structured approach
+          doesn't slow you down — it prevents you from having to reverse
+          expensive mistakes six months later.
+        </p>
 
-    <div class="pullquote">"The most important skill in engineering is not knowing the right answer — it is knowing how to find it, and knowing when you need to."</div>
+        <div class="pullquote">
+          "The most important skill in engineering is not knowing the right
+          answer — it is knowing how to find it, and knowing when you need to."
+        </div>
 
-    <h3>The Decision Framework</h3>
-    <ul class="phase-list">
-      <li><div class="phase-num">1</div><div><strong>Define the actual problem.</strong> Is the stated problem the real problem? "We need Kafka" is usually a solution masquerading as a problem. "We need to decouple order processing from payment processing" is the actual problem. Write the problem in one sentence without mentioning a technology.</div></li>
-      <li><div class="phase-num">2</div><div><strong>Identify your constraints.</strong> Timeline, team expertise, operational burden, budget, compliance requirements. A technically superior solution your team can't operate is worse than a simpler one they can. Constraints are not excuses — they are inputs.</div></li>
-      <li><div class="phase-num">3</div><div><strong>Generate at least three options.</strong> One that minimises change (do less), one that solves it correctly, and one ambitious stretch option. Single-option decisions are not decisions — they are announcements. Document all options even if you know the answer.</div></li>
-      <li><div class="phase-num">4</div><div><strong>Define your evaluation criteria.</strong> Write the criteria before evaluating. Operational complexity, time to implement, performance at 10× current load, reversibility. Agree on what matters before bias kicks in.</div></li>
-      <li><div class="phase-num">5</div><div><strong>Timebox the decision.</strong> Set a decision date. "We'll decide by Thursday" prevents analysis paralysis. For reversible decisions (library choice, API design), decide in hours. For irreversible ones (database engine, cloud provider), take a week and build a spike.</div></li>
-      <li><div class="phase-num">6</div><div><strong>Write it down as an ADR.</strong> Include the context, the options, the chosen option, and the reasoning. Future-you and your teammates will thank present-you.</div></li>
-    </ul>
+        <h3>The Decision Framework</h3>
+        <ul class="phase-list">
+          <li>
+            <div class="phase-num">1</div>
+            <div>
+              <strong>Define the actual problem.</strong> Is the stated problem
+              the real problem? "We need Kafka" is usually a solution
+              masquerading as a problem. "We need to decouple order processing
+              from payment processing" is the actual problem. Write the problem
+              in one sentence without mentioning a technology.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">2</div>
+            <div>
+              <strong>Identify your constraints.</strong> Timeline, team
+              expertise, operational burden, budget, compliance requirements. A
+              technically superior solution your team can't operate is worse
+              than a simpler one they can. Constraints are not excuses — they
+              are inputs.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">3</div>
+            <div>
+              <strong>Generate at least three options.</strong> One that
+              minimises change (do less), one that solves it correctly, and one
+              ambitious stretch option. Single-option decisions are not
+              decisions — they are announcements. Document all options even if
+              you know the answer.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">4</div>
+            <div>
+              <strong>Define your evaluation criteria.</strong> Write the
+              criteria before evaluating. Operational complexity, time to
+              implement, performance at 10× current load, reversibility. Agree
+              on what matters before bias kicks in.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">5</div>
+            <div>
+              <strong>Timebox the decision.</strong> Set a decision date. "We'll
+              decide by Thursday" prevents analysis paralysis. For reversible
+              decisions (library choice, API design), decide in hours. For
+              irreversible ones (database engine, cloud provider), take a week
+              and build a spike.
+            </div>
+          </li>
+          <li>
+            <div class="phase-num">6</div>
+            <div>
+              <strong>Write it down as an ADR.</strong> Include the context, the
+              options, the chosen option, and the reasoning. Future-you and your
+              teammates will thank present-you.
+            </div>
+          </li>
+        </ul>
 
-    <h3>Reversible vs Irreversible Decisions</h3>
-    <table>
-      <tr><th>Decision Type</th><th>Examples</th><th>Process</th><th>Urgency</th></tr>
-      <tr><td><span class="badge badge-green">Reversible (Type 2)</span></td><td>API route names, variable naming, library choice for utilities</td><td>Make it, document it, move on. Easy to undo.</td><td>Hours</td></tr>
-      <tr><td><span class="badge badge-amber">Partially Reversible</span></td><td>Database schema, API contracts with consumers</td><td>Spike + design doc + team review</td><td>Days</td></tr>
-      <tr><td><span class="badge badge-red">Irreversible (Type 1)</span></td><td>Cloud provider, database engine, public API breaking change</td><td>Full RFC process, explicit stakeholder sign-off, ADR</td><td>Weeks</td></tr>
-    </table>
+        <h3>Reversible vs Irreversible Decisions</h3>
+        <table>
+          <tr>
+            <th>Decision Type</th>
+            <th>Examples</th>
+            <th>Process</th>
+            <th>Urgency</th>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">Reversible (Type 2)</span></td>
+            <td>
+              API route names, variable naming, library choice for utilities
+            </td>
+            <td>Make it, document it, move on. Easy to undo.</td>
+            <td>Hours</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-amber">Partially Reversible</span></td>
+            <td>Database schema, API contracts with consumers</td>
+            <td>Spike + design doc + team review</td>
+            <td>Days</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-red">Irreversible (Type 1)</span></td>
+            <td>Cloud provider, database engine, public API breaking change</td>
+            <td>Full RFC process, explicit stakeholder sign-off, ADR</td>
+            <td>Weeks</td>
+          </tr>
+        </table>
 
-    <div class="info"><div class="info-label">ℹ️ Disagree and Commit</div>Not every decision needs consensus. Once a decision is made through a fair process, team members who disagree should disagree on record (in the ADR) and then fully commit. Passive non-compliance — implementing half-heartedly or relitigating in every code review — is more damaging than the original disagreement.</div>
-  </div>
+        <div class="info">
+          <div class="info-label">ℹ️ Disagree and Commit</div>
+          Not every decision needs consensus. Once a decision is made through a
+          fair process, team members who disagree should disagree on record (in
+          the ADR) and then fully commit. Passive non-compliance — implementing
+          half-heartedly or relitigating in every code review — is more damaging
+          than the original disagreement.
+        </div>
+      </div>
 
-  <hr class="divider">
+      <hr class="divider" />
 
-  <!-- ═══ 11 OWNERSHIP ═══ -->
-  <div class="section" id="ownership">
-    <div class="section-label">11 — Team Practices</div>
-    <h2>Code Ownership & Team Practices</h2>
-    <p class="lead">Code ownership, on-call practices, and technical debt management are engineering disciplines as important as system design. Teams that neglect them build fast until they don't.</p>
+      <!-- ═══ 11 OWNERSHIP ═══ -->
+      <div class="section" id="ownership">
+        <div class="section-label">11 — Team Practices</div>
+        <h2>Code Ownership & Team Practices</h2>
+        <p class="lead">
+          Code ownership, on-call practices, and technical debt management are
+          engineering disciplines as important as system design. Teams that
+          neglect them build fast until they don't.
+        </p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">INI — CODEOWNERS: Enforce Review by Domain Owners</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-      <pre><code><span class="cm"># .github/CODEOWNERS
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang"
+              >INI — CODEOWNERS: Enforce Review by Domain Owners</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code><span class="cm"># .github/CODEOWNERS
 # Every PR touching these paths requires review from the specified owner(s)</span>
 
 <span class="cm"># Payments team owns all billing/payment code</span>
@@ -903,74 +1960,166 @@ cursor encoding the last seen `(createdAt, id)` tuple.
 
 # Global: senior engineer reviews all changes
 *                          @myorg/senior-engineers</span></code></pre>
-    </div>
+        </div>
 
-    <h3>Managing Technical Debt Deliberately</h3>
-    <p>Technical debt is not inherently bad — it is a financing decision. The problem is debt you don't know you have, or debt you can't repay. The practice of explicit debt management makes it visible and controllable.</p>
+        <h3>Managing Technical Debt Deliberately</h3>
+        <p>
+          Technical debt is not inherently bad — it is a financing decision. The
+          problem is debt you don't know you have, or debt you can't repay. The
+          practice of explicit debt management makes it visible and
+          controllable.
+        </p>
 
-    <div class="compare-grid">
-      <div class="compare-card">
-        <div class="compare-header bad">❌ Debt invisibility</div>
-        <div class="code-block"><pre><code><span class="cm">// TODO: fix this later
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-header bad">❌ Debt invisibility</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// TODO: fix this later
 // HACK: this is terrible but ship it
 // FIXME: don't ask
 </span>
 <span class="cm">// Debt accumulates silently.
 // No ticket. No owner. No timeline.
-// "Later" is never.</span></code></pre></div>
-      </div>
-      <div class="compare-card">
-        <div class="compare-header good">✅ Debt as first-class work</div>
-        <div class="code-block"><pre><code><span class="cm">// TODO(PLAT-1842): Replace this O(n²) lookup
+// "Later" is never.</span></code></pre>
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-header good">✅ Debt as first-class work</div>
+            <div class="code-block">
+              <pre><code><span class="cm">// TODO(PLAT-1842): Replace this O(n²) lookup
 // with a Map once the API v2 migration ships.
 // Acceptable at current scale (< 1000 items).
 // Owner: @alice | Due: 2026-Q3</span>
 
 <span class="cm">// Each TODO links to a tracked ticket.
 // Budget 20% of each sprint for debt.
-// Debt review in monthly tech meeting.</span></code></pre></div>
+// Debt review in monthly tech meeting.</span></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- ═══ 12 CHECKLIST ═══ -->
+      <div class="section" id="checklist">
+        <div class="section-label">12 — Ship with Confidence</div>
+        <h2>Production Readiness Checklist</h2>
+        <p class="lead">
+          Every feature that touches production should pass this gate. Not as
+          bureaucracy — as the minimum bar for not waking someone up at 3am.
+        </p>
+
+        <ul class="checklist">
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong
+                >Tests cover the happy path and all significant error
+                paths.</strong
+              >
+              Passing tests in CI — not "it works on my machine". Coverage
+              report reviewed, not just percentage.
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong>All inputs validated.</strong> No
+              <code>req.body.anything</code> reaching the database unchecked.
+              Zod/Valibot schemas on every API boundary. Output encoding where
+              appropriate.
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong>Errors handled and logged with context.</strong> No silent
+              catch blocks. No <code>console.log</code> in production code.
+              Structured logs with requestId for correlation.
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong>No secrets or PII in code or logs.</strong> Git history
+              scanned (gitleaks). No tokens in environment variable names that
+              end up logged. PII redacted before logging.
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong>Performance considered.</strong> New DB queries have
+              EXPLAIN run. No unbounded queries without limits. N+1 patterns
+              identified and resolved. Caching strategy for hot reads.
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong
+                >Feature flags or gradual rollout for risky changes.</strong
+              >
+              New features behind a flag for A/B testing and safe rollback.
+              Database migrations are backward-compatible (add column before
+              removing old one).
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong>Observability in place.</strong> New code paths have
+              metrics, logs, and alerts. On-call runbook updated. SLO impact
+              assessed — does this change affect latency or error rate?
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong>ADR written for significant decisions.</strong> Why this
+              approach was chosen over alternatives. Linked in the PR
+              description. Stored in <code>docs/decisions/</code>.
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong>Rollback plan documented.</strong> Can this be reverted
+              with a deploy? Does it require a DB migration rollback? How long
+              would rollback take? Who needs to be notified?
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">✅</span>
+            <div>
+              <strong>Reviewed by someone who didn't write it.</strong> At least
+              one reviewer who understands the domain. CODEOWNERS satisfied.
+              Security-critical paths reviewed by a security-aware engineer.
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
-  </div>
 
-  <hr class="divider">
-
-  <!-- ═══ 12 CHECKLIST ═══ -->
-  <div class="section" id="checklist">
-    <div class="section-label">12 — Ship with Confidence</div>
-    <h2>Production Readiness Checklist</h2>
-    <p class="lead">Every feature that touches production should pass this gate. Not as bureaucracy — as the minimum bar for not waking someone up at 3am.</p>
-
-    <ul class="checklist">
-      <li><span class="check-icon">✅</span><div><strong>Tests cover the happy path and all significant error paths.</strong> Passing tests in CI — not "it works on my machine". Coverage report reviewed, not just percentage.</div></li>
-      <li><span class="check-icon">✅</span><div><strong>All inputs validated.</strong> No <code>req.body.anything</code> reaching the database unchecked. Zod/Valibot schemas on every API boundary. Output encoding where appropriate.</div></li>
-      <li><span class="check-icon">✅</span><div><strong>Errors handled and logged with context.</strong> No silent catch blocks. No <code>console.log</code> in production code. Structured logs with requestId for correlation.</div></li>
-      <li><span class="check-icon">✅</span><div><strong>No secrets or PII in code or logs.</strong> Git history scanned (gitleaks). No tokens in environment variable names that end up logged. PII redacted before logging.</div></li>
-      <li><span class="check-icon">✅</span><div><strong>Performance considered.</strong> New DB queries have EXPLAIN run. No unbounded queries without limits. N+1 patterns identified and resolved. Caching strategy for hot reads.</div></li>
-      <li><span class="check-icon">✅</span><div><strong>Feature flags or gradual rollout for risky changes.</strong> New features behind a flag for A/B testing and safe rollback. Database migrations are backward-compatible (add column before removing old one).</div></li>
-      <li><span class="check-icon">✅</span><div><strong>Observability in place.</strong> New code paths have metrics, logs, and alerts. On-call runbook updated. SLO impact assessed — does this change affect latency or error rate?</div></li>
-      <li><span class="check-icon">✅</span><div><strong>ADR written for significant decisions.</strong> Why this approach was chosen over alternatives. Linked in the PR description. Stored in <code>docs/decisions/</code>.</div></li>
-      <li><span class="check-icon">✅</span><div><strong>Rollback plan documented.</strong> Can this be reverted with a deploy? Does it require a DB migration rollback? How long would rollback take? Who needs to be notified?</div></li>
-      <li><span class="check-icon">✅</span><div><strong>Reviewed by someone who didn't write it.</strong> At least one reviewer who understands the domain. CODEOWNERS satisfied. Security-critical paths reviewed by a security-aware engineer.</div></li>
-    </ul>
-  </div>
-
-</div>
-
-<footer>
-  <strong>Engineering Best Practices — Complete Guide</strong><br>
-  Part of the <a href="index.html">DevDive</a> series — Deep dives for serious developers.<br><br>
-  <span style="color:rgba(255,255,255,.3)">© 2026 DevDive · Language-agnostic · TypeScript/JavaScript examples — June 2026</span>
-</footer>
-<script>
-function copyCode(btn) {
-  const pre = btn.closest('.code-block').querySelector('pre')
-  navigator.clipboard.writeText(pre.innerText).then(() => {
-    const orig = btn.textContent
-    btn.textContent = 'Copied!'
-    setTimeout(() => btn.textContent = orig, 2000)
-  })
-}
-</script>
-</body>
+    <footer>
+      <strong>Engineering Best Practices — Complete Guide</strong><br />
+      Part of the <a href="index.html">DevDive</a> series — Deep dives for
+      serious developers.<br /><br />
+      <span style="color: rgba(255, 255, 255, 0.3)"
+        >© 2026 DevDive · Language-agnostic · TypeScript/JavaScript examples —
+        June 2026</span
+      >
+    </footer>
+    <script>
+      function copyCode(btn) {
+        const pre = btn.closest(".code-block").querySelector("pre");
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = orig), 2000);
+        });
+      }
+    </script>
+  </body>
 </html>

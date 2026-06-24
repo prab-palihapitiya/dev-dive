@@ -3,129 +3,650 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Angular In Depth: Architecture, Patterns &amp; Comparison with React/Next.js</title>
+    <title>
+      Angular In Depth: Architecture, Patterns &amp; Comparison with
+      React/Next.js
+    </title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <style>
       :root {
-        --bg:#faf8f5; --surface:#ffffff; --text-primary:#1a1a1a;
-        --text-secondary:#6b6b6b; --text-muted:#9a9a9a;
-        --accent:#c2185b; --accent-light:#fce4ec; --accent-subtle:#fce4ec;
-        --border:#e8e3db; --code-bg:#0d1117; --code-text:#e6edf3;
-        --tag-bg:#f3f0eb; --tag-text:#555;
-        --tip-bg:#f0fdf4; --tip-border:#16a34a;
-        --warn-bg:#fff7ed; --warn-border:#ea580c;
-        --info-bg:#eff6ff; --info-border:#2563eb;
-        --ng:#dd0031; --react:#61dafb; --next:#000;
+        --bg: #faf8f5;
+        --surface: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b6b6b;
+        --text-muted: #9a9a9a;
+        --accent: #c2185b;
+        --accent-light: #fce4ec;
+        --accent-subtle: #fce4ec;
+        --border: #e8e3db;
+        --code-bg: #0d1117;
+        --code-text: #e6edf3;
+        --tag-bg: #f3f0eb;
+        --tag-text: #555;
+        --tip-bg: #f0fdf4;
+        --tip-border: #16a34a;
+        --warn-bg: #fff7ed;
+        --warn-border: #ea580c;
+        --info-bg: #eff6ff;
+        --info-border: #2563eb;
+        --ng: #dd0031;
+        --react: #61dafb;
+        --next: #000;
       }
-      *{box-sizing:border-box;margin:0;padding:0}
-      body{font-family:"Outfit",sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.75}
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.75;
+      }
 
-      nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
-      .nav-left{display:flex;align-items:center;gap:12px}
-      .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;transition:color .15s;display:flex;align-items:center;gap:5px}
-      .nav-back:hover{color:var(--accent)}
-      .nav-pipe{color:var(--border);font-size:18px}
-      .nav-brand{font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-.3px}
-      .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:#fef3c7;color:#b45309;border-radius:100px;letter-spacing:.3px}
-      .nav-links{display:flex;gap:0}
-      .nav-links a{font-size:13px;color:var(--text-secondary);text-decoration:none;padding:6px 10px;border-radius:6px;transition:all .15s;white-space:nowrap}
-      .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
-      .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(250, 248, 245, 0.93);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover {
+        color: var(--accent);
+      }
+      .nav-pipe {
+        color: var(--border);
+        font-size: 18px;
+      }
+      .nav-brand {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: #fef3c7;
+        color: #b45309;
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 0;
+      }
+      .nav-links a {
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--tag-bg);
+        color: var(--text-primary);
+      }
+      .nav-rt {
+        font-size: 13px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
 
-      .hero{max-width:780px;margin:0 auto;padding:64px 2rem 48px}
-      .hero-tag{display:inline-flex;align-items:center;gap:6px;background:#fef3c7;color:#b45309;font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:24px;letter-spacing:.3px}
-      .hero h1{font-family:"Lora",serif;font-size:clamp(32px,5vw,50px);font-weight:600;line-height:1.15;letter-spacing:-.5px;margin-bottom:20px}
-      .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
-      .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-      .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#dd0031,#9c0023);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white}
-      .meta-text{font-size:14px;color:var(--text-secondary)}
-      .meta-text strong{color:var(--text-primary)}
-      .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 2rem 48px;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #fef3c7;
+        color: #b45309;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        letter-spacing: 0.3px;
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(32px, 5vw, 50px);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+        margin-bottom: 20px;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #dd0031, #9c0023);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: white;
+      }
+      .meta-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .meta-text strong {
+        color: var(--text-primary);
+      }
+      .hero-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin-top: 32px;
+      }
 
-      .toc-wrapper{max-width:780px;margin:0 auto;padding:0 2rem 8px}
-      .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:40px}
-      .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
-      .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
-      .toc a{font-size:14px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
-      .toc a:hover{color:var(--accent)}
-      .toc-num{font-size:12px;color:var(--text-muted);font-weight:500;min-width:20px}
+      .toc-wrapper {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 8px;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 40px;
+      }
+      .toc h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 24px;
+      }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+        transition: color 0.15s;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc-num {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+        min-width: 20px;
+      }
 
-      .content{max-width:780px;margin:0 auto;padding:0 2rem 80px}
-      .section{margin-bottom:72px;scroll-margin-top:72px}
-      .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-      .section-label::after{content:"";flex:1;height:1px;background:#fce4ec}
-      h2{font-family:"Lora",serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:16px}
-      h3{font-size:19px;font-weight:600;margin:32px 0 12px}
-      h4{font-size:16px;font-weight:600;margin:20px 0 8px}
-      p{margin-bottom:18px;color:#2d2d2d}
-      .lead{font-size:19px;color:var(--text-secondary);font-weight:300;margin-bottom:24px}
-      ul.prose{margin:0 0 18px 20px} ul.prose li{margin-bottom:6px;color:#2d2d2d}
+      .content {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 80px;
+      }
+      .section {
+        margin-bottom: 72px;
+        scroll-margin-top: 72px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #fce4ec;
+      }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+      }
+      h3 {
+        font-size: 19px;
+        font-weight: 600;
+        margin: 32px 0 12px;
+      }
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 20px 0 8px;
+      }
+      p {
+        margin-bottom: 18px;
+        color: #2d2d2d;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        margin-bottom: 24px;
+      }
+      ul.prose {
+        margin: 0 0 18px 20px;
+      }
+      ul.prose li {
+        margin-bottom: 6px;
+        color: #2d2d2d;
+      }
 
-      .code-block{background:var(--code-bg);border-radius:10px;margin:24px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
-      .code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
-      .code-lang{font-size:12px;color:#6e7681;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
-      .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:"Outfit",sans-serif;transition:all .15s}
-      .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
-      pre{padding:20px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.7;color:var(--code-text)}
-      pre code{background:none;padding:0;font-size:inherit}
-      code{font-family:"JetBrains Mono",monospace;font-size:13.5px;background:#fce4ec;color:#c2185b;padding:2px 6px;border-radius:4px}
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 10px;
+        margin: 24px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-lang {
+        font-size: 12px;
+        color: #6e7681;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .copy-btn {
+        font-size: 12px;
+        color: #484f58;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #8b949e;
+      }
+      pre {
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--code-text);
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        background: #fce4ec;
+        color: #c2185b;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
 
-      .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
-      .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
-      .pu{color:#e6edf3}.bi{color:#ffa657}.at{color:#79c0ff}.dc{color:#f0883e}
+      .kw {
+        color: #ff7b72;
+      }
+      .ty {
+        color: #79c0ff;
+      }
+      .st {
+        color: #a5d6ff;
+      }
+      .nm {
+        color: #f0883e;
+      }
+      .cm {
+        color: #8b949e;
+        font-style: italic;
+      }
+      .fn {
+        color: #d2a8ff;
+      }
+      .op {
+        color: #c9d1d9;
+      }
+      .pu {
+        color: #e6edf3;
+      }
+      .bi {
+        color: #ffa657;
+      }
+      .at {
+        color: #79c0ff;
+      }
+      .dc {
+        color: #f0883e;
+      }
 
-      .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
-      .compare-card{border-radius:10px;overflow:hidden;border:1px solid var(--border)}
-      .compare-header{padding:10px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
-      .compare-header.ng{background:#fce4ec;color:#9c0023}
-      .compare-header.react{background:#e0f7fa;color:#006064}
-      .compare-header.next{background:#f3f4f6;color:#111}
-      .compare-header.bad{background:#fef2f2;color:#dc2626}
-      .compare-header.good{background:#f0fdf4;color:#16a34a}
-      .compare-card .code-block{border-radius:0;margin:0;border:none}
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .compare-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .compare-header {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .compare-header.ng {
+        background: #fce4ec;
+        color: #9c0023;
+      }
+      .compare-header.react {
+        background: #e0f7fa;
+        color: #006064;
+      }
+      .compare-header.next {
+        background: #f3f4f6;
+        color: #111;
+      }
+      .compare-header.bad {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+      .compare-header.good {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .compare-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+      }
 
-      .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-      .tip-label{font-size:12px;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-      .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-      .warn-label{font-size:12px;font-weight:600;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-      .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;font-size:15px}
-      .info-label{font-size:12px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+      .tip {
+        background: var(--tip-bg);
+        border-left: 3px solid var(--tip-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .tip-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #16a34a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .warn {
+        background: var(--warn-bg);
+        border-left: 3px solid var(--warn-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .warn-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #ea580c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .info {
+        background: var(--info-bg);
+        border-left: 3px solid var(--info-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2563eb;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
 
-      table{width:100%;border-collapse:collapse;margin:24px 0;font-size:15px}
-      th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
-      td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
-      tr:last-child td{border-bottom:none}
-      tr:hover td{background:var(--bg)}
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      th {
+        background: var(--tag-bg);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg);
+      }
 
-      .fw-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:2px 10px;border-radius:100px;white-space:nowrap}
-      .fw-ng{background:#fce4ec;color:#c2185b}
-      .fw-react{background:#e0f7fa;color:#006064}
-      .fw-next{background:#f3f4f6;color:#374151;border:1px solid #d1d5db}
+      .fw-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 2px 10px;
+        border-radius: 100px;
+        white-space: nowrap;
+      }
+      .fw-ng {
+        background: #fce4ec;
+        color: #c2185b;
+      }
+      .fw-react {
+        background: #e0f7fa;
+        color: #006064;
+      }
+      .fw-next {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+      }
 
-      .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0}
-      .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
-      .concept-card h4{font-size:15px;font-weight:600;margin:0 0 6px}
-      .concept-card p{font-size:14px;color:var(--text-secondary);margin:0;line-height:1.5}
-      .concept-icon{font-size:22px;margin-bottom:10px}
+      .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+      }
+      .concept-card h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 6px;
+      }
+      .concept-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .concept-icon {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
 
-      .pullquote{font-family:"Lora",serif;font-style:italic;font-size:22px;line-height:1.5;color:var(--text-secondary);border-left:4px solid var(--accent);padding:12px 24px;margin:36px 0}
-      .checklist{list-style:none;margin:16px 0}
-      .checklist li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:15px}
-      .checklist li:last-child{border-bottom:none}
-      .check-icon{font-size:16px;flex-shrink:0;margin-top:2px}
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 12px 24px;
+        margin: 36px 0;
+      }
+      .checklist {
+        list-style: none;
+        margin: 16px 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .check-icon {
+        font-size: 16px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
 
-      .verdict-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
-      .verdict-card{border-radius:10px;padding:20px;border:2px solid var(--border)}
-      .verdict-card.ng-card{border-color:#dd0031;background:#fff5f7}
-      .verdict-card.react-card{border-color:#61dafb;background:#f0fdff}
-      .verdict-card.next-card{border-color:#374151;background:#f9fafb}
-      .verdict-title{font-size:14px;font-weight:700;margin-bottom:10px}
-      .verdict-list{list-style:none;font-size:13px;color:var(--text-secondary);line-height:1.8}
+      .verdict-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .verdict-card {
+        border-radius: 10px;
+        padding: 20px;
+        border: 2px solid var(--border);
+      }
+      .verdict-card.ng-card {
+        border-color: #dd0031;
+        background: #fff5f7;
+      }
+      .verdict-card.react-card {
+        border-color: #61dafb;
+        background: #f0fdff;
+      }
+      .verdict-card.next-card {
+        border-color: #374151;
+        background: #f9fafb;
+      }
+      .verdict-title {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .verdict-list {
+        list-style: none;
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.8;
+      }
 
-      footer{background:#1a1a1a;color:rgba(255,255,255,.65);text-align:center;padding:40px 2rem;font-size:14px}
-      footer strong{color:white}
-      @media(max-width:640px){.toc-grid,.compare-grid,.concept-grid,.verdict-grid{grid-template-columns:1fr}.nav-links{display:none}}
+      footer {
+        background: #1a1a1a;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: center;
+        padding: 40px 2rem;
+        font-size: 14px;
+      }
+      footer strong {
+        color: white;
+      }
+      @media (max-width: 640px) {
+        .toc-grid,
+        .compare-grid,
+        .concept-grid,
+        .verdict-grid {
+          grid-template-columns: 1fr;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -152,7 +673,10 @@
 
     <div class="hero">
       <div class="hero-tag">&#9679; JavaScript</div>
-      <h1>Angular In Depth: Architecture, Patterns &amp; Comparison with React/Next.js</h1>
+      <h1>
+        Angular In Depth: Architecture, Patterns &amp; Comparison with
+        React/Next.js
+      </h1>
       <p class="hero-sub">
         A senior engineer's guide to Angular — components, signals, dependency
         injection, reactive forms, routing, SSR — with direct side-by-side
@@ -173,31 +697,46 @@
       <div class="toc">
         <h3>Table of Contents</h3>
         <div class="toc-grid">
-          <a href="#philosophy"><span class="toc-num">01</span> Philosophy &amp; Mental Model</a>
-          <a href="#routing"><span class="toc-num">05</span> Routing Deep Dive</a>
-          <a href="#components"><span class="toc-num">02</span> Component Architecture</a>
-          <a href="#forms"><span class="toc-num">06</span> Forms &amp; Validation</a>
-          <a href="#reactivity"><span class="toc-num">03</span> Reactivity &amp; Change Detection</a>
-          <a href="#ssr"><span class="toc-num">07</span> SSR &amp; Performance</a>
+          <a href="#philosophy"
+            ><span class="toc-num">01</span> Philosophy &amp; Mental Model</a
+          >
+          <a href="#routing"
+            ><span class="toc-num">05</span> Routing Deep Dive</a
+          >
+          <a href="#components"
+            ><span class="toc-num">02</span> Component Architecture</a
+          >
+          <a href="#forms"
+            ><span class="toc-num">06</span> Forms &amp; Validation</a
+          >
+          <a href="#reactivity"
+            ><span class="toc-num">03</span> Reactivity &amp; Change
+            Detection</a
+          >
+          <a href="#ssr"
+            ><span class="toc-num">07</span> SSR &amp; Performance</a
+          >
           <a href="#di"><span class="toc-num">04</span> Dependency Injection</a>
           <a href="#state"><span class="toc-num">08</span> State Management</a>
-          <a href="#verdict"><span class="toc-num">09</span> When to Choose What</a>
+          <a href="#verdict"
+            ><span class="toc-num">09</span> When to Choose What</a
+          >
           <a href="#verdict"><span class="toc-num">&nbsp;</span> &nbsp;</a>
         </div>
       </div>
     </div>
 
     <div class="content">
-
       <!-- ══════════════════════ 01 PHILOSOPHY -->
       <div class="section" id="philosophy">
         <div class="section-label">01 &mdash; The Core Distinction</div>
         <h2>Philosophy &amp; Mental Model</h2>
         <p class="lead">
-          The most important question isn't "which is better" — it's "what problem
-          is each solving?" Angular, React, and Next.js occupy different positions
-          on the spectrum between <em>library</em> and <em>platform</em>, and that
-          position shapes every technical decision downstream.
+          The most important question isn't "which is better" — it's "what
+          problem is each solving?" Angular, React, and Next.js occupy different
+          positions on the spectrum between <em>library</em> and
+          <em>platform</em>, and that position shapes every technical decision
+          downstream.
         </p>
 
         <table>
@@ -210,44 +749,107 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td><strong>Classification</strong></td><td>Full framework (opinionated platform)</td><td>UI library</td><td>React meta-framework</td></tr>
-            <tr><td><strong>Language</strong></td><td>TypeScript — first class, mandatory</td><td>JS or TS — opt-in</td><td>JS or TS — opt-in</td></tr>
-            <tr><td><strong>Routing</strong></td><td>Built-in (<code>@angular/router</code>)</td><td>Third-party (React Router, TanStack)</td><td>Built-in (file-based App Router)</td></tr>
-            <tr><td><strong>HTTP client</strong></td><td>Built-in (<code>HttpClient</code>)</td><td>Third-party (fetch, axios, TanStack Query)</td><td>Native fetch + Server Components</td></tr>
-            <tr><td><strong>Forms</strong></td><td>Built-in (Reactive + Template-driven)</td><td>Third-party (react-hook-form, Formik)</td><td>Third-party (same as React)</td></tr>
-            <tr><td><strong>DI system</strong></td><td>Built-in, hierarchical</td><td>Context API (manual)</td><td>Context API (manual)</td></tr>
-            <tr><td><strong>State</strong></td><td>Signals (built-in) + NgRx</td><td>useState/useReducer + Zustand/Redux</td><td>Same + Server state via RSC</td></tr>
-            <tr><td><strong>Testing</strong></td><td>Built-in (Karma → Jest, TestBed)</td><td>Third-party (Jest + RTL)</td><td>Third-party (Jest + RTL + Playwright)</td></tr>
-            <tr><td><strong>CLI</strong></td><td>Angular CLI — batteries included</td><td>Vite / CRA (deprecated)</td><td><code>create-next-app</code></td></tr>
-            <tr><td><strong>Bundle size (hello world)</strong></td><td>~45KB gzip</td><td>~42KB gzip</td><td>~80KB gzip (with runtime)</td></tr>
+            <tr>
+              <td><strong>Classification</strong></td>
+              <td>Full framework (opinionated platform)</td>
+              <td>UI library</td>
+              <td>React meta-framework</td>
+            </tr>
+            <tr>
+              <td><strong>Language</strong></td>
+              <td>TypeScript — first class, mandatory</td>
+              <td>JS or TS — opt-in</td>
+              <td>JS or TS — opt-in</td>
+            </tr>
+            <tr>
+              <td><strong>Routing</strong></td>
+              <td>Built-in (<code>@angular/router</code>)</td>
+              <td>Third-party (React Router, TanStack)</td>
+              <td>Built-in (file-based App Router)</td>
+            </tr>
+            <tr>
+              <td><strong>HTTP client</strong></td>
+              <td>Built-in (<code>HttpClient</code>)</td>
+              <td>Third-party (fetch, axios, TanStack Query)</td>
+              <td>Native fetch + Server Components</td>
+            </tr>
+            <tr>
+              <td><strong>Forms</strong></td>
+              <td>Built-in (Reactive + Template-driven)</td>
+              <td>Third-party (react-hook-form, Formik)</td>
+              <td>Third-party (same as React)</td>
+            </tr>
+            <tr>
+              <td><strong>DI system</strong></td>
+              <td>Built-in, hierarchical</td>
+              <td>Context API (manual)</td>
+              <td>Context API (manual)</td>
+            </tr>
+            <tr>
+              <td><strong>State</strong></td>
+              <td>Signals (built-in) + NgRx</td>
+              <td>useState/useReducer + Zustand/Redux</td>
+              <td>Same + Server state via RSC</td>
+            </tr>
+            <tr>
+              <td><strong>Testing</strong></td>
+              <td>Built-in (Karma → Jest, TestBed)</td>
+              <td>Third-party (Jest + RTL)</td>
+              <td>Third-party (Jest + RTL + Playwright)</td>
+            </tr>
+            <tr>
+              <td><strong>CLI</strong></td>
+              <td>Angular CLI — batteries included</td>
+              <td>Vite / CRA (deprecated)</td>
+              <td><code>create-next-app</code></td>
+            </tr>
+            <tr>
+              <td><strong>Bundle size (hello world)</strong></td>
+              <td>~45KB gzip</td>
+              <td>~42KB gzip</td>
+              <td>~80KB gzip (with runtime)</td>
+            </tr>
           </tbody>
         </table>
 
         <p>
-          Angular's bet is that <strong>consistency and productivity at scale</strong>
-          outweigh flexibility. When 30 engineers join a project, they already know
-          where the routing config lives, how services are injected, how forms are
-          validated, and how HTTP calls are made — because there is one canonical
-          Angular way to do each. React's bet is the inverse: the ecosystem's
-          diversity produces better individual solutions than any framework could
-          ship natively.
+          Angular's bet is that
+          <strong>consistency and productivity at scale</strong>
+          outweigh flexibility. When 30 engineers join a project, they already
+          know where the routing config lives, how services are injected, how
+          forms are validated, and how HTTP calls are made — because there is
+          one canonical Angular way to do each. React's bet is the inverse: the
+          ecosystem's diversity produces better individual solutions than any
+          framework could ship natively.
         </p>
 
         <div class="concept-grid">
           <div class="concept-card">
             <div class="concept-icon">🏗️</div>
             <h4>Angular is a platform</h4>
-            <p>Routing, HTTP, forms, animations, i18n, testing utilities — all from <code>@angular/*</code>. One upgrade path, one breaking change policy.</p>
+            <p>
+              Routing, HTTP, forms, animations, i18n, testing utilities — all
+              from <code>@angular/*</code>. One upgrade path, one breaking
+              change policy.
+            </p>
           </div>
           <div class="concept-card">
             <div class="concept-icon">🧩</div>
             <h4>React is a library</h4>
-            <p>React renders UI. Everything else — routing, data fetching, forms, state — is your choice. Maximum flexibility, maximum decision fatigue.</p>
+            <p>
+              React renders UI. Everything else — routing, data fetching, forms,
+              state — is your choice. Maximum flexibility, maximum decision
+              fatigue.
+            </p>
           </div>
           <div class="concept-card">
             <div class="concept-icon">⚡</div>
             <h4>Next.js is a meta-framework</h4>
-            <p>React + opinionated file-based routing + SSR/SSG/ISR + Edge Runtime + Server Components. The production-ready default for React apps.</p>
+            <p>
+              React + opinionated file-based routing + SSR/SSG/ISR + Edge
+              Runtime + Server Components. The production-ready default for
+              React apps.
+            </p>
           </div>
         </div>
 
@@ -263,13 +865,16 @@
         <div class="section-label">02 &mdash; Building Blocks</div>
         <h2>Component Architecture</h2>
         <p class="lead">
-          Both Angular and React converge on the component as the fundamental unit
-          of UI, but their component models diverge sharply on class vs function,
-          template syntax, and how metadata is declared.
+          Both Angular and React converge on the component as the fundamental
+          unit of UI, but their component models diverge sharply on class vs
+          function, template syntax, and how metadata is declared.
         </p>
 
         <h3>The Same Component: Side by Side</h3>
-        <p>A user profile card with a name, avatar, role badge, and a follow button:</p>
+        <p>
+          A user profile card with a name, avatar, role badge, and a follow
+          button:
+        </p>
 
         <div class="compare-grid">
           <div class="compare-card">
@@ -346,9 +951,10 @@
         </div>
 
         <p>
-          Angular's component is a <strong>class decorated with metadata</strong>.
-          The decorator declares the selector (custom HTML tag), which dependencies
-          need to be imported, and the template. React's component is a
+          Angular's component is a
+          <strong>class decorated with metadata</strong>. The decorator declares
+          the selector (custom HTML tag), which dependencies need to be
+          imported, and the template. React's component is a
           <strong>plain function</strong> — no decorators, no class, no imports
           list — the JSX template is inlined in the return statement.
         </p>
@@ -357,13 +963,18 @@
         <p>
           Prior to Angular 14, every component had to be declared in an
           <code>NgModule</code>. Modules were a source of ceremony, confusion,
-          and boilerplate. Standalone components remove the <code>NgModule</code>
+          and boilerplate. Standalone components remove the
+          <code>NgModule</code>
           requirement: a component declares its own imports directly. Angular 17
           makes standalone the default for all CLI-generated code.
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Angular 17 app bootstrap (no NgModule)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Angular 17 app bootstrap (no NgModule)</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">// main.ts — Angular 17+ bootstraps a standalone component directly</span>
 <span class="kw">import</span> <span class="pu">{</span> bootstrapApplication <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/platform-browser'</span>
 <span class="kw">import</span> <span class="pu">{</span> AppComponent <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./app/app.component'</span>
@@ -389,17 +1000,53 @@
 
         <table>
           <thead>
-            <tr><th>Concept</th><th>Angular template</th><th>React JSX</th></tr>
+            <tr>
+              <th>Concept</th>
+              <th>Angular template</th>
+              <th>React JSX</th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td>Conditional rendering</td><td><code>@if (cond) { } @else { }</code></td><td><code>{cond &amp;&amp; &lt;X /&gt;}</code> or ternary</td></tr>
-            <tr><td>List rendering</td><td><code>@for (item of list; track item.id) { }</code></td><td><code>{list.map(i =&gt; &lt;X key={i.id} /&gt;)}</code></td></tr>
-            <tr><td>Property binding</td><td><code>[src]="avatarUrl"</code></td><td><code>src={avatarUrl}</code></td></tr>
-            <tr><td>Event binding</td><td><code>(click)="handleClick()"</code></td><td><code>onClick={handleClick}</code></td></tr>
-            <tr><td>Two-way binding</td><td><code>[(ngModel)]="value"</code></td><td><code>value={v} onChange={setV}</code></td></tr>
-            <tr><td>CSS class binding</td><td><code>[class.active]="isActive"</code></td><td><code>className={isActive ? 'active' : ''}</code></td></tr>
-            <tr><td>Content projection</td><td><code>&lt;ng-content /&gt;</code></td><td><code>{children}</code></td></tr>
-            <tr><td>Switch/match</td><td><code>@switch (val) { @case ('a') {} }</code></td><td>Map object or nested ternary</td></tr>
+            <tr>
+              <td>Conditional rendering</td>
+              <td><code>@if (cond) { } @else { }</code></td>
+              <td><code>{cond &amp;&amp; &lt;X /&gt;}</code> or ternary</td>
+            </tr>
+            <tr>
+              <td>List rendering</td>
+              <td><code>@for (item of list; track item.id) { }</code></td>
+              <td><code>{list.map(i =&gt; &lt;X key={i.id} /&gt;)}</code></td>
+            </tr>
+            <tr>
+              <td>Property binding</td>
+              <td><code>[src]="avatarUrl"</code></td>
+              <td><code>src={avatarUrl}</code></td>
+            </tr>
+            <tr>
+              <td>Event binding</td>
+              <td><code>(click)="handleClick()"</code></td>
+              <td><code>onClick={handleClick}</code></td>
+            </tr>
+            <tr>
+              <td>Two-way binding</td>
+              <td><code>[(ngModel)]="value"</code></td>
+              <td><code>value={v} onChange={setV}</code></td>
+            </tr>
+            <tr>
+              <td>CSS class binding</td>
+              <td><code>[class.active]="isActive"</code></td>
+              <td><code>className={isActive ? 'active' : ''}</code></td>
+            </tr>
+            <tr>
+              <td>Content projection</td>
+              <td><code>&lt;ng-content /&gt;</code></td>
+              <td><code>{children}</code></td>
+            </tr>
+            <tr>
+              <td>Switch/match</td>
+              <td><code>@switch (val) { @case ('a') {} }</code></td>
+              <td>Map object or nested ternary</td>
+            </tr>
           </tbody>
         </table>
 
@@ -408,8 +1055,8 @@
           Angular 17 replaced structural directives (<code>*ngIf</code>,
           <code>*ngFor</code>, <code>*ngSwitch</code>) with built-in template
           control flow blocks (<code>@if</code>, <code>@for</code>,
-          <code>@switch</code>). The new syntax is more readable, type-safe,
-          and 30–90% faster at runtime due to improved diff tracking.
+          <code>@switch</code>). The new syntax is more readable, type-safe, and
+          30–90% faster at runtime due to improved diff tracking.
         </div>
       </div>
 
@@ -418,10 +1065,11 @@
         <div class="section-label">03 &mdash; State &amp; Updates</div>
         <h2>Reactivity &amp; Change Detection</h2>
         <p class="lead">
-          How a framework knows <em>when</em> and <em>what</em> to re-render is the
-          defining performance characteristic. Angular and React have fundamentally
-          different answers — and Angular's Signals (v16+) are closing the gap with
-          React's fine-grained reactivity model while eliminating Zone.js overhead.
+          How a framework knows <em>when</em> and <em>what</em> to re-render is
+          the defining performance characteristic. Angular and React have
+          fundamentally different answers — and Angular's Signals (v16+) are
+          closing the gap with React's fine-grained reactivity model while
+          eliminating Zone.js overhead.
         </p>
 
         <h3>Angular's Change Detection: Zone.js → OnPush → Signals</h3>
@@ -433,7 +1081,11 @@
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Angular change detection evolution</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Angular change detection evolution</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">// ─── Step 1: Default (Zone.js) — checks entire tree ────────</span>
 <span class="dc">@Component</span><span class="pu">({</span> template<span class="op">:</span> <span class="st">'{{ count }}'</span> <span class="pu">})</span>
 <span class="kw">export class</span> <span class="ty">DefaultComponent</span> <span class="pu">{</span>
@@ -529,18 +1181,20 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
 
         <p>
           Angular Signals auto-track their dependencies — no dependency array to
-          maintain, no stale closure bugs, no <code>useCallback</code> to stabilise
-          references. React's <code>useMemo</code> and <code>useEffect</code> require
-          manually declaring what they depend on, which is the root cause of the
-          majority of React performance bugs in production.
+          maintain, no stale closure bugs, no <code>useCallback</code> to
+          stabilise references. React's <code>useMemo</code> and
+          <code>useEffect</code> require manually declaring what they depend on,
+          which is the root cause of the majority of React performance bugs in
+          production.
         </p>
 
         <div class="tip">
           <div class="tip-label">💡 Signal-based components are Zone-free</div>
           Angular 18 introduced <strong>zoneless change detection</strong> as
           experimental — applications built entirely with signals can opt out of
-          Zone.js entirely (<code>provideExperimentalZonelessChangeDetection()</code>),
-          shrinking bundle size by ~12KB and improving startup performance measurably.
+          Zone.js entirely
+          (<code>provideExperimentalZonelessChangeDetection()</code>), shrinking
+          bundle size by ~12KB and improving startup performance measurably.
         </div>
       </div>
 
@@ -551,14 +1205,19 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         <p class="lead">
           Angular's Dependency Injection system is one of its most powerful and
           most misunderstood features. It is a hierarchical IoC container that
-          resolves class dependencies at runtime. React has no equivalent — Context
-          is the closest analogue, but the mental model differs significantly.
+          resolves class dependencies at runtime. React has no equivalent —
+          Context is the closest analogue, but the mental model differs
+          significantly.
         </p>
 
         <h3>Angular DI — Services &amp; Providers</h3>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Angular injectable service</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Angular injectable service</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> <span class="pu">{</span> Injectable<span class="pu">,</span> signal<span class="pu">,</span> computed <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/core'</span>
 <span class="kw">import</span> <span class="pu">{</span> HttpClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/common/http'</span>
 
@@ -600,7 +1259,11 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         <h3>React Equivalent — Context + Custom Hook</h3>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — React auth service pattern</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — React auth service pattern</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">// auth-context.tsx</span>
 <span class="kw">import</span> <span class="pu">{</span> createContext<span class="pu">,</span> useContext<span class="pu">,</span> useState<span class="pu">,</span> useMemo <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
 
@@ -640,27 +1303,32 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         <p>
           Angular's DI is more powerful: it is hierarchical (you can provide a
           service at the component level for a scoped instance), testable (swap
-          implementations in TestBed), and lazy-loadable. React's Context is flat —
-          one provider, all consumers — and re-renders every consumer when the
-          context value changes unless you manually optimise with <code>memo</code>.
+          implementations in TestBed), and lazy-loadable. React's Context is
+          flat — one provider, all consumers — and re-renders every consumer
+          when the context value changes unless you manually optimise with
+          <code>memo</code>.
         </p>
       </div>
-
 
       <!-- ══════════════════════ 05 ROUTING -->
       <div class="section" id="routing">
         <div class="section-label">05 &mdash; Navigation</div>
         <h2>Routing Deep Dive</h2>
         <p class="lead">
-          Routing is the area where Angular and Next.js differ most dramatically.
-          Angular uses an explicit route configuration object. Next.js uses the
-          file system itself as the route definition — no config file required.
-          Both approaches have real trade-offs worth understanding deeply.
+          Routing is the area where Angular and Next.js differ most
+          dramatically. Angular uses an explicit route configuration object.
+          Next.js uses the file system itself as the route definition — no
+          config file required. Both approaches have real trade-offs worth
+          understanding deeply.
         </p>
 
         <h3>Angular Router — Explicit Configuration</h3>
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Angular app.routes.ts (lazy + guards)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Angular app.routes.ts (lazy + guards)</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> <span class="pu">{</span> <span class="ty">Routes</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/router'</span>
 <span class="kw">import</span> <span class="pu">{</span> authGuard <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./guards/auth.guard'</span>
 
@@ -704,7 +1372,11 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
 
         <h3>Next.js App Router — File System Routing</h3>
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">Bash — Next.js 15 App Router file structure</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >Bash — Next.js 15 App Router file structure</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code>app/
 ├── layout.tsx          <span class="cm"># Root layout (persistent shell)</span>
 ├── page.tsx            <span class="cm"># Route: /</span>
@@ -725,7 +1397,12 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         </div>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Next.js route with auth middleware + data fetch</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Next.js route with auth middleware + data
+              fetch</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">// middleware.ts — runs on Edge, guards all /dashboard routes</span>
 <span class="kw">import</span> <span class="pu">{</span> NextResponse <span class="pu">}</span> <span class="kw">from</span> <span class="st">'next/server'</span>
 <span class="kw">import</span> <span class="kw">type</span> <span class="pu">{</span> <span class="ty">NextRequest</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'next/server'</span>
@@ -756,17 +1433,53 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
 
         <table>
           <thead>
-            <tr><th>Feature</th><th><span class="fw-badge fw-ng">Angular Router</span></th><th><span class="fw-badge fw-next">Next.js App Router</span></th></tr>
+            <tr>
+              <th>Feature</th>
+              <th><span class="fw-badge fw-ng">Angular Router</span></th>
+              <th><span class="fw-badge fw-next">Next.js App Router</span></th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td>Route definition</td><td>TypeScript config array</td><td>File system (<code>page.tsx</code>)</td></tr>
-            <tr><td>Lazy loading</td><td><code>loadComponent</code> / <code>loadChildren</code></td><td>Automatic per-segment</td></tr>
-            <tr><td>Auth guard</td><td>Functional guard (<code>canActivate</code>)</td><td>Middleware on Edge</td></tr>
-            <tr><td>Data pre-fetch</td><td><code>resolve</code> object</td><td><code>async</code> Server Component</td></tr>
-            <tr><td>Nested layouts</td><td>Named router outlets</td><td>Nested <code>layout.tsx</code> files</td></tr>
-            <tr><td>Loading states</td><td>Manual skeleton components</td><td><code>loading.tsx</code> auto Suspense</td></tr>
-            <tr><td>Parallel routes</td><td>Named outlets (complex)</td><td><code>@slot</code> folders (native)</td></tr>
-            <tr><td>Route groups</td><td>Module organisation</td><td><code>(group)</code> folder convention</td></tr>
+            <tr>
+              <td>Route definition</td>
+              <td>TypeScript config array</td>
+              <td>File system (<code>page.tsx</code>)</td>
+            </tr>
+            <tr>
+              <td>Lazy loading</td>
+              <td><code>loadComponent</code> / <code>loadChildren</code></td>
+              <td>Automatic per-segment</td>
+            </tr>
+            <tr>
+              <td>Auth guard</td>
+              <td>Functional guard (<code>canActivate</code>)</td>
+              <td>Middleware on Edge</td>
+            </tr>
+            <tr>
+              <td>Data pre-fetch</td>
+              <td><code>resolve</code> object</td>
+              <td><code>async</code> Server Component</td>
+            </tr>
+            <tr>
+              <td>Nested layouts</td>
+              <td>Named router outlets</td>
+              <td>Nested <code>layout.tsx</code> files</td>
+            </tr>
+            <tr>
+              <td>Loading states</td>
+              <td>Manual skeleton components</td>
+              <td><code>loading.tsx</code> auto Suspense</td>
+            </tr>
+            <tr>
+              <td>Parallel routes</td>
+              <td>Named outlets (complex)</td>
+              <td><code>@slot</code> folders (native)</td>
+            </tr>
+            <tr>
+              <td>Route groups</td>
+              <td>Module organisation</td>
+              <td><code>(group)</code> folder convention</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -776,16 +1489,20 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         <div class="section-label">06 &mdash; User Input</div>
         <h2>Forms &amp; Validation</h2>
         <p class="lead">
-          Forms are where Angular's "batteries included" philosophy pays the biggest
-          dividend. Angular ships two complete form systems — Reactive and
-          Template-driven — both type-safe in Angular 14+. React has no native form
-          system; the ecosystem converged on <strong>react-hook-form</strong> as
-          the de facto standard.
+          Forms are where Angular's "batteries included" philosophy pays the
+          biggest dividend. Angular ships two complete form systems — Reactive
+          and Template-driven — both type-safe in Angular 14+. React has no
+          native form system; the ecosystem converged on
+          <strong>react-hook-form</strong> as the de facto standard.
         </p>
 
         <h3>Angular Typed Reactive Forms</h3>
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Angular strictly-typed reactive form</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Angular strictly-typed reactive form</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> <span class="pu">{</span>
   FormBuilder<span class="pu">,</span> Validators<span class="pu">,</span> AbstractControl
 <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/forms'</span>
@@ -841,7 +1558,11 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
 
         <h3>React with react-hook-form + Zod</h3>
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — React login form with RHF + Zod</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — React login form with RHF + Zod</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> <span class="pu">{</span> useForm <span class="pu">}</span>       <span class="kw">from</span> <span class="st">'react-hook-form'</span>
 <span class="kw">import</span> <span class="pu">{</span> zodResolver <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@hookform/resolvers/zod'</span>
 <span class="kw">import</span> <span class="pu">{</span> z <span class="pu">}</span>             <span class="kw">from</span> <span class="st">'zod'</span>
@@ -883,11 +1604,12 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
 
         <div class="tip">
           <div class="tip-label">💡 Angular vs React-Hook-Form — strengths</div>
-          Angular Reactive Forms shine for <strong>deeply nested, dynamic forms</strong>
-          (FormArrays, conditional validators, cross-field validation) because the
-          form model lives in the class, not in JSX. RHF + Zod wins on
-          <strong>schema-first validation</strong> and uncontrolled inputs (it never
-          forces re-renders on every keystroke by default).
+          Angular Reactive Forms shine for
+          <strong>deeply nested, dynamic forms</strong>
+          (FormArrays, conditional validators, cross-field validation) because
+          the form model lives in the class, not in JSX. RHF + Zod wins on
+          <strong>schema-first validation</strong> and uncontrolled inputs (it
+          never forces re-renders on every keystroke by default).
         </div>
       </div>
 
@@ -896,14 +1618,19 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         <div class="section-label">07 &mdash; Server Rendering</div>
         <h2>SSR &amp; Performance</h2>
         <p class="lead">
-          Next.js has a significant lead over Angular in server rendering maturity,
-          flexibility, and developer experience — though Angular SSR has closed the
-          gap substantially with Angular 17's updated SSR pipeline and hydration.
+          Next.js has a significant lead over Angular in server rendering
+          maturity, flexibility, and developer experience — though Angular SSR
+          has closed the gap substantially with Angular 17's updated SSR
+          pipeline and hydration.
         </p>
 
         <h3>Next.js Rendering Strategies</h3>
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Next.js 15 rendering modes per route</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Next.js 15 rendering modes per route</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">// ── Static Site Generation (SSG) — build-time HTML ───────</span>
 <span class="cm">// Any async Server Component with no dynamic data = SSG by default</span>
 <span class="kw">export default async function</span> <span class="fn">BlogPost</span><span class="pu">({</span> params <span class="pu">}) {</span>
@@ -945,7 +1672,11 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
 
         <h3>Angular SSR (Angular 17+)</h3>
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Angular SSR with HttpClient transfer state</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Angular SSR with HttpClient transfer state</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">// app.config.ts — enable SSR hydration</span>
 <span class="kw">import</span> <span class="pu">{</span> provideClientHydration <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/platform-browser'</span>
 <span class="kw">import</span> <span class="pu">{</span> withHttpTransferCacheOptions <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@angular/platform-browser'</span>
@@ -982,16 +1713,48 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
 
         <table>
           <thead>
-            <tr><th>Feature</th><th><span class="fw-badge fw-ng">Angular SSR</span></th><th><span class="fw-badge fw-next">Next.js</span></th></tr>
+            <tr>
+              <th>Feature</th>
+              <th><span class="fw-badge fw-ng">Angular SSR</span></th>
+              <th><span class="fw-badge fw-next">Next.js</span></th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td>SSR</td><td>✅ Angular Universal / built-in</td><td>✅ Server Components (default)</td></tr>
-            <tr><td>SSG</td><td>⚠️ Via prerender config</td><td>✅ Automatic (no dynamic data)</td></tr>
-            <tr><td>ISR</td><td>❌ Not native</td><td>✅ <code>revalidate</code> option</td></tr>
-            <tr><td>Streaming SSR</td><td>⚠️ Experimental</td><td>✅ Suspense + React Server Components</td></tr>
-            <tr><td>Hydration</td><td>✅ Non-destructive hydration (v16+)</td><td>✅ Selective hydration</td></tr>
-            <tr><td>Edge runtime</td><td>❌ Node.js only</td><td>✅ Edge + Node.js per-route</td></tr>
-            <tr><td>Image optimisation</td><td>⚠️ Manual / NgOptimizedImage</td><td>✅ <code>&lt;Image /&gt;</code> component</td></tr>
+            <tr>
+              <td>SSR</td>
+              <td>✅ Angular Universal / built-in</td>
+              <td>✅ Server Components (default)</td>
+            </tr>
+            <tr>
+              <td>SSG</td>
+              <td>⚠️ Via prerender config</td>
+              <td>✅ Automatic (no dynamic data)</td>
+            </tr>
+            <tr>
+              <td>ISR</td>
+              <td>❌ Not native</td>
+              <td>✅ <code>revalidate</code> option</td>
+            </tr>
+            <tr>
+              <td>Streaming SSR</td>
+              <td>⚠️ Experimental</td>
+              <td>✅ Suspense + React Server Components</td>
+            </tr>
+            <tr>
+              <td>Hydration</td>
+              <td>✅ Non-destructive hydration (v16+)</td>
+              <td>✅ Selective hydration</td>
+            </tr>
+            <tr>
+              <td>Edge runtime</td>
+              <td>❌ Node.js only</td>
+              <td>✅ Edge + Node.js per-route</td>
+            </tr>
+            <tr>
+              <td>Image optimisation</td>
+              <td>⚠️ Manual / NgOptimizedImage</td>
+              <td>✅ <code>&lt;Image /&gt;</code> component</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -1002,9 +1765,10 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         <h2>State Management</h2>
         <p class="lead">
           Both ecosystems have mature state management solutions, but their
-          philosophies differ. Angular Signals built into the framework reduce the
-          need for external state libraries for most apps. React's ecosystem pushed
-          lightweight stores (Zustand, Jotai) as the answer to Redux's verbosity.
+          philosophies differ. Angular Signals built into the framework reduce
+          the need for external state libraries for most apps. React's ecosystem
+          pushed lightweight stores (Zustand, Jotai) as the answer to Redux's
+          verbosity.
         </p>
 
         <div class="compare-grid">
@@ -1080,12 +1844,13 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         </div>
 
         <p>
-          For large-scale Angular apps, <strong>NgRx</strong> (Redux-inspired, RxJS-powered)
-          remains the enterprise standard. Angular 17 also introduced the
-          <strong>NgRx Signal Store</strong> — a lighter alternative that combines
-          signals with NgRx's action/effect pattern without the boilerplate of classic
-          NgRx. For React, <strong>TanStack Query</strong> has largely replaced
-          Redux for <em>server state</em>, while Zustand handles UI state.
+          For large-scale Angular apps, <strong>NgRx</strong> (Redux-inspired,
+          RxJS-powered) remains the enterprise standard. Angular 17 also
+          introduced the <strong>NgRx Signal Store</strong> — a lighter
+          alternative that combines signals with NgRx's action/effect pattern
+          without the boilerplate of classic NgRx. For React,
+          <strong>TanStack Query</strong> has largely replaced Redux for
+          <em>server state</em>, while Zustand handles UI state.
         </p>
       </div>
 
@@ -1094,14 +1859,17 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         <div class="section-label">09 &mdash; The Decision</div>
         <h2>When to Choose What</h2>
         <p class="lead">
-          There is no universally correct answer. The right choice depends on team
-          size, existing expertise, project duration, and whether you're building
-          a product or a platform. Here is an honest decision framework.
+          There is no universally correct answer. The right choice depends on
+          team size, existing expertise, project duration, and whether you're
+          building a product or a platform. Here is an honest decision
+          framework.
         </p>
 
         <div class="verdict-grid">
           <div class="verdict-card ng-card">
-            <div class="verdict-title" style="color:#c2185b">🅰 Choose Angular when…</div>
+            <div class="verdict-title" style="color: #c2185b">
+              🅰 Choose Angular when…
+            </div>
             <ul class="verdict-list">
               <li>✅ Team is large (10+ engineers)</li>
               <li>✅ Project is long-lived (3+ years)</li>
@@ -1115,7 +1883,9 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
             </ul>
           </div>
           <div class="verdict-card react-card">
-            <div class="verdict-title" style="color:#006064">⚛ Choose React when…</div>
+            <div class="verdict-title" style="color: #006064">
+              ⚛ Choose React when…
+            </div>
             <ul class="verdict-list">
               <li>✅ You want maximum ecosystem choice</li>
               <li>✅ Team has strong JS / functional background</li>
@@ -1128,7 +1898,9 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
             </ul>
           </div>
           <div class="verdict-card next-card">
-            <div class="verdict-title" style="color:#374151">▲ Choose Next.js when…</div>
+            <div class="verdict-title" style="color: #374151">
+              ▲ Choose Next.js when…
+            </div>
             <ul class="verdict-list">
               <li>✅ SEO-critical public-facing site or app</li>
               <li>✅ Marketing + app in one codebase</li>
@@ -1145,26 +1917,103 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
         <h3>The Honest Performance Reality</h3>
         <table>
           <thead>
-            <tr><th>Metric</th><th><span class="fw-badge fw-ng">Angular 17</span></th><th><span class="fw-badge fw-react">React 19</span></th><th><span class="fw-badge fw-next">Next.js 15</span></th></tr>
+            <tr>
+              <th>Metric</th>
+              <th><span class="fw-badge fw-ng">Angular 17</span></th>
+              <th><span class="fw-badge fw-react">React 19</span></th>
+              <th><span class="fw-badge fw-next">Next.js 15</span></th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td>Initial JS (hello world)</td><td>~45KB gzip</td><td>~42KB gzip</td><td>~80KB gzip</td></tr>
-            <tr><td>Build-time tree shaking</td><td>Excellent (Ivy)</td><td>Good (Vite/Rollup)</td><td>Good (Turbopack)</td></tr>
-            <tr><td>Runtime update perf</td><td>Excellent (Signals)</td><td>Good (VDOM diff)</td><td>Excellent (RSC skip)</td></tr>
-            <tr><td>TTI (SSR app)</td><td>Good (hydration v16+)</td><td>Good</td><td>Excellent (PPR)</td></tr>
-            <tr><td>Dev server HMR</td><td>Fast (esbuild)</td><td>Instant (Vite)</td><td>Fast (Turbopack)</td></tr>
-            <tr><td>Build output (large app)</td><td>45–120KB routes</td><td>50–200KB routes</td><td>Variable (RSC reduces)</td></tr>
+            <tr>
+              <td>Initial JS (hello world)</td>
+              <td>~45KB gzip</td>
+              <td>~42KB gzip</td>
+              <td>~80KB gzip</td>
+            </tr>
+            <tr>
+              <td>Build-time tree shaking</td>
+              <td>Excellent (Ivy)</td>
+              <td>Good (Vite/Rollup)</td>
+              <td>Good (Turbopack)</td>
+            </tr>
+            <tr>
+              <td>Runtime update perf</td>
+              <td>Excellent (Signals)</td>
+              <td>Good (VDOM diff)</td>
+              <td>Excellent (RSC skip)</td>
+            </tr>
+            <tr>
+              <td>TTI (SSR app)</td>
+              <td>Good (hydration v16+)</td>
+              <td>Good</td>
+              <td>Excellent (PPR)</td>
+            </tr>
+            <tr>
+              <td>Dev server HMR</td>
+              <td>Fast (esbuild)</td>
+              <td>Instant (Vite)</td>
+              <td>Fast (Turbopack)</td>
+            </tr>
+            <tr>
+              <td>Build output (large app)</td>
+              <td>45–120KB routes</td>
+              <td>50–200KB routes</td>
+              <td>Variable (RSC reduces)</td>
+            </tr>
           </tbody>
         </table>
 
         <h3>Final Checklist Before Deciding</h3>
         <ul class="checklist">
-          <li><span class="check-icon">🔷</span><span><strong>Team size &amp; seniority:</strong> Large junior-heavy teams benefit most from Angular's conventions. Small senior teams benefit most from React's flexibility.</span></li>
-          <li><span class="check-icon">🔷</span><span><strong>SEO requirements:</strong> If Google ranking matters for the primary surface, Next.js is the clearest choice. Angular SSR works but lags Next.js in ISR and Edge SSR.</span></li>
-          <li><span class="check-icon">🔷</span><span><strong>Form complexity:</strong> Dashboard apps with complex multi-step forms, conditional validation, and deeply nested models genuinely benefit from Angular Reactive Forms.</span></li>
-          <li><span class="check-icon">🔷</span><span><strong>Ecosystem lock-in:</strong> Angular means Google. Next.js means Vercel. React means Meta. All are open source — but understand who drives the roadmap.</span></li>
-          <li><span class="check-icon">🔷</span><span><strong>Long-term maintenance:</strong> Angular's strict semver and LTS policy (18-month active, 6-month LTS) gives predictable upgrade windows. React has no formal LTS policy.</span></li>
-          <li><span class="check-icon">🔷</span><span><strong>Mobile ambitions:</strong> If React Native is a future consideration, React + Next.js keeps the skill set and potentially the component logic shared.</span></li>
+          <li>
+            <span class="check-icon">🔷</span
+            ><span
+              ><strong>Team size &amp; seniority:</strong> Large junior-heavy
+              teams benefit most from Angular's conventions. Small senior teams
+              benefit most from React's flexibility.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">🔷</span
+            ><span
+              ><strong>SEO requirements:</strong> If Google ranking matters for
+              the primary surface, Next.js is the clearest choice. Angular SSR
+              works but lags Next.js in ISR and Edge SSR.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">🔷</span
+            ><span
+              ><strong>Form complexity:</strong> Dashboard apps with complex
+              multi-step forms, conditional validation, and deeply nested models
+              genuinely benefit from Angular Reactive Forms.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">🔷</span
+            ><span
+              ><strong>Ecosystem lock-in:</strong> Angular means Google. Next.js
+              means Vercel. React means Meta. All are open source — but
+              understand who drives the roadmap.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">🔷</span
+            ><span
+              ><strong>Long-term maintenance:</strong> Angular's strict semver
+              and LTS policy (18-month active, 6-month LTS) gives predictable
+              upgrade windows. React has no formal LTS policy.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">🔷</span
+            ><span
+              ><strong>Mobile ambitions:</strong> If React Native is a future
+              consideration, React + Next.js keeps the skill set and potentially
+              the component logic shared.</span
+            >
+          </li>
         </ul>
 
         <div class="pullquote">
@@ -1173,28 +2022,38 @@ qty<span class="pu">.</span><span class="fn">update</span><span class="pu">(</sp
           that doesn't understand the tool they're using."
         </div>
       </div>
-
-    </div><!-- /content -->
+    </div>
+    <!-- /content -->
 
     <footer>
-      <p><strong>Angular In Depth: Architecture, Patterns &amp; Comparison with React/Next.js</strong></p>
-      <p style="margin-top:8px;font-size:13px">Angular 17+ &middot; React 19 &middot; Next.js 15 &mdash; Choose deliberately.</p>
+      <p>
+        <strong
+          >Angular In Depth: Architecture, Patterns &amp; Comparison with
+          React/Next.js</strong
+        >
+      </p>
+      <p style="margin-top: 8px; font-size: 13px">
+        Angular 17+ &middot; React 19 &middot; Next.js 15 &mdash; Choose
+        deliberately.
+      </p>
     </footer>
 
     <script>
       function copyCode(btn) {
-        const pre = btn.closest('.code-block').querySelector('pre')
+        const pre = btn.closest(".code-block").querySelector("pre");
         navigator.clipboard.writeText(pre.textContent).then(() => {
-          btn.textContent = 'Copied!'
-          setTimeout(() => btn.textContent = 'Copy', 2000)
-        })
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = "Copy"), 2000);
+        });
       }
-      document.querySelectorAll('a[href^="#"]').forEach(a =>
-        a.addEventListener('click', e => {
-          e.preventDefault()
-          document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' })
-        })
-      )
+      document.querySelectorAll('a[href^="#"]').forEach((a) =>
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          document
+            .querySelector(a.getAttribute("href"))
+            ?.scrollIntoView({ behavior: "smooth" });
+        }),
+      );
     </script>
   </body>
 </html>

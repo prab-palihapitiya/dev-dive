@@ -3,9 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Frontend Design Systems: Architecture, Tokens &amp; Scalable Components</title>
+    <title>
+      Frontend Design Systems: Architecture, Tokens &amp; Scalable Components
+    </title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
     <style>
       :root {
         --bg: #faf8f5;
@@ -36,125 +43,631 @@
         --operator: #c9d1d9;
         --builtin: #ffa657;
       }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: "Outfit", sans-serif; background: var(--bg); color: var(--text-primary); font-size: 17px; line-height: 1.75; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 17px;
+        line-height: 1.75;
+      }
 
-      nav { position: sticky; top: 0; z-index: 100; background: rgba(250,248,245,0.93); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
-      .nav-left { display: flex; align-items: center; gap: 12px; }
-      .nav-back { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.15s; display: flex; align-items: center; gap: 5px; }
-      .nav-back:hover { color: var(--accent); }
-      .nav-pipe { color: var(--border); font-size: 18px; }
-      .nav-brand { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
-      .nav-badge { font-size: 11px; font-weight: 600; padding: 2px 10px; background: var(--accent-light); color: var(--accent); border-radius: 100px; letter-spacing: 0.3px; }
-      .nav-links { display: flex; gap: 0; }
-      .nav-links a { font-size: 13px; color: var(--text-secondary); text-decoration: none; padding: 6px 10px; border-radius: 6px; transition: all 0.15s; white-space: nowrap; }
-      .nav-links a:hover { background: var(--tag-bg); color: var(--text-primary); }
-      .nav-rt { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(250, 248, 245, 0.93);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-back {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-back:hover {
+        color: var(--accent);
+      }
+      .nav-pipe {
+        color: var(--border);
+        font-size: 18px;
+      }
+      .nav-brand {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        background: var(--accent-light);
+        color: var(--accent);
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 0;
+      }
+      .nav-links a {
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .nav-links a:hover {
+        background: var(--tag-bg);
+        color: var(--text-primary);
+      }
+      .nav-rt {
+        font-size: 13px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
 
-      .hero { max-width: 780px; margin: 0 auto; padding: 64px 2rem 48px; }
-      .hero-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-subtle); color: var(--accent); font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 100px; margin-bottom: 24px; letter-spacing: 0.3px; }
-      .hero h1 { font-family: "Lora", serif; font-size: clamp(32px, 5vw, 50px); font-weight: 600; line-height: 1.15; letter-spacing: -0.5px; color: var(--text-primary); margin-bottom: 20px; }
-      .hero-sub { font-size: 19px; color: var(--text-secondary); font-weight: 300; line-height: 1.6; margin-bottom: 32px; }
-      .hero-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-      .avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #0891b2, #0e7490); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: white; }
-      .meta-text { font-size: 14px; color: var(--text-secondary); }
-      .meta-text strong { color: var(--text-primary); }
-      .hero-divider { border: none; border-top: 1px solid var(--border); margin-top: 32px; }
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 64px 2rem 48px;
+      }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--accent-subtle);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 24px;
+        letter-spacing: 0.3px;
+      }
+      .hero h1 {
+        font-family: "Lora", serif;
+        font-size: clamp(32px, 5vw, 50px);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+      }
+      .hero-sub {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+      .hero-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0891b2, #0e7490);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: white;
+      }
+      .meta-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .meta-text strong {
+        color: var(--text-primary);
+      }
+      .hero-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin-top: 32px;
+      }
 
-      .toc-wrapper { max-width: 780px; margin: 0 auto; padding: 0 2rem 8px; }
-      .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin-bottom: 40px; }
-      .toc h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; font-weight: 500; }
-      .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
-      .toc a { font-size: 14px; color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 4px 0; transition: color 0.15s; }
-      .toc a:hover { color: var(--accent); }
-      .toc-num { font-size: 12px; color: var(--text-muted); font-weight: 500; min-width: 20px; }
+      .toc-wrapper {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 8px;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 40px;
+      }
+      .toc h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+      .toc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 24px;
+      }
+      .toc a {
+        font-size: 14px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 0;
+        transition: color 0.15s;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc-num {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 500;
+        min-width: 20px;
+      }
 
-      .content { max-width: 780px; margin: 0 auto; padding: 0 2rem 80px; }
-      .section { margin-bottom: 72px; scroll-margin-top: 72px; }
-      .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-      .section-label::after { content: ""; flex: 1; height: 1px; background: var(--accent-subtle); }
-      h2 { font-family: "Lora", serif; font-size: clamp(22px, 3vw, 30px); font-weight: 600; letter-spacing: -0.3px; margin-bottom: 16px; color: var(--text-primary); }
-      h3 { font-size: 19px; font-weight: 600; margin: 32px 0 12px; color: var(--text-primary); }
-      h4 { font-size: 16px; font-weight: 600; margin: 20px 0 8px; color: var(--text-primary); }
-      p { margin-bottom: 18px; color: #2d2d2d; }
-      .lead { font-size: 19px; color: var(--text-secondary); font-weight: 300; margin-bottom: 24px; }
+      .content {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 2rem 80px;
+      }
+      .section {
+        margin-bottom: 72px;
+        scroll-margin-top: 72px;
+      }
+      .section-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--accent-subtle);
+      }
+      h2 {
+        font-family: "Lora", serif;
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+      h3 {
+        font-size: 19px;
+        font-weight: 600;
+        margin: 32px 0 12px;
+        color: var(--text-primary);
+      }
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 20px 0 8px;
+        color: var(--text-primary);
+      }
+      p {
+        margin-bottom: 18px;
+        color: #2d2d2d;
+      }
+      .lead {
+        font-size: 19px;
+        color: var(--text-secondary);
+        font-weight: 300;
+        margin-bottom: 24px;
+      }
 
-      .code-block { background: var(--code-bg); border-radius: 10px; margin: 24px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-      .code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); }
-      .code-lang { font-size: 12px; color: #6e7681; font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: 0.5px; }
-      .copy-btn { font-size: 12px; color: #484f58; background: none; border: none; cursor: pointer; padding: 2px 8px; border-radius: 4px; font-family: "Outfit", sans-serif; transition: all 0.15s; }
-      .copy-btn:hover { background: rgba(255,255,255,0.07); color: #8b949e; }
-      pre { padding: 20px; overflow-x: auto; font-family: "JetBrains Mono", monospace; font-size: 13.5px; line-height: 1.7; color: var(--code-text); }
-      pre code { background: none; padding: 0; font-size: inherit; }
-      code { font-family: "JetBrains Mono", monospace; font-size: 13.5px; background: #e0f7fa; color: #0e7490; padding: 2px 6px; border-radius: 4px; }
+      .code-block {
+        background: var(--code-bg);
+        border-radius: 10px;
+        margin: 24px 0;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .code-lang {
+        font-size: 12px;
+        color: #6e7681;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .copy-btn {
+        font-size: 12px;
+        color: #484f58;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #8b949e;
+      }
+      pre {
+        padding: 20px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--code-text);
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13.5px;
+        background: #e0f7fa;
+        color: #0e7490;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
 
-      .kw{color:#ff7b72} .ty{color:#79c0ff} .st{color:#a5d6ff} .nm{color:#f0883e}
-      .cm{color:#8b949e;font-style:italic} .fn{color:#d2a8ff} .op{color:#c9d1d9}
-      .pu{color:#e6edf3} .bi{color:#ffa657} .rx{color:#7ee787} .at{color:#79c0ff}
-      .pr{color:#e6edf3}
+      .kw {
+        color: #ff7b72;
+      }
+      .ty {
+        color: #79c0ff;
+      }
+      .st {
+        color: #a5d6ff;
+      }
+      .nm {
+        color: #f0883e;
+      }
+      .cm {
+        color: #8b949e;
+        font-style: italic;
+      }
+      .fn {
+        color: #d2a8ff;
+      }
+      .op {
+        color: #c9d1d9;
+      }
+      .pu {
+        color: #e6edf3;
+      }
+      .bi {
+        color: #ffa657;
+      }
+      .rx {
+        color: #7ee787;
+      }
+      .at {
+        color: #79c0ff;
+      }
+      .pr {
+        color: #e6edf3;
+      }
 
-      .tip { background: var(--tip-bg); border-left: 3px solid var(--tip-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
-      .tip-label { font-size: 12px; font-weight: 600; color: #16a34a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-      .warn { background: var(--warn-bg); border-left: 3px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
-      .warn-label { font-size: 12px; font-weight: 600; color: #ea580c; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-      .info { background: var(--info-bg); border-left: 3px solid var(--info-border); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 15px; }
-      .info-label { font-size: 12px; font-weight: 600; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+      .tip {
+        background: var(--tip-bg);
+        border-left: 3px solid var(--tip-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .tip-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #16a34a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .warn {
+        background: var(--warn-bg);
+        border-left: 3px solid var(--warn-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .warn-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #ea580c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .info {
+        background: var(--info-bg);
+        border-left: 3px solid var(--info-border);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #2563eb;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
 
-      .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
-      .compare-card { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-      .compare-header { padding: 10px 16px; font-size: 13px; font-weight: 600; }
-      .compare-header.bad { background: #fef2f2; color: #dc2626; }
-      .compare-header.good { background: #f0fdf4; color: #16a34a; }
-      .compare-card .code-block { border-radius: 0; margin: 0; border: none; }
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .compare-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .compare-header {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .compare-header.bad {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+      .compare-header.good {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .compare-card .code-block {
+        border-radius: 0;
+        margin: 0;
+        border: none;
+      }
 
-      table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
-      th { background: var(--tag-bg); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
-      td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
-      tr:last-child td { border-bottom: none; }
-      tr:hover td { background: var(--bg); }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 24px 0;
+        font-size: 15px;
+      }
+      th {
+        background: var(--tag-bg);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg);
+      }
 
-      .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0; }
-      .concept-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
-      .concept-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; margin-top: 0; }
-      .concept-card p { font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
-      .concept-icon { font-size: 22px; margin-bottom: 10px; }
+      .concept-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin: 24px 0;
+      }
+      .concept-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+      }
+      .concept-card h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        margin-top: 0;
+      }
+      .concept-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .concept-icon {
+        font-size: 22px;
+        margin-bottom: 10px;
+      }
 
-      .token-layer { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 24px 0; }
-      .token-row { display: grid; grid-template-columns: 140px 1fr 1fr; align-items: center; gap: 16px; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
-      .token-row:last-child { border-bottom: none; }
-      .token-row.header { background: var(--tag-bg); font-weight: 600; font-size: 13px; color: var(--text-secondary); }
-      .token-swatch { width: 24px; height: 24px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.08); display: inline-block; vertical-align: middle; margin-right: 8px; }
+      .token-layer {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 24px 0;
+      }
+      .token-row {
+        display: grid;
+        grid-template-columns: 140px 1fr 1fr;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+      }
+      .token-row:last-child {
+        border-bottom: none;
+      }
+      .token-row.header {
+        background: var(--tag-bg);
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+      .token-swatch {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 8px;
+      }
 
-      .pullquote { font-family: "Lora", serif; font-style: italic; font-size: 22px; line-height: 1.5; color: var(--text-secondary); border-left: 4px solid var(--accent); padding: 12px 24px; margin: 36px 0; }
+      .pullquote {
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        border-left: 4px solid var(--accent);
+        padding: 12px 24px;
+        margin: 36px 0;
+      }
 
-      .checklist { list-style: none; margin: 16px 0; }
-      .checklist li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
-      .checklist li:last-child { border-bottom: none; }
-      .check-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+      .checklist {
+        list-style: none;
+        margin: 16px 0;
+      }
+      .checklist li {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+      .check-icon {
+        font-size: 16px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
 
-      .arch-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 28px; margin: 24px 0; font-family: "JetBrains Mono", monospace; font-size: 13px; line-height: 1.9; color: var(--text-secondary); overflow-x: auto; }
-      .arch-diagram .layer { color: var(--accent); font-weight: 600; }
-      .arch-diagram .item { color: var(--text-primary); }
-      .arch-diagram .arrow { color: var(--text-muted); }
+      .arch-diagram {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 28px;
+        margin: 24px 0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.9;
+        color: var(--text-secondary);
+        overflow-x: auto;
+      }
+      .arch-diagram .layer {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .arch-diagram .item {
+        color: var(--text-primary);
+      }
+      .arch-diagram .arrow {
+        color: var(--text-muted);
+      }
 
-      .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; letter-spacing: 0.3px; vertical-align: middle; }
-      .badge-cyan { background: #cffafe; color: #0e7490; }
-      .badge-green { background: #dcfce7; color: #15803d; }
-      .badge-amber { background: #fef3c7; color: #b45309; }
-      .badge-red { background: #fee2e2; color: #b91c1c; }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+        letter-spacing: 0.3px;
+        vertical-align: middle;
+      }
+      .badge-cyan {
+        background: #cffafe;
+        color: #0e7490;
+      }
+      .badge-green {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .badge-red {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
 
-      footer { background: #1a1a1a; color: rgba(255,255,255,0.65); text-align: center; padding: 40px 2rem; font-size: 14px; }
-      footer strong { color: white; }
+      footer {
+        background: #1a1a1a;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: center;
+        padding: 40px 2rem;
+        font-size: 14px;
+      }
+      footer strong {
+        color: white;
+      }
 
       @media (max-width: 640px) {
-        .toc-grid, .compare-grid, .concept-grid { grid-template-columns: 1fr; }
-        .nav-links { display: none; }
-        .token-row { grid-template-columns: 1fr; }
+        .toc-grid,
+        .compare-grid,
+        .concept-grid {
+          grid-template-columns: 1fr;
+        }
+        .nav-links {
+          display: none;
+        }
+        .token-row {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
   <body>
-
     <nav>
       <div class="nav-left">
         <a class="nav-back" href="index.html">&#8592; DevDive</a>
@@ -177,7 +690,9 @@
 
     <div class="hero">
       <div class="hero-tag">&#9679; Best Practices</div>
-      <h1>Frontend Design Systems: Architecture, Tokens &amp; Scalable Components</h1>
+      <h1>
+        Frontend Design Systems: Architecture, Tokens &amp; Scalable Components
+      </h1>
       <p class="hero-sub">
         A deep dive into building a production-grade design system from first
         principles &mdash; design tokens, type scales, color semantics, atomic
@@ -198,20 +713,35 @@
       <div class="toc">
         <h3>Table of Contents</h3>
         <div class="toc-grid">
-          <a href="#layers"><span class="toc-num">01</span> The Three-Layer Architecture</a>
-          <a href="#spacing"><span class="toc-num">05</span> Spacing, Grid &amp; Layout</a>
-          <a href="#tokens"><span class="toc-num">02</span> Design Tokens in Depth</a>
-          <a href="#components"><span class="toc-num">06</span> Atomic Component Architecture</a>
-          <a href="#typography"><span class="toc-num">03</span> Typography System</a>
-          <a href="#api"><span class="toc-num">07</span> Component API Design</a>
-          <a href="#color"><span class="toc-num">04</span> Color System &amp; Theming</a>
-          <a href="#governance"><span class="toc-num">08</span> Governance &amp; Documentation</a>
+          <a href="#layers"
+            ><span class="toc-num">01</span> The Three-Layer Architecture</a
+          >
+          <a href="#spacing"
+            ><span class="toc-num">05</span> Spacing, Grid &amp; Layout</a
+          >
+          <a href="#tokens"
+            ><span class="toc-num">02</span> Design Tokens in Depth</a
+          >
+          <a href="#components"
+            ><span class="toc-num">06</span> Atomic Component Architecture</a
+          >
+          <a href="#typography"
+            ><span class="toc-num">03</span> Typography System</a
+          >
+          <a href="#api"
+            ><span class="toc-num">07</span> Component API Design</a
+          >
+          <a href="#color"
+            ><span class="toc-num">04</span> Color System &amp; Theming</a
+          >
+          <a href="#governance"
+            ><span class="toc-num">08</span> Governance &amp; Documentation</a
+          >
         </div>
       </div>
     </div>
 
     <div class="content">
-
       <!-- ═══════════════ 01 LAYERS -->
       <div class="section" id="layers">
         <div class="section-label">01 &mdash; The Big Picture</div>
@@ -225,57 +755,80 @@
         <p>
           Most teams start by building a component library and calling it a
           design system. Components are the most visible layer, so the mistake
-          is understandable &mdash; but components without a token foundation are
-          impossible to theme, and components without documented usage patterns
-          are impossible to adopt consistently. The three layers must be built in
-          order: tokens first, then components, then patterns.
+          is understandable &mdash; but components without a token foundation
+          are impossible to theme, and components without documented usage
+          patterns are impossible to adopt consistently. The three layers must
+          be built in order: tokens first, then components, then patterns.
         </p>
 
         <div class="arch-diagram">
-<span class="layer">LAYER 3 — PATTERNS &amp; DOCUMENTATION</span>
-<span class="arrow">        ↓  usage guidelines · page templates · composition rules · content models</span>
+          <span class="layer">LAYER 3 — PATTERNS &amp; DOCUMENTATION</span>
+          <span class="arrow">
+            ↓ usage guidelines · page templates · composition rules · content
+            models</span
+          >
 
-<span class="layer">LAYER 2 — COMPONENTS</span>
-<span class="arrow">        ↓  atoms · molecules · organisms · hooks · utilities</span>
+          <span class="layer">LAYER 2 — COMPONENTS</span>
+          <span class="arrow">
+            ↓ atoms · molecules · organisms · hooks · utilities</span
+          >
 
-<span class="layer">LAYER 1 — DESIGN TOKENS</span>
-<span class="arrow">           primitives · semantic tokens · component tokens · mode tokens</span>
+          <span class="layer">LAYER 1 — DESIGN TOKENS</span>
+          <span class="arrow">
+            primitives · semantic tokens · component tokens · mode tokens</span
+          >
         </div>
 
         <div class="concept-grid">
           <div class="concept-card">
             <div class="concept-icon">🪙</div>
             <h4>Design Tokens</h4>
-            <p>Named, purposeful decisions: colors, spacing, radii, shadows, transitions. Platform-agnostic JSON that compiles to CSS variables, iOS Swift, Android XML.</p>
+            <p>
+              Named, purposeful decisions: colors, spacing, radii, shadows,
+              transitions. Platform-agnostic JSON that compiles to CSS
+              variables, iOS Swift, Android XML.
+            </p>
           </div>
           <div class="concept-card">
             <div class="concept-icon">🧱</div>
             <h4>Components</h4>
-            <p>Reusable UI units built entirely from tokens. Never hard-coded values inside components — every visual decision traces back to a token.</p>
+            <p>
+              Reusable UI units built entirely from tokens. Never hard-coded
+              values inside components — every visual decision traces back to a
+              token.
+            </p>
           </div>
           <div class="concept-card">
             <div class="concept-icon">📐</div>
             <h4>Patterns</h4>
-            <p>Opinionated recipes: how to compose components into common flows — forms, navigation, data tables, onboarding. Answers the "when" and "why", not just "what".</p>
+            <p>
+              Opinionated recipes: how to compose components into common flows —
+              forms, navigation, data tables, onboarding. Answers the "when" and
+              "why", not just "what".
+            </p>
           </div>
           <div class="concept-card">
             <div class="concept-icon">📖</div>
             <h4>Documentation</h4>
-            <p>The system's source of truth. Living Storybook stories, token visualizers, do/don't comparisons, accessibility notes, and API references.</p>
+            <p>
+              The system's source of truth. Living Storybook stories, token
+              visualizers, do/don't comparisons, accessibility notes, and API
+              references.
+            </p>
           </div>
         </div>
 
         <div class="pullquote">
           "If a designer can change a decision in Figma without needing an
-          engineer to ship it, you have a design system. If they can't, you
-          have a component library."
+          engineer to ship it, you have a design system. If they can't, you have
+          a component library."
         </div>
 
         <p>
           The technical implication of this distinction is that tokens must
           exist as a source of truth that both the design tool (Figma variables)
-          and the codebase (CSS custom properties, JS constants) consume
-          &mdash; compiled from the same JSON, not maintained in parallel.
+          and the codebase (CSS custom properties, JS constants) consume &mdash;
+          compiled from the same JSON, not maintained in parallel.
         </p>
       </div>
 
@@ -286,26 +839,44 @@
         <p class="lead">
           Tokens are named design decisions. They are the atoms of your system
           &mdash; not "blue" or "16px" but <em>what that value means</em>. The
-          W3C Design Token Community Group format defines three tiers: primitive,
-          semantic, and component-specific.
+          W3C Design Token Community Group format defines three tiers:
+          primitive, semantic, and component-specific.
         </p>
 
         <h3>The Three-Tier Token Hierarchy</h3>
 
         <div class="token-layer">
-          <div class="token-row header"><span>Tier</span><span>Example Token</span><span>Example Value</span></div>
+          <div class="token-row header">
+            <span>Tier</span><span>Example Token</span
+            ><span>Example Value</span>
+          </div>
           <div class="token-row">
-            <span><strong>Primitive</strong><br/><span style="font-size:12px;color:var(--text-muted)">Raw scale values</span></span>
+            <span
+              ><strong>Primitive</strong><br /><span
+                style="font-size: 12px; color: var(--text-muted)"
+                >Raw scale values</span
+              ></span
+            >
             <span><code>color.cyan.600</code></span>
             <span><code>#0891b2</code></span>
           </div>
           <div class="token-row">
-            <span><strong>Semantic</strong><br/><span style="font-size:12px;color:var(--text-muted)">Intent-named aliases</span></span>
+            <span
+              ><strong>Semantic</strong><br /><span
+                style="font-size: 12px; color: var(--text-muted)"
+                >Intent-named aliases</span
+              ></span
+            >
             <span><code>color.action.default</code></span>
             <span><code>{color.cyan.600}</code></span>
           </div>
           <div class="token-row">
-            <span><strong>Component</strong><br/><span style="font-size:12px;color:var(--text-muted)">Scoped overrides</span></span>
+            <span
+              ><strong>Component</strong><br /><span
+                style="font-size: 12px; color: var(--text-muted)"
+                >Scoped overrides</span
+              ></span
+            >
             <span><code>button.primary.bg</code></span>
             <span><code>{color.action.default}</code></span>
           </div>
@@ -313,16 +884,19 @@
 
         <p>
           Primitives are never used directly in components. Components consume
-          semantic tokens. Semantic tokens reference primitives. This indirection
-          is what makes theming possible: you can swap an entire brand by
-          re-mapping semantic tokens to different primitives &mdash; without
-          touching a single component.
+          semantic tokens. Semantic tokens reference primitives. This
+          indirection is what makes theming possible: you can swap an entire
+          brand by re-mapping semantic tokens to different primitives &mdash;
+          without touching a single component.
         </p>
 
         <h3>W3C Token Format &amp; Style Dictionary</h3>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">JSON — tokens/primitives/color.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang">JSON — tokens/primitives/color.json</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="pu">{</span>
   <span class="st">"color"</span><span class="op">:</span> <span class="pu">{</span>
     <span class="st">"cyan"</span><span class="op">:</span> <span class="pu">{</span>
@@ -341,7 +915,10 @@
         </div>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">JSON — tokens/semantic/color.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang">JSON — tokens/semantic/color.json</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="pu">{</span>
   <span class="st">"color"</span><span class="op">:</span> <span class="pu">{</span>
     <span class="st">"action"</span><span class="op">:</span> <span class="pu">{</span>
@@ -364,7 +941,11 @@
         </div>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">JavaScript — style-dictionary.config.mjs</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >JavaScript — style-dictionary.config.mjs</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> StyleDictionary <span class="kw">from</span> <span class="st">'style-dictionary'</span>
 
 <span class="kw">const</span> sd <span class="op">=</span> <span class="kw">new</span> <span class="fn">StyleDictionary</span><span class="pu">({</span>
@@ -400,11 +981,14 @@
         </div>
 
         <div class="tip">
-          <div class="tip-label">&#128161; One token source, every platform</div>
+          <div class="tip-label">
+            &#128161; One token source, every platform
+          </div>
           Style Dictionary compiles the same JSON into CSS custom properties,
           JavaScript ES6 exports, Swift structs, and Android resources in a
           single build step. The design tool (Figma) reads from the same JSON
-          via the Tokens Studio plugin. Every platform stays in sync automatically.
+          via the Tokens Studio plugin. Every platform stays in sync
+          automatically.
         </div>
       </div>
 
@@ -415,8 +999,8 @@
         <p class="lead">
           A typography system is not a list of font sizes. It is a set of named
           text roles &mdash; each with a fixed combination of size, line height,
-          weight, and letter spacing &mdash; that map to the semantic meaning of the
-          content, not to its visual outcome.
+          weight, and letter spacing &mdash; that map to the semantic meaning of
+          the content, not to its visual outcome.
         </p>
 
         <h3>Modular Type Scale</h3>
@@ -424,11 +1008,15 @@
           A modular scale generates harmonious size steps from a base size and a
           ratio. The most common ratios are 1.25 (Major Third), 1.333 (Perfect
           Fourth), and 1.5 (Perfect Fifth). Each step multiplies the previous by
-          the ratio, producing a coherent visual rhythm across headings and body text.
+          the ratio, producing a coherent visual rhythm across headings and body
+          text.
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">JSON — tokens/typography/scale.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang">JSON — tokens/typography/scale.json</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="pu">{</span>
   <span class="st">"font"</span><span class="op">:</span> <span class="pu">{</span>
     <span class="st">"family"</span><span class="op">:</span> <span class="pu">{</span>
@@ -466,7 +1054,10 @@
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">CSS — Fluid type scale via clamp()</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang">CSS — Fluid type scale via clamp()</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">/*
   Formula: clamp(min, preferred, max)
   preferred = minSize + (maxSize - minSize) * ((100vw - minVW) / (maxVW - minVW))
@@ -495,11 +1086,11 @@
 
         <div class="info">
           <div class="info-label">&#128218; Variable Fonts</div>
-          If your brand allows it, a single variable font file replaces an entire
-          weight family. A variable font with <code>wght</code> axis lets you use
-          any weight from 100–900 in a single 80KB file instead of loading
-          six separate 40KB files. Google Fonts serves variable variants for
-          Outfit, Inter, and most modern typefaces.
+          If your brand allows it, a single variable font file replaces an
+          entire weight family. A variable font with <code>wght</code> axis lets
+          you use any weight from 100–900 in a single 80KB file instead of
+          loading six separate 40KB files. Google Fonts serves variable variants
+          for Outfit, Inter, and most modern typefaces.
         </div>
       </div>
 
@@ -511,13 +1102,18 @@
           A color system has two jobs: encode brand identity and communicate
           meaning. These are in constant tension. Solve both by separating the
           palette (raw values) from the semantic layer (what each color means in
-          context) and the mode layer (how semantics shift between light and dark).
+          context) and the mode layer (how semantics shift between light and
+          dark).
         </p>
 
         <h3>Palette → Semantic → Mode</h3>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">CSS — Full color token cascade with dark mode</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >CSS — Full color token cascade with dark mode</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">/* ── Layer 0: Raw palette (never use directly in components) ── */</span>
 <span class="bi">:root</span> <span class="pu">{</span>
   <span class="op">--</span>palette<span class="op">-</span>cyan<span class="op">-</span><span class="nm">50</span><span class="op">:</span>  <span class="nm">#ecfeff</span><span class="pu">;</span>
@@ -560,12 +1156,14 @@
         </div>
 
         <div class="warn">
-          <div class="warn-label">&#9888; Never create a dark mode by inverting</div>
+          <div class="warn-label">
+            &#9888; Never create a dark mode by inverting
+          </div>
           Inverting light colors for dark mode is a predictable failure. A cyan
-          that reads at 4.6:1 on white may drop to 2.1:1 on a dark surface.
-          Dark mode requires independently verified token values &mdash; not
-          programmatic transformations. Always re-check contrast ratios for every
-          semantic color in each mode.
+          that reads at 4.6:1 on white may drop to 2.1:1 on a dark surface. Dark
+          mode requires independently verified token values &mdash; not
+          programmatic transformations. Always re-check contrast ratios for
+          every semantic color in each mode.
         </div>
 
         <h3>Multi-brand Theming</h3>
@@ -577,7 +1175,11 @@
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">CSS — Brand-specific token overrides via data-brand</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >CSS — Brand-specific token overrides via data-brand</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">/* Brand A (default — loaded in :root above) */</span>
 
 <span class="cm">/* Brand B — loaded on the root element at runtime */</span>
@@ -592,7 +1194,11 @@
         </div>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">JSX — ThemeProvider with brand switching</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >JSX — ThemeProvider with brand switching</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> <span class="pu">{</span> createContext<span class="pu">,</span> useContext<span class="pu">,</span> useEffect <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
 
 <span class="kw">const</span> ThemeCtx <span class="op">=</span> <span class="fn">createContext</span><span class="pu">({})</span>
@@ -615,28 +1221,32 @@
         </div>
       </div>
 
-
       <!-- ═══════════════ 05 SPACING -->
       <div class="section" id="spacing">
         <div class="section-label">05 &mdash; Structure &amp; Rhythm</div>
         <h2>Spacing, Grid &amp; Layout</h2>
         <p class="lead">
-          Spacing is the most underestimated token category. Inconsistent whitespace
-          is the single most common reason a UI looks "off" without anyone being
-          able to name why. An 8pt grid system eliminates the problem at its source.
+          Spacing is the most underestimated token category. Inconsistent
+          whitespace is the single most common reason a UI looks "off" without
+          anyone being able to name why. An 8pt grid system eliminates the
+          problem at its source.
         </p>
 
         <h3>The 8pt Grid System</h3>
         <p>
-          Every spacing value in the system is a multiple of 8. The base unit of 8px
-          was chosen because it divides evenly into the most common screen resolutions,
-          aligns with the standard line-height rhythms for 16px body text (16 = 8×2),
-          and produces a consistent vertical rhythm when applied uniformly. 4px is
-          permitted as a half-unit for tight internal padding only.
+          Every spacing value in the system is a multiple of 8. The base unit of
+          8px was chosen because it divides evenly into the most common screen
+          resolutions, aligns with the standard line-height rhythms for 16px
+          body text (16 = 8×2), and produces a consistent vertical rhythm when
+          applied uniformly. 4px is permitted as a half-unit for tight internal
+          padding only.
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">JSON — tokens/spacing.json</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang">JSON — tokens/spacing.json</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="pu">{</span>
   <span class="st">"space"</span><span class="op">:</span> <span class="pu">{</span>
     <span class="st">"0"</span><span class="op">:</span>   <span class="pu">{</span> <span class="st">"$value"</span><span class="op">:</span> <span class="st">"0"</span>       <span class="pu">},</span>
@@ -663,15 +1273,18 @@
 
         <h3>Container Queries for Component-level Responsiveness</h3>
         <p>
-          CSS container queries are now widely supported and fundamentally change
-          how responsive components work inside a design system. Instead of
-          responding to the viewport (which depends on where a component happens
-          to be placed), a component responds to the size of its immediate container.
-          This makes components genuinely portable.
+          CSS container queries are now widely supported and fundamentally
+          change how responsive components work inside a design system. Instead
+          of responding to the viewport (which depends on where a component
+          happens to be placed), a component responds to the size of its
+          immediate container. This makes components genuinely portable.
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">CSS — Container query responsive card</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang">CSS — Container query responsive card</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="cm">/* Mark the parent as a containment context */</span>
 <span class="pu">.ds-card-wrapper</span> <span class="pu">{</span>
   container<span class="op">-</span>type<span class="op">:</span> inline<span class="op">-</span>size<span class="pu">;</span>
@@ -707,31 +1320,44 @@
         <div class="section-label">06 &mdash; Building Blocks</div>
         <h2>Atomic Component Architecture</h2>
         <p class="lead">
-          Atomic design, introduced by Brad Frost, provides the right vocabulary for
-          component hierarchy: atoms are the smallest possible units, molecules are
-          composed of atoms, and organisms are composed of molecules. In a React
-          design system, this maps directly to implementation decisions about
-          scope, API surface, and import paths.
+          Atomic design, introduced by Brad Frost, provides the right vocabulary
+          for component hierarchy: atoms are the smallest possible units,
+          molecules are composed of atoms, and organisms are composed of
+          molecules. In a React design system, this maps directly to
+          implementation decisions about scope, API surface, and import paths.
         </p>
 
         <table>
           <thead>
-            <tr><th>Level</th><th>Examples</th><th>Rule</th></tr>
+            <tr>
+              <th>Level</th>
+              <th>Examples</th>
+              <th>Rule</th>
+            </tr>
           </thead>
           <tbody>
             <tr>
               <td><strong>Atom</strong></td>
-              <td><code>Button</code>, <code>Input</code>, <code>Label</code>, <code>Badge</code>, <code>Icon</code></td>
+              <td>
+                <code>Button</code>, <code>Input</code>, <code>Label</code>,
+                <code>Badge</code>, <code>Icon</code>
+              </td>
               <td>No component dependencies. Uses only tokens and HTML.</td>
             </tr>
             <tr>
               <td><strong>Molecule</strong></td>
-              <td><code>FormField</code>, <code>SearchBar</code>, <code>Card</code>, <code>Tooltip</code></td>
+              <td>
+                <code>FormField</code>, <code>SearchBar</code>,
+                <code>Card</code>, <code>Tooltip</code>
+              </td>
               <td>Composes 2–5 atoms. Has a single, clear job.</td>
             </tr>
             <tr>
               <td><strong>Organism</strong></td>
-              <td><code>Navbar</code>, <code>DataTable</code>, <code>CommentThread</code></td>
+              <td>
+                <code>Navbar</code>, <code>DataTable</code>,
+                <code>CommentThread</code>
+              </td>
               <td>Composed of molecules. May connect to context or store.</td>
             </tr>
             <tr>
@@ -744,14 +1370,18 @@
 
         <h3>Compound Components Pattern</h3>
         <p>
-          For complex stateful widgets like Tabs, Accordions, Dropdowns, or Selects,
-          the compound component pattern gives consumers a declarative, composable
-          API while keeping internal state encapsulated. It is the pattern used by
-          Radix UI, HeadlessUI, and React Aria.
+          For complex stateful widgets like Tabs, Accordions, Dropdowns, or
+          Selects, the compound component pattern gives consumers a declarative,
+          composable API while keeping internal state encapsulated. It is the
+          pattern used by Radix UI, HeadlessUI, and React Aria.
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">JSX — Compound Select component with Context</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >JSX — Compound Select component with Context</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> <span class="pu">{</span> createContext<span class="pu">,</span> useContext<span class="pu">,</span> useState<span class="pu">,</span> useId <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
 
 <span class="kw">const</span> SelectCtx <span class="op">=</span> <span class="fn">createContext</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
@@ -838,22 +1468,26 @@ Select<span class="pu">.</span>Item    <span class="op">=</span> SelectItem
         <div class="section-label">07 &mdash; Developer Experience</div>
         <h2>Component API Design</h2>
         <p class="lead">
-          The component API is the interface between your design system and every
-          product team that consumes it. A bad API generates workarounds that
-          spread through codebases and become impossible to deprecate. A good API
-          is predictable, composable, and constrains choices toward the right answer.
+          The component API is the interface between your design system and
+          every product team that consumes it. A bad API generates workarounds
+          that spread through codebases and become impossible to deprecate. A
+          good API is predictable, composable, and constrains choices toward the
+          right answer.
         </p>
 
         <h3>Variant-first Props with cva()</h3>
         <p>
-          The <strong>class-variance-authority</strong> library provides a typed,
-          composable way to define visual variants. It produces a single
+          The <strong>class-variance-authority</strong> library provides a
+          typed, composable way to define visual variants. It produces a single
           function that maps props to class strings, keeping component code
           clean and providing TypeScript autocomplete for every variant slot.
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Button with cva variants</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang">TypeScript — Button with cva variants</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> <span class="pu">{</span> cva<span class="pu">,</span> <span class="ty">VariantProps</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'class-variance-authority'</span>
 <span class="kw">import</span> <span class="pu">{</span> forwardRef<span class="pu">,</span> <span class="ty">ButtonHTMLAttributes</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
 
@@ -913,14 +1547,19 @@ Button<span class="pu">.</span>displayName <span class="op">=</span> <span class
         <h3>Polymorphic Components with the <code>as</code> Prop</h3>
         <p>
           A polymorphic component renders as a different HTML element or custom
-          component based on the <code>as</code> prop. This is the correct way to
-          build a <code>Text</code> or <code>Box</code> primitive that can render
-          as a <code>&lt;p&gt;</code>, <code>&lt;span&gt;</code>, or
-          <code>&lt;h1&gt;</code> without duplicating prop types or losing TypeScript inference.
+          component based on the <code>as</code> prop. This is the correct way
+          to build a <code>Text</code> or <code>Box</code> primitive that can
+          render as a <code>&lt;p&gt;</code>, <code>&lt;span&gt;</code>, or
+          <code>&lt;h1&gt;</code> without duplicating prop types or losing
+          TypeScript inference.
         </p>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Polymorphic Text primitive</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang"
+              >TypeScript — Polymorphic Text primitive</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> <span class="pu">{</span> <span class="ty">ComponentPropsWithRef</span><span class="pu">,</span> <span class="ty">ElementType</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
 
 <span class="cm">// ── Generic helper type ───────────────────────────────────</span>
@@ -979,7 +1618,9 @@ Button<span class="pu">.</span>displayName <span class="op">=</span> <span class
             </div>
           </div>
           <div class="compare-card">
-            <div class="compare-header good">&#10003; Constrained variant API</div>
+            <div class="compare-header good">
+              &#10003; Constrained variant API
+            </div>
             <div class="code-block">
               <pre><code><span class="cm">// Consumers pick from known variants</span>
 <span class="op">&lt;</span><span class="ty">Button</span>
@@ -993,12 +1634,15 @@ Button<span class="pu">.</span>displayName <span class="op">=</span> <span class
         </div>
 
         <div class="warn">
-          <div class="warn-label">&#9888; Avoid style props on design system components</div>
-          Accepting arbitrary <code>style</code>, <code>color</code>, or dimension
-          props on design system atoms defeats the purpose of the system. If a
-          consumer needs something the current variants don't cover, that is a signal
-          to add a variant &mdash; not to expose an escape hatch. Escape hatches
-          accumulate and eventually replace the system.
+          <div class="warn-label">
+            &#9888; Avoid style props on design system components
+          </div>
+          Accepting arbitrary <code>style</code>, <code>color</code>, or
+          dimension props on design system atoms defeats the purpose of the
+          system. If a consumer needs something the current variants don't
+          cover, that is a signal to add a variant &mdash; not to expose an
+          escape hatch. Escape hatches accumulate and eventually replace the
+          system.
         </div>
       </div>
 
@@ -1008,38 +1652,51 @@ Button<span class="pu">.</span>displayName <span class="op">=</span> <span class
         <h2>Governance &amp; Documentation</h2>
         <p class="lead">
           The technical layer of a design system accounts for perhaps 30% of its
-          success. The remaining 70% is governance: who decides what goes in, how
-          changes are communicated, and how the system stays relevant as products
-          evolve. Systems that skip this rot within two years.
+          success. The remaining 70% is governance: who decides what goes in,
+          how changes are communicated, and how the system stays relevant as
+          products evolve. Systems that skip this rot within two years.
         </p>
 
         <h3>Semantic Versioning for Design Systems</h3>
         <p>
-          Design system versions have a stronger social contract than typical library
-          semver because consuming teams commit design and engineering resources to
-          upgrades. A clear versioning policy reduces upgrade anxiety and prevents
-          teams from pinning to old versions indefinitely.
+          Design system versions have a stronger social contract than typical
+          library semver because consuming teams commit design and engineering
+          resources to upgrades. A clear versioning policy reduces upgrade
+          anxiety and prevents teams from pinning to old versions indefinitely.
         </p>
 
         <table>
           <thead>
-            <tr><th>Version</th><th>When to bump</th><th>Examples</th></tr>
+            <tr>
+              <th>Version</th>
+              <th>When to bump</th>
+              <th>Examples</th>
+            </tr>
           </thead>
           <tbody>
             <tr>
               <td><span class="badge badge-red">MAJOR</span></td>
               <td>Breaking API change, removed prop, token rename</td>
-              <td>Renaming <code>variant="primary"</code> → <code>"brand"</code>; removing <code>size="xs"</code></td>
+              <td>
+                Renaming <code>variant="primary"</code> → <code>"brand"</code>;
+                removing <code>size="xs"</code>
+              </td>
             </tr>
             <tr>
               <td><span class="badge badge-amber">MINOR</span></td>
               <td>New component, new variant, new token</td>
-              <td>Adding <code>&lt;Stepper&gt;</code>; adding <code>size="2xl"</code>; adding semantic color token</td>
+              <td>
+                Adding <code>&lt;Stepper&gt;</code>; adding
+                <code>size="2xl"</code>; adding semantic color token
+              </td>
             </tr>
             <tr>
               <td><span class="badge badge-green">PATCH</span></td>
               <td>Bug fix, visual tweak that doesn't change API</td>
-              <td>Fixing focus ring offset; correcting a contrast ratio; fixing a broken SSR prop</td>
+              <td>
+                Fixing focus ring offset; correcting a contrast ratio; fixing a
+                broken SSR prop
+              </td>
             </tr>
           </tbody>
         </table>
@@ -1047,7 +1704,10 @@ Button<span class="pu">.</span>displayName <span class="op">=</span> <span class
         <h3>Storybook Documentation Architecture</h3>
 
         <div class="code-block">
-          <div class="code-header"><span class="code-lang">TypeScript — Button.stories.tsx</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-header">
+            <span class="code-lang">TypeScript — Button.stories.tsx</span
+            ><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
           <pre><code><span class="kw">import</span> <span class="kw">type</span> <span class="pu">{</span> <span class="ty">Meta</span><span class="pu">,</span> <span class="ty">StoryObj</span> <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@storybook/react'</span>
 <span class="kw">import</span> <span class="pu">{</span> Button <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./Button'</span>
 
@@ -1093,43 +1753,112 @@ Button<span class="pu">.</span>displayName <span class="op">=</span> <span class
 
         <h3>Contribution Checklist</h3>
         <ul class="checklist">
-          <li><span class="check-icon">&#9989;</span><span><strong>Token-first:</strong> Every new visual decision is a token before it is a component prop. No hard-coded values anywhere in the system.</span></li>
-          <li><span class="check-icon">&#9989;</span><span><strong>Accessibility by default:</strong> Every interactive component has correct ARIA roles, keyboard navigation, and passes axe. No component merges without a passing <code>jest-axe</code> test.</span></li>
-          <li><span class="check-icon">&#9989;</span><span><strong>API review:</strong> New props are reviewed by at least one consuming team before merge. Prop names follow the system's conventions (<code>variant</code>, <code>size</code>, <code>as</code>) not the implementor's preference.</span></li>
-          <li><span class="check-icon">&#9989;</span><span><strong>Stories before code:</strong> Write all Storybook stories first. If you can't write a story for a state, you don't yet understand what you're building.</span></li>
-          <li><span class="check-icon">&#9989;</span><span><strong>Visual regression tests:</strong> Chromatic (or equivalent) runs on every PR and blocks merge on unreviewed visual changes to existing components.</span></li>
-          <li><span class="check-icon">&#9989;</span><span><strong>Changelog discipline:</strong> Every PR includes a <code>CHANGELOG.md</code> entry categorised as Added, Changed, Deprecated, Removed, Fixed, or Security.</span></li>
-          <li><span class="check-icon">&#9989;</span><span><strong>Deprecation period:</strong> Removed APIs get a deprecation notice in a minor version, with a codemod or migration guide, before removal in the next major.</span></li>
-          <li><span class="check-icon">&#9989;</span><span><strong>Office hours:</strong> Design system team holds weekly open office hours. Consuming teams should never resort to forking or monkey-patching because they couldn't get a question answered.</span></li>
+          <li>
+            <span class="check-icon">&#9989;</span
+            ><span
+              ><strong>Token-first:</strong> Every new visual decision is a
+              token before it is a component prop. No hard-coded values anywhere
+              in the system.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span
+            ><span
+              ><strong>Accessibility by default:</strong> Every interactive
+              component has correct ARIA roles, keyboard navigation, and passes
+              axe. No component merges without a passing
+              <code>jest-axe</code> test.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span
+            ><span
+              ><strong>API review:</strong> New props are reviewed by at least
+              one consuming team before merge. Prop names follow the system's
+              conventions (<code>variant</code>, <code>size</code>,
+              <code>as</code>) not the implementor's preference.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span
+            ><span
+              ><strong>Stories before code:</strong> Write all Storybook stories
+              first. If you can't write a story for a state, you don't yet
+              understand what you're building.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span
+            ><span
+              ><strong>Visual regression tests:</strong> Chromatic (or
+              equivalent) runs on every PR and blocks merge on unreviewed visual
+              changes to existing components.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span
+            ><span
+              ><strong>Changelog discipline:</strong> Every PR includes a
+              <code>CHANGELOG.md</code> entry categorised as Added, Changed,
+              Deprecated, Removed, Fixed, or Security.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span
+            ><span
+              ><strong>Deprecation period:</strong> Removed APIs get a
+              deprecation notice in a minor version, with a codemod or migration
+              guide, before removal in the next major.</span
+            >
+          </li>
+          <li>
+            <span class="check-icon">&#9989;</span
+            ><span
+              ><strong>Office hours:</strong> Design system team holds weekly
+              open office hours. Consuming teams should never resort to forking
+              or monkey-patching because they couldn't get a question
+              answered.</span
+            >
+          </li>
         </ul>
 
         <div class="pullquote">
           "A design system is never finished. It reflects the living design
-          language of your organisation. When it stops evolving, it starts dying."
+          language of your organisation. When it stops evolving, it starts
+          dying."
         </div>
       </div>
-
-    </div><!-- /content -->
+    </div>
+    <!-- /content -->
 
     <footer>
-      <p><strong>Frontend Design Systems: Architecture, Tokens &amp; Scalable Components</strong></p>
-      <p style="margin-top: 8px; font-size: 13px">Build systematic. Ship consistent.</p>
+      <p>
+        <strong
+          >Frontend Design Systems: Architecture, Tokens &amp; Scalable
+          Components</strong
+        >
+      </p>
+      <p style="margin-top: 8px; font-size: 13px">
+        Build systematic. Ship consistent.
+      </p>
     </footer>
 
     <script>
       function copyCode(btn) {
-        const pre = btn.closest('.code-block').querySelector('pre')
+        const pre = btn.closest(".code-block").querySelector("pre");
         navigator.clipboard.writeText(pre.textContent).then(() => {
-          btn.textContent = 'Copied!'
-          setTimeout(() => (btn.textContent = 'Copy'), 2000)
-        })
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = "Copy"), 2000);
+        });
       }
-      document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', e => {
-          e.preventDefault()
-          document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' })
-        })
-      })
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          document
+            .querySelector(a.getAttribute("href"))
+            ?.scrollIntoView({ behavior: "smooth" });
+        });
+      });
     </script>
   </body>
 </html>
