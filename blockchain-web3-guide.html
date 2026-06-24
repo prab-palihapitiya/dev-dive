@@ -1,0 +1,1126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Blockchain & Web3: Smart Contracts, DApps & the Decentralized Stack — DevDive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#faf8f5;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
+      --text-muted:#9a9a9a;--accent:#7c3aed;--accent-light:#f5f3ff;--accent-subtle:#ede9fe;
+      --border:#e8e3db;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#f3f0eb;
+      --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
+      --info-bg:#eff6ff;--info-border:#2563eb;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Outfit",sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.8}
+    nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s}
+    .nav-back:hover{color:var(--accent)}
+    .nav-pipe{color:var(--border);font-size:18px}
+    .nav-brand{font-size:14px;font-weight:700;letter-spacing:-.3px}
+    .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:100px}
+    .nav-links{display:flex;gap:0}
+    .nav-links a{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:5px 8px;border-radius:6px;transition:all .15s;white-space:nowrap}
+    .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
+    .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+    .hero{max-width:800px;margin:0 auto;padding:64px 2rem 48px}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:24px}
+    .hero h1{font-family:"Lora",serif;font-size:clamp(30px,4.5vw,48px);font-weight:600;line-height:1.15;letter-spacing:-.5px;margin-bottom:20px}
+    .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+    .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white}
+    .meta-text{font-size:14px;color:var(--text-secondary)}
+    .meta-text strong{color:var(--text-primary)}
+    .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+    .toc-wrapper{max-width:800px;margin:0 auto;padding:0 2rem 8px}
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:48px}
+    .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+    .toc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px 20px}
+    .toc a{font-size:13.5px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
+    .toc a:hover{color:var(--accent)}
+    .toc-num{font-size:11px;color:var(--text-muted);font-weight:600;min-width:18px;flex-shrink:0}
+    .content{max-width:800px;margin:0 auto;padding:0 2rem 80px}
+    .section{margin-bottom:72px;scroll-margin-top:72px}
+    .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .section-label::after{content:"";flex:1;height:1px;background:var(--accent-subtle)}
+    h2{font-family:"Lora",serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:14px}
+    h3{font-size:18px;font-weight:600;margin:28px 0 10px}
+    p{margin-bottom:16px;color:#2d2d2d;line-height:1.8}
+    .lead{font-size:18px;color:var(--text-secondary);font-weight:300;margin-bottom:20px;line-height:1.7}
+    .code-block{background:var(--code-bg);border-radius:10px;margin:20px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+    .code-header{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+    .code-lang{font-size:11px;color:#6e7681;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+    .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:"Outfit",sans-serif;transition:all .15s}
+    .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+    pre{padding:18px 20px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.75;color:var(--code-text)}
+    pre code{background:none;padding:0;font-size:inherit;color:inherit}
+    code{font-family:"JetBrains Mono",monospace;font-size:13px;background:#f5f3ff;color:#7c3aed;padding:2px 6px;border-radius:4px}
+    .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+    .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+    .pu{color:#e6edf3}.bi{color:#ffa657}.at{color:#79c0ff}
+    .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .tip-label{font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .warn-label{font-size:11px;font-weight:700;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .info-label{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14.5px}
+    th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:12px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+    td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--bg)}
+    .pullquote{font-family:"Lora",serif;font-style:italic;font-size:21px;line-height:1.55;color:var(--text-secondary);border-left:4px solid var(--accent);padding:10px 22px;margin:32px 0}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:20px 0}
+    .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 17px}
+    .concept-card h4{font-size:14px;font-weight:600;margin:0 0 5px}
+    .concept-card p{font-size:13px;color:var(--text-secondary);margin:0;line-height:1.5}
+    .concept-icon{font-size:19px;margin-bottom:8px}
+    .domain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:24px 0}
+    .domain-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+    .domain-name{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text-primary)}
+    .domain-tags{display:flex;flex-wrap:wrap;gap:4px}
+    .dtag{font-size:11px;font-weight:600;padding:2px 7px;border-radius:100px;background:var(--accent-subtle);color:var(--accent)}
+    .arch-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin:20px 0;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:2.1;color:var(--text-secondary);overflow-x:auto}
+    .arch-box .hl{color:var(--accent);font-weight:600}
+    .arch-box .dim{color:var(--text-muted)}
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+    .compare-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+    .compare-card h4{font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .compare-card ul{margin:0;padding-left:18px}
+    .compare-card li{font-size:14px;color:var(--text-secondary);margin-bottom:4px;line-height:1.55}
+    .roadmap-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+    .roadmap-step{min-width:90px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:100px;text-align:center;flex-shrink:0;margin-top:2px}
+    .roadmap-content{font-size:14.5px;color:var(--text-secondary);line-height:1.6}
+    .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;vertical-align:middle}
+    .badge-purple{background:#ede9fe;color:#6d28d9}
+    .badge-red{background:#fee2e2;color:#b91c1c}
+    .badge-green{background:#dcfce7;color:#15803d}
+    .badge-amber{background:#fef3c7;color:#b45309}
+    footer{background:#1a1a1a;color:rgba(255,255,255,.65);text-align:center;padding:40px 2rem;font-size:14px}
+    footer strong{color:white}
+    @media(max-width:640px){.toc-grid{grid-template-columns:1fr 1fr}.nav-links{display:none}.concept-grid,.domain-grid{grid-template-columns:1fr 1fr}.compare-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="index.html">&#8592; DevDive</a>
+    <span class="nav-pipe">|</span>
+    <span class="nav-brand">Blockchain &amp; Web3</span>
+    <span class="nav-badge">Backend</span>
+  </div>
+  <div class="nav-links">
+    <a href="#trust">The Trust Problem</a>
+    <a href="#fundamentals">Fundamentals</a>
+    <a href="#consensus">Consensus</a>
+    <a href="#platforms">Platforms</a>
+    <a href="#contracts">Smart Contracts</a>
+    <a href="#solidity">Solidity</a>
+    <a href="#security">Security</a>
+    <a href="#tokens">Tokens</a>
+    <a href="#dapps">DApps</a>
+    <a href="#infra">Infrastructure</a>
+    <a href="#defi">DeFi &amp; DAOs</a>
+    <a href="#layer2">Layer 2</a>
+    <a href="#enterprise">Enterprise</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+  <span class="nav-rt">~42 min read</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; Backend</div>
+  <h1>Blockchain &amp; Web3: Smart Contracts, DApps &amp; the Decentralized Stack</h1>
+  <p class="hero-sub">
+    From the trust problem and cryptographic primitives, through Solidity and smart contract security,
+    to DeFi protocols, Layer 2 rollups, and enterprise blockchains — with the mental models
+    you need to build production-grade Web3 systems.
+  </p>
+  <div class="hero-meta">
+    <div class="avatar">W3</div>
+    <div class="meta-text">
+      <strong>Web3 Engineering Field Guide</strong><br/>
+      14 Parts &middot; Ethereum &middot; Solidity &middot; DeFi &middot; Layer 2 &mdash; June 2026
+    </div>
+  </div>
+  <hr class="hero-divider"/>
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>14 Parts &mdash; From Fundamentals to Production Web3</h3>
+    <div class="toc-grid">
+      <a href="#trust"><span class="toc-num">01</span>The Trust Problem</a>
+      <a href="#tokens"><span class="toc-num">08</span>Token Standards</a>
+      <a href="#fundamentals"><span class="toc-num">02</span>Blockchain Fundamentals</a>
+      <a href="#dapps"><span class="toc-num">09</span>DApp Architecture</a>
+      <a href="#consensus"><span class="toc-num">03</span>Consensus Mechanisms</a>
+      <a href="#infra"><span class="toc-num">10</span>Web3 Infrastructure</a>
+      <a href="#platforms"><span class="toc-num">04</span>Blockchain Platforms</a>
+      <a href="#defi"><span class="toc-num">11</span>DeFi &amp; DAOs</a>
+      <a href="#contracts"><span class="toc-num">05</span>Smart Contracts</a>
+      <a href="#layer2"><span class="toc-num">12</span>Layer 2 &amp; Scaling</a>
+      <a href="#solidity"><span class="toc-num">06</span>Solidity Development</a>
+      <a href="#enterprise"><span class="toc-num">13</span>Enterprise Blockchain</a>
+      <a href="#security"><span class="toc-num">07</span>Smart Contract Security</a>
+      <a href="#roadmap"><span class="toc-num">14</span>Web3 Dev Roadmap</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ─── 01 TRUST ─── -->
+<div class="section" id="trust">
+  <div class="section-label">01 &mdash; The Problem</div>
+  <h2>The Trust Problem Blockchain Solves</h2>
+  <p class="lead">Every digital system that has ever existed depends on trust. Not the vague social trust between humans — the strict, enforceable trust in a central authority that owns the data, processes the transactions, and can freeze, revert, or censor any of it. Blockchain replaces that single authority with a network of participants governed by math.</p>
+  <p>Traditional financial systems rely on intermediaries that act as arbiters of truth. When you send money internationally, the chain looks like this:</p>
+  <div class="arch-box">
+    <span class="hl">Sender's Bank</span> <span class="dim">→ verifies balance, debits account</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  SWIFT network (1–5 business days, 3–7% fees)</span><br/>
+    <span class="hl">Correspondent Bank(s)</span> <span class="dim">→ intermediate settlement</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Receiver's Bank</span> <span class="dim">→ credits account</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Receiver</span>
+  </div>
+  <p>Each intermediary charges fees, introduces delay, and must be trusted not to fail, freeze assets, or misappropriate funds. This is not hypothetical — banks have failed, assets have been frozen arbitrarily, and cross-border settlement remains slow and expensive in 2026.</p>
+
+  <h3>The Double Spending Problem</h3>
+  <p>Digital information is trivially copyable. A JPEG you send me does not leave your machine — you still have it. If digital money worked the same way, nothing stops a malicious actor from spending the same token twice: send a copy to Alice and another copy to Bob simultaneously. Before blockchain, the only solution was a trusted central authority that maintained a canonical ledger and rejected double spends.</p>
+  <p>Bitcoin's 2008 whitepaper solved this without a central authority using a combination of cryptography, economic incentives, and distributed consensus. That insight is the foundation everything else in Web3 is built on.</p>
+
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🏦</div><h4>Centralized Control</h4><p>Traditional intermediaries can freeze accounts, reverse transactions, or go bankrupt — taking user funds with them.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌍</div><h4>Geographic Restrictions</h4><p>Banking access requires government ID, permanent address, and citizenship. 1.4 billion adults globally remain unbanked.</p></div>
+    <div class="concept-card"><div class="concept-icon">🐢</div><h4>Settlement Delays</h4><p>International wire transfers take 1–5 business days and pass through multiple correspondent banks, each adding fees.</p></div>
+    <div class="concept-card"><div class="concept-icon">✂️</div><h4>Censorship Risk</h4><p>Any central authority can be pressured by governments or regulators to block specific transactions or accounts.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔒</div><h4>Permissioned Access</h4><p>Building financial services on top of existing rails requires licensing, partnerships, and compliance overhead that stifles innovation.</p></div>
+    <div class="concept-card"><div class="concept-icon">🧩</div><h4>Composability</h4><p>Blockchain protocols are open: anyone can build on top of them, permissionlessly. A DeFi protocol can combine three other protocols in a single transaction.</p></div>
+  </div>
+
+  <div class="pullquote">"Blockchain is not primarily a database technology. It is a trust technology — a way of establishing rules that are enforced by mathematics and economic incentives rather than law and institutions."</div>
+</div>
+
+<!-- ─── 02 FUNDAMENTALS ─── -->
+<div class="section" id="fundamentals">
+  <div class="section-label">02 &mdash; Core Concepts</div>
+  <h2>Blockchain Fundamentals</h2>
+  <p class="lead">A blockchain is a distributed ledger: a chain of cryptographically linked blocks, replicated across thousands of nodes, where no single node controls the canonical state. Every primitive that makes it work — hashing, Merkle trees, digital signatures — has a specific job to do.</p>
+
+  <h3>Blocks and the Chain</h3>
+  <p>Each block is a data structure containing a batch of transactions, a timestamp, metadata, and — critically — the hash of the previous block. That hash linkage is what creates the chain. Changing any historical transaction changes that block's hash, which breaks the next block's reference, which cascades through every block that follows. This makes tampering with history computationally detectable by any node.</p>
+  <div class="arch-box">
+    <span class="hl">Block 1 (Genesis)</span><br/>
+    <span class="dim">&nbsp;&nbsp;prev_hash: 0x0000...0000  (no previous block)</span><br/>
+    <span class="dim">&nbsp;&nbsp;tx_root:   0xabc1... (Merkle root of transactions)</span><br/>
+    <span class="dim">&nbsp;&nbsp;timestamp: 1231006505</span><br/>
+    <span class="dim">&nbsp;&nbsp;nonce:     2083236893</span><br/>
+    <span class="dim">&nbsp;&nbsp;hash:      0x000000000019d6...</span><br/><br/>
+    <span class="hl">Block 2</span><br/>
+    <span class="dim">&nbsp;&nbsp;prev_hash: 0x000000000019d6... ← links to Block 1</span><br/>
+    <span class="dim">&nbsp;&nbsp;tx_root:   0xdef4...</span><br/>
+    <span class="dim">&nbsp;&nbsp;hash:      0x00000000000000...</span><br/><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓  Change any tx in Block 1?  Block 1's hash changes.</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓  Block 2's prev_hash no longer matches.</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓  Every subsequent block is invalidated.</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓  The network rejects the fork immediately.</span>
+  </div>
+
+  <h3>Cryptographic Hashing</h3>
+  <p>A hash function maps arbitrary input to a fixed-size output deterministically. The key properties that make blockchains work:</p>
+  <table>
+    <thead><tr><th>Property</th><th>Meaning</th><th>Why It Matters</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Deterministic</strong></td><td>Same input always produces same hash</td><td>Any node can independently verify a hash</td></tr>
+      <tr><td><strong>One-way</strong></td><td>Computationally infeasible to reverse</td><td>You can prove you know data without revealing it (commitments)</td></tr>
+      <tr><td><strong>Avalanche effect</strong></td><td>One-bit change completely alters the hash</td><td>Makes tampering with historical data immediately detectable</td></tr>
+      <tr><td><strong>Collision resistant</strong></td><td>Infeasible to find two inputs with the same hash</td><td>Each block and transaction has a unique fingerprint</td></tr>
+    </tbody>
+  </table>
+  <p>Bitcoin uses SHA-256. Ethereum uses Keccak-256 (a variant of SHA-3). Neither has been broken in production after over a decade of use with trillions of dollars at stake.</p>
+
+  <h3>Merkle Trees</h3>
+  <p>Blocks contain potentially thousands of transactions. To efficiently prove that a specific transaction is in a block without downloading the entire block, Ethereum and Bitcoin use Merkle trees — binary trees where every leaf is a transaction hash and every parent node is the hash of its two children. The root of the tree (the Merkle root) is stored in the block header.</p>
+  <div class="arch-box">
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Root</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\</span><br/>
+    <span class="hl">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hash(AB)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hash(CD)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;\</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;Hash(A) Hash(B)&nbsp;Hash(C) Hash(D)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Tx A&nbsp;&nbsp;Tx B&nbsp;&nbsp;Tx C&nbsp;&nbsp;Tx D</span><br/><br/>
+    <span class="dim">Prove Tx C is in the block? Only need: Hash(D) + Hash(AB) + Root</span><br/>
+    <span class="dim">That is O(log n) data — not O(n). Light clients use this.</span>
+  </div>
+
+  <h3>Public Key Cryptography</h3>
+  <p>Every blockchain account is defined by an asymmetric key pair. The private key is a 256-bit random number that only the owner knows. The public key is derived from it via elliptic curve multiplication (ECDSA on the secp256k1 curve in Bitcoin/Ethereum). The address is derived from the public key via a hash, making it shorter and hiding the public key until the first spend.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🔐</div><h4>Private Key</h4><p>256-bit random number. Signs transactions. Proves ownership. Must never be shared — loss is permanent and irrecoverable.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔑</div><h4>Public Key</h4><p>Derived from private key via elliptic curve math. Shared publicly. Used to verify signatures without exposing the private key.</p></div>
+    <div class="concept-card"><div class="concept-icon">🏷️</div><h4>Address</h4><p>Keccak-256 hash of the public key, last 20 bytes. The identity you share publicly. e.g. <code>0xd8dA6BF2...</code></p></div>
+    <div class="concept-card"><div class="concept-icon">✍️</div><h4>Digital Signature</h4><p>Proves you own the private key for an address without revealing the key. Every transaction must be signed before the network accepts it.</p></div>
+  </div>
+  <div class="warn"><div class="warn-label">There is no password reset</div>Lose your private key (or seed phrase), and your funds are permanently inaccessible. No support ticket. No bank to call. No court order can help. Hardware wallets and proper backup of seed phrases are non-negotiable for anything holding real value.</div>
+</div>
+
+<!-- ─── 03 CONSENSUS ─── -->
+<div class="section" id="consensus">
+  <div class="section-label">03 &mdash; Agreement at Scale</div>
+  <h2>Consensus Mechanisms</h2>
+  <p class="lead">Thousands of nodes that don't trust each other must agree on a single ordered history of transactions. This is the Byzantine Generals Problem — a classic distributed systems challenge where some participants may be malicious. Consensus mechanisms are the economic and cryptographic protocols that solve it.</p>
+
+  <h3>Proof of Work</h3>
+  <p>Bitcoin's original consensus mechanism. To add a block, miners must find a nonce such that <code>SHA256(block_header + nonce)</code> produces a hash below a target value. This requires billions of hashing attempts — expensive computation that cannot be faked. The network adjusts the target every 2016 blocks to keep block time near 10 minutes.</p>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>✅ PoW Strengths</h4>
+      <ul>
+        <li>Battle-tested — 15+ years without a successful 51% attack on Bitcoin</li>
+        <li>Security is grounded in real-world energy and hardware costs</li>
+        <li>Permissionless participation — anyone with hardware can mine</li>
+        <li>No stake-based centralization risk</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>⚠️ PoW Weaknesses</h4>
+      <ul>
+        <li>Massive energy consumption (~150 TWh/year for Bitcoin)</li>
+        <li>Low throughput — Bitcoin: ~7 TPS; Ethereum PoW: ~15 TPS</li>
+        <li>Specialized ASIC hardware creates mining centralization</li>
+        <li>51% attacks feasible on smaller chains with low hash rate</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Proof of Stake</h3>
+  <p>Ethereum's current consensus mechanism (since "The Merge" in September 2022). Validators lock up (stake) 32 ETH as collateral. The protocol randomly selects validators to propose blocks, weighted by stake. Dishonest validators are "slashed" — a portion of their stake is permanently destroyed. Security comes from economic cost rather than computational cost.</p>
+  <div class="arch-box">
+    <span class="hl">Validator</span> <span class="dim">→ stakes 32 ETH as collateral</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  randomly selected by protocol to propose block</span><br/>
+    <span class="hl">Block Proposal</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  other validators attest (vote) on the block</span><br/>
+    <span class="hl">Attestations</span> <span class="dim">→ 2/3 supermajority required to finalize</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Finalized Block</span> <span class="dim">→ irreversible after ~13 minutes (2 epochs)</span><br/><br/>
+    <span class="dim">Caught double-signing?  → stake gets slashed (partially destroyed)</span>
+  </div>
+
+  <h3>Other Consensus Models</h3>
+  <table>
+    <thead><tr><th>Mechanism</th><th>Used By</th><th>Trade-off</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Delegated PoS (DPoS)</strong></td><td>EOS, TRON, BNB Chain</td><td>Higher throughput; fewer validators = more centralized</td></tr>
+      <tr><td><strong>Tendermint / BFT</strong></td><td>Cosmos, Celestia</td><td>Instant finality; requires known validator set</td></tr>
+      <tr><td><strong>Proof of Authority (PoA)</strong></td><td>Private blockchains, testnets</td><td>Very fast; fully centralized — validators are known entities</td></tr>
+      <tr><td><strong>Proof of History (PoH)</strong></td><td>Solana</td><td>Enables ~65,000 TPS; more complex to validate; higher hardware requirements</td></tr>
+      <tr><td><strong>Avalanche Consensus</strong></td><td>Avalanche</td><td>Sub-second finality; probabilistic; Sybil-resistant via PoS</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ─── 04 PLATFORMS ─── -->
+<div class="section" id="platforms">
+  <div class="section-label">04 &mdash; Ecosystem</div>
+  <h2>Blockchain Platforms</h2>
+  <p class="lead">Bitcoin proved the concept. Ethereum made it programmable. What followed was an explosion of alternative Layer 1 blockchains, each making different trade-offs on the same impossible trilemma: security, decentralization, and scalability.</p>
+
+  <h3>Bitcoin — Digital Gold</h3>
+  <p>Bitcoin's design is deliberately conservative. Script (Bitcoin's programming language) is intentionally limited — no loops, no Turing completeness. This limits what you can build on it, but also limits the attack surface. The goal is a single use case done perfectly: a censorship-resistant, fixed-supply store of value that settles transactions without any trusted party.</p>
+  <div class="info"><div class="info-label">21 Million Cap</div>Bitcoin's supply is hard-capped at 21 million BTC, enforced by the protocol. Every 210,000 blocks (~4 years) the block reward halves. This disinflationary schedule is the most important economic property in crypto and the reason the "digital gold" narrative has staying power.</div>
+
+  <h3>Ethereum — The Programmable Blockchain</h3>
+  <p>Ethereum's core innovation was the Ethereum Virtual Machine (EVM) — a globally distributed, Turing-complete computer where any code can run without a trusted host. Every node runs the same code and arrives at the same state. This enabled smart contracts, which enabled tokens, which enabled DeFi, NFTs, and DAOs. The entire Web3 ecosystem traces its roots to the EVM.</p>
+
+  <h3>Modern Layer 1 Ecosystems</h3>
+  <div class="domain-grid">
+    <div class="domain-card">
+      <div class="domain-name">⚡ Solana</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">~65,000 TPS</span><span class="dtag">Rust</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Proof of History + PoS. Extremely high throughput and low fees, but historically more outages than Ethereum. Popular for high-frequency trading and gaming.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🔺 Avalanche</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Subnets</span><span class="dtag">EVM</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Sub-second finality. Custom subnets allow private app-specific blockchains. EVM-compatible — Ethereum tooling works. Strong in DeFi and gaming.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🌐 Cosmos</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">IBC</span><span class="dtag">Tendermint</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">"Internet of Blockchains" — separate chains connected via IBC protocol. Application-specific chains (app-chains) are the model. Instant finality.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🟣 Polygon</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">PoS Sidechain</span><span class="dtag">zkEVM</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Multiple scaling solutions under one brand: PoS sidechain, Polygon zkEVM (ZK rollup). Enterprise adoption (Nike, Starbucks, Reddit) is highest here.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🔵 Arbitrum</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Optimistic Rollup</span><span class="dtag">L2</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Largest Ethereum L2 by TVL. Optimistic rollup with fraud proofs. Full EVM compatibility. Most DeFi protocols have native Arbitrum deployments.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🔴 Optimism</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">OP Stack</span><span class="dtag">Superchain</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Optimistic rollup. The OP Stack powers the "Superchain" — a set of interoperable L2s including Coinbase's Base. Strong governance model via OP token.</p>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>Chain</th><th>TPS</th><th>Finality</th><th>Language</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bitcoin</strong></td><td>~7</td><td>~60 min (probabilistic)</td><td>Script</td><td>Store of value, settlement</td></tr>
+      <tr><td><strong>Ethereum</strong></td><td>~15–30</td><td>~13 min (2 epochs)</td><td>Solidity, Vyper</td><td>DeFi, NFTs, DAOs, enterprise</td></tr>
+      <tr><td><strong>Solana</strong></td><td>~65,000</td><td>~400ms</td><td>Rust, C</td><td>High-frequency DeFi, gaming</td></tr>
+      <tr><td><strong>Arbitrum / Optimism</strong></td><td>~4,000+</td><td>~1s (soft)</td><td>Solidity (EVM)</td><td>Ethereum scaling, DeFi</td></tr>
+      <tr><td><strong>Avalanche</strong></td><td>~4,500</td><td>&lt;2s</td><td>Solidity (EVM)</td><td>App-chains, DeFi</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ─── 05 SMART CONTRACTS ─── -->
+<div class="section" id="contracts">
+  <div class="section-label">05 &mdash; Programmable Trust</div>
+  <h2>Smart Contracts</h2>
+  <p class="lead">A smart contract is code that lives on a blockchain. It has an address, holds a balance, stores state, and executes functions when called by a transaction. No server. No database. No administrator. Once deployed, the rules are enforced by the network itself.</p>
+
+  <h3>What Makes Them "Smart"</h3>
+  <p>The word "smart" is a misnomer — contracts are not intelligent. What makes them powerful is that they are <em>self-executing</em>: when pre-defined conditions are met, the outcome is automatically enforced without any human intermediary being able to interfere.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🤖</div><h4>Self-Executing</h4><p>Code runs automatically when called. No counterparty can refuse to settle. The contract does not have business hours, jurisdictions, or moods.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌐</div><h4>Globally Accessible</h4><p>Anyone with an Ethereum address can call a public function — no KYC, no geography, no bank account required.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔍</div><h4>Transparent</h4><p>All contract code (when verified) and all state changes are publicly visible. Anyone can audit exactly what a contract does before interacting with it.</p></div>
+    <div class="concept-card"><div class="concept-icon">♾️</div><h4>Immutable</h4><p>Once deployed, standard contracts cannot be changed. What you see is what runs. This is both a strength (no rug pulls via code change) and a risk (bugs are permanent).</p></div>
+    <div class="concept-card"><div class="concept-icon">🔗</div><h4>Composable</h4><p>Contracts can call other contracts. A single transaction can borrow from a lending protocol, swap on a DEX, and repay the loan — all atomically.</p></div>
+    <div class="concept-card"><div class="concept-icon">⛽</div><h4>Gas-Metered</h4><p>Every computation costs gas, paid in ETH. This prevents infinite loops and ensures network resources are allocated fairly.</p></div>
+  </div>
+
+  <h3>The Smart Contract Lifecycle</h3>
+  <div class="arch-box">
+    <span class="hl">1. Write</span> <span class="dim">→ Solidity / Vyper code in your editor</span><br/>
+    <span class="hl">2. Compile</span> <span class="dim">→ solc produces EVM bytecode + ABI (interface)</span><br/>
+    <span class="hl">3. Test</span> <span class="dim">→ Hardhat / Foundry run tests against local EVM fork</span><br/>
+    <span class="hl">4. Audit</span> <span class="dim">→ manual security review + automated static analysis</span><br/>
+    <span class="hl">5. Deploy</span> <span class="dim">→ send a transaction with bytecode; EVM assigns address</span><br/>
+    <span class="hl">6. Verify</span> <span class="dim">→ upload source to Etherscan so users can audit</span><br/>
+    <span class="hl">7. Interact</span> <span class="dim">→ users call functions via wallet / dApp / direct tx</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Contract state is permanent and public forever</span>
+  </div>
+  <div class="warn"><div class="warn-label">Immutability cuts both ways</div>Smart contracts that hold real value cannot be patched after deployment. A bug found after launch is a permanent vulnerability. This is why audits, testnets, staged rollouts, and upgrade proxy patterns exist — and why no audit is a guarantee of safety.</div>
+</div>
+
+<!-- ─── 06 SOLIDITY ─── -->
+<div class="section" id="solidity">
+  <div class="section-label">06 &mdash; Development</div>
+  <h2>Solidity Development</h2>
+  <p class="lead">Solidity is the dominant language for EVM-compatible smart contracts. Its syntax is intentionally familiar to JavaScript and C++ developers, but the execution model is radically different — every operation has a gas cost, storage is expensive, and bugs are permanent.</p>
+
+  <h3>Solidity Fundamentals</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Solidity — Core Language Features</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// SPDX-License-Identifier: MIT</span>
+<span class="kw">pragma solidity</span> ^<span class="nm">0.8.24</span>;
+
+<span class="kw">contract</span> <span class="ty">SimpleVault</span> {
+    <span class="cm">// State variables — stored permanently on-chain (expensive)</span>
+    <span class="ty">address</span> <span class="kw">public</span> owner;
+    <span class="ty">mapping</span>(<span class="ty">address</span> =&gt; <span class="ty">uint256</span>) <span class="kw">private</span> balances;
+
+    <span class="cm">// Events — emitted to logs (cheap; not readable by contracts)</span>
+    <span class="kw">event</span> <span class="fn">Deposited</span>(<span class="ty">address indexed</span> user, <span class="ty">uint256</span> amount);
+    <span class="kw">event</span> <span class="fn">Withdrawn</span>(<span class="ty">address indexed</span> user, <span class="ty">uint256</span> amount);
+
+    <span class="cm">// Modifiers — reusable access control guards</span>
+    <span class="kw">modifier</span> <span class="fn">onlyOwner</span>() {
+        <span class="kw">require</span>(msg.sender == owner, <span class="st">"Not owner"</span>);
+        _; <span class="cm">// function body executes here</span>
+    }
+
+    <span class="cm">// Constructor — runs once at deployment</span>
+    <span class="kw">constructor</span>() {
+        owner = msg.sender;
+    }
+
+    <span class="cm">// payable — allows function to receive ETH</span>
+    <span class="kw">function</span> <span class="fn">deposit</span>() <span class="kw">external payable</span> {
+        <span class="kw">require</span>(msg.value &gt; 0, <span class="st">"Send ETH"</span>);
+        balances[msg.sender] += msg.value;
+        <span class="kw">emit</span> <span class="fn">Deposited</span>(msg.sender, msg.value);
+    }
+
+    <span class="cm">// Checks-Effects-Interactions pattern (see security section)</span>
+    <span class="kw">function</span> <span class="fn">withdraw</span>(<span class="ty">uint256</span> amount) <span class="kw">external</span> {
+        <span class="cm">// 1. CHECK</span>
+        <span class="kw">require</span>(balances[msg.sender] &gt;= amount, <span class="st">"Insufficient balance"</span>);
+        <span class="cm">// 2. EFFECT — update state BEFORE external call</span>
+        balances[msg.sender] -= amount;
+        <span class="cm">// 3. INTERACT — external call last</span>
+        (<span class="ty">bool</span> ok,) = msg.sender.<span class="fn">call</span>{value: amount}(<span class="st">""</span>);
+        <span class="kw">require</span>(ok, <span class="st">"Transfer failed"</span>);
+        <span class="kw">emit</span> <span class="fn">Withdrawn</span>(msg.sender, amount);
+    }
+
+    <span class="cm">// view — reads state, costs no gas when called off-chain</span>
+    <span class="kw">function</span> <span class="fn">balanceOf</span>(<span class="ty">address</span> user) <span class="kw">external view returns</span> (<span class="ty">uint256</span>) {
+        <span class="kw">return</span> balances[user];
+    }
+}</code></pre>
+  </div>
+
+  <h3>Gas Optimization Patterns</h3>
+  <p>Every EVM opcode has a fixed gas cost. Storage writes (<code>SSTORE</code>) are the most expensive operation — ~20,000 gas for a new slot, ~5,000 to update an existing one. Understanding the cost model is not optional when deploying contracts that users will call thousands of times.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Solidity — Gas Optimization Techniques</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// ❌ Expensive: reads storage in every loop iteration</span>
+<span class="kw">for</span> (<span class="ty">uint</span> i = <span class="nm">0</span>; i &lt; storageArray.length; i++) { ... }
+
+<span class="cm">// ✅ Cache storage reads in memory (memory is ~3x cheaper)</span>
+<span class="ty">uint256</span> len = storageArray.length;
+<span class="kw">for</span> (<span class="ty">uint</span> i = <span class="nm">0</span>; i &lt; len; i++) { ... }
+
+<span class="cm">// ✅ Use calldata instead of memory for read-only params</span>
+<span class="kw">function</span> <span class="fn">process</span>(<span class="ty">uint256</span>[] <span class="kw">calldata</span> ids) <span class="kw">external</span> { ... }
+
+<span class="cm">// ✅ Pack struct variables to fit in fewer storage slots</span>
+<span class="cm">// Each slot = 32 bytes. Pack small types together:</span>
+<span class="kw">struct</span> <span class="ty">User</span> {
+    <span class="ty">uint128</span> balance;   <span class="cm">// 16 bytes</span>
+    <span class="ty">uint64</span>  lastSeen;  <span class="cm">// 8 bytes  → shares slot with balance</span>
+    <span class="ty">bool</span>    active;    <span class="cm">// 1 byte   → same slot</span>
+    <span class="cm">// Total: 25 bytes in ONE slot instead of 3 separate 32-byte slots</span>
+}
+
+<span class="cm">// ✅ Use events instead of storage for historical data</span>
+<span class="cm">// Events cost ~375 gas; SSTORE costs ~20,000 gas</span>
+<span class="kw">emit</span> <span class="fn">Transfer</span>(from, to, amount); <span class="cm">// cheap, queryable off-chain</span>
+
+<span class="cm">// ✅ Short-circuit with custom errors instead of strings</span>
+<span class="kw">error</span> <span class="ty">InsufficientBalance</span>(<span class="ty">uint256</span> available, <span class="ty">uint256</span> required);
+<span class="kw">revert</span> <span class="ty">InsufficientBalance</span>(balance, amount); <span class="cm">// cheaper than require("string")</span></code></pre>
+  </div>
+
+  <h3>Contract Architecture Patterns</h3>
+  <table>
+    <thead><tr><th>Pattern</th><th>Problem Solved</th><th>Trade-off</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Ownable</strong></td><td>Single admin address can call privileged functions</td><td>Centralization risk — owner is a single point of failure</td></tr>
+      <tr><td><strong>Access Control</strong></td><td>Role-based permissions (OpenZeppelin <code>AccessControl</code>)</td><td>More complex; multiple roles must be carefully managed</td></tr>
+      <tr><td><strong>Proxy / Upgradeable</strong></td><td>Separate storage (proxy) from logic (implementation) — swap logic without losing state</td><td>Breaks immutability guarantee; adds complexity and trust in admin</td></tr>
+      <tr><td><strong>Factory</strong></td><td>Deploy many similar contracts from one template contract</td><td>Slightly higher deployment gas; all instances share the factory interface</td></tr>
+      <tr><td><strong>Multi-sig</strong></td><td>Require M-of-N signatures for privileged operations (Gnosis Safe)</td><td>Slower execution; coordination overhead; still relies on key holders</td></tr>
+    </tbody>
+  </table>
+  <div class="tip"><div class="tip-label">Use OpenZeppelin — Do Not Reinvent</div>OpenZeppelin Contracts is the industry-standard audited library for Solidity. Use it for ERC-20, ERC-721, access control, proxy patterns, and math utilities. Every line of code you write from scratch is a line that can contain a bug. Prefer battle-tested, audited implementations wherever they exist.</div>
+</div>
+
+<!-- ─── 07 SECURITY ─── -->
+<div class="section" id="security">
+  <div class="section-label">07 &mdash; Attack Vectors</div>
+  <h2>Smart Contract Security</h2>
+  <p class="lead">Smart contracts have collectively lost billions of dollars to exploits. The immutability that makes them trustworthy is also what makes bugs catastrophic. Understanding the major attack classes is not optional — it is the minimum bar for anyone writing code that holds user funds.</p>
+
+  <h3>Reentrancy — The DAO Hack</h3>
+  <p>The most famous smart contract exploit. In 2016, an attacker drained 3.6 million ETH (~$60M at the time) from The DAO by exploiting a reentrancy vulnerability. The contract sent ETH to the caller before updating its internal balance. The attacker's contract recursively called back into the withdraw function before the balance was decremented.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Solidity — Reentrancy Vulnerability vs Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// ❌ VULNERABLE: external call before state update</span>
+<span class="kw">function</span> <span class="fn">withdraw</span>() <span class="kw">external</span> {
+    <span class="ty">uint256</span> amount = balances[msg.sender];
+    <span class="cm">// Attacker's contract receives ETH and calls withdraw() again</span>
+    <span class="cm">// At this point balances[msg.sender] is still the original amount!</span>
+    (<span class="ty">bool</span> ok,) = msg.sender.<span class="fn">call</span>{value: amount}(<span class="st">""</span>);
+    <span class="kw">require</span>(ok);
+    balances[msg.sender] = <span class="nm">0</span>; <span class="cm">// Too late — reentrant call already drained it</span>
+}
+
+<span class="cm">// ✅ FIX 1: Checks-Effects-Interactions pattern</span>
+<span class="kw">function</span> <span class="fn">withdraw</span>() <span class="kw">external</span> {
+    <span class="ty">uint256</span> amount = balances[msg.sender]; <span class="cm">// CHECK</span>
+    balances[msg.sender] = <span class="nm">0</span>;             <span class="cm">// EFFECT — state updated FIRST</span>
+    (<span class="ty">bool</span> ok,) = msg.sender.<span class="fn">call</span>{value: amount}(<span class="st">""</span>); <span class="cm">// INTERACT last</span>
+    <span class="kw">require</span>(ok);
+}
+
+<span class="cm">// ✅ FIX 2: ReentrancyGuard (OpenZeppelin)</span>
+<span class="kw">import</span> <span class="st">"@openzeppelin/contracts/security/ReentrancyGuard.sol"</span>;
+
+<span class="kw">contract</span> <span class="ty">SafeVault</span> <span class="kw">is</span> <span class="ty">ReentrancyGuard</span> {
+    <span class="kw">function</span> <span class="fn">withdraw</span>() <span class="kw">external nonReentrant</span> {
+        <span class="cm">// nonReentrant sets a lock — any reentrant call reverts immediately</span>
+        <span class="ty">uint256</span> amount = balances[msg.sender];
+        balances[msg.sender] = <span class="nm">0</span>;
+        (<span class="ty">bool</span> ok,) = msg.sender.<span class="fn">call</span>{value: amount}(<span class="st">""</span>);
+        <span class="kw">require</span>(ok);
+    }
+}</code></pre>
+  </div>
+
+  <h3>Common Vulnerability Classes</h3>
+  <table>
+    <thead><tr><th>Vulnerability</th><th>Description</th><th>Defence</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Reentrancy</strong></td><td>External call lets attacker re-enter your function before state updates</td><td>Checks-Effects-Interactions; <code>ReentrancyGuard</code></td></tr>
+      <tr><td><strong>Integer Overflow</strong></td><td>Arithmetic wraps around (pre-Solidity 0.8)</td><td>Solidity 0.8+ reverts on overflow by default; use SafeMath on older contracts</td></tr>
+      <tr><td><strong>Access Control Flaw</strong></td><td>Missing or incorrect <code>require</code> checks allow unauthorized calls</td><td>OpenZeppelin <code>Ownable</code> / <code>AccessControl</code>; audit every state-changing function</td></tr>
+      <tr><td><strong>Oracle Manipulation</strong></td><td>On-chain price oracles manipulated via flash loans in a single transaction</td><td>Use Chainlink time-weighted average prices (TWAP) instead of spot price</td></tr>
+      <tr><td><strong>Front-Running</strong></td><td>MEV bots see pending transactions and insert their own ahead with higher gas</td><td>Commit-reveal schemes; slippage limits; private mempools (Flashbots Protect)</td></tr>
+      <tr><td><strong>Flash Loan Attack</strong></td><td>Borrow millions uncollateralized in one tx, manipulate a protocol, repay</td><td>Avoid relying on token balances or spot prices within a single transaction</td></tr>
+      <tr><td><strong>Signature Replay</strong></td><td>Valid signed message reused on a different chain or contract</td><td>Include <code>chainId</code>, contract address, and nonce in every signature (EIP-712)</td></tr>
+      <tr><td><strong>Uninitialized Proxy</strong></td><td>Proxy implementation contract initialized by attacker before owner</td><td>Call <code>_disableInitializers()</code> in implementation constructor; use OpenZeppelin proxies</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Security Best Practices</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🧪</div><h4>Test Everything</h4><p>Foundry and Hardhat both support fuzz testing. Foundry's fuzzer generates thousands of random inputs automatically — use it for any arithmetic or access control logic.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔬</div><h4>Static Analysis</h4><p>Run Slither (Trail of Bits) and Mythril on every PR. They catch common patterns like reentrancy, integer issues, and access control gaps automatically.</p></div>
+    <div class="concept-card"><div class="concept-icon">📋</div><h4>Professional Audit</h4><p>Any contract holding more than a few thousand dollars of value needs an external audit. Budget 6–12 weeks and $20k–$200k depending on complexity.</p></div>
+    <div class="concept-card"><div class="concept-icon">🐛</div><h4>Bug Bounty</h4><p>Immunefi hosts bug bounties for smart contracts. A public bounty signals commitment to security and incentivizes white-hat researchers to find issues before attackers do.</p></div>
+    <div class="concept-card"><div class="concept-icon">⏸️</div><h4>Circuit Breakers</h4><p>Implement pause mechanisms (OpenZeppelin <code>Pausable</code>) that let the team halt the contract if an exploit is detected. Accept the centralization cost for the safety guarantee.</p></div>
+    <div class="concept-card"><div class="concept-icon">📦</div><h4>Staged Rollout</h4><p>Deploy with low TVL caps first. Raise limits after 30–90 days of incident-free operation. Announce limits publicly so the community can track them.</p></div>
+  </div>
+  <div class="warn"><div class="warn-label">Audits are not guarantees</div>Every major exploit in DeFi history happened to a contract that had been audited. Audits reduce risk — they do not eliminate it. Defence in depth: tests, static analysis, audit, bug bounty, circuit breakers, and insurance (Nexus Mutual, InsurAce) are all layers of the same strategy.</div>
+</div>
+
+<!-- ─── 08 TOKENS ─── -->
+<div class="section" id="tokens">
+  <div class="section-label">08 &mdash; Token Standards</div>
+  <h2>Token Standards</h2>
+  <p class="lead">The ERC (Ethereum Request for Comment) process defines shared interfaces for tokens. Standardization is what allows a token to be listed on any exchange, stored in any wallet, and integrated into any DeFi protocol without custom code on every platform.</p>
+
+  <h3>ERC-20 — Fungible Tokens</h3>
+  <p>The foundation of DeFi. An ERC-20 token is interchangeable — one USDC is identical to any other USDC. The standard defines a minimal interface: <code>transfer</code>, <code>approve</code>, <code>transferFrom</code>, <code>balanceOf</code>, and <code>allowance</code>. Everything built on top of this — stablecoins, governance tokens, LP tokens — follows the same interface.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Solidity — Minimal ERC-20 (OpenZeppelin)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// SPDX-License-Identifier: MIT</span>
+<span class="kw">pragma solidity</span> ^<span class="nm">0.8.24</span>;
+
+<span class="kw">import</span> <span class="st">"@openzeppelin/contracts/token/ERC20/ERC20.sol"</span>;
+<span class="kw">import</span> <span class="st">"@openzeppelin/contracts/access/Ownable.sol"</span>;
+
+<span class="kw">contract</span> <span class="ty">GovernanceToken</span> <span class="kw">is</span> <span class="ty">ERC20</span>, <span class="ty">Ownable</span> {
+    <span class="ty">uint256</span> <span class="kw">public constant</span> MAX_SUPPLY = <span class="nm">100_000_000</span> * <span class="nm">10</span> ** <span class="nm">18</span>;
+
+    <span class="kw">constructor</span>(<span class="ty">address</span> initialOwner)
+        <span class="ty">ERC20</span>(<span class="st">"MyDAO Token"</span>, <span class="st">"MDT"</span>)
+        <span class="ty">Ownable</span>(initialOwner)
+    {
+        <span class="cm">// Mint 10% to treasury at deploy</span>
+        _<span class="fn">mint</span>(initialOwner, MAX_SUPPLY / <span class="nm">10</span>);
+    }
+
+    <span class="cm">// Controlled mint — rest distributed via rewards/vesting</span>
+    <span class="kw">function</span> <span class="fn">mint</span>(<span class="ty">address</span> to, <span class="ty">uint256</span> amount) <span class="kw">external onlyOwner</span> {
+        <span class="kw">require</span>(<span class="fn">totalSupply</span>() + amount &lt;= MAX_SUPPLY, <span class="st">"Cap exceeded"</span>);
+        _<span class="fn">mint</span>(to, amount);
+    }
+}</code></pre>
+  </div>
+
+  <h3>ERC-721 — Non-Fungible Tokens</h3>
+  <p>NFTs represent unique assets. Each token has a unique ID within the contract — token #1 is not interchangeable with token #2, even within the same collection. The standard defines ownership tracking, transfer mechanics, and the <code>tokenURI</code> function that points to the metadata (image, traits, description) stored off-chain on IPFS or Arweave.</p>
+
+  <h3>ERC-1155 — Multi-Token Standard</h3>
+  <p>A more flexible standard that supports fungible, non-fungible, and semi-fungible tokens in a single contract. A game items contract might have: 1,000,000 fungible gold coins (token ID 1), 500 semi-fungible "rare sword" tokens (token ID 2), and one unique legendary weapon (token ID 3) — all in one contract. Batch transfers reduce gas costs dramatically.</p>
+
+  <table>
+    <thead><tr><th>Standard</th><th>Type</th><th>Use Cases</th><th>Key Characteristic</th></tr></thead>
+    <tbody>
+      <tr><td><strong>ERC-20</strong></td><td>Fungible</td><td>Stablecoins, governance tokens, DeFi LP tokens, wrapped assets</td><td>All tokens identical; 18 decimal places by convention</td></tr>
+      <tr><td><strong>ERC-721</strong></td><td>Non-fungible</td><td>NFT art, collectibles, domain names, event tickets, real estate deeds</td><td>Each token has a unique ID; <code>tokenURI</code> points to metadata</td></tr>
+      <tr><td><strong>ERC-1155</strong></td><td>Multi-type</td><td>Game items, loyalty points, semi-fungible tickets, batch airdrops</td><td>One contract, many token types; gas-efficient batch operations</td></tr>
+      <tr><td><strong>ERC-4626</strong></td><td>Tokenized vault</td><td>Yield-bearing tokens — deposit assets, receive shares representing your claim</td><td>Standard interface for vaults; DeFi composability</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ─── 09 DAPPS ─── -->
+<div class="section" id="dapps">
+  <div class="section-label">09 &mdash; Frontend + Chain</div>
+  <h2>DApp Architecture</h2>
+  <p class="lead">A decentralized application replaces the backend and database with smart contracts and the blockchain. The frontend looks familiar — HTML, React, TypeScript — but the data layer is fundamentally different. State lives on-chain. Authentication is wallet-based. Every write is a transaction.</p>
+
+  <h3>DApp vs Traditional App</h3>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>🖥️ Traditional Web App</h4>
+      <ul>
+        <li>Frontend → REST API → PostgreSQL</li>
+        <li>Auth via email/password or OAuth</li>
+        <li>Server controls all state</li>
+        <li>Data is private by default</li>
+        <li>Company can change logic or shut down</li>
+        <li>Instant reads, instant writes</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>⛓️ Decentralized App</h4>
+      <ul>
+        <li>Frontend → Wallet → Smart Contract → Blockchain</li>
+        <li>Auth via wallet signature (Sign-In With Ethereum)</li>
+        <li>Contract controls state; enforced by network</li>
+        <li>All state is public by default</li>
+        <li>Immutable logic (unless upgradeable proxy)</li>
+        <li>Reads are fast; writes take 1–30 seconds, cost gas</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Web3 Frontend Stack</h3>
+  <div class="arch-box">
+    <span class="hl">React / Next.js</span> <span class="dim">— UI layer (familiar)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Wagmi v2 + Viem</span> <span class="dim">— React hooks for wallet and contract interaction</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  useAccount, useBalance, useWriteContract, useWaitForTransaction</span><br/>
+    <span class="hl">RainbowKit / ConnectKit</span> <span class="dim">— wallet connection UI (MetaMask, Coinbase, WalletConnect)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Viem</span> <span class="dim">— TypeScript library: reads, writes, ABIs, encoding</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Alchemy / Infura / public RPC</span> <span class="dim">— node provider (JSON-RPC endpoint)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Ethereum / L2</span>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Wagmi v2: Read + Write Contract</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> useReadContract, useWriteContract, useWaitForTransactionReceipt <span class="pu">}</span> <span class="kw">from</span> <span class="st">'wagmi'</span>
+<span class="kw">import</span> <span class="pu">{</span> parseEther <span class="pu">}</span> <span class="kw">from</span> <span class="st">'viem'</span>
+<span class="kw">import</span> <span class="pu">{</span> vaultAbi, VAULT_ADDRESS <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./contracts'</span>
+
+<span class="kw">export function</span> <span class="fn">VaultInterface</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="cm">// Read — free, no wallet needed, returns cached data</span>
+  <span class="kw">const</span> <span class="pu">{</span> data: balance <span class="pu">}</span> = <span class="fn">useReadContract</span><span class="pu">({</span>
+    address: VAULT_ADDRESS,
+    abi: vaultAbi,
+    functionName: <span class="st">'balanceOf'</span>,
+    args: [userAddress],
+  <span class="pu">})</span>
+
+  <span class="cm">// Write — requires wallet signature, costs gas</span>
+  <span class="kw">const</span> <span class="pu">{</span> writeContract, data: txHash <span class="pu">}</span> = <span class="fn">useWriteContract</span><span class="pu">()</span>
+
+  <span class="cm">// Wait for transaction to be mined</span>
+  <span class="kw">const</span> <span class="pu">{</span> isLoading: isConfirming, isSuccess <span class="pu">}</span> = <span class="fn">useWaitForTransactionReceipt</span><span class="pu">({</span>
+    hash: txHash
+  <span class="pu">})</span>
+
+  <span class="kw">const</span> <span class="fn">handleDeposit</span> = <span class="pu">()</span> =&gt; <span class="pu">{</span>
+    <span class="fn">writeContract</span><span class="pu">({</span>
+      address: VAULT_ADDRESS,
+      abi: vaultAbi,
+      functionName: <span class="st">'deposit'</span>,
+      value: <span class="fn">parseEther</span><span class="pu">(</span><span class="st">'0.1'</span><span class="pu">),</span>  <span class="cm">// send 0.1 ETH with the call</span>
+    <span class="pu">})</span>
+  <span class="pu">}</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="kw">&lt;div&gt;</span>
+      <span class="kw">&lt;p&gt;</span>Balance: <span class="pu">{</span>balance?.toString()<span class="pu">}</span> wei<span class="kw">&lt;/p&gt;</span>
+      <span class="kw">&lt;button</span> <span class="at">onClick</span>=<span class="pu">{</span>handleDeposit<span class="pu">}</span> <span class="at">disabled</span>=<span class="pu">{</span>isConfirming<span class="pu">}&gt;</span>
+        <span class="pu">{</span>isConfirming ? <span class="st">'Confirming...'</span> : <span class="st">'Deposit 0.1 ETH'</span><span class="pu">}</span>
+      <span class="kw">&lt;/button&gt;</span>
+      <span class="pu">{</span>isSuccess &amp;&amp; <span class="kw">&lt;p&gt;</span>Deposit confirmed!<span class="kw">&lt;/p&gt;</span><span class="pu">}</span>
+    <span class="kw">&lt;/div&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>The Transaction Lifecycle UX Problem</h3>
+  <p>One of the biggest DApp UX challenges: blockchain writes are asynchronous and visible to the whole network. The user clicks "Submit", their wallet prompts for approval, the transaction enters the mempool, gets picked up by a validator, gets included in a block, and finally gets confirmed after 1–30 seconds. Good DApp UX must communicate each of these states clearly.</p>
+  <div class="info"><div class="info-label">Sign-In With Ethereum (EIP-4361)</div>SIWE is the Web3 equivalent of OAuth. The user signs a structured message with their wallet (no gas cost, no on-chain transaction). Your server verifies the signature, confirming the user controls that Ethereum address. This is how wallet-based authentication works in production DApps.</div>
+</div>
+
+<!-- ─── 10 INFRA ─── -->
+<div class="section" id="infra">
+  <div class="section-label">10 &mdash; Web3 Infrastructure</div>
+  <h2>Web3 Infrastructure</h2>
+  <p class="lead">Smart contracts are only part of the stack. Production DApps also need node access, event indexing, decentralized file storage, and a way to bring real-world data on-chain. Each of these is a solved problem with specialized tools.</p>
+
+  <h3>Node Providers</h3>
+  <p>Your DApp talks to the blockchain via a JSON-RPC node. Running your own full Ethereum node requires ~2TB of disk, significant bandwidth, and operational overhead. Most teams use managed node providers — the "AWS of Web3".</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🔮</div><h4>Alchemy</h4><p>Most popular. Enhanced APIs beyond standard RPC: NFT API, token API, trace API. Generous free tier. Used by OpenSea, Aave, OpenZeppelin.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌟</div><h4>Infura</h4><p>ConsenSys product. Oldest provider. Broad multi-chain support. IPFS gateway included. Standard choice for teams already in the ConsenSys ecosystem.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔵</div><h4>QuickNode</h4><p>Fastest global infrastructure. Good for latency-sensitive apps. Add-on marketplace for additional data services. Multi-chain with broad L2 support.</p></div>
+    <div class="concept-card"><div class="concept-icon">⚡</div><h4>Ankr</h4><p>Decentralized node network. Community-run nodes. Good for teams that prioritize decentralization in their infrastructure stack. Lower cost at scale.</p></div>
+  </div>
+
+  <h3>Indexing with The Graph</h3>
+  <p>Blockchain data is append-only and unstructured — you cannot run <code>SELECT * FROM transfers WHERE to = ?</code>. Querying historical events directly from a node is slow and expensive. The Graph solves this by indexing contract events into a queryable GraphQL API via "subgraphs".</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">GraphQL — Query a Uniswap Subgraph</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm"># Query the 5 largest ETH/USDC swaps in the last 24 hours</span>
+<span class="pu">{</span>
+  <span class="fn">swaps</span><span class="pu">(</span>
+    first: <span class="nm">5</span>
+    orderBy: amountUSD
+    orderDirection: desc
+    where: <span class="pu">{</span>
+      pool: <span class="st">"0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640"</span>
+      timestamp_gt: <span class="nm">1719187200</span>
+    <span class="pu">}</span>
+  <span class="pu">)</span> <span class="pu">{</span>
+    id
+    amountUSD
+    amount0   <span class="cm"># ETH amount</span>
+    amount1   <span class="cm"># USDC amount</span>
+    sender
+    timestamp
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>Decentralized Storage</h3>
+  <p>Storing large files on-chain costs thousands of dollars per megabyte. NFT metadata, images, frontend assets, and contract ABIs are stored off-chain using content-addressed decentralized storage.</p>
+  <table>
+    <thead><tr><th>Protocol</th><th>Model</th><th>Persistence</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td><strong>IPFS</strong></td><td>Content-addressed P2P network. Files accessed by hash, not URL.</td><td>Requires pinning service (Pinata, nft.storage) — files unpinned eventually disappear</td><td>NFT metadata, DApp frontends, general file storage</td></tr>
+      <tr><td><strong>Arweave</strong></td><td>Pay once, store permanently. Cryptoeconomic endowment covers future storage.</td><td>Permanent by design</td><td>NFT assets needing true permanence, historical records</td></tr>
+      <tr><td><strong>Filecoin</strong></td><td>Storage market — clients pay miners to store data with cryptographic proofs</td><td>Storage deals have a duration; must be renewed</td><td>Large datasets, enterprise data, content distribution</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Oracles — Bridging On-Chain and Off-Chain</h3>
+  <p>Smart contracts are sandboxed — they cannot make HTTP requests or access external data. An oracle is a service that delivers verified real-world data on-chain. The most critical use case in DeFi is price feeds: a lending protocol must know the current ETH/USD price to decide if a position is undercollateralized.</p>
+  <div class="arch-box">
+    <span class="hl">Off-Chain Data Sources</span> <span class="dim">(CEX prices, API endpoints, sports results)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  aggregated and signed by decentralized oracle network</span><br/>
+    <span class="hl">Chainlink DON</span> <span class="dim">(Decentralized Oracle Network — multiple independent nodes)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  median reported on-chain every heartbeat or on deviation</span><br/>
+    <span class="hl">Price Feed Contract</span> <span class="dim">e.g. ETH/USD: 0x5f4eC3D...</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  smart contract reads latestRoundData()</span><br/>
+    <span class="hl">Your Contract</span> <span class="dim">uses the price for collateral checks, liquidations, etc.</span>
+  </div>
+  <div class="tip"><div class="tip-label">Always validate oracle data</div>Check <code>updatedAt</code> — if the price feed hasn't updated in 1+ hours, something is wrong. Check <code>answeredInRound &gt;= roundId</code>. Set a staleness threshold and revert if the price is too old. A single line of oracle validation has prevented millions in losses.</div>
+</div>
+
+<!-- ─── 11 DEFI & DAOs ─── -->
+<div class="section" id="defi">
+  <div class="section-label">11 &mdash; Decentralized Finance</div>
+  <h2>DeFi &amp; DAOs</h2>
+  <p class="lead">DeFi recreates financial primitives — lending, borrowing, trading, yield generation — using smart contracts instead of banks. DAOs govern these protocols and their treasuries using on-chain voting. Together they form a new financial system that is accessible to anyone with a wallet.</p>
+
+  <h3>Automated Market Makers (AMMs)</h3>
+  <p>Traditional exchanges use order books: buyers and sellers post limit orders that match when prices cross. AMMs replace this with a mathematical formula and liquidity pools. Uniswap v2 popularized the constant product formula: the product of the two token reserves must always remain constant after any trade (ignoring fees).</p>
+  <div class="arch-box">
+    <span class="hl">Liquidity Pool</span> <span class="dim">: ETH reserve × USDC reserve = k (constant)</span><br/><br/>
+    <span class="dim">Pool: 100 ETH × 200,000 USDC = 20,000,000 (k)</span><br/><br/>
+    <span class="hl">Trader swaps 1 ETH for USDC:</span><br/>
+    <span class="dim">&nbsp;&nbsp;New ETH reserve = 101</span><br/>
+    <span class="dim">&nbsp;&nbsp;New USDC reserve = 20,000,000 / 101 = 198,020 USDC</span><br/>
+    <span class="dim">&nbsp;&nbsp;Trader receives: 200,000 - 198,020 = 1,980 USDC (~$1,980/ETH)</span><br/><br/>
+    <span class="dim">Liquidity providers earn 0.3% fee on every trade</span><br/>
+    <span class="dim">Price slippage increases with trade size relative to pool size</span>
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🔄</div><h4>DEX (Uniswap, Curve)</h4><p>Swap tokens permissionlessly. No KYC, no account, no counterparty. Any ERC-20 token pair can have a pool. Curve specializes in stablecoin swaps with minimal slippage.</p></div>
+    <div class="concept-card"><div class="concept-icon">🏦</div><h4>Lending (Aave, Compound)</h4><p>Deposit collateral, borrow other assets. Rates are algorithmic — determined by utilization ratio of the pool. Positions are liquidated when collateral value falls below the liquidation threshold.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌾</div><h4>Yield Farming</h4><p>Provide liquidity or stake tokens in return for protocol token rewards. APY calculations must account for token price volatility and impermanent loss — often ignored in headline numbers.</p></div>
+    <div class="concept-card"><div class="concept-icon">⚡</div><h4>Flash Loans</h4><p>Borrow any amount with zero collateral in a single transaction — as long as you repay it before the transaction ends. Used for arbitrage, liquidations, and collateral swaps. Aave charges 0.09%.</p></div>
+    <div class="concept-card"><div class="concept-icon">💵</div><h4>Stablecoins</h4><p>USDC and USDT are fiat-backed (centralized). DAI is crypto-collateralized (decentralized, maintained by MakerDAO governance). UST-style algorithmic stablecoins have repeatedly failed — treat with extreme skepticism.</p></div>
+    <div class="concept-card"><div class="concept-icon">🤖</div><h4>MEV (Max Extractable Value)</h4><p>Validators can reorder, insert, or censor transactions within a block. Bots exploit this for arbitrage and liquidations. Flashbots built a private orderflow system (MEV-Boost) to make this more transparent and distributed.</p></div>
+  </div>
+
+  <h3>DAOs — Decentralized Autonomous Organizations</h3>
+  <p>A DAO is an organization whose rules are encoded in smart contracts and whose decisions are made by token holder votes. Instead of a board of directors approving a budget, token holders vote on proposals, and the outcome is automatically executed on-chain.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Solidity — Simple DAO Governance (OpenZeppelin Governor)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="st">"@openzeppelin/contracts/governance/Governor.sol"</span>;
+<span class="kw">import</span> <span class="st">"@openzeppelin/contracts/governance/extensions/GovernorVotes.sol"</span>;
+<span class="kw">import</span> <span class="st">"@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol"</span>;
+
+<span class="kw">contract</span> <span class="ty">MyDAO</span> <span class="kw">is</span> <span class="ty">Governor</span>, <span class="ty">GovernorVotes</span>, <span class="ty">GovernorTimelockControl</span> {
+    <span class="kw">constructor</span>(<span class="ty">IVotes</span> _token, <span class="ty">TimelockController</span> _timelock)
+        <span class="ty">Governor</span>(<span class="st">"MyDAO"</span>)
+        <span class="ty">GovernorVotes</span>(_token)
+        <span class="ty">GovernorTimelockControl</span>(_timelock)
+    {}
+
+    <span class="cm">// 7200 blocks (~24 hrs on Ethereum) before voting starts</span>
+    <span class="kw">function</span> <span class="fn">votingDelay</span>() <span class="kw">public pure override returns</span> (<span class="ty">uint256</span>) <span class="pu">{</span>
+        <span class="kw">return</span> <span class="nm">7200</span>;
+    <span class="pu">}</span>
+    <span class="cm">// 50400 blocks (~7 days) voting period</span>
+    <span class="kw">function</span> <span class="fn">votingPeriod</span>() <span class="kw">public pure override returns</span> (<span class="ty">uint256</span>) <span class="pu">{</span>
+        <span class="kw">return</span> <span class="nm">50400</span>;
+    <span class="pu">}</span>
+    <span class="cm">// Need 1% of total supply to create a proposal</span>
+    <span class="kw">function</span> <span class="fn">proposalThreshold</span>() <span class="kw">public pure override returns</span> (<span class="ty">uint256</span>) <span class="pu">{</span>
+        <span class="kw">return</span> <span class="nm">1_000_000</span> * <span class="nm">10</span> ** <span class="nm">18</span>;
+    <span class="pu">}</span>
+}
+
+<span class="cm">// Governance flow:</span>
+<span class="cm">// 1. Proposer calls propose() — queued after votingDelay</span>
+<span class="cm">// 2. Token holders call castVote(proposalId, support) during votingPeriod</span>
+<span class="cm">// 3. If quorum reached and majority For: execute() — runs after timelock delay</span>
+<span class="cm">// 4. Timelock gives community time to exit if they disagree with outcome</span></code></pre>
+  </div>
+  <div class="info"><div class="info-label">Voter Apathy is the Real Problem</div>Most DAO governance suffers from extremely low participation. Token holders with small stakes have no incentive to research proposals and vote. Large token holders (VCs, insiders) disproportionately control outcomes. Delegated voting (letting someone else vote on your behalf) and quadratic voting are active areas of governance research trying to solve this.</div>
+</div>
+
+<!-- ─── 12 LAYER 2 ─── -->
+<div class="section" id="layer2">
+  <div class="section-label">12 &mdash; Scalability</div>
+  <h2>Layer 2 &amp; Scaling</h2>
+  <p class="lead">Ethereum mainnet processes ~15–30 transactions per second. Visa processes ~24,000. The blockchain scalability trilemma explains why increasing throughput on Layer 1 always costs either security or decentralization. Layer 2 networks solve this by moving execution off-chain while inheriting Ethereum's security.</p>
+
+  <h3>The Blockchain Trilemma</h3>
+  <div class="arch-box">
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Security</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/\</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;\</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Decentralization ────── Scalability</span><br/><br/>
+    <span class="hl">Ethereum L1:</span> <span class="dim">Security + Decentralization (slow, expensive)</span><br/>
+    <span class="hl">Solana:</span>      <span class="dim">Security + Scalability (fewer validators, higher HW reqs)</span><br/>
+    <span class="hl">Old PoA:</span>     <span class="dim">Scalability + Security (centralized — known validators)</span><br/>
+    <span class="hl">L2 Rollups:</span> <span class="dim">Sidestep the trilemma — inherit L1 security, scale off-chain</span>
+  </div>
+
+  <h3>Optimistic Rollups</h3>
+  <p>Transactions are executed off-chain in batches. The batch result is posted to Ethereum L1 with an "optimistic" assumption that it's valid. Anyone can submit a fraud proof within a 7-day challenge window if they detect an invalid state transition. If no fraud proof is submitted, the batch is finalized.</p>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>✅ Optimistic Rollup Strengths</h4>
+      <ul>
+        <li>Full EVM compatibility — most Ethereum contracts deploy unchanged</li>
+        <li>Lower computational overhead than ZK proofs</li>
+        <li>Arbitrum and Optimism have billions in TVL and proven track record</li>
+        <li>10–100x cheaper than Ethereum L1 transactions</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>⚠️ Optimistic Rollup Weaknesses</h4>
+      <ul>
+        <li>7-day withdrawal delay to Ethereum mainnet (challenge window)</li>
+        <li>Security depends on at least one honest verifier submitting fraud proofs</li>
+        <li>Sequencer centralization risk — single entity orders transactions</li>
+        <li>Fraud proof systems (not just assertions) only recently production-ready</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>ZK Rollups</h3>
+  <p>Instead of optimistic assumptions, ZK rollups generate a cryptographic validity proof (a ZK-SNARK or ZK-STARK) for every batch of transactions. The proof mathematically guarantees the batch is valid — no challenge window required. Withdrawals to L1 are fast (minutes). The trade-off: generating ZK proofs is computationally intensive, and full EVM compatibility required years of engineering (zkEVM).</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🔷</div><h4>zkSync Era</h4><p>zkEVM with native account abstraction. Supports Solidity and Vyper. Strong UX focus — gasless transactions via paymasters. Largest zkEVM by TVL.</p></div>
+    <div class="concept-card"><div class="concept-icon">🟣</div><h4>Polygon zkEVM</h4><p>Type 2 zkEVM — high EVM equivalence. Most existing tooling works. Backed by Polygon's enterprise relationships and brand recognition.</p></div>
+    <div class="concept-card"><div class="concept-icon">⚫</div><h4>StarkNet</h4><h4></h4><p>Uses STARKs (no trusted setup). Cairo language (not Solidity). Most technically differentiated zkRollup. Very active research team (StarkWare).</p></div>
+    <div class="concept-card"><div class="concept-icon">🔵</div><h4>Linea</h4><p>ConsenSys / Infura-backed zkEVM. Type 2 equivalence target. Tightly integrated with MetaMask for seamless onboarding.</p></div>
+  </div>
+
+  <table>
+    <thead><tr><th>Property</th><th>Optimistic Rollup</th><th>ZK Rollup</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Withdrawal time</strong></td><td>~7 days (challenge window)</td><td>Minutes (proof verification)</td></tr>
+      <tr><td><strong>Security model</strong></td><td>Fraud proofs — 1 honest verifier needed</td><td>Validity proofs — mathematically guaranteed</td></tr>
+      <tr><td><strong>EVM compatibility</strong></td><td>Near-perfect (Arbitrum Stylus, OP Mainnet)</td><td>Improving — zkEVM is still maturing</td></tr>
+      <tr><td><strong>Proving cost</strong></td><td>Low (only if fraud)</td><td>High — proof generation is compute-heavy</td></tr>
+      <tr><td><strong>Maturity</strong></td><td>Production for 3+ years, high TVL</td><td>Rapidly maturing; significant R&amp;D investment</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ─── 13 ENTERPRISE ─── -->
+<div class="section" id="enterprise">
+  <div class="section-label">13 &mdash; Enterprise Use Cases</div>
+  <h2>Enterprise Blockchain</h2>
+  <p class="lead">Not every blockchain use case requires public decentralization. Enterprises often need the auditability and tamper-resistance of blockchain without the performance constraints, public transparency, or token economics of public networks. Private and consortium blockchains serve this need.</p>
+
+  <h3>Private vs Public Blockchain</h3>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>🌐 Public Blockchain</h4>
+      <ul>
+        <li>Anyone can read all state, run a node, submit transactions</li>
+        <li>Permissionless — no identity required</li>
+        <li>Security through massive decentralization</li>
+        <li>Slow and expensive (gas fees)</li>
+        <li>Suitable: DeFi, NFTs, DAOs, open protocols</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>🏢 Private / Consortium Blockchain</h4>
+      <ul>
+        <li>Known, vetted participants only</li>
+        <li>Permissioned — identity verified before joining</li>
+        <li>Fast (PoA or PBFT — no mining/staking competition)</li>
+        <li>Data confidentiality between participants</li>
+        <li>Suitable: supply chains, trade finance, healthcare</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="domain-grid">
+    <div class="domain-card">
+      <div class="domain-name">🧵 Supply Chain</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">IBM Food Trust</span><span class="dtag">Hyperledger</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Track provenance of goods from farm to shelf. Immutable audit trail means a contaminated product recall can be narrowed from weeks to seconds. Walmart, Nestle, and Maersk use blockchain-based provenance tracking.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🆔 Digital Identity</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">W3C DID</span><span class="dtag">Verifiable Credentials</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Self-sovereign identity: users control their own credentials. Governments issue verifiable credentials (passport, licence) as signed on-chain attestations without needing a centralized identity provider.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">💊 Healthcare</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Data Sharing</span><span class="dtag">Clinical Trials</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Tamper-proof clinical trial data. Interoperable patient records shared between providers without a central custodian. Drug supply chain authentication to prevent counterfeiting.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">💰 Trade Finance</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Letters of Credit</span><span class="dtag">R3 Corda</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Letters of credit and trade documents on blockchain reduce processing time from days to hours. Multiple banks on the same network verify documents simultaneously instead of sequentially.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🎮 Gaming</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">True Ownership</span><span class="dtag">Interoperability</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">In-game items as NFTs enable true player ownership — items persist even if the game shuts down and can be traded on secondary markets. Cross-game item portability is the long-term promise.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🏘️ Real Estate</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Tokenization</span><span class="dtag">Fractional</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Real estate tokenization enables fractional ownership, faster settlement (days vs months), and global investor access to previously illiquid assets. On-chain title records reduce fraud and improve transparency.</p>
+    </div>
+  </div>
+
+  <h3>Hyperledger Fabric</h3>
+  <p>The dominant enterprise blockchain framework. Modular architecture: pluggable consensus, membership service provider for identity, private channels between subsets of participants, and chaincode (smart contracts in Go, Java, or JavaScript). Used by IBM, Walmart, and hundreds of enterprise consortia globally.</p>
+  <div class="info"><div class="info-label">When NOT to Use Blockchain</div>A blockchain is the wrong tool when: you trust a single entity to maintain accurate records, you need fast reads and writes without settlement delays, you don't need an immutable audit trail, participants don't need to transact without trusting each other. A database with proper access controls handles most enterprise data problems better, faster, and cheaper.</div>
+</div>
+
+<!-- ─── 14 ROADMAP ─── -->
+<div class="section" id="roadmap">
+  <div class="section-label">14 &mdash; The Learning Path</div>
+  <h2>Web3 Developer Roadmap</h2>
+  <p class="lead">Web3 development sits at the intersection of distributed systems, cryptography, economics, and software engineering. The mental models you need are genuinely different from traditional backend development — and the tooling is evolving fast. This is the path from curious to production-ready.</p>
+
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#dbeafe;color:#1d4ed8">Beginner</div>
+    <div class="roadmap-content">
+      <strong>Foundations first:</strong> understand how blockchains work — blocks, hashing, public key cryptography, wallets, and transactions — before writing a single line of Solidity. Use a hardware wallet or MetaMask on testnet. Send transactions, read contract state on Etherscan. Install Foundry or Hardhat and compile a simple contract. Understand what gas is and why it exists. Read the Bitcoin whitepaper (9 pages) and the Ethereum yellow paper introduction.
+    </div>
+  </div>
+
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#dcfce7;color:#15803d">Intermediate</div>
+    <div class="roadmap-content">
+      <strong>Smart contract development:</strong> Solidity fundamentals — variables, functions, modifiers, events, structs, mappings. OpenZeppelin contracts — ERC-20, ERC-721, Ownable, AccessControl. Testing with Foundry (forge test) including fuzz tests. Deploy to Sepolia testnet, verify on Etherscan. Connect a React frontend using Wagmi + Viem. Build and deploy: a simple ERC-20 token, an NFT collection, a basic vault contract. Learn the Checks-Effects-Interactions pattern until it's instinct.
+    </div>
+  </div>
+
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#fef3c7;color:#b45309">Advanced</div>
+    <div class="roadmap-content">
+      <strong>Security and DeFi internals:</strong> study every major exploit (The DAO, Poly Network, Ronin Bridge, Nomad) and understand exactly what failed. Run Slither and Mythril on your contracts. Implement a proxy upgrade pattern. Build a simple AMM and understand impermanent loss mathematically. Write a subgraph for your contract using The Graph. Understand flash loans, MEV, and frontrunning — build a flashloan arbitrage bot on a mainnet fork. Learn Foundry's mainnet forking for integration tests against real DeFi protocols.
+    </div>
+  </div>
+
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#ede9fe;color:#6d28d9">Senior</div>
+    <div class="roadmap-content">
+      <strong>Protocol design and architecture:</strong> token economics (tokenomics) design — supply schedules, incentive alignment, governance attack vectors. Cross-chain systems — bridges, message passing protocols (LayerZero, Wormhole), their security models and failure modes. ZK proof systems — understand SNARKs vs STARKs at a conceptual level, when circuits are appropriate. Formal verification with Certora Prover. Contribute to an open-source protocol audit. Design a system that is decentralized, economically sustainable, and resistant to governance capture.
+    </div>
+  </div>
+
+  <h3>Essential Tools by Stage</h3>
+  <table>
+    <thead><tr><th>Category</th><th>Tool</th><th>Purpose</th><th>When to Use</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Development</strong></td><td>Foundry (forge, cast, anvil)</td><td>Compile, test, deploy, local node</td><td>Default choice for new projects in 2026</td></tr>
+      <tr><td><strong>Development</strong></td><td>Hardhat</td><td>JS/TS-first framework, rich plugin ecosystem</td><td>Teams with strong JS background; existing Hardhat projects</td></tr>
+      <tr><td><strong>Libraries</strong></td><td>OpenZeppelin Contracts</td><td>Audited token standards, access control, utilities</td><td>Always — never rewrite what OZ provides</td></tr>
+      <tr><td><strong>Frontend</strong></td><td>Wagmi v2 + Viem</td><td>React hooks for wallet/contract interaction</td><td>Any React DApp</td></tr>
+      <tr><td><strong>Wallet UI</strong></td><td>RainbowKit / ConnectKit</td><td>Wallet connection modal (MetaMask, Coinbase, WC)</td><td>Any DApp needing wallet connection UI</td></tr>
+      <tr><td><strong>Node Access</strong></td><td>Alchemy / Infura</td><td>JSON-RPC endpoint to Ethereum + L2s</td><td>Production — don't run your own node initially</td></tr>
+      <tr><td><strong>Indexing</strong></td><td>The Graph</td><td>GraphQL API over contract events</td><td>Any DApp with historical data needs</td></tr>
+      <tr><td><strong>Security</strong></td><td>Slither + Mythril</td><td>Static analysis — catches common vulnerability patterns</td><td>Every PR to a contract repo</td></tr>
+      <tr><td><strong>Storage</strong></td><td>IPFS + Pinata</td><td>Off-chain NFT metadata and assets</td><td>NFT projects, DApp frontends</td></tr>
+      <tr><td><strong>Multi-sig</strong></td><td>Gnosis Safe</td><td>Multi-signature wallet for protocol admin keys</td><td>Any protocol treasury or admin key</td></tr>
+    </tbody>
+  </table>
+
+  <div class="pullquote">"The engineers who excel in Web3 are not necessarily those who know the most Solidity. They are the ones who deeply understand trust, incentives, security, and the trade-offs that arise when building systems that operate without central control."</div>
+
+  <h3>The Evolution of Web3</h3>
+  <div class="arch-box">
+    <span class="hl">Bitcoin (2009)</span>           <span class="dim">→ Proof that trustless digital money is possible</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Ethereum (2015)</span>          <span class="dim">→ Programmable blockchain — smart contracts and DApps</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">DeFi Summer (2020)</span>       <span class="dim">→ Lending, DEXes, yield farming — open financial system</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">NFT Boom (2021)</span>          <span class="dim">→ Digital ownership, creator monetization, cultural shift</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">The Merge (2022)</span>         <span class="dim">→ Ethereum moves to PoS — energy use drops 99.95%</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">L2 Scaling (2023–24)</span>     <span class="dim">→ Arbitrum, Optimism, zkSync go mainstream — $0.001 txs</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Institutional Adoption (2024–25)</span>  <span class="dim">→ Bitcoin/Ethereum ETFs, enterprise L2s, RWA tokenization</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Now (2026)</span>               <span class="dim">→ Infrastructure mature; focus shifts to UX, regulation, real-world assets</span>
+  </div>
+
+  <h3>Quick Reference: Web3 Stack by Problem</h3>
+  <div class="domain-grid">
+    <div class="domain-card">
+      <div class="domain-name">💱 DeFi Protocol</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Solidity</span><span class="dtag">Foundry</span><span class="dtag">Chainlink</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Foundry for testing + fuzz, OpenZeppelin base contracts, Chainlink oracles for prices, Gnosis Safe for admin keys, Immunefi for bug bounty, Tenderly for monitoring.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🖼️ NFT Project</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">ERC-721</span><span class="dtag">IPFS</span><span class="dtag">Wagmi</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">OpenZeppelin ERC-721A (gas-optimized), metadata on IPFS via Pinata, Alchemy NFT API, RainbowKit for wallet UX, Reservoir for secondary market data.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🗳️ DAO</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Governor</span><span class="dtag">Tally</span><span class="dtag">Snapshot</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">OpenZeppelin Governor + TimelockController, Snapshot for off-chain voting (no gas), Tally or Boardroom for governance UI, Gnosis Safe for treasury management.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🎮 Web3 Game</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">ERC-1155</span><span class="dtag">L2</span><span class="dtag">Account Abstraction</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Deploy on L2 (Arbitrum or Polygon) for low fees, ERC-1155 for game items, account abstraction (ERC-4337) for gasless UX, Immutable X for game-specific scaling.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🏭 Enterprise</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Hyperledger</span><span class="dtag">Polygon CDK</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Hyperledger Fabric for private consortium, or a custom L2 via Polygon CDK / OP Stack for public-but-permissioned. Chainlink CCIP for cross-chain interoperability.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🔐 Identity</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">EIP-4361</span><span class="dtag">W3C DID</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Sign-In With Ethereum (EIP-4361) for auth, W3C DIDs for decentralized identifiers, Verifiable Credentials for attestations, Polygon ID / WorldCoin for ZK identity.</p>
+    </div>
+  </div>
+  <div class="tip"><div class="tip-label">Start on Testnet. Stay on Testnet Until You're Ready.</div>Sepolia (Ethereum), Mumbai (Polygon), and Arbitrum Sepolia are free testnets with faucets. Deploy every contract there first. Get a friend to try to break it. Then get the contract audited. Then deploy to mainnet with a low TVL cap. The cost of a bug on mainnet is always higher than the cost of more time on testnet.</div>
+</div>
+
+</div><!-- /content -->
+
+<footer>
+  <strong>DevDive</strong> &mdash; Deep dives for serious developers<br/>
+  <span style="margin-top:8px;display:block">Blockchain &amp; Web3: Smart Contracts, DApps &amp; the Decentralized Stack &middot; June 2026</span>
+</footer>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+</script>
+</body>
+</html>

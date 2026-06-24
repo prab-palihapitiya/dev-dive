@@ -540,6 +540,19 @@
       .card[data-article="rdbms"] .card-cover {
         background: linear-gradient(140deg, #0c4a6e, #0369a1 60%, #38bdf8);
       }
+      .card[data-article="rdbms"]:hover {
+        border-color: #7dd3fc;
+      }
+      .card[data-article="rdbms"] .read-link {
+        background: #e0f2fe;
+        color: #0369a1;
+      }
+      .card[data-article="rdbms"] .read-link:hover {
+        background: #bae6fd;
+      }
+      .card[data-article="blockchain"] .card-cover {
+        background: linear-gradient(140deg, #2e1065, #7c3aed 60%, #a78bfa);
+      }
       .card[data-article="systems"] .card-cover {
         background: linear-gradient(140deg, #1e293b, #475569 60%, #94a3b8);
       }
@@ -838,12 +851,12 @@
       .card[data-article="systems"] .read-link:hover {
         background: #e2e8f0;
       }
-      .card[data-article="rdbms"] .read-link {
-        background: #e0f2fe;
-        color: #0369a1;
+      .card[data-article="blockchain"] .read-link {
+        background: #ede9fe;
+        color: #7c3aed;
       }
-      .card[data-article="rdbms"] .read-link:hover {
-        background: #bae6fd;
+      .card[data-article="blockchain"] .read-link:hover {
+        background: #ddd6fe;
       }
 
       /* Hover states for individual articles */
@@ -898,8 +911,8 @@
       .card[data-article="systems"]:hover {
         border-color: #cbd5e1;
       }
-      .card[data-article="rdbms"]:hover {
-        border-color: #7dd3fc;
+      .card[data-article="blockchain"]:hover {
+        border-color: #c4b5fd;
       }
       .card-rt {
         font-size: 12px;
@@ -1268,7 +1281,7 @@
       </div>
 
       <div class="nav-right">
-        <span class="nav-count" id="article-count">18 articles</span>
+        <span class="nav-count" id="article-count">19 articles</span>
       </div>
     </nav>
 
@@ -1424,7 +1437,7 @@
         >
           <div class="cat-ov-icon" style="background: #f0fdf4">⚙️</div>
           <div class="cat-ov-name">Backend</div>
-          <div class="cat-ov-count">5 articles</div>
+          <div class="cat-ov-count">6 articles</div>
         </div>
 
         <div
@@ -1446,7 +1459,7 @@
         >
           <div class="cat-ov-icon" style="background: #fffbeb">📋</div>
           <div class="cat-ov-name">Best Practices</div>
-          <div class="cat-ov-count">5 articles</div>
+          <div class="cat-ov-count">6 articles</div>
         </div>
 
         <div class="cat-overview-card">
@@ -1464,7 +1477,7 @@
       <div class="section-title-row">
         <h2 class="section-title">Published Articles</h2>
         <span class="section-meta" id="filter-label"
-          >Showing all · 18 articles</span
+          >Showing all · 19 articles</span
         >
       </div>
 
@@ -2382,13 +2395,11 @@
           </div>
           <div class="card-body">
             <div class="card-row">
-              <span class="cat-chip" style="background: #e0f2fe; color: #0369a1"
-                >Backend</span
-              >
+              <span class="cat-chip" style="background:#e0f2fe;color:#0369a1">Backend</span>
               <span class="card-sections">13 parts</span>
             </div>
             <div class="card-title">
-              Relational Databases: Zero to Hero — MySQL, PostgreSQL & Modern Data Platforms
+              Relational Databases: Zero to Hero — MySQL, PostgreSQL &amp; Modern Data Platforms
             </div>
             <p class="card-desc">
               From why databases exist and the relational model, through ACID
@@ -2405,10 +2416,54 @@
             </div>
           </div>
           <div class="card-footer">
-            <span class="read-link"
-              >Read Article <span class="arr">→</span></span
-            >
+            <span class="read-link">Read Article <span class="arr">→</span></span>
             <span class="card-rt">~38 min read</span>
+          </div>
+        </a>
+        <!-- Blockchain & Web3 Card -->
+        <a
+          class="card"
+          data-cat="backend"
+          data-article="blockchain"
+          href="blockchain-web3-guide.html"
+        >
+          <div class="card-cover">
+            <div class="cover-bg-text">W3</div>
+            <div class="cover-badge">
+              <span class="cover-badge-lang">⛓️ Blockchain</span>
+              <span class="cover-badge-sub">Web3 Stack</span>
+            </div>
+            <div class="cover-pills">
+              <span class="cover-pill">Solidity</span>
+              <span class="cover-pill">Smart Contracts</span>
+              <span class="cover-pill">DeFi</span>
+              <span class="cover-pill">Layer 2</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-row">
+              <span class="cat-chip" style="background:#ede9fe;color:#7c3aed">Backend</span>
+              <span class="card-sections">14 parts</span>
+            </div>
+            <div class="card-title">
+              Blockchain &amp; Web3: Smart Contracts, DApps &amp; the Decentralized Stack
+            </div>
+            <p class="card-desc">
+              From the trust problem and cryptographic primitives, through Solidity,
+              smart contract security, ERC token standards, DeFi protocols, DAOs,
+              Layer 2 rollups, and enterprise blockchain — with real production patterns.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Solidity</span>
+              <span class="tag">EVM</span>
+              <span class="tag">ZK Rollups</span>
+              <span class="tag">DeFi</span>
+              <span class="tag">DAOs</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="read-link">Read Article <span class="arr">→</span></span>
+            <span class="card-rt">~42 min read</span>
           </div>
         </a>
       </div>
