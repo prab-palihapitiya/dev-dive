@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Relational Databases: Zero to Hero — DevDive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#faf8f5;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
+      --text-muted:#9a9a9a;--accent:#0369a1;--accent-light:#f0f9ff;--accent-subtle:#bae6fd;
+      --border:#e8e3db;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#f3f0eb;
+      --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
+      --info-bg:#eff6ff;--info-border:#2563eb;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Outfit",sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.8}
+    nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s}
+    .nav-back:hover{color:var(--accent)}
+    .nav-pipe{color:var(--border);font-size:18px}
+    .nav-brand{font-size:14px;font-weight:700;letter-spacing:-.3px}
+    .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:100px}
+    .nav-links{display:flex;gap:0}
+    .nav-links a{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:5px 8px;border-radius:6px;transition:all .15s;white-space:nowrap}
+    .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
+    .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+    .hero{max-width:800px;margin:0 auto;padding:64px 2rem 48px}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:24px}
+    .hero h1{font-family:"Lora",serif;font-size:clamp(30px,4.5vw,48px);font-weight:600;line-height:1.15;letter-spacing:-.5px;margin-bottom:20px}
+    .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+    .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0369a1,#0284c7);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white}
+    .meta-text{font-size:14px;color:var(--text-secondary)}
+    .meta-text strong{color:var(--text-primary)}
+    .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+    .toc-wrapper{max-width:800px;margin:0 auto;padding:0 2rem 8px}
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:48px}
+    .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+    .toc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px 20px}
+    .toc a{font-size:13.5px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
+    .toc a:hover{color:var(--accent)}
+    .toc-num{font-size:11px;color:var(--text-muted);font-weight:600;min-width:18px;flex-shrink:0}
+    .content{max-width:800px;margin:0 auto;padding:0 2rem 80px}
+    .section{margin-bottom:72px;scroll-margin-top:72px}
+    .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .section-label::after{content:"";flex:1;height:1px;background:var(--accent-subtle)}
+    h2{font-family:"Lora",serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:14px}
+    h3{font-size:18px;font-weight:600;margin:28px 0 10px}
+    p{margin-bottom:16px;color:#2d2d2d;line-height:1.8}
+    .lead{font-size:18px;color:var(--text-secondary);font-weight:300;margin-bottom:20px;line-height:1.7}
+    .code-block{background:var(--code-bg);border-radius:10px;margin:20px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+    .code-header{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+    .code-lang{font-size:11px;color:#6e7681;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+    .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:"Outfit",sans-serif;transition:all .15s}
+    .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+    pre{padding:18px 20px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.75;color:var(--code-text)}
+    pre code{background:none;padding:0;font-size:inherit;color:inherit}
+    code{font-family:"JetBrains Mono",monospace;font-size:13px;background:#e0f2fe;color:#0369a1;padding:2px 6px;border-radius:4px}
+    .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+    .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+    .pu{color:#e6edf3}.bi{color:#ffa657}.at{color:#79c0ff}
+    .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .tip-label{font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .warn-label{font-size:11px;font-weight:700;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .info-label{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14.5px}
+    th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:12px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+    td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--bg)}
+    .pullquote{font-family:"Lora",serif;font-style:italic;font-size:21px;line-height:1.55;color:var(--text-secondary);border-left:4px solid var(--accent);padding:10px 22px;margin:32px 0}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:20px 0}
+    .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 17px}
+    .concept-card h4{font-size:14px;font-weight:600;margin:0 0 5px}
+    .concept-card p{font-size:13px;color:var(--text-secondary);margin:0;line-height:1.5}
+    .concept-icon{font-size:19px;margin-bottom:8px}
+    .domain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin:24px 0}
+    .domain-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+    .domain-name{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text-primary)}
+    .domain-tags{display:flex;flex-wrap:wrap;gap:4px}
+    .dtag{font-size:11px;font-weight:600;padding:2px 7px;border-radius:100px;background:var(--accent-subtle);color:var(--accent)}
+    .arch-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin:20px 0;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:2.1;color:var(--text-secondary);overflow-x:auto}
+    .arch-box .hl{color:var(--accent);font-weight:600}
+    .arch-box .dim{color:var(--text-muted)}
+    .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;vertical-align:middle}
+    .badge-teal{background:#ccfbf1;color:#0f766e}
+    .badge-red{background:#fee2e2;color:#b91c1c}
+    .badge-amber{background:#fef3c7;color:#b45309}
+    .badge-green{background:#dcfce7;color:#15803d}
+    .badge-blue{background:#dbeafe;color:#1d4ed8}
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+    .compare-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+    .compare-card h4{font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .compare-card ul{margin:0;padding-left:18px}
+    .compare-card li{font-size:14px;color:var(--text-secondary);margin-bottom:4px;line-height:1.55}
+    .roadmap-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+    .roadmap-step{min-width:90px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:100px;text-align:center}
+    .roadmap-content{font-size:14.5px;color:var(--text-secondary);line-height:1.6}
+    footer{background:#1a1a1a;color:rgba(255,255,255,.65);text-align:center;padding:40px 2rem;font-size:14px}
+    footer strong{color:white}
+    @media(max-width:640px){.toc-grid{grid-template-columns:1fr 1fr}.nav-links{display:none}.concept-grid,.domain-grid{grid-template-columns:1fr 1fr}.compare-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="index.html">&#8592; DevDive</a>
+    <span class="nav-pipe">|</span>
+    <span class="nav-brand">Relational Databases: Zero to Hero</span>
+    <span class="nav-badge">Backend</span>
+  </div>
+  <div class="nav-links">
+    <a href="#why">Why DBs Exist</a>
+    <a href="#relational">Relational Model</a>
+    <a href="#query-opt">Query Optimization</a>
+    <a href="#transactions">Transactions</a>
+    <a href="#isolation">Isolation Levels</a>
+    <a href="#mysql">MySQL</a>
+    <a href="#postgres">PostgreSQL</a>
+    <a href="#vs">MySQL vs PG</a>
+    <a href="#nosql">NoSQL</a>
+    <a href="#distributed">Distributed SQL</a>
+    <a href="#scaling">Scaling</a>
+    <a href="#architecture">Data Architecture</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+  <span class="nav-rt">~38 min read</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; Backend</div>
+  <h1>Relational Databases:<br/>A Zero-to-Hero Guide</h1>
+  <p class="hero-sub">
+    From why databases exist and the relational model, through MySQL and PostgreSQL internals,
+    to distributed SQL and modern data platforms — with the mental models senior engineers use
+    to design production data systems.
+  </p>
+  <div class="hero-meta">
+    <div class="avatar">DB</div>
+    <div class="meta-text">
+      <strong>Database Engineering Field Guide</strong><br/>
+      13 Parts &middot; MySQL &amp; PostgreSQL &middot; Distributed SQL &mdash; June 2026
+    </div>
+  </div>
+  <hr class="hero-divider"/>
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>13 Parts &mdash; Zero to Hero</h3>
+    <div class="toc-grid">
+      <a href="#why"><span class="toc-num">01</span> Why Databases Exist</a>
+      <a href="#nosql"><span class="toc-num">08</span> NoSQL &amp; Beyond</a>
+      <a href="#relational"><span class="toc-num">02</span> Relational Fundamentals</a>
+      <a href="#distributed"><span class="toc-num">09</span> Distributed SQL</a>
+      <a href="#query-opt"><span class="toc-num">03</span> Query Optimization</a>
+      <a href="#scaling"><span class="toc-num">10</span> Scaling Strategies</a>
+      <a href="#transactions"><span class="toc-num">04</span> Transactions &amp; ACID</a>
+      <a href="#architecture"><span class="toc-num">11</span> Data Architecture</a>
+      <a href="#isolation"><span class="toc-num">05</span> Isolation Levels</a>
+      <a href="#design"><span class="toc-num">12</span> System Design Patterns</a>
+      <a href="#mysql"><span class="toc-num">06</span> MySQL Deep Dive</a>
+      <a href="#roadmap"><span class="toc-num">13</span> Learning Roadmap</a>
+      <a href="#postgres"><span class="toc-num">07</span> PostgreSQL Deep Dive</a>
+      <a href="#vs"><span class="toc-num">&#10003;</span> MySQL vs PostgreSQL</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ─── 01 WHY DATABASES EXIST ─── -->
+<div class="section" id="why">
+  <div class="section-label">01 &mdash; The Foundation</div>
+  <h2>Why Databases Exist</h2>
+  <p class="lead">Every database exists to solve one fundamental problem: application state must outlive a single process. But survival is just the beginning — concurrency, consistency, and query performance are what separate a database from a file.</p>
+  <p>Before databases, applications stored state in flat files. The problems that emerged with any non-trivial scale were predictable and severe.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">⚡</div><h4>Concurrent Writes</h4><p>Two processes write to the same file simultaneously. One overwrites the other. Data is lost with no error.</p></div>
+    <div class="concept-card"><div class="concept-icon">💥</div><h4>Data Corruption</h4><p>A crash mid-write leaves a half-written file. The application starts in an inconsistent state with no recovery path.</p></div>
+    <div class="concept-card"><div class="concept-icon">🐢</div><h4>Slow Searches</h4><p>Finding a user in a 10M-row JSON file requires reading every line. O(n) for every lookup, always.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔗</div><h4>No Relationships</h4><p>Linking an order to a user means duplicating user data in every order record, or implementing your own join logic.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔒</div><h4>No Transactions</h4><p>A bank transfer deducts money from Account A. The process crashes before crediting Account B. Money vanishes.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔑</div><h4>No Security Model</h4><p>File-level permissions are all-or-nothing. You cannot grant one user read access to some columns but not others.</p></div>
+  </div>
+  <p>A Database Management System (DBMS) abstracts all of this behind a structured interface — typically SQL. The internal architecture that makes this possible has layers of responsibility:</p>
+  <div class="arch-box">
+    <span class="hl">Application</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  Issues SQL statements</span><br/>
+    <span class="hl">SQL Parser &amp; Analyser</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  Validates syntax, resolves table/column names</span><br/>
+    <span class="hl">Query Optimizer</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  Generates the cheapest execution plan</span><br/>
+    <span class="hl">Execution Engine</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  Runs the plan: scans, joins, aggregates</span><br/>
+    <span class="hl">Storage Engine</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  Manages pages, buffer pool, WAL</span><br/>
+    <span class="hl">Disk / SSD</span>
+  </div>
+  <div class="tip"><div class="tip-label">Senior Mindset</div>Every layer in that stack is a trade-off surface. The query optimizer can make the wrong choice; the storage engine has its own flush policies; the execution engine handles joins differently per database. Understanding the stack — not just SQL — is what makes you dangerous with databases.</div>
+</div>
+
+<!-- ─── 02 RELATIONAL FUNDAMENTALS ─── -->
+<div class="section" id="relational">
+  <div class="section-label">02 &mdash; Core Concepts</div>
+  <h2>Relational Database Fundamentals</h2>
+  <p class="lead">The relational model, invented by Edgar F. Codd in 1970, is built on one elegant idea: all data is stored in relations (tables), and all queries are expressed as operations on those relations. Fifty years later, it remains the dominant data model.</p>
+
+  <h3>Keys and Relationships</h3>
+  <p>Every table needs a way to uniquely identify each row, and a way to reference rows in other tables. These two concepts — primary keys and foreign keys — are the skeleton of every relational schema.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">SQL — Key Types</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">-- Primary key: unique identifier per row</span>
+<span class="kw">CREATE TABLE</span> <span class="ty">users</span> <span class="pu">(</span>
+  id        <span class="ty">BIGINT</span> <span class="kw">GENERATED ALWAYS AS IDENTITY PRIMARY KEY</span>,
+  email     <span class="ty">TEXT</span>    <span class="kw">NOT NULL UNIQUE</span>,
+  created_at <span class="ty">TIMESTAMPTZ</span> <span class="kw">DEFAULT NOW</span><span class="pu">()</span>
+<span class="pu">);</span>
+
+<span class="cm">-- Foreign key: references primary key in another table</span>
+<span class="kw">CREATE TABLE</span> <span class="ty">orders</span> <span class="pu">(</span>
+  id      <span class="ty">BIGINT</span> <span class="kw">GENERATED ALWAYS AS IDENTITY PRIMARY KEY</span>,
+  user_id <span class="ty">BIGINT</span> <span class="kw">NOT NULL REFERENCES</span> <span class="ty">users</span><span class="pu">(</span>id<span class="pu">)</span> <span class="kw">ON DELETE CASCADE</span>,
+  total   <span class="ty">NUMERIC</span><span class="pu">(</span><span class="nm">12</span>,<span class="nm">2</span><span class="pu">)</span> <span class="kw">NOT NULL</span>,
+  status  <span class="ty">TEXT</span>    <span class="kw">DEFAULT</span> <span class="st">'pending'</span>
+<span class="pu">);</span>
+
+<span class="cm">-- Composite primary key (junction table)</span>
+<span class="kw">CREATE TABLE</span> <span class="ty">order_items</span> <span class="pu">(</span>
+  order_id   <span class="ty">BIGINT</span> <span class="kw">REFERENCES</span> <span class="ty">orders</span><span class="pu">(</span>id<span class="pu">),</span>
+  product_id <span class="ty">BIGINT</span> <span class="kw">REFERENCES</span> <span class="ty">products</span><span class="pu">(</span>id<span class="pu">),</span>
+  quantity   <span class="ty">INT</span>    <span class="kw">NOT NULL</span>,
+  unit_price <span class="ty">NUMERIC</span><span class="pu">(</span><span class="nm">10</span>,<span class="nm">2</span><span class="pu">)</span> <span class="kw">NOT NULL</span>,
+  <span class="kw">PRIMARY KEY</span> <span class="pu">(</span>order_id, product_id<span class="pu">)</span>
+<span class="pu">);</span></code></pre>
+  </div>
+
+  <h3>Normalization</h3>
+  <p>Normalization is the process of structuring tables to eliminate redundancy and prevent update anomalies. The goal is not maximum normalization — it is appropriate normalization. Over-normalized schemas can require excessive joins; under-normalized schemas duplicate data and create consistency problems.</p>
+  <table>
+    <thead><tr><th>Normal Form</th><th>Rule</th><th>Violation Example</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1NF</strong></td><td>Each column holds atomic (indivisible) values; no repeating groups</td><td>Storing <code>tag1,tag2,tag3</code> in a single <code>tags</code> column</td></tr>
+      <tr><td><strong>2NF</strong></td><td>No partial dependency — non-key columns depend on the whole primary key</td><td>In an <code>order_items</code> table keyed by <code>(order_id, product_id)</code>, storing <code>product_name</code> that depends only on <code>product_id</code></td></tr>
+      <tr><td><strong>3NF</strong></td><td>No transitive dependency — non-key columns depend directly on the primary key, not on another non-key column</td><td>Storing <code>zip_code</code> and <code>city</code> in the same row, where <code>city</code> depends on <code>zip_code</code>, not on the user</td></tr>
+      <tr><td><strong>BCNF</strong></td><td>Every determinant is a candidate key — handles edge cases 3NF misses when there are multiple composite keys</td><td>Rare in practice; appears in teaching schemas with overlapping candidate keys</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><div class="warn-label">Denormalization is a deliberate choice</div>High-read systems often intentionally denormalize — storing computed or duplicated data to avoid expensive joins at query time. This is a valid production pattern as long as you own the consistency implications and have a clear update strategy.</div>
+
+  <h3>SQL Mastery — Beyond CRUD</h3>
+  <p>CRUD (<code>INSERT</code>, <code>SELECT</code>, <code>UPDATE</code>, <code>DELETE</code>) is the entry level. Senior engineers reach for the full SQL toolkit: window functions, CTEs, lateral joins, and recursive queries.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">SQL — Window Functions, CTEs, Lateral Join</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">-- Window function: rank orders per user by amount</span>
+<span class="kw">SELECT</span>
+  user_id,
+  id          <span class="kw">AS</span> order_id,
+  total,
+  <span class="fn">RANK</span><span class="pu">()</span> <span class="kw">OVER</span> <span class="pu">(</span><span class="kw">PARTITION BY</span> user_id <span class="kw">ORDER BY</span> total <span class="kw">DESC</span><span class="pu">)</span> <span class="kw">AS</span> spend_rank
+<span class="kw">FROM</span> orders;
+
+<span class="cm">-- CTE: reusable subquery with a name</span>
+<span class="kw">WITH</span> monthly_revenue <span class="kw">AS</span> <span class="pu">(</span>
+  <span class="kw">SELECT</span>
+    <span class="fn">DATE_TRUNC</span><span class="pu">(</span><span class="st">'month'</span>, created_at<span class="pu">)</span> <span class="kw">AS</span> month,
+    <span class="fn">SUM</span><span class="pu">(</span>total<span class="pu">)</span>                           <span class="kw">AS</span> revenue
+  <span class="kw">FROM</span> orders
+  <span class="kw">GROUP BY</span> <span class="nm">1</span>
+<span class="pu">)</span>
+<span class="kw">SELECT</span> month, revenue,
+  revenue - <span class="fn">LAG</span><span class="pu">(</span>revenue<span class="pu">)</span> <span class="kw">OVER</span> <span class="pu">(</span><span class="kw">ORDER BY</span> month<span class="pu">)</span> <span class="kw">AS</span> mom_delta
+<span class="kw">FROM</span> monthly_revenue;
+
+<span class="cm">-- Lateral join: per-row subquery (PostgreSQL)</span>
+<span class="kw">SELECT</span> u.id, u.email, recent.total
+<span class="kw">FROM</span> users u
+<span class="kw">CROSS JOIN LATERAL</span> <span class="pu">(</span>
+  <span class="kw">SELECT</span> total <span class="kw">FROM</span> orders
+  <span class="kw">WHERE</span> user_id <span class="op">=</span> u.id
+  <span class="kw">ORDER BY</span> created_at <span class="kw">DESC</span>
+  <span class="kw">LIMIT</span> <span class="nm">1</span>
+<span class="pu">)</span> recent;</code></pre>
+  </div>
+</div>
+
+<!-- ─── 03 QUERY OPTIMIZATION ─── -->
+<div class="section" id="query-opt">
+  <div class="section-label">03 &mdash; Performance</div>
+  <h2>Query Optimization &amp; Indexing</h2>
+  <p class="lead">A query optimizer's job is to find the cheapest execution plan for a SQL statement. "Cheapest" means fewest disk reads, fewest CPU operations, fewest memory allocations. The optimizer does not always win — your job is to understand when it fails and why.</p>
+
+  <h3>Index Types</h3>
+  <p>Not all indexes are the same data structure or serve the same purpose. Choosing the wrong index type is one of the most common performance mistakes in production systems.</p>
+  <table>
+    <thead><tr><th>Index Type</th><th>Data Structure</th><th>Best For</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><strong>B-Tree</strong></td><td>Balanced tree</td><td>Equality, range, ORDER BY, LIKE prefix</td><td>Default index type. O(log n) lookup. Works for most cases.</td></tr>
+      <tr><td><strong>Hash</strong></td><td>Hash table</td><td>Equality lookups only (<code>=</code>)</td><td>Faster than B-Tree for exact matches; useless for ranges. PostgreSQL only persists these since v10.</td></tr>
+      <tr><td><strong>GIN</strong></td><td>Inverted index</td><td>Full-text search, JSONB, arrays, tsvector</td><td>Good for contains/overlaps queries. Slower writes due to posting lists.</td></tr>
+      <tr><td><strong>GiST</strong></td><td>Generalized search tree</td><td>Geometric types, full-text (PostgreSQL)</td><td>Extensible; used by PostGIS for spatial queries.</td></tr>
+      <tr><td><strong>Partial</strong></td><td>B-Tree on a subset</td><td>Filtered data (e.g., only <code>WHERE status = 'active'</code>)</td><td>Much smaller index, faster writes. Ideal when only a fraction of rows is queried.</td></tr>
+      <tr><td><strong>Covering</strong></td><td>B-Tree with included columns</td><td>Index-only scans — avoid heap fetch entirely</td><td>PostgreSQL: <code>INCLUDE (col1, col2)</code> in <code>CREATE INDEX</code>.</td></tr>
+    </tbody>
+  </table>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">SQL — Practical Index Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">-- Composite index: column order matters</span>
+<span class="cm">-- (user_id, created_at) supports:  WHERE user_id = ?</span>
+<span class="cm">--                                   WHERE user_id = ? AND created_at > ?</span>
+<span class="cm">-- But NOT:                          WHERE created_at > ? (leading column missing)</span>
+<span class="kw">CREATE INDEX</span> idx_orders_user_date
+  <span class="kw">ON</span> orders <span class="pu">(</span>user_id, created_at <span class="kw">DESC</span><span class="pu">);</span>
+
+<span class="cm">-- Partial index: only index rows where work happens</span>
+<span class="kw">CREATE INDEX</span> idx_orders_pending
+  <span class="kw">ON</span> orders <span class="pu">(</span>created_at<span class="pu">)</span>
+  <span class="kw">WHERE</span> status <span class="op">=</span> <span class="st">'pending'</span><span class="pu">;</span>
+
+<span class="cm">-- Covering index: include columns to avoid heap fetch</span>
+<span class="kw">CREATE INDEX</span> idx_orders_covering
+  <span class="kw">ON</span> orders <span class="pu">(</span>user_id<span class="pu">)</span>
+  <span class="kw">INCLUDE</span> <span class="pu">(</span>total, status, created_at<span class="pu">);</span>
+
+<span class="cm">-- Expression index: index a computed value</span>
+<span class="kw">CREATE INDEX</span> idx_users_lower_email
+  <span class="kw">ON</span> users <span class="pu">(</span><span class="fn">LOWER</span><span class="pu">(</span>email<span class="pu">));</span>
+<span class="cm">-- Now this query hits the index:</span>
+<span class="cm">-- SELECT * FROM users WHERE LOWER(email) = 'john@example.com';</span></code></pre>
+  </div>
+
+  <h3>Reading EXPLAIN ANALYZE</h3>
+  <p>The single most important skill for database performance work is reading query plans. <code>EXPLAIN ANALYZE</code> runs the query and shows you exactly what happened — not what the optimizer predicted, but what actually occurred.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">SQL — EXPLAIN ANALYZE Output</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">EXPLAIN</span> <span class="pu">(</span><span class="kw">ANALYZE</span>, <span class="kw">BUFFERS</span>, <span class="kw">FORMAT</span> <span class="ty">TEXT</span><span class="pu">)</span>
+<span class="kw">SELECT</span> o.id, o.total, u.email
+<span class="kw">FROM</span> orders o
+<span class="kw">JOIN</span> users u <span class="kw">ON</span> o.user_id <span class="op">=</span> u.id
+<span class="kw">WHERE</span> o.created_at <span class="op">&gt;</span> now<span class="pu">()</span> <span class="op">-</span> <span class="kw">INTERVAL</span> <span class="st">'7 days'</span>;
+
+<span class="cm">-- Sample output (key lines to read):</span>
+<span class="cm">-- Hash Join  (cost=1234..5678 rows=3200 width=48)</span>
+<span class="cm">--            (actual time=12.4..89.2 rows=3105 loops=1)</span>
+<span class="cm">--   Buffers: shared hit=820 read=142</span>
+<span class="cm">--   --&gt;  Index Scan using idx_orders_user_date on orders</span>
+<span class="cm">--         (actual time=0.04..45.1 rows=3105)</span>
+<span class="cm">--   --&gt;  Hash  (cost=410..410 rows=10200)</span>
+<span class="cm">--         Buckets: 16384  Batches: 1  Memory Usage: 880kB</span></code></pre>
+  </div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🎯</div><h4>cost=X..Y</h4><p>Planner estimate: startup cost..total cost. High startup cost is normal for sorts and hashes. Compare to actual time.</p></div>
+    <div class="concept-card"><div class="concept-icon">⚠️</div><h4>rows= estimate</h4><p>If estimated rows differ wildly from actual, run ANALYZE to update table statistics. Stale stats cause bad plans.</p></div>
+    <div class="concept-card"><div class="concept-icon">💾</div><h4>Buffers: read=N</h4><p>Disk reads. A high "read" vs "hit" ratio means your working set doesn't fit in shared_buffers — memory needs tuning.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔄</div><h4>loops=N</h4><p>Nested loop: inner side executed N times. If N is large and the inner side does index scans, it multiplies the cost.</p></div>
+  </div>
+  <div class="tip"><div class="tip-label">Three Questions for Every EXPLAIN</div>Is my index actually being used? (Look for "Index Scan" vs "Seq Scan".) Are the row estimates accurate? (Compare "rows=estimate" to "rows=actual".) Where is the most time being spent? (Look for the node with the highest "actual time".)</div>
+</div>
+
+<!-- ─── 04 TRANSACTIONS & ACID ─── -->
+<div class="section" id="transactions">
+  <div class="section-label">04 &mdash; Correctness</div>
+  <h2>Transactions &amp; ACID</h2>
+  <p class="lead">A transaction is the fundamental unit of correctness in a relational database. It groups multiple operations into an all-or-nothing unit. ACID is not marketing — it is a precise specification of the guarantees a database must provide for transactions to be trustworthy.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">SQL — Bank Transfer Transaction</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">BEGIN</span><span class="pu">;</span>
+
+<span class="cm">-- Deduct from sender</span>
+<span class="kw">UPDATE</span> accounts
+  <span class="kw">SET</span> balance <span class="op">=</span> balance <span class="op">-</span> <span class="nm">500.00</span>
+  <span class="kw">WHERE</span> id <span class="op">=</span> <span class="nm">42</span> <span class="kw">AND</span> balance <span class="op">&gt;=</span> <span class="nm">500.00</span><span class="pu">;</span>
+
+<span class="cm">-- Verify the deduction actually happened</span>
+<span class="kw">DO</span> <span class="pu">$$</span> <span class="kw">BEGIN</span>
+  <span class="kw">IF NOT FOUND THEN</span>
+    <span class="kw">RAISE EXCEPTION</span> <span class="st">'Insufficient funds or account not found'</span><span class="pu">;</span>
+  <span class="kw">END IF</span><span class="pu">;</span>
+<span class="kw">END</span> <span class="pu">$$;</span>
+
+<span class="cm">-- Credit the receiver</span>
+<span class="kw">UPDATE</span> accounts
+  <span class="kw">SET</span> balance <span class="op">=</span> balance <span class="op">+</span> <span class="nm">500.00</span>
+  <span class="kw">WHERE</span> id <span class="op">=</span> <span class="nm">99</span><span class="pu">;</span>
+
+<span class="cm">-- Persist both changes atomically</span>
+<span class="kw">COMMIT</span><span class="pu">;</span>
+
+<span class="cm">-- If anything above fails, the DB rolls back both operations</span></code></pre>
+  </div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">⚛️</div><h4>Atomicity</h4><p>All operations in a transaction succeed, or none do. A crash mid-transaction leaves no partial state on disk.</p></div>
+    <div class="concept-card"><div class="concept-icon">✅</div><h4>Consistency</h4><p>A transaction moves the database from one valid state to another. Constraints, foreign keys, and triggers are enforced throughout.</p></div>
+    <div class="concept-card"><div class="concept-icon">🏝️</div><h4>Isolation</h4><p>Concurrent transactions do not see each other's intermediate state. Isolation level determines how strictly this is enforced.</p></div>
+    <div class="concept-card"><div class="concept-icon">🪨</div><h4>Durability</h4><p>Once a transaction is committed, it survives crashes. This is achieved through the Write-Ahead Log (WAL) — changes are written to the log before being applied to data pages.</p></div>
+  </div>
+  <h3>The Write-Ahead Log (WAL)</h3>
+  <p>Durability is not magic — it is the WAL. Before any data page is modified, the change is appended to a sequential log on disk. If the database crashes and restarts, it replays the WAL to recover committed transactions and discard uncommitted ones. Sequential writes to the WAL are fast; random writes to data pages happen lazily in the background.</p>
+  <div class="info"><div class="info-label">WAL is also replication</div>PostgreSQL streaming replication works by shipping WAL records from the primary to replicas. The replica replays the same log, keeping itself in sync. Logical replication uses a decoded form of the WAL that supports cross-version and cross-database replication.</div>
+</div>
+
+<!-- ─── 05 ISOLATION LEVELS ─── -->
+<div class="section" id="isolation">
+  <div class="section-label">05 &mdash; Concurrency Control</div>
+  <h2>Isolation Levels</h2>
+  <p class="lead">Isolation sounds binary — transactions are either isolated or they aren't. In reality, isolation is a spectrum. Higher isolation costs more (locks, version chains, aborts). The SQL standard defines four levels, each permitting or preventing specific anomalies.</p>
+  <table>
+    <thead><tr><th>Isolation Level</th><th>Dirty Read</th><th>Non-Repeatable Read</th><th>Phantom Read</th><th>Default In</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Read Uncommitted</strong></td><td>✅ Possible</td><td>✅ Possible</td><td>✅ Possible</td><td>—</td></tr>
+      <tr><td><strong>Read Committed</strong></td><td>❌ Prevented</td><td>✅ Possible</td><td>✅ Possible</td><td>PostgreSQL, Oracle</td></tr>
+      <tr><td><strong>Repeatable Read</strong></td><td>❌ Prevented</td><td>❌ Prevented</td><td>✅ Possible*</td><td>MySQL InnoDB</td></tr>
+      <tr><td><strong>Serializable</strong></td><td>❌ Prevented</td><td>❌ Prevented</td><td>❌ Prevented</td><td>Explicit only</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:13px;color:var(--text-muted)">* PostgreSQL's Repeatable Read actually prevents phantom reads too, making it stricter than the SQL standard requires.</p>
+  <h3>The Three Anomalies Explained</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">👻</div><h4>Dirty Read</h4><p>Transaction A reads data written by Transaction B before B commits. If B rolls back, A read data that never existed.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔄</div><h4>Non-Repeatable Read</h4><p>Transaction A reads a row. Transaction B updates and commits it. A reads the same row again and gets a different value.</p></div>
+    <div class="concept-card"><div class="concept-icon">👥</div><h4>Phantom Read</h4><p>Transaction A queries a set of rows. Transaction B inserts a new matching row and commits. A re-runs the query and sees an extra "phantom" row.</p></div>
+  </div>
+  <h3>MVCC — How PostgreSQL Implements Isolation</h3>
+  <p>PostgreSQL uses Multi-Version Concurrency Control (MVCC). Instead of locking rows for reads, it keeps multiple versions of each row. A transaction sees a snapshot of data as it existed at transaction start. Readers never block writers, and writers never block readers — a critical advantage over lock-based systems.</p>
+  <div class="arch-box">
+    <span class="dim">Row (id=1): balance = 1000</span><br/><br/>
+    <span class="hl">Transaction A starts</span> <span class="dim">→ sees balance = 1000 (snapshot)</span><br/>
+    <span class="hl">Transaction B updates</span> <span class="dim">→ creates new row version: balance = 800</span><br/>
+    <span class="hl">Transaction B commits</span><br/>
+    <span class="hl">Transaction A re-reads</span> <span class="dim">→ still sees balance = 1000 (its snapshot)</span><br/><br/>
+    <span class="dim">Old row version is later vacuumed (cleaned up) by autovacuum</span>
+  </div>
+  <div class="warn"><div class="warn-label">VACUUM is not optional</div>MVCC creates dead row versions (tuples) that accumulate over time. PostgreSQL's autovacuum reclaims this space. Disabling or neglecting autovacuum on high-write tables causes table bloat and eventual transaction ID wraparound — a production emergency that requires downtime to recover from.</div>
+</div>
+
+<!-- ─── 06 MYSQL ─── -->
+<div class="section" id="mysql">
+  <div class="section-label">06 &mdash; MySQL Deep Dive</div>
+  <h2>MySQL Architecture &amp; InnoDB</h2>
+  <p class="lead">MySQL became the world's most deployed open-source database by being exactly what most applications needed: fast, simple, and easy to operate. Understanding its architecture reveals why it excels at what it does — and where it hits walls.</p>
+  <div class="arch-box">
+    <span class="hl">Client Connection</span> <span class="dim">(mysql protocol / pooler)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">SQL Layer</span> <span class="dim">— Parser → Optimizer → Executor</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  Pluggable storage engine interface</span><br/>
+    <span class="hl">InnoDB Storage Engine</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── Buffer Pool (data pages in RAM)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── Change Buffer (deferred secondary index writes)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── Redo Log (WAL equivalent — crash recovery)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;└── Undo Log (MVCC + ROLLBACK support)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Disk / SSD</span> <span class="dim">(.ibd files, one per table with innodb_file_per_table)</span>
+  </div>
+  <h3>InnoDB Internals Worth Knowing</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">📄</div><h4>Clustered Index</h4><p>InnoDB stores the table data in the primary key's B-Tree leaf nodes. There is no separate heap file — the PK IS the table. Secondary indexes store the primary key value as their row pointer.</p></div>
+    <div class="concept-card"><div class="concept-icon">💡</div><h4>Buffer Pool</h4><p>InnoDB's most critical tuning parameter. Set <code>innodb_buffer_pool_size</code> to 70-80% of available RAM for dedicated database servers. Cache hits eliminate disk I/O entirely.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔒</div><h4>Row-Level Locking</h4><p>InnoDB locks individual rows (not pages, not tables) for writes under Read Committed and Repeatable Read. This enables high write concurrency.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔑</div><h4>Gap Locks</h4><p>Under Repeatable Read, InnoDB uses gap locks to prevent phantoms. A gap lock on the range (10, 20) prevents any INSERT of a value in that range by concurrent transactions.</p></div>
+  </div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">MySQL — Key Configuration (my.cnf)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="pu">[mysqld]</span>
+<span class="cm"># Memory — most impactful single setting</span>
+<span class="at">innodb_buffer_pool_size</span>         <span class="op">=</span> <span class="nm">4G</span>
+<span class="at">innodb_buffer_pool_instances</span>    <span class="op">=</span> <span class="nm">4</span>    <span class="cm"># 1 per GB of buffer pool</span>
+
+<span class="cm"># Durability vs performance trade-off</span>
+<span class="cm"># 1 = fully durable (default), 2 = flush once/sec (faster, tiny crash risk)</span>
+<span class="at">innodb_flush_log_at_trx_commit</span>  <span class="op">=</span> <span class="nm">1</span>
+
+<span class="cm"># Redo log — larger = fewer checkpoints = better write throughput</span>
+<span class="at">innodb_redo_log_capacity</span>        <span class="op">=</span> <span class="nm">2G</span>   <span class="cm"># MySQL 8.0.30+</span>
+
+<span class="cm"># Connections</span>
+<span class="at">max_connections</span>                 <span class="op">=</span> <span class="nm">500</span>
+<span class="at">thread_cache_size</span>               <span class="op">=</span> <span class="nm">50</span>
+
+<span class="cm"># Query cache is removed in MySQL 8 — use ProxySQL or app-level caching</span>
+<span class="at">slow_query_log</span>                  <span class="op">=</span> <span class="nm">1</span>
+<span class="at">long_query_time</span>                 <span class="op">=</span> <span class="nm">1</span>    <span class="cm"># Log queries slower than 1s</span></code></pre>
+  </div>
+  <h3>When MySQL Wins</h3>
+  <p>MySQL's sweet spot is high-throughput simple operations: single-table reads, CRUD applications, LAMP-stack workloads. It powers WordPress, Shopify's core transactional layer, and most CMS platforms for good reason — its optimizer is well-tuned for these patterns and its operational simplicity is a genuine advantage at small team scale.</p>
+  <div class="tip"><div class="tip-label">Use BIGINT for primary keys, not INT</div>INT maxes out at ~2.1 billion. A busy e-commerce site can exhaust INT primary keys within years. BIGINT costs 4 extra bytes per row but buys you 9.2 × 10¹⁸ values. Always use BIGINT UNSIGNED or equivalent from day one.</div>
+</div>
+
+<!-- ─── 07 POSTGRESQL ─── -->
+<div class="section" id="postgres">
+  <div class="section-label">07 &mdash; PostgreSQL Deep Dive</div>
+  <h2>PostgreSQL — The Advanced Open-Source Database</h2>
+  <p class="lead">PostgreSQL is often described as "the most advanced open-source relational database." That is not marketing. It offers features that rival (and sometimes exceed) Oracle and SQL Server: native JSONB, full-text search, custom types, table inheritance, logical replication, and one of the most sophisticated query planners in existence.</p>
+  <div class="arch-box">
+    <span class="hl">Client</span> <span class="dim">(libpq, pgBouncer, pg driver)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  One backend process per connection</span><br/>
+    <span class="hl">Postmaster</span> <span class="dim">— forks backend processes</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Backend Process</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── Parser → Analyser → Rewriter → Planner → Executor</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;└── Accesses shared memory (shared_buffers, WAL buffers)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Storage</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── Heap Files (table data — unordered, no clustered PK)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── Index Files (B-Tree, GIN, GiST, BRIN, Hash)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── WAL (pg_wal directory — sequential write log)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;└── pg_toast (overflow storage for large column values)</span>
+  </div>
+  <h3>PostgreSQL's Unique Strengths</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">📦</div><h4>JSONB</h4><p>Binary JSON stored natively. Supports GIN indexing, JSONPath queries, and hybrid relational-document modelling without a separate NoSQL store.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔎</div><h4>Full-Text Search</h4><p>Built-in <code>tsvector</code> / <code>tsquery</code> with GIN indexes. Good enough for most apps — often eliminates the need for a separate search engine at smaller scale.</p></div>
+    <div class="concept-card"><div class="concept-icon">🧩</div><h4>Extensibility</h4><p>Custom data types, operators, index types (via GiST), and languages (PL/pgSQL, PL/Python, PL/v8). PostGIS adds full GIS capabilities without leaving SQL.</p></div>
+    <div class="concept-card"><div class="concept-icon">🪟</div><h4>Window Functions</h4><p>First-class SQL window functions: <code>RANK</code>, <code>LAG</code>, <code>LEAD</code>, <code>FIRST_VALUE</code>, <code>NTILE</code>, <code>ROWS BETWEEN</code>. Essential for analytics without a data warehouse.</p></div>
+    <div class="concept-card"><div class="concept-icon">📋</div><h4>CTEs &amp; Recursion</h4><p>Recursive CTEs enable graph traversal (org charts, bill-of-materials, social graphs) in pure SQL. No application-level graph iteration needed.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌀</div><h4>Materialized Views</h4><p>Persist expensive query results on disk. Refresh manually or on a schedule. Dramatically accelerates dashboards and reporting without denormalizing the base tables.</p></div>
+  </div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PostgreSQL — JSONB, Full-Text Search, Recursive CTE</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">-- JSONB: store and query structured config per tenant</span>
+<span class="kw">CREATE TABLE</span> tenants <span class="pu">(</span>
+  id      <span class="ty">BIGINT</span> <span class="kw">PRIMARY KEY</span>,
+  config  <span class="ty">JSONB</span>
+<span class="pu">);</span>
+<span class="kw">CREATE INDEX</span> idx_tenants_config <span class="kw">ON</span> tenants <span class="kw">USING GIN</span> <span class="pu">(</span>config<span class="pu">);</span>
+
+<span class="cm">-- Query a nested JSONB field with index support</span>
+<span class="kw">SELECT</span> id <span class="kw">FROM</span> tenants
+<span class="kw">WHERE</span> config <span class="op">@&gt;</span> <span class="st">'{"plan": "enterprise", "features": ["sso"]}'</span><span class="pu">;</span>
+
+<span class="cm">-- Full-text search with ranking</span>
+<span class="kw">SELECT</span> id, title,
+  <span class="fn">ts_rank</span><span class="pu">(</span>search_vector, query<span class="pu">)</span> <span class="kw">AS</span> rank
+<span class="kw">FROM</span> articles,
+  <span class="fn">to_tsquery</span><span class="pu">(</span><span class="st">'english'</span>, <span class="st">'database & performance'</span><span class="pu">)</span> query
+<span class="kw">WHERE</span> search_vector <span class="op">@@</span> query
+<span class="kw">ORDER BY</span> rank <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="nm">20</span><span class="pu">;</span>
+
+<span class="cm">-- Recursive CTE: traverse org hierarchy</span>
+<span class="kw">WITH RECURSIVE</span> org_tree <span class="kw">AS</span> <span class="pu">(</span>
+  <span class="cm">-- Base: top-level employees</span>
+  <span class="kw">SELECT</span> id, name, manager_id, <span class="nm">0</span> <span class="kw">AS</span> depth
+  <span class="kw">FROM</span> employees <span class="kw">WHERE</span> manager_id <span class="kw">IS NULL</span>
+
+  <span class="kw">UNION ALL</span>
+
+  <span class="cm">-- Recursive: direct reports of already-found employees</span>
+  <span class="kw">SELECT</span> e.id, e.name, e.manager_id, ot.depth <span class="op">+</span> <span class="nm">1</span>
+  <span class="kw">FROM</span> employees e
+  <span class="kw">JOIN</span> org_tree ot <span class="kw">ON</span> e.manager_id <span class="op">=</span> ot.id
+<span class="pu">)</span>
+<span class="kw">SELECT</span> <span class="fn">REPEAT</span><span class="pu">(</span><span class="st">'  '</span>, depth<span class="pu">)</span> <span class="op">||</span> name <span class="kw">AS</span> hierarchy
+<span class="kw">FROM</span> org_tree <span class="kw">ORDER BY</span> depth, name<span class="pu">;</span></code></pre>
+  </div>
+  <h3>Key PostgreSQL Configuration</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">postgresql.conf — Production Tuning</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm"># Memory</span>
+<span class="at">shared_buffers</span>            <span class="op">=</span> <span class="nm">4GB</span>    <span class="cm"># ~25% of RAM</span>
+<span class="at">work_mem</span>                  <span class="op">=</span> <span class="nm">64MB</span>   <span class="cm"># per sort/hash per query — multiply by connections!</span>
+<span class="at">maintenance_work_mem</span>      <span class="op">=</span> <span class="nm">512MB</span>  <span class="cm"># for VACUUM, CREATE INDEX</span>
+<span class="at">effective_cache_size</span>      <span class="op">=</span> <span class="nm">12GB</span>   <span class="cm"># tell planner how much OS cache exists</span>
+
+<span class="cm"># WAL / Checkpoints</span>
+<span class="at">wal_buffers</span>               <span class="op">=</span> <span class="nm">64MB</span>
+<span class="at">checkpoint_completion_target</span> <span class="op">=</span> <span class="nm">0.9</span>
+<span class="at">max_wal_size</span>              <span class="op">=</span> <span class="nm">4GB</span>
+
+<span class="cm"># Planner cost model — tune if using SSDs</span>
+<span class="at">random_page_cost</span>          <span class="op">=</span> <span class="nm">1.1</span>    <span class="cm"># default 4.0 is for spinning disks</span>
+<span class="at">effective_io_concurrency</span>  <span class="op">=</span> <span class="nm">200</span>   <span class="cm"># SSD: 200; spinning: 2</span>
+
+<span class="cm"># Autovacuum — don't disable this</span>
+<span class="at">autovacuum</span>                <span class="op">=</span> <span class="nm">on</span>
+<span class="at">autovacuum_vacuum_cost_delay</span> <span class="op">=</span> <span class="nm">2ms</span> <span class="cm"># reduce IO throttling on SSDs</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── VS ─── -->
+<div class="section" id="vs">
+  <div class="section-label">MySQL vs PostgreSQL</div>
+  <h2>Choosing Between MySQL and PostgreSQL</h2>
+  <p class="lead">Both are excellent, production-hardened, and capable of handling the vast majority of application workloads. The right choice depends on what your application actually does — not which one is "better."</p>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>🐬 MySQL Wins When…</h4>
+      <ul>
+        <li>Your workload is primarily simple CRUD and single-table reads</li>
+        <li>You are running a WordPress, Drupal, or LAMP-stack application</li>
+        <li>Your team has deep MySQL operational expertise (backups, replication setup)</li>
+        <li>You need a battle-tested, low-maintenance primary database for a SaaS with straightforward data models</li>
+        <li>You are migrating from a legacy system already using MySQL</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>🐘 PostgreSQL Wins When…</h4>
+      <ul>
+        <li>Your application requires complex queries: window functions, CTEs, lateral joins</li>
+        <li>You need JSONB for flexible or schema-light data alongside relational data</li>
+        <li>You are building ERP, FinTech, healthcare, or any domain requiring strong data integrity</li>
+        <li>You want full-text search, geospatial data (PostGIS), or custom data types</li>
+        <li>You are building an analytics-heavy product and want to avoid a warehouse initially</li>
+      </ul>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>Dimension</th><th>MySQL 8+</th><th>PostgreSQL 16+</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Clustered Primary Key</strong></td><td>Yes — InnoDB data is in the PK B-Tree</td><td>No — heap files; PK is a separate index</td></tr>
+      <tr><td><strong>JSONB / Document</strong></td><td>JSON type (text-stored), limited indexing</td><td>JSONB (binary), GIN indexing, JSONPath</td></tr>
+      <tr><td><strong>Full-Text Search</strong></td><td>FULLTEXT index (basic)</td><td>tsvector + GIN (much more flexible)</td></tr>
+      <tr><td><strong>Window Functions</strong></td><td>Available since MySQL 8.0</td><td>Available since PostgreSQL 8.4; more functions</td></tr>
+      <tr><td><strong>Isolation Default</strong></td><td>Repeatable Read</td><td>Read Committed</td></tr>
+      <tr><td><strong>Replication</strong></td><td>Async &amp; semi-sync; Group Replication</td><td>Streaming + Logical replication</td></tr>
+      <tr><td><strong>Extensibility</strong></td><td>Plugins (storage engines)</td><td>Extensions, custom types, PostGIS</td></tr>
+      <tr><td><strong>Ecosystem</strong></td><td>Huge; PlanetScale, Vitess, AWS Aurora</td><td>Supabase, Neon, Timescale, Citus</td></tr>
+    </tbody>
+  </table>
+  <div class="pullquote">"If you are starting a new project in 2026, PostgreSQL is the safer default. MySQL remains the right call for workloads where its operational model and ecosystem are already known quantities."</div>
+</div>
+
+<!-- ─── 08 NOSQL ─── -->
+<div class="section" id="nosql">
+  <div class="section-label">08 &mdash; Beyond Relational</div>
+  <h2>NoSQL &amp; Why It Emerged</h2>
+  <p class="lead">NoSQL did not emerge because relational databases were bad. It emerged because Google, Amazon, and Facebook faced problems that no existing database could solve at their scale: billions of rows, global distribution, and schema flexibility across thousands of services.</p>
+  <p>The term "NoSQL" is a category, not a technology. Each subcategory solves a different problem — and choosing the wrong one is as costly as choosing an RDBMS for a use case it cannot handle.</p>
+  <div class="domain-grid">
+    <div class="domain-card">
+      <div class="domain-name">📄 Document</div>
+      <div class="domain-tags" style="margin-top:6px">
+        <span class="dtag">MongoDB</span>
+        <span class="dtag">CouchDB</span>
+        <span class="dtag">Firestore</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:8px;line-height:1.5">Stores JSON-like documents. Schema-flexible. Great for user profiles, CMS content, product catalogs. Weak at multi-document transactions and complex joins.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">⚡ Key-Value</div>
+      <div class="domain-tags" style="margin-top:6px">
+        <span class="dtag">Redis</span>
+        <span class="dtag">DynamoDB</span>
+        <span class="dtag">Memcached</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:8px;line-height:1.5">Simplest model: key maps to an opaque value. Sub-millisecond reads. Used for caching, sessions, rate limiting, real-time leaderboards.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">📊 Wide-Column</div>
+      <div class="domain-tags" style="margin-top:6px">
+        <span class="dtag">Cassandra</span>
+        <span class="dtag">ScyllaDB</span>
+        <span class="dtag">HBase</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:8px;line-height:1.5">Rows with variable columns grouped into column families. Designed for massive write throughput and horizontal scale. Queries must be modelled around access patterns at schema design time.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🔗 Graph</div>
+      <div class="domain-tags" style="margin-top:6px">
+        <span class="dtag">Neo4j</span>
+        <span class="dtag">Amazon Neptune</span>
+        <span class="dtag">ArangoDB</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:8px;line-height:1.5">Nodes and edges as first-class citizens. Traversal queries (friends-of-friends, shortest path) that would require dozens of SQL joins become simple graph queries.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">⏱️ Time-Series</div>
+      <div class="domain-tags" style="margin-top:6px">
+        <span class="dtag">InfluxDB</span>
+        <span class="dtag">TimescaleDB</span>
+        <span class="dtag">QuestDB</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:8px;line-height:1.5">Optimised for time-stamped metrics, events, and IoT data. High ingest rates, automatic downsampling, retention policies built in. TimescaleDB runs on top of PostgreSQL.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🔍 Search Engine</div>
+      <div class="domain-tags" style="margin-top:6px">
+        <span class="dtag">Elasticsearch</span>
+        <span class="dtag">OpenSearch</span>
+        <span class="dtag">Typesense</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:8px;line-height:1.5">Inverted indexes built for full-text search, faceting, and relevance ranking. Usually used alongside a relational DB — the RDBMS is the source of truth; the search engine powers the search UI.</p>
+    </div>
+  </div>
+  <div class="info"><div class="info-label">The Polyglot Persistence Pattern</div>Modern production systems rarely use a single database. A typical architecture: PostgreSQL as the transactional source of truth, Redis for caching and sessions, Elasticsearch for search, and S3 (via Parquet/Iceberg) for analytics. The skill is knowing which store owns which data and how to keep them consistent.</div>
+</div>
+
+<!-- ─── 09 DISTRIBUTED SQL ─── -->
+<div class="section" id="distributed">
+  <div class="section-label">09 &mdash; Global Scale</div>
+  <h2>Modern Distributed SQL</h2>
+  <p class="lead">Traditional relational databases scale vertically: you get a bigger server. Eventually you hit the limits of what a single machine can provide — and sharding your PostgreSQL manually is one of the most painful operations in software engineering. Distributed SQL databases solve this by providing a PostgreSQL-compatible interface over a horizontally scaled cluster.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🪳</div><h4>CockroachDB</h4><p>PostgreSQL-compatible wire protocol. Automatic sharding and rebalancing. Multi-region deployments with configurable data residency. Strong consistency via Raft consensus.</p></div>
+    <div class="concept-card"><div class="concept-icon">🐯</div><h4>TiDB</h4><p>MySQL-compatible. Separates storage (TiKV) from compute. Built-in HTAP — same cluster handles both OLTP and OLAP queries via TiFlash columnar replica.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌍</div><h4>YugabyteDB</h4><p>PostgreSQL-compatible with DocDB storage layer. Designed for multi-cloud and multi-region deployments. YSQL layer is closer to full PostgreSQL compatibility than CockroachDB.</p></div>
+    <div class="concept-card"><div class="concept-icon">☁️</div><h4>Aurora (AWS)</h4><p>MySQL/PostgreSQL-compatible cloud database. Storage layer is decoupled from compute and replicated 6 ways across 3 AZs. Automatic failover in ~30s. Not truly distributed SQL but dramatically outscales standard RDS.</p></div>
+  </div>
+  <h3>The CAP Theorem and What It Actually Means</h3>
+  <p>The CAP theorem states that a distributed system can guarantee at most two of three properties simultaneously: Consistency, Availability, and Partition Tolerance. Since network partitions are inevitable in any distributed system, the practical choice is between CP (consistent but may reject requests during a partition) and AP (available but may return stale data).</p>
+  <table>
+    <thead><tr><th>Database</th><th>CAP Choice</th><th>Behaviour During Network Partition</th></tr></thead>
+    <tbody>
+      <tr><td><strong>CockroachDB</strong></td><td>CP</td><td>Rejects writes that cannot achieve quorum — prefers consistency over availability</td></tr>
+      <tr><td><strong>Cassandra</strong></td><td>AP</td><td>Continues accepting reads and writes; resolves conflicts on read via last-write-wins</td></tr>
+      <tr><td><strong>DynamoDB</strong></td><td>Tunable (AP default)</td><td>Strong consistency mode available per-request; eventual consistency by default</td></tr>
+      <tr><td><strong>PostgreSQL (single node)</strong></td><td>CA</td><td>Not distributed — no partition tolerance; failover requires external tooling</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><div class="warn-label">Distributed SQL is not free</div>Cross-shard transactions are expensive. If your query touches rows on three different nodes, it must coordinate via a consensus protocol across all three — adding latency compared to a single-node RDBMS. Design schemas to minimise cross-shard operations: co-locate related data by tenant ID, user ID, or another high-cardinality partition key.</div>
+</div>
+
+<!-- ─── 10 SCALING ─── -->
+<div class="section" id="scaling">
+  <div class="section-label">10 &mdash; Scaling Strategies</div>
+  <h2>Scaling Relational Databases</h2>
+  <p class="lead">The order of operations for scaling a relational database almost always looks the same: optimise queries first, add caching second, add read replicas third, partition tables fourth, and consider sharding only when the previous four steps are insufficient. Skipping steps is expensive.</p>
+
+  <h3>Read Replicas</h3>
+  <p>The first scaling lever. A primary handles all writes; one or more replicas receive WAL stream and replay it, staying within seconds of the primary. Route read-heavy workloads — reporting, dashboards, search — to replicas. This is the most impactful and operationally simple scaling approach for most systems.</p>
+  <div class="arch-box">
+    <span class="hl">Application</span><br/>
+    <span class="dim">&nbsp;&nbsp;│ writes  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│ reads</span><br/>
+    <span class="hl">Primary</span> <span class="dim">─── WAL stream ──▶</span> <span class="hl">Read Replica 1</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── WAL stream ──▶</span> <span class="hl">Read Replica 2</span>
+  </div>
+
+  <h3>Table Partitioning</h3>
+  <p>Partitioning splits a large table into smaller physical sub-tables (partitions) while presenting a single logical table to queries. PostgreSQL declarative partitioning supports range, list, and hash strategies. The query planner performs partition pruning — if a <code>WHERE</code> clause filters on the partition key, only matching partitions are scanned.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">PostgreSQL — Declarative Range Partitioning</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">-- Parent table (no data stored here)</span>
+<span class="kw">CREATE TABLE</span> events <span class="pu">(</span>
+  id         <span class="ty">BIGINT</span>,
+  user_id    <span class="ty">BIGINT</span>,
+  event_type <span class="ty">TEXT</span>,
+  created_at <span class="ty">TIMESTAMPTZ</span> <span class="kw">NOT NULL</span>
+<span class="pu">)</span> <span class="kw">PARTITION BY RANGE</span> <span class="pu">(</span>created_at<span class="pu">);</span>
+
+<span class="cm">-- Monthly partitions — only this month's partition is "hot"</span>
+<span class="kw">CREATE TABLE</span> events_2026_05 <span class="kw">PARTITION OF</span> events
+  <span class="kw">FOR VALUES FROM</span> <span class="pu">(</span><span class="st">'2026-05-01'</span><span class="pu">)</span> <span class="kw">TO</span> <span class="pu">(</span><span class="st">'2026-06-01'</span><span class="pu">);</span>
+<span class="kw">CREATE TABLE</span> events_2026_06 <span class="kw">PARTITION OF</span> events
+  <span class="kw">FOR VALUES FROM</span> <span class="pu">(</span><span class="st">'2026-06-01'</span><span class="pu">)</span> <span class="kw">TO</span> <span class="pu">(</span><span class="st">'2026-07-01'</span><span class="pu">);</span>
+
+<span class="cm">-- Indexes are created per partition — or via the parent</span>
+<span class="kw">CREATE INDEX</span> <span class="kw">ON</span> events <span class="pu">(</span>user_id, created_at<span class="pu">);</span>
+
+<span class="cm">-- Query hits only the June partition (partition pruning)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> events
+<span class="kw">WHERE</span> created_at <span class="op">&gt;=</span> <span class="st">'2026-06-01'</span>
+  <span class="kw">AND</span> user_id <span class="op">=</span> <span class="nm">12345</span><span class="pu">;</span></code></pre>
+  </div>
+
+  <h3>Sharding</h3>
+  <p>Sharding splits data horizontally across multiple independent database instances (shards). Each shard holds a subset of rows, typically by a shard key (user ID, tenant ID, geographic region). Unlike partitioning, shards are separate databases — there is no single node that knows the full dataset, which means cross-shard queries require application-level coordination or a query router.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🔑</div><h4>Shard Key Selection</h4><p>The most critical sharding decision. A good shard key distributes data evenly, keeps related data co-located, and avoids hot spots. Bad choices: sequential IDs (all new writes go to one shard), low-cardinality keys like status or country code.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌡️</div><h4>Hot Spot Problem</h4><p>A viral user or large tenant creates a hot shard that receives disproportionate traffic. Mitigations: consistent hashing, virtual nodes, or a separate tier for large tenants.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔗</div><h4>Cross-Shard Joins</h4><p>Cannot be done in the database — must be done in the application or a distributed query layer (Vitess, Citus). Design access patterns to avoid them. This is the primary cost of sharding.</p></div>
+    <div class="concept-card"><div class="concept-icon">🛠️</div><h4>Vitess / Citus</h4><p>Vitess (MySQL) and Citus (PostgreSQL) add a sharding layer above the database. They handle connection pooling, query routing, cross-shard aggregation, and online resharding without application changes.</p></div>
+  </div>
+  <div class="tip"><div class="tip-label">Connection Pooling is Non-Optional at Scale</div>Every PostgreSQL connection is a separate OS process (~5–10MB RAM). At 500 concurrent connections you are using 2.5–5GB just for process overhead. Use PgBouncer (transaction mode for most workloads) or pgpool-II. Target fewer than 100 server-side connections with thousands of application-side connections going through the pooler.</div>
+</div>
+
+<!-- ─── 11 DATA ARCHITECTURE ─── -->
+<div class="section" id="architecture">
+  <div class="section-label">11 &mdash; Modern Data Platforms</div>
+  <h2>Modern Data Architecture</h2>
+  <p class="lead">Production systems almost always have two distinct database needs: operational databases that serve live application traffic, and analytical databases that serve business intelligence, reporting, and data science. Trying to run both workloads on the same RDBMS is a common source of production incidents.</p>
+
+  <h3>OLTP vs OLAP</h3>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>⚙️ OLTP (Online Transaction Processing)</h4>
+      <ul>
+        <li>High volume of short, targeted queries</li>
+        <li>Reads and writes a handful of rows per query</li>
+        <li>Optimised for low-latency individual transactions</li>
+        <li>Row-oriented storage (fetch whole rows)</li>
+        <li>Examples: orders, payments, user sessions, inventory</li>
+        <li>Database: PostgreSQL, MySQL, Aurora</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>📊 OLAP (Online Analytical Processing)</h4>
+      <ul>
+        <li>Low volume of complex, full-scan queries</li>
+        <li>Aggregates millions to billions of rows</li>
+        <li>Optimised for throughput, not latency</li>
+        <li>Column-oriented storage (only scan needed columns)</li>
+        <li>Examples: revenue reports, cohort analysis, BI dashboards</li>
+        <li>Database: Snowflake, BigQuery, Redshift, ClickHouse</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>The Modern Data Stack</h3>
+  <div class="arch-box">
+    <span class="hl">Application Database</span> <span class="dim">(PostgreSQL / MySQL — source of truth)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  CDC (Change Data Capture) via Debezium, Fivetran, or logical replication</span><br/>
+    <span class="hl">Data Lake</span> <span class="dim">(S3 / GCS — raw Parquet / JSON files)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  dbt transforms, Apache Spark, or Flink for streaming</span><br/>
+    <span class="hl">Data Warehouse</span> <span class="dim">(Snowflake / BigQuery / Redshift — modelled, queryable)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  BI tools: Metabase, Looker, Tableau, Superset</span><br/>
+    <span class="hl">Business Intelligence Layer</span>
+  </div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">❄️</div><h4>Snowflake</h4><p>Separates storage (S3) from compute (virtual warehouses). Pay per query. Near-unlimited concurrency. Industry standard for cloud data warehousing.</p></div>
+    <div class="concept-card"><div class="concept-icon">📊</div><h4>BigQuery</h4><p>Google's serverless warehouse. Columnar storage, automatic scaling, built-in ML. Pricing by bytes scanned — partition and cluster your tables to control costs.</p></div>
+    <div class="concept-card"><div class="concept-icon">🏔️</div><h4>Apache Iceberg</h4><p>Open table format that adds ACID transactions, schema evolution, and time-travel to data lakes. Decouples the table format from the query engine — query with Spark, Trino, Flink, or DuckDB.</p></div>
+    <div class="concept-card"><div class="concept-icon">🦆</div><h4>DuckDB</h4><p>In-process OLAP engine. Runs inside your Python script or application. Can query Parquet, CSV, and Iceberg files directly. Excellent for local analytics and replacing Pandas for medium-sized datasets.</p></div>
+  </div>
+</div>
+
+<!-- ─── 12 SYSTEM DESIGN ─── -->
+<div class="section" id="design">
+  <div class="section-label">12 &mdash; Real-World Patterns</div>
+  <h2>Database Design for Production Systems</h2>
+  <p class="lead">Database selection is domain-driven. Different application domains have different dominant constraints — and those constraints should drive both the database choice and the schema design philosophy.</p>
+  <div class="domain-grid">
+    <div class="domain-card">
+      <div class="domain-name">🛒 E-Commerce</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px">
+        <span class="dtag">PostgreSQL</span>
+        <span class="dtag">Redis</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">ACID transactions for inventory and payments. Redis for cart state, session tokens, and product catalogue caching. Partition orders by month. Consider Elasticsearch for product search.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🏦 FinTech</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px">
+        <span class="dtag">PostgreSQL</span>
+        <span class="dtag">Append-only</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Immutable ledger pattern — never UPDATE a transaction row, INSERT a correcting entry. Serializable isolation for critical transfers. Audit log in a separate table with trigger-based population.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">📋 ERP / SaaS</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px">
+        <span class="dtag">PostgreSQL</span>
+        <span class="dtag">Multi-tenant</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Row-level security per tenant. Schema-per-tenant or tenant_id column. Partitioning by tenant for large deployments. Citus for extreme multi-tenant scale.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">📱 Social Network</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px">
+        <span class="dtag">PostgreSQL</span>
+        <span class="dtag">Redis</span>
+        <span class="dtag">Cassandra</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">User profiles in PostgreSQL. Activity feeds in Redis (sorted sets) or Cassandra (wide-column, time-series friendly). Shard by user ID at extreme scale.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">🏥 Healthcare</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px">
+        <span class="dtag">PostgreSQL</span>
+        <span class="dtag">Audit Log</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">HIPAA compliance requires access logging and encryption at rest. Row-level security for provider-patient data access. Immutable audit tables. PostgreSQL + field-level encryption extensions.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">📊 Analytics SaaS</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px">
+        <span class="dtag">PostgreSQL</span>
+        <span class="dtag">ClickHouse</span>
+        <span class="dtag">Iceberg</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">OLTP for account management in PostgreSQL. Event ingestion to Kafka → ClickHouse or S3/Iceberg. Materialized views for dashboard queries. Never run analytical queries on the OLTP primary.</p>
+    </div>
+  </div>
+  <h3>The Immutable Ledger Pattern (FinTech Essential)</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">SQL — Immutable Ledger with Running Balance</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">-- Never UPDATE. Only INSERT.</span>
+<span class="kw">CREATE TABLE</span> ledger_entries <span class="pu">(</span>
+  id          <span class="ty">BIGINT</span> <span class="kw">GENERATED ALWAYS AS IDENTITY PRIMARY KEY</span>,
+  account_id  <span class="ty">BIGINT</span>        <span class="kw">NOT NULL</span>,
+  amount      <span class="ty">NUMERIC</span><span class="pu">(</span><span class="nm">18</span>,<span class="nm">6</span><span class="pu">)</span> <span class="kw">NOT NULL</span>,  <span class="cm">-- positive = credit, negative = debit</span>
+  entry_type  <span class="ty">TEXT</span>          <span class="kw">NOT NULL</span>,  <span class="cm">-- 'deposit', 'withdrawal', 'fee', 'reversal'</span>
+  reference   <span class="ty">TEXT</span>,                    <span class="cm">-- external transaction ID</span>
+  created_at  <span class="ty">TIMESTAMPTZ</span>   <span class="kw">NOT NULL DEFAULT NOW</span><span class="pu">(),</span>
+  created_by  <span class="ty">BIGINT</span>        <span class="kw">NOT NULL</span>   <span class="cm">-- user or service that created this entry</span>
+<span class="pu">);</span>
+
+<span class="cm">-- Running balance via window function (no stored balance field)</span>
+<span class="kw">SELECT</span>
+  id,
+  entry_type,
+  amount,
+  <span class="fn">SUM</span><span class="pu">(</span>amount<span class="pu">)</span> <span class="kw">OVER</span> <span class="pu">(</span>
+    <span class="kw">PARTITION BY</span> account_id
+    <span class="kw">ORDER BY</span> created_at
+    <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>
+  <span class="pu">)</span> <span class="kw">AS</span> running_balance
+<span class="kw">FROM</span> ledger_entries
+<span class="kw">WHERE</span> account_id <span class="op">=</span> <span class="nm">42</span>
+<span class="kw">ORDER BY</span> created_at<span class="pu">;</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── 13 ROADMAP ─── -->
+<div class="section" id="roadmap">
+  <div class="section-label">13 &mdash; The Learning Path</div>
+  <h2>Zero-to-Hero Learning Roadmap</h2>
+  <p class="lead">Database mastery is not a checklist — it is a mental model that accumulates. Each layer of understanding changes how you design schemas, write queries, and architect systems. This is the path from writing SQL to designing data platforms.</p>
+
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#dbeafe;color:#1d4ed8">Beginner</div>
+    <div class="roadmap-content">
+      <strong>Foundation:</strong> tables, columns, data types, primary keys, foreign keys. CRUD with <code>INSERT</code>, <code>SELECT</code>, <code>UPDATE</code>, <code>DELETE</code>. Basic <code>JOIN</code>s: INNER, LEFT, RIGHT. Filtering with <code>WHERE</code>, sorting with <code>ORDER BY</code>, grouping with <code>GROUP BY</code> and <code>HAVING</code>.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#dcfce7;color:#15803d">Intermediate</div>
+    <div class="roadmap-content">
+      <strong>Query Power:</strong> subqueries, CTEs, window functions (<code>ROW_NUMBER</code>, <code>RANK</code>, <code>LAG</code>, <code>LEAD</code>). Indexes: B-Tree, composite, partial, covering. Transactions with explicit <code>BEGIN</code> / <code>COMMIT</code> / <code>ROLLBACK</code>. Schema design: normalization, foreign key constraints, check constraints. Reading basic <code>EXPLAIN</code> output.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#fef3c7;color:#b45309">Advanced</div>
+    <div class="roadmap-content">
+      <strong>Performance &amp; Internals:</strong> isolation levels and their real-world effects. MVCC and autovacuum in PostgreSQL. <code>EXPLAIN ANALYZE</code> with <code>BUFFERS</code> — reading plans, identifying bad estimates, fixing them. Index types: GIN for JSONB and full-text, partial indexes, expression indexes. Connection pooling with PgBouncer. Replication: streaming, logical, and their trade-offs. Table partitioning for large tables.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#ede9fe;color:#6d28d9">Senior</div>
+    <div class="roadmap-content">
+      <strong>Architecture &amp; Systems Thinking:</strong> CAP theorem and what it means for database selection. Sharding strategies, shard key selection, and cross-shard coordination. Distributed SQL trade-offs (CockroachDB, TiDB, YugabyteDB). OLTP vs OLAP separation — when to introduce a data warehouse. CDC and event streaming for data sync. Multi-tenant data isolation patterns. Disaster recovery: RPO and RTO, backup strategies, point-in-time recovery. Database cost optimisation at scale.
+    </div>
+  </div>
+
+  <div class="pullquote">"A senior engineer doesn't ask, <em>'Which database is best?'</em> They ask: <em>'What problem am I solving, and which database's trade-offs align with that problem?'</em>"</div>
+
+  <h3>The Mental Model That Changes Everything</h3>
+  <p>The database world evolved through distinct eras, each solving a problem the previous era could not:</p>
+  <div class="arch-box">
+    <span class="hl">File Storage</span>                    <span class="dim">→ no concurrency, no querying</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Relational Databases (1970s)</span>   <span class="dim">→ ACID, SQL, normalization</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">MySQL / PostgreSQL (1990s–)</span>   <span class="dim">→ open-source, web-scale RDBMS</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">NoSQL Movement (2000s)</span>         <span class="dim">→ flexible schema, horizontal scale</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">NewSQL / Distributed SQL (2010s)</span> <span class="dim">→ SQL + horizontal scale + ACID</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Cloud Warehouses (2010s–)</span>      <span class="dim">→ Snowflake, BigQuery, Redshift</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Lakehouses (2020s)</span>             <span class="dim">→ Iceberg, Delta Lake, open formats</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Modern Data Platforms (now)</span>    <span class="dim">→ polyglot persistence, streaming, AI</span>
+  </div>
+  <h3>Quick Reference: Which Database for Which Problem</h3>
+  <table>
+    <thead><tr><th>Database</th><th>Optimised For</th><th>Avoid When</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MySQL</strong></td><td>Simple web CRUD, LAMP stack, SaaS with straightforward schemas</td><td>Complex analytics, advanced SQL features, full-text search</td></tr>
+      <tr><td><strong>PostgreSQL</strong></td><td>Complex queries, JSON storage, FinTech, ERP, anything needing strong integrity</td><td>Massive write-heavy sharded workloads (use Citus or CockroachDB instead)</td></tr>
+      <tr><td><strong>Redis</strong></td><td>Caching, sessions, rate limiting, pub/sub, leaderboards</td><td>Primary data store for critical data without persistence configuration</td></tr>
+      <tr><td><strong>MongoDB</strong></td><td>Flexible document storage, rapid iteration on schema</td><td>Workloads requiring strong relational integrity or complex joins</td></tr>
+      <tr><td><strong>Cassandra</strong></td><td>High write throughput, time-series, globally distributed data</td><td>Ad-hoc queries, transactions, anything requiring flexible querying</td></tr>
+      <tr><td><strong>CockroachDB</strong></td><td>Global ACID transactions, multi-region deployments</td><td>Simple single-region apps where PostgreSQL complexity is unnecessary</td></tr>
+      <tr><td><strong>Snowflake / BigQuery</strong></td><td>Analytics at scale, BI reporting, data warehouse</td><td>Transactional workloads — OLAP databases are not designed for OLTP</td></tr>
+      <tr><td><strong>Elasticsearch</strong></td><td>Full-text search, log analysis, faceted search UI</td><td>Primary data store — always replicate from your source-of-truth RDBMS</td></tr>
+    </tbody>
+  </table>
+  <div class="tip"><div class="tip-label">Final Principle</div>Start with PostgreSQL. Add Redis when you need caching. Add a search engine when full-text requirements exceed what pg's tsvector can handle. Add a warehouse when analytics queries start affecting production performance. Add Kafka when you need reliable event streaming between services. Reach for sharding or distributed SQL only when vertical scaling and read replicas are genuinely exhausted. Complexity is a liability — add it only when the cost of not adding it is higher.</div>
+</div>
+
+</div><!-- /content -->
+
+<footer>
+  <strong>DevDive</strong> &mdash; Deep dives for serious developers<br/>
+  <span style="margin-top:8px;display:block">Relational Databases: Zero to Hero &middot; June 2026</span>
+</footer>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+</script>
+</body>
+</html>

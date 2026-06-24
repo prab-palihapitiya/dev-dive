@@ -537,6 +537,9 @@
       .card[data-article="senior"] .card-cover {
         background: linear-gradient(140deg, #b45309, #d97706 60%, #fb923c);
       }
+      .card[data-article="rdbms"] .card-cover {
+        background: linear-gradient(140deg, #0c4a6e, #0369a1 60%, #38bdf8);
+      }
       .card[data-article="systems"] .card-cover {
         background: linear-gradient(140deg, #1e293b, #475569 60%, #94a3b8);
       }
@@ -835,6 +838,13 @@
       .card[data-article="systems"] .read-link:hover {
         background: #e2e8f0;
       }
+      .card[data-article="rdbms"] .read-link {
+        background: #e0f2fe;
+        color: #0369a1;
+      }
+      .card[data-article="rdbms"] .read-link:hover {
+        background: #bae6fd;
+      }
 
       /* Hover states for individual articles */
       .card[data-article="ts-mastery"]:hover {
@@ -887,6 +897,9 @@
       }
       .card[data-article="systems"]:hover {
         border-color: #cbd5e1;
+      }
+      .card[data-article="rdbms"]:hover {
+        border-color: #7dd3fc;
       }
       .card-rt {
         font-size: 12px;
@@ -1255,7 +1268,7 @@
       </div>
 
       <div class="nav-right">
-        <span class="nav-count" id="article-count">17 articles</span>
+        <span class="nav-count" id="article-count">18 articles</span>
       </div>
     </nav>
 
@@ -1411,7 +1424,7 @@
         >
           <div class="cat-ov-icon" style="background: #f0fdf4">⚙️</div>
           <div class="cat-ov-name">Backend</div>
-          <div class="cat-ov-count">4 articles</div>
+          <div class="cat-ov-count">5 articles</div>
         </div>
 
         <div
@@ -1451,7 +1464,7 @@
       <div class="section-title-row">
         <h2 class="section-title">Published Articles</h2>
         <span class="section-meta" id="filter-label"
-          >Showing all · 17 articles</span
+          >Showing all · 18 articles</span
         >
       </div>
 
@@ -2344,6 +2357,58 @@
               >Read Article <span class="arr">→</span></span
             >
             <span class="card-rt">~32 min read</span>
+          </div>
+        </a>
+
+        <!-- RDBMS Zero to Hero Card -->
+        <a
+          class="card"
+          data-cat="backend"
+          data-article="rdbms"
+          href="rdbms-zero-to-hero.html"
+        >
+          <div class="card-cover">
+            <div class="cover-bg-text">DB</div>
+            <div class="cover-badge">
+              <span class="cover-badge-lang">🗄️ Databases</span>
+              <span class="cover-badge-sub">Zero to Hero</span>
+            </div>
+            <div class="cover-pills">
+              <span class="cover-pill">MySQL</span>
+              <span class="cover-pill">PostgreSQL</span>
+              <span class="cover-pill">ACID</span>
+              <span class="cover-pill">Scaling</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-row">
+              <span class="cat-chip" style="background: #e0f2fe; color: #0369a1"
+                >Backend</span
+              >
+              <span class="card-sections">13 parts</span>
+            </div>
+            <div class="card-title">
+              Relational Databases: Zero to Hero — MySQL, PostgreSQL & Modern Data Platforms
+            </div>
+            <p class="card-desc">
+              From why databases exist and the relational model, through ACID
+              transactions, isolation levels, MySQL &amp; PostgreSQL internals,
+              indexing, query optimization, distributed SQL, and modern data
+              architectures — with real-world design patterns.
+            </p>
+            <div class="card-tags">
+              <span class="tag">ACID</span>
+              <span class="tag">Indexes</span>
+              <span class="tag">MVCC</span>
+              <span class="tag">Sharding</span>
+              <span class="tag">Data Warehouse</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="read-link"
+              >Read Article <span class="arr">→</span></span
+            >
+            <span class="card-rt">~38 min read</span>
           </div>
         </a>
       </div>
