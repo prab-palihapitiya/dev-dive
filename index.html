@@ -550,6 +550,19 @@
       .card[data-article="rdbms"] .read-link:hover {
         background: #bae6fd;
       }
+      .card[data-article="react-senior"] .card-cover {
+        background: linear-gradient(140deg, #0c4a6e, #0891b2 60%, #67e8f9);
+      }
+      .card[data-article="react-senior"]:hover {
+        border-color: #a5f3fc;
+      }
+      .card[data-article="react-senior"] .read-link {
+        background: #ecfeff;
+        color: #0891b2;
+      }
+      .card[data-article="react-senior"] .read-link:hover {
+        background: #cffafe;
+      }
       .card[data-article="devguidelines"] .card-cover {
         background: linear-gradient(140deg, #064e3b, #0d9488 60%, #34d399);
       }
@@ -1294,7 +1307,7 @@
       </div>
 
       <div class="nav-right">
-        <span class="nav-count" id="article-count">20 articles</span>
+        <span class="nav-count" id="article-count">21 articles</span>
       </div>
     </nav>
 
@@ -1409,7 +1422,7 @@
         >
           <div class="cat-ov-icon" style="background: #fffbeb">⚡</div>
           <div class="cat-ov-name">JavaScript</div>
-          <div class="cat-ov-count">3 articles</div>
+          <div class="cat-ov-count">5 articles</div>
         </div>
 
         <div
@@ -1490,7 +1503,7 @@
       <div class="section-title-row">
         <h2 class="section-title">Published Articles</h2>
         <span class="section-meta" id="filter-label"
-          >Showing all · 20 articles</span
+          >Showing all · 21 articles</span
         >
       </div>
 
@@ -2408,11 +2421,14 @@
           </div>
           <div class="card-body">
             <div class="card-row">
-              <span class="cat-chip" style="background:#e0f2fe;color:#0369a1">Backend</span>
+              <span class="cat-chip" style="background: #e0f2fe; color: #0369a1"
+                >Backend</span
+              >
               <span class="card-sections">13 parts</span>
             </div>
             <div class="card-title">
-              Relational Databases: Zero to Hero — MySQL, PostgreSQL &amp; Modern Data Platforms
+              Relational Databases: Zero to Hero — MySQL, PostgreSQL &amp;
+              Modern Data Platforms
             </div>
             <p class="card-desc">
               From why databases exist and the relational model, through ACID
@@ -2429,7 +2445,9 @@
             </div>
           </div>
           <div class="card-footer">
-            <span class="read-link">Read Article <span class="arr">→</span></span>
+            <span class="read-link"
+              >Read Article <span class="arr">→</span></span
+            >
             <span class="card-rt">~38 min read</span>
           </div>
         </a>
@@ -2455,16 +2473,20 @@
           </div>
           <div class="card-body">
             <div class="card-row">
-              <span class="cat-chip" style="background:#ede9fe;color:#7c3aed">Backend</span>
+              <span class="cat-chip" style="background: #ede9fe; color: #7c3aed"
+                >Backend</span
+              >
               <span class="card-sections">14 parts</span>
             </div>
             <div class="card-title">
-              Blockchain &amp; Web3: Smart Contracts, DApps &amp; the Decentralized Stack
+              Blockchain &amp; Web3: Smart Contracts, DApps &amp; the
+              Decentralized Stack
             </div>
             <p class="card-desc">
-              From the trust problem and cryptographic primitives, through Solidity,
-              smart contract security, ERC token standards, DeFi protocols, DAOs,
-              Layer 2 rollups, and enterprise blockchain — with real production patterns.
+              From the trust problem and cryptographic primitives, through
+              Solidity, smart contract security, ERC token standards, DeFi
+              protocols, DAOs, Layer 2 rollups, and enterprise blockchain — with
+              real production patterns.
             </p>
             <div class="card-tags">
               <span class="tag">Solidity</span>
@@ -2475,7 +2497,9 @@
             </div>
           </div>
           <div class="card-footer">
-            <span class="read-link">Read Article <span class="arr">→</span></span>
+            <span class="read-link"
+              >Read Article <span class="arr">→</span></span
+            >
             <span class="card-rt">~42 min read</span>
           </div>
         </a>
@@ -2502,17 +2526,19 @@
           </div>
           <div class="card-body">
             <div class="card-row">
-              <span class="cat-chip" style="background:#f0fdf4;color:#16a34a">Best Practices</span>
+              <span class="cat-chip" style="background: #f0fdf4; color: #16a34a"
+                >Best Practices</span
+              >
               <span class="card-sections">8 categories</span>
             </div>
             <div class="card-title">
               Clean Code: Developer Guidelines for JavaScript &amp; TypeScript
             </div>
             <p class="card-desc">
-              Robert C. Martin's heuristics and smells from Clean Code, translated
-              to JavaScript and TypeScript — 60+ named rules across Comments,
-              Functions, General principles, Naming, and Testing. Use rule codes
-              directly in pull request reviews.
+              Robert C. Martin's heuristics and smells from Clean Code,
+              translated to JavaScript and TypeScript — 60+ named rules across
+              Comments, Functions, General principles, Naming, and Testing. Use
+              rule codes directly in pull request reviews.
             </p>
             <div class="card-tags">
               <span class="tag">DRY</span>
@@ -2523,8 +2549,63 @@
             </div>
           </div>
           <div class="card-footer">
-            <span class="read-link">Read Article <span class="arr">→</span></span>
+            <span class="read-link"
+              >Read Article <span class="arr">→</span></span
+            >
             <span class="card-rt">~35 min read</span>
+          </div>
+        </a>
+
+        <!-- React Senior Guide Card -->
+        <a
+          class="card"
+          data-cat="javascript"
+          data-article="react-senior"
+          href="react-senior-guide.html"
+        >
+          <div class="card-cover">
+            <div class="cover-bg-text">Re</div>
+            <div class="cover-badge">
+              <span class="cover-badge-lang">⚛️ React</span>
+              <span class="cover-badge-sub">Senior Guide</span>
+            </div>
+            <div class="cover-pills">
+              <span class="cover-pill">Fiber</span>
+              <span class="cover-pill">RSC</span>
+              <span class="cover-pill">Performance</span>
+              <span class="cover-pill">Architecture</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-row">
+              <span class="cat-chip" style="background: #ecfeff; color: #0891b2"
+                >JavaScript</span
+              >
+              <span class="card-sections">12 parts</span>
+            </div>
+            <div class="card-title">
+              React: The Complete Senior Engineer's Guide — From Components to
+              Frontend Architecture
+            </div>
+            <p class="card-desc">
+              From React's Fiber internals and Concurrent Mode through hooks,
+              state architecture, TanStack Query, performance engineering, React
+              Server Components, frontend system design, and the patterns that
+              separate senior from staff-level engineers.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Fiber</span>
+              <span class="tag">RSC</span>
+              <span class="tag">Next.js</span>
+              <span class="tag">Zustand</span>
+              <span class="tag">System Design</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="read-link"
+              >Read Article <span class="arr">→</span></span
+            >
+            <span class="card-rt">~45 min read</span>
           </div>
         </a>
       </div>

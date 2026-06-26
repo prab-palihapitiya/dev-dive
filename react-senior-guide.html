@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>React: The Senior Engineer's Complete Guide — DevDive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#faf8f5;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
+      --text-muted:#9a9a9a;--accent:#0891b2;--accent-light:#ecfeff;--accent-subtle:#cffafe;
+      --border:#e8e3db;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#f3f0eb;
+      --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
+      --info-bg:#eff6ff;--info-border:#2563eb;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Outfit",sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.8}
+    nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s}
+    .nav-back:hover{color:var(--accent)}
+    .nav-pipe{color:var(--border);font-size:18px}
+    .nav-brand{font-size:14px;font-weight:700;letter-spacing:-.3px}
+    .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:100px}
+    .nav-links{display:flex;gap:0}
+    .nav-links a{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:5px 8px;border-radius:6px;transition:all .15s;white-space:nowrap}
+    .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
+    .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+    .hero{max-width:800px;margin:0 auto;padding:64px 2rem 48px}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:24px}
+    .hero h1{font-family:"Lora",serif;font-size:clamp(30px,4.5vw,48px);font-weight:600;line-height:1.15;letter-spacing:-.5px;margin-bottom:20px}
+    .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+    .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0e7490,#0891b2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white}
+    .meta-text{font-size:14px;color:var(--text-secondary)}
+    .meta-text strong{color:var(--text-primary)}
+    .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+    .toc-wrapper{max-width:800px;margin:0 auto;padding:0 2rem 8px}
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:48px}
+    .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+    .toc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px 20px}
+    .toc a{font-size:13.5px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
+    .toc a:hover{color:var(--accent)}
+    .toc-num{font-size:11px;color:var(--text-muted);font-weight:600;min-width:18px;flex-shrink:0}
+    .content{max-width:800px;margin:0 auto;padding:0 2rem 80px}
+    .section{margin-bottom:72px;scroll-margin-top:72px}
+    .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .section-label::after{content:"";flex:1;height:1px;background:var(--accent-subtle)}
+    h2{font-family:"Lora",serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:14px}
+    h3{font-size:18px;font-weight:600;margin:32px 0 10px}
+    p{margin-bottom:16px;color:#2d2d2d;line-height:1.8}
+    .lead{font-size:18px;color:var(--text-secondary);font-weight:300;margin-bottom:20px;line-height:1.7}
+    .code-block{background:var(--code-bg);border-radius:10px;margin:20px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+    .code-header{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+    .code-lang{font-size:11px;color:#6e7681;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+    .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:"Outfit",sans-serif;transition:all .15s}
+    .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+    pre{padding:18px 20px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.75;color:var(--code-text)}
+    pre code{background:none;padding:0;font-size:inherit;color:inherit}
+    code{font-family:"JetBrains Mono",monospace;font-size:13px;background:#ecfeff;color:#0891b2;padding:2px 6px;border-radius:4px}
+    .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+    .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+    .pu{color:#e6edf3}.bi{color:#ffa657}.at{color:#79c0ff}.jsx{color:#7ee787}
+    .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .tip-label{font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .warn-label{font-size:11px;font-weight:700;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .info-label{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14.5px}
+    th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:12px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+    td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--bg)}
+    .pullquote{font-family:"Lora",serif;font-style:italic;font-size:20px;line-height:1.55;color:var(--text-secondary);border-left:4px solid var(--accent);padding:10px 22px;margin:32px 0}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:20px 0}
+    .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 17px}
+    .concept-card h4{font-size:14px;font-weight:600;margin:0 0 5px}
+    .concept-card p{font-size:13px;color:var(--text-secondary);margin:0;line-height:1.5}
+    .concept-icon{font-size:19px;margin-bottom:8px}
+    .arch-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin:20px 0;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:2.1;color:var(--text-secondary);overflow-x:auto}
+    .arch-box .hl{color:var(--accent);font-weight:600}
+    .arch-box .dim{color:var(--text-muted)}
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+    .compare-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+    .compare-card h4{font-size:14px;font-weight:700;margin-bottom:10px}
+    .compare-card ul{margin:0;padding-left:18px}
+    .compare-card li{font-size:14px;color:var(--text-secondary);margin-bottom:4px;line-height:1.55}
+    .domain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:24px 0}
+    .domain-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+    .domain-name{font-size:13px;font-weight:700;margin-bottom:6px}
+    .dtag{font-size:11px;font-weight:600;padding:2px 7px;border-radius:100px;background:var(--accent-subtle);color:var(--accent);display:inline-block;margin:2px 2px 0 0}
+    .roadmap-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+    .roadmap-step{min-width:90px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:100px;text-align:center;flex-shrink:0;margin-top:2px}
+    .roadmap-content{font-size:14.5px;color:var(--text-secondary);line-height:1.6}
+    footer{background:#1a1a1a;color:rgba(255,255,255,.65);text-align:center;padding:40px 2rem;font-size:14px}
+    footer strong{color:white}
+    @media(max-width:640px){.toc-grid{grid-template-columns:1fr 1fr}.nav-links{display:none}.concept-grid,.domain-grid{grid-template-columns:1fr 1fr}.compare-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="index.html">&#8592; DevDive</a>
+    <span class="nav-pipe">|</span>
+    <span class="nav-brand">React: The Senior Engineer's Guide</span>
+    <span class="nav-badge">JavaScript</span>
+  </div>
+  <div class="nav-links">
+    <a href="#why">Why React</a>
+    <a href="#fundamentals">Fundamentals</a>
+    <a href="#rendering">Rendering &amp; Fiber</a>
+    <a href="#hooks">Hooks</a>
+    <a href="#state">State Architecture</a>
+    <a href="#data">Data Layer</a>
+    <a href="#performance">Performance</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#nextjs">Next.js &amp; RSC</a>
+    <a href="#system-design">System Design</a>
+    <a href="#security">Security &amp; Testing</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+  <span class="nav-rt">~45 min read</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; JavaScript</div>
+  <h1>React: The Senior Engineer's Complete Guide</h1>
+  <p class="hero-sub">
+    From React's core rendering model and Fiber internals through hooks, state architecture,
+    React Server Components, performance engineering, frontend system design, and the patterns
+    that separate senior engineers from staff-level architects.
+  </p>
+  <div class="hero-meta">
+    <div class="avatar">Re</div>
+    <div class="meta-text">
+      <strong>React Architecture Field Guide</strong><br/>
+      12 Parts &middot; Fundamentals to Staff-Level &middot; React 19 &amp; Next.js 15 &mdash; June 2026
+    </div>
+  </div>
+  <hr class="hero-divider"/>
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>12 Parts &mdash; Fundamentals to Frontend Platform Engineering</h3>
+    <div class="toc-grid">
+      <a href="#why"><span class="toc-num">01</span>Why React Exists</a>
+      <a href="#performance"><span class="toc-num">07</span>Performance Engineering</a>
+      <a href="#fundamentals"><span class="toc-num">02</span>React Fundamentals</a>
+      <a href="#architecture"><span class="toc-num">08</span>Modern Architecture</a>
+      <a href="#rendering"><span class="toc-num">03</span>Rendering &amp; Fiber</a>
+      <a href="#nextjs"><span class="toc-num">09</span>Next.js &amp; RSC</a>
+      <a href="#hooks"><span class="toc-num">04</span>Hooks Deep Dive</a>
+      <a href="#system-design"><span class="toc-num">10</span>Frontend System Design</a>
+      <a href="#state"><span class="toc-num">05</span>State Architecture</a>
+      <a href="#security"><span class="toc-num">11</span>Security &amp; Testing</a>
+      <a href="#data"><span class="toc-num">06</span>Data Layer</a>
+      <a href="#roadmap"><span class="toc-num">12</span>Senior → Staff Roadmap</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ─── 01 WHY REACT ─── -->
+<div class="section" id="why">
+  <div class="section-label">01 &mdash; Origins</div>
+  <h2>Why React Exists</h2>
+  <p class="lead">React was not created to be a component library. It was created to solve a specific, painful problem that all large web applications hit: as UI state grows, keeping the DOM in sync with application state becomes exponentially more complex and unpredictable.</p>
+  <h3>The Frontend Before React</h3>
+  <p>Before React, the dominant model was imperative DOM manipulation. jQuery made it easy; it did not make it correct. When your application had dozens of UI elements that all needed to reflect the same piece of state, you wrote code like:</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">JavaScript — jQuery Era</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// Every time user data changes, manually update every element</span>
+<span class="kw">function</span> <span class="fn">onUserLoaded</span><span class="pu">(</span>user<span class="pu">) {</span>
+  <span class="fn">$</span><span class="pu">(</span><span class="st">'#header-name'</span><span class="pu">).</span><span class="fn">text</span><span class="pu">(</span>user.name<span class="pu">);</span>
+  <span class="fn">$</span><span class="pu">(</span><span class="st">'#sidebar-avatar'</span><span class="pu">).</span><span class="fn">attr</span><span class="pu">(</span><span class="st">'src'</span>, user.avatar<span class="pu">);</span>
+  <span class="fn">$</span><span class="pu">(</span><span class="st">'#profile-email'</span><span class="pu">).</span><span class="fn">text</span><span class="pu">(</span>user.email<span class="pu">);</span>
+  <span class="fn">$</span><span class="pu">(</span><span class="st">'#dashboard-greeting'</span><span class="pu">).</span><span class="fn">text</span><span class="pu">(</span><span class="st">'Hello, '</span> + user.name<span class="pu">);</span>
+  <span class="cm">// ... and 20 more elements scattered across the page</span>
+  <span class="cm">// Miss one? Silent bug. State is out of sync.</span>
+<span class="pu">}</span></code></pre>
+  </div>
+  <p>The core problem: state lived in the DOM itself. The DOM was both the data store and the view. As applications grew, keeping these in sync required increasingly complex event chains, and bugs became almost impossible to trace.</p>
+  <h3>React's Core Insight</h3>
+  <p>React's founding idea, articulated in the 2013 JSConf presentation, was deceptively simple:</p>
+  <div class="pullquote">"UI is a function of state. Given the same state, the UI should always look the same. Re-render everything on every state change, and let the framework figure out the minimal DOM update."</div>
+  <p>This shifted frontend from <em>imperative</em> (tell the DOM what to change) to <em>declarative</em> (describe what the UI should look like for any given state, and React handles the rest).</p>
+  <div class="arch-box">
+    <span class="dim">Imperative (jQuery): </span><span class="hl">Find element → mutate it → hope everything is consistent</span><br/>
+    <span class="dim">Declarative (React): </span><span class="hl">UI = f(state) → React diffs → minimal DOM update</span><br/><br/>
+    <span class="dim">State changes? Re-run f(state). React calculates the diff. Done.</span><br/>
+    <span class="dim">No manual DOM tracking. No synchronization bugs. Predictable.</span>
+  </div>
+</div>
+
+<!-- ─── 02 FUNDAMENTALS ─── -->
+<div class="section" id="fundamentals">
+  <div class="section-label">02 &mdash; Core Concepts</div>
+  <h2>React Fundamentals</h2>
+  <p class="lead">Components, JSX, props, and state are React's four foundational primitives. Understanding what each one actually is — not just how to use it — is the difference between using React and understanding React.</p>
+  <h3>Components</h3>
+  <p>A React component is a pure function that maps props to a React element tree. The function takes an input object (props) and returns a description of what to render. React calls this function, compares the result to the previous result, and updates only what changed.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Component Anatomy</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> useState <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="cm">// Props contract — typed explicitly</span>
+<span class="kw">interface</span> <span class="ty">UserCardProps</span> <span class="pu">{</span>
+  name: <span class="ty">string</span>
+  role: <span class="ty">string</span>
+  avatarUrl: <span class="ty">string</span>
+  onSelect?: <span class="pu">(</span>name: <span class="ty">string</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">void</span>
+<span class="pu">}</span>
+
+<span class="cm">// Component = pure function: props → React element tree</span>
+<span class="kw">export function</span> <span class="fn">UserCard</span><span class="pu">({</span> name, role, avatarUrl, onSelect <span class="pu">}:</span> <span class="ty">UserCardProps</span><span class="pu">) {</span>
+  <span class="kw">const</span> <span class="pu">[</span>expanded, setExpanded<span class="pu">]</span> = <span class="fn">useState</span><span class="pu">(</span><span class="kw">false</span><span class="pu">)</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="jsx">&lt;div</span> <span class="at">className</span>=<span class="st">"card"</span> <span class="at">onClick</span>=<span class="pu">{()</span> <span class="op">=&gt;</span> onSelect?.<span class="pu">(</span>name<span class="pu">)}&gt;</span>
+      <span class="jsx">&lt;img</span> <span class="at">src</span>=<span class="pu">{</span>avatarUrl<span class="pu">}</span> <span class="at">alt</span>=<span class="pu">{</span>name<span class="pu">}</span> <span class="jsx">/&gt;</span>
+      <span class="jsx">&lt;h3&gt;</span><span class="pu">{</span>name<span class="pu">}</span><span class="jsx">&lt;/h3&gt;</span>
+      <span class="pu">{</span>expanded <span class="op">&amp;&amp;</span> <span class="jsx">&lt;p&gt;</span><span class="pu">{</span>role<span class="pu">}</span><span class="jsx">&lt;/p&gt;</span><span class="pu">}</span>
+      <span class="jsx">&lt;button</span> <span class="at">onClick</span>=<span class="pu">{(</span>e<span class="pu">)</span> <span class="op">=&gt;</span> <span class="pu">{</span> e.<span class="fn">stopPropagation</span><span class="pu">()</span>; <span class="fn">setExpanded</span><span class="pu">(</span>e <span class="op">=&gt;</span> !e<span class="pu">)</span> <span class="pu">}}&gt;</span>
+        <span class="pu">{</span>expanded ? <span class="st">'Less'</span> : <span class="st">'More'</span><span class="pu">}</span>
+      <span class="jsx">&lt;/button&gt;</span>
+    <span class="jsx">&lt;/div&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>JSX — Not HTML</h3>
+  <p>JSX is syntactic sugar that compiles to <code>React.createElement()</code> calls. Understanding this is important because it explains why JSX has certain constraints (single root element, className not class, camelCase attributes) and why React can render to non-DOM targets like React Native, terminals, and PDFs.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">JSX → JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// What you write</span>
+<span class="kw">const</span> el = <span class="jsx">&lt;Button</span> <span class="at">variant</span>=<span class="st">"primary"</span> <span class="at">onClick</span>=<span class="pu">{</span>handleClick<span class="pu">}&gt;</span>Save<span class="jsx">&lt;/Button&gt;</span>
+
+<span class="cm">// What the compiler emits (React 17+ automatic JSX transform)</span>
+<span class="kw">import</span> <span class="pu">{</span> jsx <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react/jsx-runtime'</span>
+<span class="kw">const</span> el = <span class="fn">jsx</span><span class="pu">(</span>Button, <span class="pu">{</span> variant: <span class="st">'primary'</span>, onClick: handleClick, children: <span class="st">'Save'</span> <span class="pu">})</span>
+
+<span class="cm">// This returns a plain JS object (a React element):</span>
+<span class="cm">// { type: Button, props: { variant: 'primary', onClick: f, children: 'Save' } }</span>
+<span class="cm">// It is NOT a DOM element. React creates the DOM element later.</span></code></pre>
+  </div>
+
+  <h3>Props vs State</h3>
+  <table>
+    <thead><tr><th>Dimension</th><th>Props</th><th>State</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Ownership</strong></td><td>Owned by the parent; passed down</td><td>Owned by the component itself</td></tr>
+      <tr><td><strong>Mutability</strong></td><td>Immutable from child's perspective</td><td>Mutable via <code>setState</code> / setter</td></tr>
+      <tr><td><strong>Re-render trigger</strong></td><td>Yes — when parent re-renders with new value</td><td>Yes — when setter is called with a new value</td></tr>
+      <tr><td><strong>Persistence</strong></td><td>Lives as long as parent keeps passing it</td><td>Lives as long as component is mounted</td></tr>
+      <tr><td><strong>Purpose</strong></td><td>Component configuration and data</td><td>UI-local mutable data</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ─── 03 RENDERING & FIBER ─── -->
+<div class="section" id="rendering">
+  <div class="section-label">03 &mdash; Internals</div>
+  <h2>Rendering, Reconciliation &amp; Fiber</h2>
+  <p class="lead">React's rendering model is its most important and least understood subsystem. Every performance problem, every unexpected re-render, every subtle state bug traces back to how React decides what to render, when to render it, and how to reconcile the result with the previous tree.</p>
+  <h3>The Render Pipeline</h3>
+  <div class="arch-box">
+    <span class="hl">Trigger</span> <span class="dim">— setState(), new props, context change, forceUpdate()</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Render Phase</span> <span class="dim">(pure, interruptible in Concurrent Mode)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;React calls component functions → builds new virtual DOM tree</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Diffs new tree against previous tree (reconciliation)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Produces a list of "effects" (DOM mutations needed)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Commit Phase</span> <span class="dim">(synchronous, non-interruptible)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Applies DOM mutations (beforeMutation → mutation → layout)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Runs useLayoutEffect synchronously</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Schedules useEffect for async execution</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Passive Effects</span> <span class="dim">— useEffect runs after paint</span>
+  </div>
+  <div class="info"><div class="info-label">Key insight</div>The render phase is <strong>pure and side-effect free</strong>. This is why React can safely interrupt, restart, and throw away in-progress renders in Concurrent Mode. The commit phase is where side effects happen — and it is always synchronous and complete.</div>
+
+  <h3>React Fiber Architecture</h3>
+  <p>The old React reconciler (pre-v16) used a recursive, synchronous call stack. A large re-render would block the main thread for its full duration — causing dropped frames and janky UIs. Fiber replaced it with a linked-list work unit model that can be interrupted.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🧵</div><h4>Fiber Nodes</h4><p>Each component instance has a corresponding Fiber node — a plain JS object that tracks component type, props, state, effects, and pointers to parent/child/sibling fibers.</p></div>
+    <div class="concept-card"><div class="concept-icon">⏸️</div><h4>Interruptible Work</h4><p>React processes fibers one at a time. Between each unit of work, it checks if higher-priority work has arrived. If so, it pauses and handles the priority work first.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔀</div><h4>Priority Lanes</h4><p>React 18 introduced Lanes — a bitmask-based priority system. User interactions get high-priority lanes; background work gets low-priority lanes. This is what powers <code>useTransition</code>.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌲</div><h4>Double Buffering</h4><p>React maintains two trees: the "current" tree (what's on screen) and the "work-in-progress" tree (what's being computed). Completed work-in-progress becomes the new current atomically at commit.</p></div>
+  </div>
+
+  <h3>Reconciliation — The Diffing Algorithm</h3>
+  <p>React's reconciler needs to diff two trees efficiently. A naive tree diff is O(n³). React achieves O(n) by applying two assumptions: elements of different types produce different trees, and <code>key</code> props identify which list elements are stable across renders.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Keys and Reconciliation</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// ❌ Without keys: React can't match items across renders</span>
+<span class="cm">// On re-order, React unmounts/remounts everything → loses input state</span>
+<span class="pu">{</span>users.<span class="fn">map</span><span class="pu">(</span>u <span class="op">=&gt;</span> <span class="jsx">&lt;UserRow</span> <span class="at">user</span>=<span class="pu">{</span>u<span class="pu">}</span> <span class="jsx">/&gt;</span><span class="pu">)}</span>
+
+<span class="cm">// ❌ Index as key: still breaks on re-order (index changes)</span>
+<span class="pu">{</span>users.<span class="fn">map</span><span class="pu">((</span>u, i<span class="pu">)</span> <span class="op">=&gt;</span> <span class="jsx">&lt;UserRow</span> <span class="at">key</span>=<span class="pu">{</span>i<span class="pu">}</span> <span class="at">user</span>=<span class="pu">{</span>u<span class="pu">}</span> <span class="jsx">/&gt;</span><span class="pu">)}</span>
+
+<span class="cm">// ✅ Stable, unique key: React tracks identity across renders</span>
+<span class="pu">{</span>users.<span class="fn">map</span><span class="pu">(</span>u <span class="op">=&gt;</span> <span class="jsx">&lt;UserRow</span> <span class="at">key</span>=<span class="pu">{</span>u.id<span class="pu">}</span> <span class="at">user</span>=<span class="pu">{</span>u<span class="pu">}</span> <span class="jsx">/&gt;</span><span class="pu">)}</span>
+
+<span class="cm">// Keys also force remount — useful to reset component state:</span>
+<span class="jsx">&lt;ProfileForm</span> <span class="at">key</span>=<span class="pu">{</span>selectedUserId<span class="pu">}</span> <span class="at">userId</span>=<span class="pu">{</span>selectedUserId<span class="pu">}</span> <span class="jsx">/&gt;</span>
+<span class="cm">// Changing selectedUserId unmounts old form (clearing state) and mounts fresh one</span></code></pre>
+  </div>
+
+  <h3>Concurrent Rendering</h3>
+  <p>React 18's Concurrent Mode enables React to prepare multiple UI versions simultaneously and interrupt low-priority renders when high-priority work arrives. This is what makes <code>useTransition</code> and <code>useDeferredValue</code> possible — they tell React which updates can be deferred without blocking user interaction.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — useTransition for Non-Blocking Updates</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> useState, useTransition <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="kw">function</span> <span class="fn">SearchPage</span><span class="pu">() {</span>
+  <span class="kw">const</span> <span class="pu">[</span>query, setQuery<span class="pu">]</span> = <span class="fn">useState</span><span class="pu">(</span><span class="st">''</span><span class="pu">)</span>
+  <span class="kw">const</span> <span class="pu">[</span>results, setResults<span class="pu">]</span> = <span class="fn">useState</span><span class="pu">([])</span>
+  <span class="kw">const</span> <span class="pu">[</span>isPending, startTransition<span class="pu">]</span> = <span class="fn">useTransition</span><span class="pu">()</span>
+
+  <span class="kw">function</span> <span class="fn">handleSearch</span><span class="pu">(</span>value: <span class="ty">string</span><span class="pu">) {</span>
+    <span class="fn">setQuery</span><span class="pu">(</span>value<span class="pu">)</span>              <span class="cm">// Urgent: update input immediately</span>
+    <span class="fn">startTransition</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="pu">{</span>   <span class="cm">// Non-urgent: filter 10k items</span>
+      <span class="fn">setResults</span><span class="pu">(</span><span class="fn">filterItems</span><span class="pu">(</span>value<span class="pu">))</span>
+    <span class="pu">})</span>
+  <span class="pu">}</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="jsx">&lt;&gt;</span>
+      <span class="jsx">&lt;input</span> <span class="at">value</span>=<span class="pu">{</span>query<span class="pu">}</span> <span class="at">onChange</span>=<span class="pu">{</span>e <span class="op">=&gt;</span> <span class="fn">handleSearch</span><span class="pu">(</span>e.target.value<span class="pu">)}</span> <span class="jsx">/&gt;</span>
+      <span class="pu">{</span>isPending ? <span class="jsx">&lt;Spinner</span> <span class="jsx">/&gt;</span> : <span class="jsx">&lt;ResultList</span> <span class="at">items</span>=<span class="pu">{</span>results<span class="pu">}</span> <span class="jsx">/&gt;</span><span class="pu">}</span>
+    <span class="jsx">&lt;/&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── 04 HOOKS ─── -->
+<div class="section" id="hooks">
+  <div class="section-label">04 &mdash; Hooks</div>
+  <h2>Hooks Deep Dive</h2>
+  <p class="lead">Hooks are not just a syntactic convenience over class components. They are a fundamentally better model for composing stateful logic — one that makes it possible to extract, test, and reuse behaviour that was previously trapped inside component lifecycle methods.</p>
+
+  <h3>useState — Snapshot Semantics</h3>
+  <p>The most important mental model for <code>useState</code>: state is a snapshot at render time. Calling the setter does not mutate the current value — it schedules a re-render with the new value. This is why closures over state can go stale in async code.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — useState Snapshot Trap & Functional Updates</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// ❌ Stale closure: count is captured at render time (0)</span>
+<span class="kw">function</span> <span class="fn">BuggyCounter</span><span class="pu">() {</span>
+  <span class="kw">const</span> <span class="pu">[</span>count, setCount<span class="pu">]</span> = <span class="fn">useState</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+  <span class="kw">const</span> <span class="fn">handleClick</span> = <span class="pu">()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+    <span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="fn">setCount</span><span class="pu">(</span>count + <span class="nm">1</span><span class="pu">),</span> <span class="nm">1000</span><span class="pu">)</span> <span class="cm">// always sets to 1</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+
+<span class="cm">// ✅ Functional update: receives the LATEST state, not the closure</span>
+<span class="kw">function</span> <span class="fn">CorrectCounter</span><span class="pu">() {</span>
+  <span class="kw">const</span> <span class="pu">[</span>count, setCount<span class="pu">]</span> = <span class="fn">useState</span><span class="pu">(</span><span class="nm">0</span><span class="pu">)</span>
+  <span class="kw">const</span> <span class="fn">handleClick</span> = <span class="pu">()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+    <span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="fn">setCount</span><span class="pu">(</span>prev <span class="op">=&gt;</span> prev + <span class="nm">1</span><span class="pu">),</span> <span class="nm">1000</span><span class="pu">)</span> <span class="cm">// correct</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>useEffect — Synchronization, Not Lifecycle</h3>
+  <p>The mental model that makes <code>useEffect</code> click: it is not "run code after mount" — it is "synchronize this side effect with these values." The cleanup function un-synchronizes when the values change or the component unmounts. Thinking of it as synchronization eliminates most dependency array bugs.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — useEffect Synchronization Mental Model</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// Think: "Synchronize a subscription to roomId"</span>
+<span class="fn">useEffect</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+  <span class="kw">const</span> socket = <span class="fn">connectToRoom</span><span class="pu">(</span>roomId<span class="pu">)</span>           <span class="cm">// synchronize</span>
+  socket.<span class="fn">on</span><span class="pu">(</span><span class="st">'message'</span>, <span class="fn">handleMessage</span><span class="pu">)</span>
+
+  <span class="kw">return</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+    socket.<span class="fn">off</span><span class="pu">(</span><span class="st">'message'</span>, <span class="fn">handleMessage</span><span class="pu">)</span>
+    socket.<span class="fn">disconnect</span><span class="pu">()</span>                          <span class="cm">// un-synchronize</span>
+  <span class="pu">}</span>
+<span class="pu">},</span> <span class="pu">[</span>roomId<span class="pu">])</span>
+<span class="cm">// When roomId changes: cleanup old room → connect to new room</span>
+<span class="cm">// Not "run on mount" — "keep in sync with roomId"</span></code></pre>
+  </div>
+  <div class="warn"><div class="warn-label">useEffect is rarely the right tool for data fetching</div>Effects run after paint, create waterfalls in nested components, and require manual cleanup of race conditions. Use TanStack Query, SWR, or React Router loaders for data fetching. Reserve useEffect for browser APIs, subscriptions, and third-party library synchronization.</div>
+
+  <h3>useMemo &amp; useCallback — When They Actually Help</h3>
+  <p>Both hooks skip re-computation between renders when dependencies haven't changed. The cost: every render checks the dependency array and stores the previous result. They only provide a net benefit when the saved work exceeds the memoization overhead.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Memoization Decision Guide</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// ❌ useMemo for cheap operations — overhead exceeds benefit</span>
+<span class="kw">const</span> fullName = <span class="fn">useMemo</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="st">`</span><span class="pu">${</span>first<span class="pu">}</span><span class="st"> </span><span class="pu">${</span>last<span class="pu">}</span><span class="st">`</span>, <span class="pu">[</span>first, last<span class="pu">])</span>
+
+<span class="cm">// ✅ useMemo for genuinely expensive computation</span>
+<span class="kw">const</span> sortedFilteredItems = <span class="fn">useMemo</span><span class="pu">(()</span> <span class="op">=&gt;</span>
+  items
+    .<span class="fn">filter</span><span class="pu">(</span>i <span class="op">=&gt;</span> i.category === activeCategory<span class="pu">)</span>
+    .<span class="fn">sort</span><span class="pu">((</span>a, b<span class="pu">)</span> <span class="op">=&gt;</span> a.name.<span class="fn">localeCompare</span><span class="pu">(</span>b.name<span class="pu">))</span>,
+  <span class="pu">[</span>items, activeCategory<span class="pu">]</span>
+<span class="pu">)</span>  <span class="cm">// items has 5,000 entries — sorting is expensive</span>
+
+<span class="cm">// ✅ useCallback to stabilize a ref passed to a memoized child</span>
+<span class="kw">const</span> handleDelete = <span class="fn">useCallback</span><span class="pu">((</span>id: <span class="ty">string</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+  <span class="fn">deleteItem</span><span class="pu">(</span>id<span class="pu">)</span>
+<span class="pu">},</span> <span class="pu">[])</span>  <span class="cm">// stable reference → React.memo child won't re-render</span></code></pre>
+  </div>
+
+  <h3>Custom Hooks — The Real Power</h3>
+  <p>Custom hooks are the primary mechanism for code reuse in React. Any stateful logic — data fetching, form handling, WebSocket connections, media queries, authentication — can be extracted into a custom hook that is testable in isolation and composable across components.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Production Custom Hooks</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// useLocalStorage — persists state to localStorage with SSR safety</span>
+<span class="kw">function</span> <span class="fn">useLocalStorage</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span><span class="pu">(</span>key: <span class="ty">string</span>, initialValue: <span class="ty">T</span><span class="pu">) {</span>
+  <span class="kw">const</span> <span class="pu">[</span>value, setValue<span class="pu">]</span> = <span class="fn">useState</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(</span><span class="kw">typeof</span> window === <span class="st">'undefined'</span><span class="pu">)</span> <span class="kw">return</span> initialValue
+    <span class="kw">try</span> <span class="pu">{</span>
+      <span class="kw">const</span> item = window.localStorage.<span class="fn">getItem</span><span class="pu">(</span>key<span class="pu">)</span>
+      <span class="kw">return</span> item ? <span class="ty">JSON</span>.<span class="fn">parse</span><span class="pu">(</span>item<span class="pu">)</span> <span class="op">as</span> <span class="ty">T</span> : initialValue
+    <span class="pu">}</span> <span class="kw">catch</span> <span class="pu">{</span> <span class="kw">return</span> initialValue <span class="pu">}</span>
+  <span class="pu">})</span>
+
+  <span class="kw">const</span> setStoredValue = <span class="fn">useCallback</span><span class="pu">((</span>newValue: <span class="ty">T</span> | <span class="pu">((</span>prev: <span class="ty">T</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="ty">T</span><span class="pu">))</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+    <span class="kw">const</span> resolved = newValue <span class="kw">instanceof</span> <span class="ty">Function</span>
+      ? <span class="fn">newValue</span><span class="pu">(</span>value<span class="pu">)</span> : newValue
+    <span class="fn">setValue</span><span class="pu">(</span>resolved<span class="pu">)</span>
+    window.localStorage.<span class="fn">setItem</span><span class="pu">(</span>key, <span class="ty">JSON</span>.<span class="fn">stringify</span><span class="pu">(</span>resolved<span class="pu">))</span>
+  <span class="pu">},</span> <span class="pu">[</span>key, value<span class="pu">])</span>
+
+  <span class="kw">return</span> <span class="pu">[</span>value, setStoredValue<span class="pu">]</span> <span class="kw">as const</span>
+<span class="pu">}</span>
+
+<span class="cm">// useDebounce — debounces a value (for search inputs, etc.)</span>
+<span class="kw">function</span> <span class="fn">useDebounce</span><span class="op">&lt;</span><span class="ty">T</span><span class="op">&gt;</span><span class="pu">(</span>value: <span class="ty">T</span>, delayMs: <span class="ty">number</span><span class="pu">)</span>: <span class="ty">T</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">[</span>debounced, setDebounced<span class="pu">]</span> = <span class="fn">useState</span><span class="pu">(</span>value<span class="pu">)</span>
+  <span class="fn">useEffect</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+    <span class="kw">const</span> timer = <span class="fn">setTimeout</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="fn">setDebounced</span><span class="pu">(</span>value<span class="pu">),</span> delayMs<span class="pu">)</span>
+    <span class="kw">return</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="fn">clearTimeout</span><span class="pu">(</span>timer<span class="pu">)</span>
+  <span class="pu">},</span> <span class="pu">[</span>value, delayMs<span class="pu">])</span>
+  <span class="kw">return</span> debounced
+<span class="pu">}</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── 05 STATE ─── -->
+<div class="section" id="state">
+  <div class="section-label">05 &mdash; State Architecture</div>
+  <h2>State Architecture at Scale</h2>
+  <p class="lead">State management is the hardest design problem in React applications. Not because the tools are complex, but because developers consistently misclassify state — putting server data in Redux, URL state in useState, and local UI state in a global store. The solution is a clear taxonomy.</p>
+
+  <h3>The State Classification Framework</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">📍</div><h4>Local State</h4><p>Owned by one component. Examples: modal open/closed, input value, accordion expanded. Tool: <code>useState</code>, <code>useReducer</code>.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌐</div><h4>Shared UI State</h4><p>Needed by multiple components in the same subtree. Examples: selected item, active tab. Tool: lift state up, or <code>useContext</code>.</p></div>
+    <div class="concept-card"><div class="concept-icon">🗂️</div><h4>Global UI State</h4><p>App-wide UI decisions: theme, language, sidebar collapsed. Tool: Context API, Zustand. Rarely needs Redux.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌍</div><h4>Server State</h4><p>Data that lives on the server: users, orders, products. The client has a cached copy. Tool: TanStack Query, SWR — not Redux.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔗</div><h4>URL State</h4><p>State that should survive page refresh and be shareable: filters, pagination, selected IDs. Tool: query params via <code>useSearchParams</code>.</p></div>
+    <div class="concept-card"><div class="concept-icon">💾</div><h4>Session State</h4><p>Auth tokens, user preferences, feature flags. Survives navigation but not new sessions. Tool: localStorage hook, session storage, or auth context.</p></div>
+  </div>
+  <div class="tip"><div class="tip-label">The most common state architecture mistake</div>Putting server data in Redux. Redux is for client-side state that your application owns. Users, orders, and products live on the server — you have a temporary cache. TanStack Query manages cache lifetime, background refetching, loading states, and error handling. Redux cannot do this elegantly.</div>
+
+  <h3>Zustand — Minimal Global State</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Zustand Store Pattern</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> create <span class="pu">}</span> <span class="kw">from</span> <span class="st">'zustand'</span>
+<span class="kw">import</span> <span class="pu">{</span> immer <span class="pu">}</span> <span class="kw">from</span> <span class="st">'zustand/middleware/immer'</span>
+
+<span class="kw">interface</span> <span class="ty">CartStore</span> <span class="pu">{</span>
+  items: <span class="ty">CartItem</span>[]
+  <span class="fn">addItem</span><span class="pu">(</span>item: <span class="ty">CartItem</span><span class="pu">)</span>: <span class="ty">void</span>
+  <span class="fn">removeItem</span><span class="pu">(</span>id: <span class="ty">string</span><span class="pu">)</span>: <span class="ty">void</span>
+  total: <span class="ty">number</span>
+<span class="pu">}</span>
+
+<span class="kw">export const</span> useCartStore = <span class="fn">create</span><span class="op">&lt;</span><span class="ty">CartStore</span><span class="op">&gt;</span><span class="pu">()(</span>
+  <span class="fn">immer</span><span class="pu">((</span>set, get<span class="pu">)</span> <span class="op">=&gt;</span> <span class="pu">({</span>
+    items: <span class="pu">[],</span>
+    <span class="fn">addItem</span><span class="pu">(</span>item<span class="pu">) {</span>
+      <span class="fn">set</span><span class="pu">(</span>state <span class="op">=&gt;</span> <span class="pu">{</span>
+        <span class="kw">const</span> existing = state.items.<span class="fn">find</span><span class="pu">(</span>i <span class="op">=&gt;</span> i.id === item.id<span class="pu">)</span>
+        <span class="kw">if</span> <span class="pu">(</span>existing<span class="pu">)</span> existing.quantity++
+        <span class="kw">else</span> state.items.<span class="fn">push</span><span class="pu">({</span> ...item, quantity: <span class="nm">1</span> <span class="pu">})</span>
+      <span class="pu">})</span>
+    <span class="pu">},</span>
+    <span class="fn">removeItem</span><span class="pu">(</span>id<span class="pu">) {</span>
+      <span class="fn">set</span><span class="pu">(</span>state <span class="op">=&gt;</span> <span class="pu">{</span>
+        state.items = state.items.<span class="fn">filter</span><span class="pu">(</span>i <span class="op">=&gt;</span> i.id !== id<span class="pu">)</span>
+      <span class="pu">})</span>
+    <span class="pu">},</span>
+    <span class="kw">get</span> <span class="fn">total</span><span class="pu">() {</span>
+      <span class="kw">return</span> get<span class="pu">().</span>items.<span class="fn">reduce</span><span class="pu">((</span>sum, i<span class="pu">)</span> <span class="op">=&gt;</span> sum + i.price * i.quantity, <span class="nm">0</span><span class="pu">)</span>
+    <span class="pu">}</span>
+  <span class="pu">}))</span>
+<span class="pu">)</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── 06 DATA ─── -->
+<div class="section" id="data">
+  <div class="section-label">06 &mdash; Data Layer</div>
+  <h2>Data Fetching &amp; Server State</h2>
+  <p class="lead">Data fetching is not a React problem — it is an async state management problem. React itself provides no opinions. The ecosystem has converged on TanStack Query as the standard answer, and for good reason: it solves loading states, caching, background refetching, deduplication, and race conditions out of the box.</p>
+
+  <h3>TanStack Query — The Server State Standard</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — TanStack Query Patterns</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> useQuery, useMutation, useQueryClient <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@tanstack/react-query'</span>
+
+<span class="cm">// Read: auto-cached, background-refetched, deduped across components</span>
+<span class="kw">function</span> <span class="fn">useUser</span><span class="pu">(</span>userId: <span class="ty">string</span><span class="pu">) {</span>
+  <span class="kw">return</span> <span class="fn">useQuery</span><span class="pu">({</span>
+    queryKey: <span class="pu">[</span><span class="st">'user'</span>, userId<span class="pu">],</span>
+    queryFn: <span class="pu">()</span> <span class="op">=&gt;</span> <span class="fn">fetchUser</span><span class="pu">(</span>userId<span class="pu">),</span>
+    staleTime: <span class="nm">5</span> * <span class="nm">60</span> * <span class="nm">1000</span>,   <span class="cm">// consider fresh for 5 mins</span>
+    gcTime: <span class="nm">10</span> * <span class="nm">60</span> * <span class="nm">1000</span>,    <span class="cm">// keep in cache for 10 mins</span>
+    retry: <span class="nm">2</span>,
+  <span class="pu">})</span>
+<span class="pu">}</span>
+
+<span class="cm">// Write: mutation with optimistic update + rollback</span>
+<span class="kw">function</span> <span class="fn">useUpdateUser</span><span class="pu">() {</span>
+  <span class="kw">const</span> queryClient = <span class="fn">useQueryClient</span><span class="pu">()</span>
+  <span class="kw">return</span> <span class="fn">useMutation</span><span class="pu">({</span>
+    mutationFn: <span class="pu">(</span>data: <span class="ty">UpdateUserPayload</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="fn">updateUser</span><span class="pu">(</span>data<span class="pu">),</span>
+    <span class="kw">async</span> <span class="fn">onMutate</span><span class="pu">(</span>data<span class="pu">) {</span>
+      <span class="cm">// Cancel in-flight refetches to avoid overwriting optimistic update</span>
+      <span class="kw">await</span> queryClient.<span class="fn">cancelQueries</span><span class="pu">({</span> queryKey: <span class="pu">[</span><span class="st">'user'</span>, data.id<span class="pu">]</span> <span class="pu">})</span>
+      <span class="kw">const</span> snapshot = queryClient.<span class="fn">getQueryData</span><span class="pu">([</span><span class="st">'user'</span>, data.id<span class="pu">])</span>
+      queryClient.<span class="fn">setQueryData</span><span class="pu">([</span><span class="st">'user'</span>, data.id<span class="pu">],</span> prev <span class="op">=&gt;</span> <span class="pu">({</span> ...prev, ...data <span class="pu">}))</span>
+      <span class="kw">return</span> <span class="pu">{</span> snapshot <span class="pu">}</span>            <span class="cm">// return snapshot for rollback</span>
+    <span class="pu">},</span>
+    <span class="fn">onError</span><span class="pu">(</span>_err, data, ctx<span class="pu">) {</span>
+      queryClient.<span class="fn">setQueryData</span><span class="pu">([</span><span class="st">'user'</span>, data.id<span class="pu">],</span> ctx?.snapshot<span class="pu">)</span> <span class="cm">// rollback</span>
+    <span class="pu">},</span>
+    <span class="fn">onSettled</span><span class="pu">(</span>_data, _err, data<span class="pu">) {</span>
+      queryClient.<span class="fn">invalidateQueries</span><span class="pu">({</span> queryKey: <span class="pu">[</span><span class="st">'user'</span>, data.id<span class="pu">]</span> <span class="pu">})</span> <span class="cm">// sync</span>
+    <span class="pu">},</span>
+  <span class="pu">})</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>Data Synchronization Strategies</h3>
+  <table>
+    <thead><tr><th>Strategy</th><th>When to Use</th><th>Trade-off</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Polling</strong></td><td>Data changes infrequently; real-time not critical</td><td>Simple; wastes bandwidth when nothing changes</td></tr>
+      <tr><td><strong>WebSockets</strong></td><td>Real-time collaboration, live dashboards, chat</td><td>Bidirectional; complex reconnection logic</td></tr>
+      <tr><td><strong>Server-Sent Events (SSE)</strong></td><td>Server pushes updates; client doesn't send</td><td>Simpler than WS; one-directional only</td></tr>
+      <tr><td><strong>Optimistic Updates</strong></td><td>Fast perceived performance for mutations</td><td>Requires rollback logic on error</td></tr>
+      <tr><td><strong>Background Sync</strong></td><td>Offline-first; sync when connection restored</td><td>Conflict resolution complexity</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ─── 07 PERFORMANCE ─── -->
+<div class="section" id="performance">
+  <div class="section-label">07 &mdash; Performance Engineering</div>
+  <h2>React Performance Engineering</h2>
+  <p class="lead">React performance is not about <code>useMemo</code> everywhere. It is about understanding why renders happen, measuring their actual cost, and applying targeted optimizations. Premature optimization is the enemy of readable code; unmeasured optimization is the enemy of correct code.</p>
+
+  <h3>Diagnosing Re-renders</h3>
+  <p>Before optimizing, measure. The React DevTools Profiler shows exactly which components rendered, why they rendered, and how long each render took. The "why did this render?" feature is your first diagnostic tool — not memoization.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">📊</div><h4>React DevTools Profiler</h4><p>Record a session, identify components with high "self time." The flamegraph shows the render cascade; "why did this render?" shows prop/state/context changes.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔬</div><h4>React Scan</h4><p>Open-source tool (2024) that visually highlights components as they re-render in real time. Far faster than the DevTools profiler for identifying hot spots.</p></div>
+    <div class="concept-card"><div class="concept-icon">📉</div><h4>Performance Budgets</h4><p>Define explicit limits for JS bundle size, LCP, INP, and CLS. Enforce them in CI. Without a budget, performance degrades silently one small change at a time.</p></div>
+    <div class="concept-card"><div class="concept-icon">⚡</div><h4>Chrome Performance</h4><p>For commit-phase analysis: Long Tasks, Layout, Paint. React Profiler shows React work; Chrome Performance shows the full browser picture including CSS and layout.</p></div>
+  </div>
+
+  <h3>React.memo — Bail Out of Renders</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — React.memo Correctly Applied</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> memo, useCallback <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="cm">// ✅ Memoize when: expensive render AND parent re-renders frequently</span>
+<span class="kw">const</span> DataGrid = <span class="fn">memo</span><span class="pu">(</span><span class="kw">function</span> <span class="fn">DataGrid</span><span class="pu">({</span> rows, onRowClick <span class="pu">}:</span> <span class="ty">DataGridProps</span><span class="pu">) {</span>
+  <span class="cm">// Renders 500 rows — expensive. memo skips if rows & onRowClick are stable.</span>
+  <span class="kw">return</span> <span class="pu">...</span>
+<span class="pu">})</span>
+
+<span class="cm">// Parent must stabilize the callback too, or memo is useless</span>
+<span class="kw">function</span> <span class="fn">Dashboard</span><span class="pu">() {</span>
+  <span class="kw">const</span> <span class="pu">[</span>filter, setFilter<span class="pu">]</span> = <span class="fn">useState</span><span class="pu">(</span><span class="st">''</span><span class="pu">)</span>
+
+  <span class="cm">// Without useCallback: new function reference every render → memo is bypassed</span>
+  <span class="kw">const</span> handleRowClick = <span class="fn">useCallback</span><span class="pu">((</span>id: <span class="ty">string</span><span class="pu">)</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+    <span class="fn">navigateTo</span><span class="pu">(</span><span class="st">`/items/</span><span class="pu">${</span>id<span class="pu">}</span><span class="st">`</span><span class="pu">)</span>
+  <span class="pu">},</span> <span class="pu">[])</span>  <span class="cm">// stable — no dependencies</span>
+
+  <span class="kw">return</span> <span class="jsx">&lt;DataGrid</span> <span class="at">rows</span>=<span class="pu">{</span>rows<span class="pu">}</span> <span class="at">onRowClick</span>=<span class="pu">{</span>handleRowClick<span class="pu">}</span> <span class="jsx">/&gt;</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>Virtualization for Large Lists</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — TanStack Virtual</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> useVirtualizer <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@tanstack/react-virtual'</span>
+
+<span class="kw">function</span> <span class="fn">VirtualList</span><span class="pu">({</span> items <span class="pu">}:</span> <span class="pu">{</span> items: <span class="ty">Item</span>[] <span class="pu">}) {</span>
+  <span class="kw">const</span> parentRef = <span class="fn">useRef</span><span class="op">&lt;</span><span class="ty">HTMLDivElement</span><span class="op">&gt;</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+
+  <span class="kw">const</span> virtualizer = <span class="fn">useVirtualizer</span><span class="pu">({</span>
+    count: items.length,
+    <span class="fn">getScrollElement</span><span class="pu">:()</span> <span class="op">=&gt;</span> parentRef.current,
+    estimateSize: <span class="pu">()</span> <span class="op">=&gt;</span> <span class="nm">48</span>,    <span class="cm">// estimated row height in px</span>
+    overscan: <span class="nm">5</span>,               <span class="cm">// render 5 extra rows above/below viewport</span>
+  <span class="pu">})</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="jsx">&lt;div</span> <span class="at">ref</span>=<span class="pu">{</span>parentRef<span class="pu">}</span> <span class="at">style</span>=<span class="pu">{{</span> height: <span class="st">'600px'</span>, overflow: <span class="st">'auto'</span> <span class="pu">}}&gt;</span>
+      <span class="jsx">&lt;div</span> <span class="at">style</span>=<span class="pu">{{</span> height: virtualizer.<span class="fn">getTotalSize</span><span class="pu">()</span> <span class="pu">}}&gt;</span>
+        <span class="pu">{</span>virtualizer.<span class="fn">getVirtualItems</span><span class="pu">().</span><span class="fn">map</span><span class="pu">(</span>vItem <span class="op">=&gt;</span> <span class="pu">(</span>
+          <span class="jsx">&lt;div</span>
+            <span class="at">key</span>=<span class="pu">{</span>vItem.key<span class="pu">}</span>
+            <span class="at">style</span>=<span class="pu">{{</span> transform: <span class="st">`translateY(</span><span class="pu">${</span>vItem.start<span class="pu">}</span><span class="st">px)`</span>, position: <span class="st">'absolute'</span> <span class="pu">}}</span>
+          <span class="jsx">&gt;</span>
+            <span class="jsx">&lt;ItemRow</span> <span class="at">item</span>=<span class="pu">{</span>items<span class="pu">[</span>vItem.index<span class="pu">]}</span> <span class="jsx">/&gt;</span>
+          <span class="jsx">&lt;/div&gt;</span>
+        <span class="pu">))}</span>
+      <span class="jsx">&lt;/div&gt;</span>
+    <span class="jsx">&lt;/div&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+<span class="cm">// 100,000 rows → only ~15 DOM nodes rendered at any time</span></code></pre>
+  </div>
+
+  <h3>Code Splitting &amp; Bundle Optimization</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Lazy Loading &amp; Suspense</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> lazy, Suspense <span class="pu">}</span> <span class="kw">from</span> <span class="st">'react'</span>
+
+<span class="cm">// Split at route level: each route is a separate bundle chunk</span>
+<span class="kw">const</span> Dashboard   = <span class="fn">lazy</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="kw">import</span><span class="pu">(</span><span class="st">'./pages/Dashboard'</span><span class="pu">))</span>
+<span class="kw">const</span> Analytics   = <span class="fn">lazy</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="kw">import</span><span class="pu">(</span><span class="st">'./pages/Analytics'</span><span class="pu">))</span>
+<span class="kw">const</span> Settings    = <span class="fn">lazy</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="kw">import</span><span class="pu">(</span><span class="st">'./pages/Settings'</span><span class="pu">))</span>
+
+<span class="cm">// Also split heavy components: charts, editors, maps, date pickers</span>
+<span class="kw">const</span> RichEditor  = <span class="fn">lazy</span><span class="pu">(()</span> <span class="op">=&gt;</span> <span class="kw">import</span><span class="pu">(</span><span class="st">'./components/RichEditor'</span><span class="pu">))</span>
+
+<span class="kw">function</span> <span class="fn">App</span><span class="pu">() {</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="jsx">&lt;Suspense</span> <span class="at">fallback</span>=<span class="pu">{</span><span class="jsx">&lt;PageSkeleton</span> <span class="jsx">/&gt;</span><span class="pu">}&gt;</span>
+      <span class="jsx">&lt;Routes&gt;</span>
+        <span class="jsx">&lt;Route</span> <span class="at">path</span>=<span class="st">"/dashboard"</span> <span class="at">element</span>=<span class="pu">{</span><span class="jsx">&lt;Dashboard</span> <span class="jsx">/&gt;</span><span class="pu">}</span> <span class="jsx">/&gt;</span>
+        <span class="jsx">&lt;Route</span> <span class="at">path</span>=<span class="st">"/analytics"</span> <span class="at">element</span>=<span class="pu">{</span><span class="jsx">&lt;Analytics</span> <span class="jsx">/&gt;</span><span class="pu">}</span> <span class="jsx">/&gt;</span>
+      <span class="jsx">&lt;/Routes&gt;</span>
+    <span class="jsx">&lt;/Suspense&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span></code></pre>
+  </div>
+  <div class="info"><div class="info-label">Memory Leaks — The Silent Killer</div>The most common memory leaks in React: event listeners added in useEffect without cleanup, WebSocket subscriptions that outlive the component, intervals not cleared on unmount, and closures retaining large arrays in callbacks. Always return a cleanup function from effects that create subscriptions or timers.</div>
+</div>
+
+<!-- ─── 08 ARCHITECTURE ─── -->
+<div class="section" id="architecture">
+  <div class="section-label">08 &mdash; Modern Architecture</div>
+  <h2>Modern React Architecture</h2>
+  <p class="lead">The most impactful architectural decision in a React codebase is not which state library to use — it is how you organize code. Feature-based architecture aligns the codebase with the business domain, which makes it scale with team growth rather than against it.</p>
+
+  <h3>Feature-Based Architecture</h3>
+  <p>Traditional layer-based organization (<code>components/</code>, <code>hooks/</code>, <code>utils/</code>) breaks down when a codebase grows beyond one team. A change to the "orders" feature touches files scattered across every directory. Feature-based organization co-locates everything a feature needs.</p>
+  <div class="arch-box">
+    <span class="dim">src/</span><br/>
+    <span class="hl">&nbsp;&nbsp;features/</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;users/</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;components/     &lt;-- UserCard, UserTable, UserForm</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hooks/          &lt;-- useUsers, useUser, useCreateUser</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;api/            &lt;-- usersApi.ts (TanStack Query functions)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;store/          &lt;-- usersSlice.ts or usersStore.ts</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;types/          &lt;-- User.ts, UserRole.ts</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index.ts        &lt;-- public API barrel (export only what others need)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;orders/</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;products/</span><br/>
+    <span class="hl">&nbsp;&nbsp;shared/</span>          <span class="dim">&lt;-- Button, Input, Modal, useDebounce</span><br/>
+    <span class="hl">&nbsp;&nbsp;pages/</span>           <span class="dim">&lt;-- route-level components (thin wrappers)</span><br/>
+    <span class="hl">&nbsp;&nbsp;app/</span>             <span class="dim">&lt;-- router, providers, global error boundary</span>
+  </div>
+
+  <h3>Clean Architecture in React</h3>
+  <p>For enterprise applications, a four-layer model provides clear separation between business logic, application orchestration, and infrastructure concerns — making the application testable and framework-independent at the domain level.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🖼️</div><h4>UI Layer</h4><p>React components. Pure rendering — no business logic, no direct API calls. Receives data as props or from hooks. Testable in isolation with Storybook.</p></div>
+    <div class="concept-card"><div class="concept-icon">⚙️</div><h4>Application Layer</h4><p>Custom hooks that orchestrate use cases. Calls domain services, manages loading/error state, handles navigation side effects. The "controller" of the frontend.</p></div>
+    <div class="concept-card"><div class="concept-icon">🏛️</div><h4>Domain Layer</h4><p>Pure TypeScript — no React. Business entities, validation rules, calculation logic. Fully unit-testable with zero React dependencies.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔌</div><h4>Infrastructure Layer</h4><p>API clients, localStorage adapters, WebSocket connections. Implements interfaces defined by the domain layer. Swappable without touching business logic.</p></div>
+  </div>
+
+  <h3>Design Systems Engineering</h3>
+  <p>A design system is not a component library — it is a shared language between design and engineering. The architecture flows from abstract tokens to concrete components to application usage.</p>
+  <div class="arch-box">
+    <span class="hl">Design Tokens</span>    <span class="dim">— color-primary-500, spacing-4, font-size-lg (CSS variables)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓ consumed by</span><br/>
+    <span class="hl">Primitive Components</span>  <span class="dim">— Button, Input, Modal, Badge (no business logic)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓ composed into</span><br/>
+    <span class="hl">Pattern Components</span>    <span class="dim">— DataTable, FormSection, PageLayout</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓ assembled into</span><br/>
+    <span class="hl">Feature Components</span>    <span class="dim">— UserTable, OrderForm, ProductGrid</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓ composed on</span><br/>
+    <span class="hl">Pages</span>                  <span class="dim">— UsersPage, OrdersPage (route-level)</span>
+  </div>
+  <div class="tip"><div class="tip-label">Accessibility is architecture, not compliance</div>Accessibility built into the design system level propagates throughout the entire application automatically. A Button component that handles keyboard interaction, focus management, and ARIA roles correctly means every feature that uses Button gets this for free. Retrofitting accessibility feature-by-feature costs 10x more and results in inconsistency.</div>
+
+  <h3>Micro-Frontends — When and Why</h3>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>✅ Use Micro-Frontends When</h4>
+      <ul>
+        <li>Multiple teams need truly independent release cycles</li>
+        <li>Different parts use genuinely different tech stacks</li>
+        <li>Organizational boundaries map to product boundaries</li>
+        <li>Team autonomy is worth the integration overhead</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>⚠️ Use Modular Monolith Instead When</h4>
+      <ul>
+        <li>One team owns the whole frontend</li>
+        <li>Shared components/state are core to the UX</li>
+        <li>You want a single deployment unit</li>
+        <li>The overhead of Module Federation isn't justified</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 09 NEXT.JS & RSC ─── -->
+<div class="section" id="nextjs">
+  <div class="section-label">09 &mdash; Next.js &amp; RSC</div>
+  <h2>Next.js &amp; React Server Components</h2>
+  <p class="lead">React alone is a UI library — it solves rendering, not routing, SSR, or deployment. Next.js has become React's de facto production framework. React Server Components, introduced in Next.js 13 and stabilised in Next.js 14–15, are the most significant architectural shift in React since hooks.</p>
+
+  <h3>Rendering Strategies</h3>
+  <table>
+    <thead><tr><th>Strategy</th><th>When Rendered</th><th>Best For</th><th>Trade-off</th></tr></thead>
+    <tbody>
+      <tr><td><strong>CSR</strong> (Client-Side)</td><td>In the browser, after JS loads</td><td>Highly interactive apps, dashboards behind auth</td><td>Slow initial load; poor SEO</td></tr>
+      <tr><td><strong>SSR</strong> (Server-Side)</td><td>On the server per request</td><td>Dynamic content with SEO requirements</td><td>Slower TTFB than static; server load</td></tr>
+      <tr><td><strong>SSG</strong> (Static Generation)</td><td>At build time</td><td>Marketing pages, blogs, docs</td><td>Stale data; long builds for large sites</td></tr>
+      <tr><td><strong>ISR</strong> (Incremental Static)</td><td>At build time + background revalidation</td><td>E-commerce, news — content changes infrequently</td><td>Complex cache invalidation</td></tr>
+      <tr><td><strong>RSC</strong> (Server Components)</td><td>On the server, streamed to client</td><td>Data-heavy components with zero client JS</td><td>New mental model; not all libraries compatible</td></tr>
+    </tbody>
+  </table>
+
+  <h3>React Server Components — The Paradigm Shift</h3>
+  <p>Server Components run <em>only</em> on the server. They can directly query databases, access the filesystem, and call internal APIs — all without sending any JavaScript to the client. They render to a serialized payload (the "Flight" format) that the client uses to hydrate the tree. The result: dramatically less client-side JavaScript for data-heavy UIs.</p>
+  <div class="arch-box">
+    <span class="hl">Server Component Tree</span> <span class="dim">(no useState, no event handlers, direct DB access)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓ renders to</span><br/>
+    <span class="hl">RSC Payload</span> <span class="dim">(Flight format — JSON-like serialized tree)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓ streamed to browser</span><br/>
+    <span class="hl">"use client" boundaries</span> <span class="dim">(interactive islands hydrated with JS)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Final UI</span> <span class="dim">(server-rendered shell + interactive client components)</span>
+  </div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Server vs Client Component Boundary</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// app/dashboard/page.tsx — Server Component (default in Next.js App Router)</span>
+<span class="cm">// No 'use client' directive = runs on server only</span>
+<span class="kw">async function</span> <span class="fn">DashboardPage</span><span class="pu">() {</span>
+  <span class="cm">// Direct database access — no API route needed</span>
+  <span class="kw">const</span> metrics = <span class="kw">await</span> db.query.<span class="fn">getDashboardMetrics</span><span class="pu">()</span>
+  <span class="kw">const</span> recentOrders = <span class="kw">await</span> db.query.<span class="fn">getRecentOrders</span><span class="pu">({</span> limit: <span class="nm">10</span> <span class="pu">})</span>
+
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="jsx">&lt;main&gt;</span>
+      <span class="cm">// MetricsGrid is also a Server Component — zero client JS</span>
+      <span class="jsx">&lt;MetricsGrid</span> <span class="at">data</span>=<span class="pu">{</span>metrics<span class="pu">}</span> <span class="jsx">/&gt;</span>
+      <span class="cm">// OrdersTable needs interactivity — it's a Client Component</span>
+      <span class="jsx">&lt;OrdersTable</span> <span class="at">initialOrders</span>=<span class="pu">{</span>recentOrders<span class="pu">}</span> <span class="jsx">/&gt;</span>
+    <span class="jsx">&lt;/main&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+
+<span class="cm">// components/OrdersTable.tsx — Client Component (needs state + events)</span>
+<span class="st">'use client'</span>
+
+<span class="kw">export function</span> <span class="fn">OrdersTable</span><span class="pu">({</span> initialOrders <span class="pu">}:</span> <span class="pu">{</span> initialOrders: <span class="ty">Order</span>[] <span class="pu">}) {</span>
+  <span class="kw">const</span> <span class="pu">[</span>orders, setOrders<span class="pu">]</span> = <span class="fn">useState</span><span class="pu">(</span>initialOrders<span class="pu">)</span>
+  <span class="kw">const</span> <span class="pu">[</span>sortKey, setSortKey<span class="pu">]</span> = <span class="fn">useState</span><span class="op">&lt;</span><span class="ty">keyof Order</span><span class="op">&gt;</span><span class="pu">(</span><span class="st">'createdAt'</span><span class="pu">)</span>
+  <span class="cm">// Client-side interactivity here...</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>Streaming SSR</h3>
+  <p>Next.js App Router streams HTML to the browser as each part of the page becomes ready — rather than waiting for the entire page to render before sending anything. This dramatically improves Time-to-First-Byte (TTFB) and Largest Contentful Paint (LCP) for pages with slow data fetches. <code>Suspense</code> boundaries mark where streaming chunks begin.</p>
+</div>
+
+<!-- ─── 10 SYSTEM DESIGN ─── -->
+<div class="section" id="system-design">
+  <div class="section-label">10 &mdash; Frontend System Design</div>
+  <h2>Frontend System Design</h2>
+  <p class="lead">System design is where senior engineers distinguish themselves. Designing a real-time dashboard, a multi-tenant SaaS, or a collaborative editor requires thinking about data flow, rendering architecture, and state synchronization holistically — not component by component.</p>
+
+  <h3>Real-Time Dashboards</h3>
+  <p>Real-time dashboards combine high-frequency data streams with expensive rendering. The architecture must separate concerns clearly: the data layer fetches and caches, the state layer manages subscriptions, and the UI layer renders only what changed.</p>
+  <div class="arch-box">
+    <span class="hl">WebSocket / SSE connection</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  raw event stream</span><br/>
+    <span class="hl">Event normalizer</span> <span class="dim">— maps raw events to domain types</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Zustand store</span> <span class="dim">— holds current snapshot; sliced selectors prevent over-rendering</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">React.memo + useCallback</span> <span class="dim">— memoized chart/metric components</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">Virtualized list</span> <span class="dim">— only visible rows rendered; stable keys preserve scroll</span>
+  </div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">⏱️</div><h4>Throttle Updates</h4><p>A WebSocket emitting 100 events/second will cause 100 renders/second. Throttle or batch state updates — update the store at most every 100ms using a flush interval.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔪</div><h4>Slice Selectors</h4><p>If the whole store re-renders every chart on every tick, performance collapses. Use Zustand's selector pattern: <code>useStore(s => s.metricA)</code> so each component only re-renders when its specific slice changes.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔌</div><h4>Reconnection Logic</h4><p>WebSockets disconnect. Your hook must detect disconnection, implement exponential backoff, and re-request missed events on reconnect. Never expose raw WebSocket connections to components.</p></div>
+    <div class="concept-card"><div class="concept-icon">💾</div><h4>Buffer Overflow</h4><p>A time-series store keeping all data in memory will grow without bound. Implement a sliding window — keep only the last N data points per metric, evicting old entries on each update.</p></div>
+  </div>
+
+  <h3>Multi-Tenant SaaS Frontend</h3>
+  <p>Multi-tenant applications must isolate tenant state, configuration, and branding without creating a separate codebase per tenant. The architecture centres on a tenant context that drives feature flags, theming, and permission checks throughout the tree.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Tenant Context Pattern</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">interface</span> <span class="ty">TenantConfig</span> <span class="pu">{</span>
+  id: <span class="ty">string</span>
+  name: <span class="ty">string</span>
+  theme: <span class="pu">{</span> primaryColor: <span class="ty">string</span>; logoUrl: <span class="ty">string</span> <span class="pu">}</span>
+  features: <span class="ty">Record</span><span class="op">&lt;</span><span class="ty">string</span>, <span class="ty">boolean</span><span class="op">&gt;</span>
+  permissions: <span class="ty">Permission</span>[]
+<span class="pu">}</span>
+
+<span class="kw">const</span> TenantContext = <span class="fn">createContext</span><span class="op">&lt;</span><span class="ty">TenantConfig</span> | <span class="ty">null</span><span class="op">&gt;</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)</span>
+
+<span class="kw">export function</span> <span class="fn">useTenant</span><span class="pu">() {</span>
+  <span class="kw">const</span> ctx = <span class="fn">useContext</span><span class="pu">(</span>TenantContext<span class="pu">)</span>
+  <span class="kw">if</span> <span class="pu">(!</span>ctx<span class="pu">)</span> <span class="kw">throw new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">'useTenant must be used inside TenantProvider'</span><span class="pu">)</span>
+  <span class="kw">return</span> ctx
+<span class="pu">}</span>
+
+<span class="cm">// Feature flag gate — renders children only if feature is enabled for tenant</span>
+<span class="kw">export function</span> <span class="fn">Feature</span><span class="pu">({</span> name, children, fallback <span class="pu">}:</span> <span class="pu">{</span>
+  name: <span class="ty">string</span>, children: <span class="ty">ReactNode</span>, fallback?: <span class="ty">ReactNode</span>
+<span class="pu">}) {</span>
+  <span class="kw">const</span> <span class="pu">{</span> features <span class="pu">}</span> = <span class="fn">useTenant</span><span class="pu">()</span>
+  <span class="kw">return</span> <span class="pu">&lt;&gt;</span><span class="pu">{</span>features<span class="pu">[</span>name<span class="pu">]</span> ? children : <span class="pu">(</span>fallback ?? <span class="kw">null</span><span class="pu">)}&lt;/&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// Usage: invisible to tenants without the 'advanced-reporting' feature</span>
+<span class="jsx">&lt;Feature</span> <span class="at">name</span>=<span class="st">"advanced-reporting"</span><span class="jsx">&gt;</span>
+  <span class="jsx">&lt;ReportBuilder</span> <span class="jsx">/&gt;</span>
+<span class="jsx">&lt;/Feature&gt;</span></code></pre>
+  </div>
+
+  <h3>Collaborative Applications (CRDTs)</h3>
+  <p>Collaborative editors (think Google Docs, Figma, Notion) require multiple users to edit the same document simultaneously and converge on the same state without conflicts. Conflict-free Replicated Data Types (CRDTs) provide a mathematical guarantee that any two clients that have seen the same set of operations will have the same state — regardless of order.</p>
+  <div class="arch-box">
+    <span class="hl">Local Edit</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  apply immediately to local state (optimistic)</span><br/>
+    <span class="hl">CRDT Operation</span> <span class="dim">(Yjs, Automerge) — encodes the edit as a commutative op</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│  broadcast to all peers via WebSocket</span><br/>
+    <span class="hl">Remote Operations arrive</span> <span class="dim">— CRDT merges regardless of order</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;│</span><br/>
+    <span class="hl">All clients converge</span> <span class="dim">to identical state — no server arbitration needed</span>
+  </div>
+
+  <h3>ERP &amp; Complex Form Frontends</h3>
+  <p>ERP frontends are characterised by massive forms, complex conditional logic, deep permission models, and data grids with thousands of rows. The key architectural decisions are schema-driven form generation, row-level permission evaluation, and server-side pagination with client-side sorting.</p>
+  <div class="tip"><div class="tip-label">URL State is underused</div>Filter values, pagination state, sort keys, and selected IDs should almost always live in the URL. Users can share a link and land on the same view. Browser back/forward work. Page refresh doesn't reset the UI. Use <code>useSearchParams</code> from React Router or <code>nuqs</code> for type-safe URL state management.</div>
+</div>
+
+<!-- ─── 11 SECURITY & TESTING ─── -->
+<div class="section" id="security">
+  <div class="section-label">11 &mdash; Security &amp; Testing</div>
+  <h2>Security &amp; Testing</h2>
+  <p class="lead">Security and testing are not separate disciplines — they are part of the same quality system. A test suite that never tests authorization logic, XSS vectors, or error boundaries gives false confidence. Senior engineers design both systems together.</p>
+
+  <h3>XSS Prevention</h3>
+  <p>React escapes all values rendered in JSX by default — <code>{userContent}</code> is always safe. The only XSS risk in React comes from explicitly bypassing this protection with <code>dangerouslySetInnerHTML</code>, which should be treated as a last resort and always combined with a sanitizer.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Safe HTML Rendering</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> DOMPurify <span class="kw">from</span> <span class="st">'dompurify'</span>
+
+<span class="cm">// ❌ Never: direct unsanitized HTML from user/server</span>
+<span class="jsx">&lt;div</span> <span class="at">dangerouslySetInnerHTML</span>=<span class="pu">{{</span> __html: userContent <span class="pu">}}</span> <span class="jsx">/&gt;</span>
+
+<span class="cm">// ✅ If HTML rendering is genuinely needed: sanitize first</span>
+<span class="kw">const</span> clean = DOMPurify.<span class="fn">sanitize</span><span class="pu">(</span>userContent, <span class="pu">{</span>
+  ALLOWED_TAGS: <span class="pu">[</span><span class="st">'b'</span>, <span class="st">'i'</span>, <span class="st">'em'</span>, <span class="st">'strong'</span>, <span class="st">'a'</span>, <span class="st">'p'</span><span class="pu">],</span>
+  ALLOWED_ATTR: <span class="pu">[</span><span class="st">'href'</span>, <span class="st">'target'</span><span class="pu">],</span>
+<span class="pu">})</span>
+<span class="jsx">&lt;div</span> <span class="at">dangerouslySetInnerHTML</span>=<span class="pu">{{</span> __html: clean <span class="pu">}}</span> <span class="jsx">/&gt;</span>
+
+<span class="cm">// ✅ CSP header (set server-side) as defence-in-depth</span>
+<span class="cm">// Content-Security-Policy: default-src 'self'; script-src 'self'</span></code></pre>
+  </div>
+
+  <h3>Authentication &amp; Authorization Patterns</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🔑</div><h4>Auth with OIDC</h4><p>Use a proven provider (Auth0, Clerk, Supabase Auth). Never implement your own OAuth flow. Store tokens in <code>httpOnly</code> cookies — never <code>localStorage</code> — to prevent XSS token theft.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔒</div><h4>RBAC on the Frontend</h4><p>Role-based access control on the client is for UX only — it hides UI elements. It is never a security boundary. The server must enforce every permission on every API call.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔄</div><h4>Token Rotation</h4><p>Short-lived access tokens (15 min) refreshed silently via a refresh token flow. Intercept 401 responses, refresh the token, and replay the failed request — transparent to the user.</p></div>
+    <div class="concept-card"><div class="concept-icon">🛡️</div><h4>Route Guards</h4><p>Protect routes at the router level — not by checking auth state inside every page component. A single auth guard in the router tree is the single source of truth for route access.</p></div>
+  </div>
+
+  <h3>Testing Strategy</h3>
+  <p>The testing trophy (not pyramid) is the model that works for React: the majority of coverage should come from integration tests that render real component trees with mocked API boundaries — not unit tests of isolated functions or full E2E tests.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — React Testing Library Best Practices</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> render, screen, userEvent <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@testing-library/react'</span>
+<span class="kw">import</span> <span class="pu">{</span> http, HttpResponse <span class="pu">}</span> <span class="kw">from</span> <span class="st">'msw'</span>
+<span class="kw">import</span> <span class="pu">{</span> server <span class="pu">}</span> <span class="kw">from</span> <span class="st">'../mocks/server'</span>
+
+<span class="cm">// Test behaviour, not implementation</span>
+<span class="fn">describe</span><span class="pu">(</span><span class="st">'UserProfile'</span>, <span class="pu">()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+  <span class="fn">it</span><span class="pu">(</span><span class="st">'shows updated name after edit and save'</span>, <span class="kw">async</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+    <span class="cm">// Mock the API response for this specific test</span>
+    server.<span class="fn">use</span><span class="pu">(</span>
+      http.<span class="fn">patch</span><span class="pu">(</span><span class="st">'/api/users/:id'</span>, <span class="pu">()</span> <span class="op">=&gt;</span>
+        HttpResponse.<span class="fn">json</span><span class="pu">({</span> id: <span class="st">'1'</span>, name: <span class="st">'Jane Doe'</span> <span class="pu">})</span>
+      <span class="pu">)</span>
+    <span class="pu">)</span>
+
+    <span class="fn">render</span><span class="pu">(&lt;</span><span class="ty">UserProfile</span> <span class="at">userId</span>=<span class="st">"1"</span> <span class="pu">/&gt;)</span>
+
+    <span class="cm">// Query by accessible role — not by class name or test ID</span>
+    <span class="kw">const</span> nameInput = screen.<span class="fn">getByRole</span><span class="pu">(</span><span class="st">'textbox'</span>, <span class="pu">{</span> name: <span class="st">/name/i</span> <span class="pu">})</span>
+    <span class="kw">await</span> userEvent.<span class="fn">clear</span><span class="pu">(</span>nameInput<span class="pu">)</span>
+    <span class="kw">await</span> userEvent.<span class="fn">type</span><span class="pu">(</span>nameInput, <span class="st">'Jane Doe'</span><span class="pu">)</span>
+    <span class="kw">await</span> userEvent.<span class="fn">click</span><span class="pu">(</span>screen.<span class="fn">getByRole</span><span class="pu">(</span><span class="st">'button'</span>, <span class="pu">{</span> name: <span class="st">/save/i</span> <span class="pu">}))</span>
+
+    <span class="cm">// Assert on visible outcome — not on state or function calls</span>
+    <span class="kw">await</span> screen.<span class="fn">findByText</span><span class="pu">(</span><span class="st">'Jane Doe'</span><span class="pu">)</span>
+    <span class="fn">expect</span><span class="pu">(</span>screen.<span class="fn">queryByRole</span><span class="pu">(</span><span class="st">'alert'</span><span class="pu">)).</span><span class="fn">not</span>.<span class="fn">toBeInTheDocument</span><span class="pu">()</span>
+  <span class="pu">})</span>
+<span class="pu">})</span></code></pre>
+  </div>
+  <table>
+    <thead><tr><th>Layer</th><th>Tool</th><th>What to Test</th><th>Coverage Goal</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Unit</strong></td><td>Vitest</td><td>Pure utility functions, reducers, domain logic</td><td>100% of domain layer</td></tr>
+      <tr><td><strong>Component Integration</strong></td><td>RTL + MSW</td><td>User flows, form submission, API interaction</td><td>All critical user journeys</td></tr>
+      <tr><td><strong>Visual Regression</strong></td><td>Storybook + Chromatic</td><td>Component appearance across states</td><td>All design system components</td></tr>
+      <tr><td><strong>E2E</strong></td><td>Playwright</td><td>Full auth flows, checkout, critical business paths</td><td>Top 5–10 user journeys</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ─── 12 ROADMAP ─── -->
+<div class="section" id="roadmap">
+  <div class="section-label">12 &mdash; The Learning Path</div>
+  <h2>Senior → Staff Engineer Roadmap</h2>
+  <p class="lead">Most React engineers plateau at the senior level because they keep deepening implementation knowledge rather than broadening architectural thinking. The transition from Senior to Staff is a transition from building React applications to designing frontend platforms and systems.</p>
+
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#dbeafe;color:#1d4ed8">Beginner</div>
+    <div class="roadmap-content">
+      <strong>Foundation:</strong> JSX, components, props, state, event handling. Build real UIs with <code>useState</code>. Understand why React re-renders. Learn conditional rendering, list rendering with keys, and controlled inputs. Read the official React docs from start to finish — they are excellent.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#dcfce7;color:#15803d">Intermediate</div>
+    <div class="roadmap-content">
+      <strong>Hooks &amp; data:</strong> All core hooks with deep understanding — not just syntax. React Router, data fetching with TanStack Query, Context API. Build a multi-page app with authentication. Write component tests with RTL. Understand the render cycle and what triggers re-renders.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#fef3c7;color:#b45309">Advanced</div>
+    <div class="roadmap-content">
+      <strong>Performance &amp; architecture:</strong> React Profiler, memoization strategies, virtualization. Feature-based architecture. Global state design with Zustand or Redux Toolkit. Next.js App Router — SSR, SSG, ISR. TypeScript deeply. Design systems. E2E testing with Playwright. Custom hooks that abstract complex behaviour.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#ede9fe;color:#6d28d9">Senior</div>
+    <div class="roadmap-content">
+      <strong>Systems thinking:</strong> React Fiber and Concurrent Mode internals. React Server Components and the Flight protocol. Frontend system design: design a real-time dashboard, a multi-tenant SaaS, a collaborative editor. Performance budgets and INP optimization. Authentication architecture. Error boundaries and observability. Leading architecture decisions with written ADRs.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#fdf2f8;color:#9d174d">Staff+</div>
+    <div class="roadmap-content">
+      <strong>Platform engineering:</strong> Micro-frontend strategy and Module Federation. Design system governance — versioning, deprecation, accessibility SLAs. Frontend observability: RUM, error budgets, performance SLOs. Scaling frontend teams on a single codebase (20+ engineers). Technology selection and migration planning. Mentoring senior engineers. Writing technical strategy documents that influence product direction.
+    </div>
+  </div>
+
+  <h3>What Separates Senior from Staff</h3>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>🧑‍💻 Senior React Engineer</h4>
+      <ul>
+        <li>Deeply knows React, hooks, Next.js, TypeScript</li>
+        <li>Designs features and components well</li>
+        <li>Optimises performance in existing systems</li>
+        <li>Writes comprehensive tests</li>
+        <li>Mentors junior developers on their team</li>
+        <li>Makes good choices within existing architecture</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>🏗️ Staff / Principal Engineer</h4>
+      <ul>
+        <li>Designs the architecture multiple teams build on</li>
+        <li>Defines performance budgets and enforces them in CI</li>
+        <li>Builds internal platforms (design systems, shared tooling)</li>
+        <li>Makes technology bets with multi-year consequences</li>
+        <li>Writes strategy docs that change engineering direction</li>
+        <li>Reduces coordination cost across teams through abstraction</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>The React Ecosystem in 2026</h3>
+  <div class="arch-box">
+    <span class="hl">Class Components (2013–2018)</span>  <span class="dim">→ lifecycle methods, HOCs, render props</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Functional + Hooks (2019–)</span>     <span class="dim">→ composition, custom hooks, cleaner code</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Concurrent Rendering (2022–)</span>    <span class="dim">→ useTransition, useDeferredValue, Suspense</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Server Components (2023–)</span>       <span class="dim">→ RSC, streaming SSR, zero-JS server trees</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">React 19 Actions (2024–)</span>        <span class="dim">→ useActionState, useFormStatus, server actions</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">AI-Native UIs (2025–)</span>           <span class="dim">→ streaming AI responses, agentic UIs, HITL patterns</span>
+  </div>
+
+  <h3>The Three Fundamentals — Unchanged Since 2013</h3>
+  <p>Every innovation in React's history — hooks, context, concurrent mode, server components — is an attempt to better solve the same three problems:</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">📦</div><h4>State</h4><p>Where does state live? Who owns it? How does it flow? Local, shared, global, server, URL — classifying state correctly is the most important architectural skill in React.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔄</div><h4>Rendering</h4><p>What triggers a render? What is the cost? Can it be deferred? Understanding the Fiber scheduler, memoization, and Concurrent Mode separates engineers who guess from those who know.</p></div>
+    <div class="concept-card"><div class="concept-icon">🌊</div><h4>Data Flow</h4><p>How does data get from the server to the UI? Props down, events up, context across, TanStack Query for server state, Zustand for global UI state. Each mechanism has the right use case.</p></div>
+  </div>
+
+  <div class="pullquote">"Senior React engineers stop thinking about components and start thinking about the architecture, scalability, performance, and maintainability of entire frontend systems."</div>
+
+  <h3>Quick-Reference Tool Decisions</h3>
+  <table>
+    <thead><tr><th>Problem</th><th>Tool</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Server data (users, orders, products)</td><td>TanStack Query</td><td>Caching, background sync, optimistic updates built in</td></tr>
+      <tr><td>Global UI state (theme, sidebar, modals)</td><td>Zustand</td><td>Minimal boilerplate, excellent TypeScript, no provider needed</td></tr>
+      <tr><td>Complex local state / state machines</td><td>useReducer + immer</td><td>Predictable state transitions, easy to test in isolation</td></tr>
+      <tr><td>Forms with validation</td><td>React Hook Form + Zod</td><td>Uncontrolled by default (fast), schema-driven validation</td></tr>
+      <tr><td>URL / filter state</td><td>nuqs or useSearchParams</td><td>Type-safe query params, sharable URLs, free browser history</td></tr>
+      <tr><td>Large lists (1k+ rows)</td><td>TanStack Virtual</td><td>Only renders visible rows, supports variable heights</td></tr>
+      <tr><td>Component tests</td><td>Vitest + RTL + MSW</td><td>Fast, tests behaviour not implementation, real API mocking</td></tr>
+      <tr><td>E2E tests</td><td>Playwright</td><td>Multi-browser, auto-wait, best-in-class network interception</td></tr>
+      <tr><td>Styling</td><td>Tailwind CSS</td><td>Co-located styles, tree-shakeable, excellent with design tokens</td></tr>
+      <tr><td>SSR / full-stack</td><td>Next.js App Router</td><td>RSC, streaming, server actions, edge support out of the box</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- /content -->
+
+<footer>
+  <strong>DevDive</strong> &mdash; Deep dives for serious developers<br/>
+  <span style="margin-top:8px;display:block">React: The Senior Engineer's Complete Guide &middot; June 2026</span>
+</footer>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre')
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!'
+    setTimeout(() => btn.textContent = 'Copy', 1800)
+  })
+}
+</script>
+</body>
+</html>
