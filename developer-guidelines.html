@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Clean Code: Developer Guidelines for JavaScript &amp; TypeScript — DevDive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#faf8f5;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
+      --text-muted:#9a9a9a;--accent:#0d9488;--accent-light:#f0fdfa;--accent-subtle:#ccfbf1;
+      --border:#e8e3db;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#f3f0eb;
+      --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
+      --info-bg:#eff6ff;--info-border:#2563eb;--bad-bg:#fff1f2;--bad-border:#e11d48;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Outfit",sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.8}
+    nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s}
+    .nav-back:hover{color:var(--accent)}
+    .nav-pipe{color:var(--border);font-size:18px}
+    .nav-brand{font-size:14px;font-weight:700;letter-spacing:-.3px}
+    .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:100px}
+    .nav-links{display:flex;gap:0}
+    .nav-links a{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:5px 8px;border-radius:6px;transition:all .15s;white-space:nowrap}
+    .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
+    .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+    .hero{max-width:800px;margin:0 auto;padding:64px 2rem 48px}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:24px}
+    .hero h1{font-family:"Lora",serif;font-size:clamp(30px,4.5vw,48px);font-weight:600;line-height:1.15;letter-spacing:-.5px;margin-bottom:20px}
+    .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+    .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0f766e,#0d9488);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white}
+    .meta-text{font-size:14px;color:var(--text-secondary)}
+    .meta-text strong{color:var(--text-primary)}
+    .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+    .toc-wrapper{max-width:800px;margin:0 auto;padding:0 2rem 8px}
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:48px}
+    .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+    .toc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px 20px}
+    .toc a{font-size:13.5px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
+    .toc a:hover{color:var(--accent)}
+    .toc-num{font-size:11px;color:var(--text-muted);font-weight:600;min-width:18px;flex-shrink:0}
+    .content{max-width:800px;margin:0 auto;padding:0 2rem 80px}
+    .section{margin-bottom:72px;scroll-margin-top:72px}
+    .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .section-label::after{content:"";flex:1;height:1px;background:var(--accent-subtle)}
+    h2{font-family:"Lora",serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:14px}
+    h3{font-size:18px;font-weight:600;margin:32px 0 10px;display:flex;align-items:center;gap:10px}
+    .rule-id{font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;background:var(--accent-subtle);color:var(--accent);font-family:"JetBrains Mono",monospace;flex-shrink:0}
+    p{margin-bottom:16px;color:#2d2d2d;line-height:1.8}
+    .lead{font-size:18px;color:var(--text-secondary);font-weight:300;margin-bottom:20px;line-height:1.7}
+    .rule-quote{font-style:italic;font-size:15px;color:var(--text-secondary);background:var(--accent-light);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin:0 0 16px;line-height:1.6}
+    .code-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+    .code-block{background:var(--code-bg);border-radius:10px;margin:20px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+    .code-block.bad{border-color:rgba(225,29,72,.25)}
+    .code-block.good{border-color:rgba(16,185,129,.25)}
+    .code-header{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+    .code-lang{font-size:11px;color:#6e7681;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+    .code-label-bad{font-size:11px;font-weight:700;color:#f43f5e;font-family:"Outfit",sans-serif}
+    .code-label-good{font-size:11px;font-weight:700;color:#10b981;font-family:"Outfit",sans-serif}
+    .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:"Outfit",sans-serif;transition:all .15s}
+    .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+    pre{padding:18px 20px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.75;color:var(--code-text)}
+    pre code{background:none;padding:0;font-size:inherit;color:inherit}
+    code{font-family:"JetBrains Mono",monospace;font-size:13px;background:#ccfbf1;color:#0d9488;padding:2px 6px;border-radius:4px}
+    .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+    .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+    .pu{color:#e6edf3}.bi{color:#ffa657}.at{color:#79c0ff}
+    .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .tip-label{font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .warn-label{font-size:11px;font-weight:700;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .info-label{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .pullquote{font-family:"Lora",serif;font-style:italic;font-size:20px;line-height:1.55;color:var(--text-secondary);border-left:4px solid var(--accent);padding:10px 22px;margin:32px 0}
+    .rules-index{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin:16px 0 0}
+    .rule-chip{font-size:12px;font-family:"JetBrains Mono",monospace;font-weight:500;padding:4px 10px;border-radius:6px;background:var(--tag-bg);color:var(--text-secondary);border:1px solid var(--border);cursor:pointer;text-decoration:none;transition:all .15s;display:block;text-align:center}
+    .rule-chip:hover{background:var(--accent-subtle);color:var(--accent);border-color:var(--accent)}
+    footer{background:#1a1a1a;color:rgba(255,255,255,.65);text-align:center;padding:40px 2rem;font-size:14px}
+    footer strong{color:white}
+    @media(max-width:640px){.toc-grid{grid-template-columns:1fr 1fr}.nav-links{display:none}.code-pair{grid-template-columns:1fr}.rules-index{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="index.html">&#8592; DevDive</a>
+    <span class="nav-pipe">|</span>
+    <span class="nav-brand">Clean Code: Developer Guidelines</span>
+    <span class="nav-badge">Best Practices</span>
+  </div>
+  <div class="nav-links">
+    <a href="#comments">Comments</a>
+    <a href="#environment">Environment</a>
+    <a href="#functions">Functions</a>
+    <a href="#general-1">General G1–G12</a>
+    <a href="#general-2">General G13–G24</a>
+    <a href="#general-3">General G25–G36</a>
+    <a href="#js-ts">JS / TypeScript</a>
+    <a href="#names">Names</a>
+    <a href="#tests">Tests</a>
+  </div>
+  <span class="nav-rt">~35 min read</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; Best Practices</div>
+  <h1>Clean Code: Developer Guidelines for JavaScript &amp; TypeScript</h1>
+  <p class="hero-sub">
+    An adaptation of Robert C. Martin's heuristics and smells from <em>Clean Code</em>, translated to JavaScript and TypeScript — structured as a living reference for code reviews, pull requests, and daily engineering practice.
+  </p>
+  <div class="hero-meta">
+    <div class="avatar">CC</div>
+    <div class="meta-text">
+      <strong>Code Quality Reference</strong><br/>
+      8 Categories &middot; 60+ Rules &middot; JS &amp; TypeScript &mdash; June 2026
+    </div>
+  </div>
+  <hr class="hero-divider"/>
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>8 Categories &mdash; 60+ Heuristics &amp; Smells</h3>
+    <div class="toc-grid">
+      <a href="#comments"><span class="toc-num">C</span>Comments (C1–C5)</a>
+      <a href="#general-2"><span class="toc-num">G&#8202;&#8202;</span>General G13–G24</a>
+      <a href="#environment"><span class="toc-num">E</span>Environment (E1–E2)</a>
+      <a href="#general-3"><span class="toc-num">G&#8202;&#8202;</span>General G25–G36</a>
+      <a href="#functions"><span class="toc-num">F</span>Functions (F1–F4)</a>
+      <a href="#js-ts"><span class="toc-num">JS</span>JS / TypeScript (JS1–JS3)</a>
+      <a href="#general-1"><span class="toc-num">G&#8202;&#8202;</span>General G1–G12</a>
+      <a href="#names"><span class="toc-num">N</span>Names (N1–N7)</a>
+      <a href="#tests"><span class="toc-num">T</span>Tests (T1–T9)</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ─── INTRO ─── -->
+<div class="section" id="intro">
+  <p class="lead">This guide is an adaptation of Robert C. Martin's heuristics and smells from <em>Clean Code</em>, with all code examples translated to JavaScript and TypeScript. The concepts apply universally across languages — the JS/TS context makes them immediately actionable for modern frontend and full-stack engineers.</p>
+  <div class="info"><div class="info-label">How to Use This Guide</div>Use the rule codes (C1, G5, N3…) as shorthand in pull request comments to reference specific principles without lengthy explanations. A comment like "G5 — extract the shared discount logic" communicates precisely and educates at the same time.</div>
+  <div class="pullquote">"Clean code is not written by following a set of rules. Professionalism and craftsmanship come from values that drive disciplines."<br/><span style="font-size:14px;font-style:normal">— Robert C. Martin</span></div>
+</div>
+
+<!-- ─── COMMENTS ─── -->
+<div class="section" id="comments">
+  <div class="section-label">C &mdash; Comments</div>
+  <h2>Comments</h2>
+  <p class="lead">A comment worth writing is worth writing well. But the best comment is often no comment at all — when code is expressive enough to speak for itself.</p>
+
+  <h3><span class="rule-id">C1</span> Inappropriate Information</h3>
+  <div class="rule-quote">Comments should be reserved for technical notes about the code and design.</div>
+  <p>Meta-data belongs in dedicated systems, not source files. Change histories, author names, last-modified dates, ticket numbers, and SPR references are all better tracked in your version control system or issue tracker. When they appear in comments, they clutter the file with historical noise that grows stale and misleads future readers.</p>
+
+  <h3><span class="rule-id">C2</span> Obsolete Comment</h3>
+  <div class="rule-quote">Obsolete comments tend to migrate away from the code they once described.</div>
+  <p>A comment that describes what the code used to do becomes a floating island of misdirection. Code evolves; comments often do not. When you find an obsolete comment, update it or delete it immediately. Do not leave it in place as a historical curiosity — it will mislead the next developer who reads it.</p>
+
+  <h3><span class="rule-id">C3</span> Redundant Comment</h3>
+  <div class="rule-quote">Comments should say things that the code cannot say for itself.</div>
+  <p>A comment that restates what the code already clearly expresses adds noise without signal.</p>
+  <div class="code-block bad">
+    <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Redundant</span></div>
+    <pre><code>i++; <span class="cm">// increment</span>
+
+<span class="cm">/**
+ * Begins the process of selling an item.
+ * @param sellRequest The request details for selling the item.
+ * @returns A response object related to the sell operation.
+ */</span>
+<span class="kw">function</span> <span class="fn">beginSellItem</span><span class="pu">(</span>sellRequest: <span class="ty">SellRequest</span><span class="pu">)</span>: <span class="ty">SellResponse</span> <span class="pu">{</span> ... <span class="pu">}</span></code></pre>
+  </div>
+  <p>The JSDoc above adds nothing the function signature doesn't already communicate. Reserve documentation comments for non-obvious behaviour, edge cases, and design decisions that cannot be expressed in types or names alone.</p>
+
+  <h3><span class="rule-id">C4</span> Poorly Written Comment</h3>
+  <div class="rule-quote">Choose your words carefully.</div>
+  <p>If a comment is worth writing, write it well. Use correct grammar. Be brief and precise. Don't ramble. Don't state the obvious. A poorly written comment is worse than no comment — it suggests carelessness, and carelessness in comments invites carelessness in the code itself.</p>
+
+  <h3><span class="rule-id">C5</span> Commented-Out Code</h3>
+  <div class="rule-quote">It pollutes the modules that contain it and distracts the people who try to read it.</div>
+  <p>Commented-out code is an abomination. It calls functions that no longer exist, uses variable names that have changed, and follows conventions that are obsolete. Nobody deletes it because everyone assumes someone else needs it. Delete it. Your version control system remembers it.</p>
+  <div class="code-block bad">
+    <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Delete This</span></div>
+    <pre><code><span class="cm">// const oldResult = calculateLegacyTotal(items);</span>
+<span class="cm">// if (oldResult > 0) {</span>
+<span class="cm">//   applyDiscount(oldResult);</span>
+<span class="cm">// }</span>
+<span class="kw">const</span> result = <span class="fn">calculateTotal</span><span class="pu">(</span>items<span class="pu">);</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── ENVIRONMENT ─── -->
+<div class="section" id="environment">
+  <div class="section-label">E &mdash; Environment</div>
+  <h2>Environment</h2>
+  <p class="lead">The ease of building and testing a project is not a luxury — it is a quality signal. A project that requires multiple manual steps to build or test will be built and tested less often, which means bugs accumulate faster.</p>
+
+  <h3><span class="rule-id">E1</span> Build Requires More Than One Step</h3>
+  <div class="rule-quote">Building a project should be a single trivial operation.</div>
+  <p>You should be able to check out a project and be running it with two commands. No hunting for config files, no undocumented environment variables, no manual setup steps that live only in someone's head.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">Shell</span><span class="code-label-good">✓ Ideal Build Flow</span></div>
+    <pre><code>git clone git@github.com:org/project.git
+cd project
+pnpm install
+pnpm dev</code></pre>
+  </div>
+  <p>If your README has more than a few steps before "you're running," that complexity belongs in scripts, Dockerfiles, or tooling — not in the human's head.</p>
+
+  <h3><span class="rule-id">E2</span> Tests Require More Than One Step</h3>
+  <div class="rule-quote">You should be able to run all the unit tests with just one command.</div>
+  <p>Tests that are hard to run are tests that don't get run. Whether triggered from an IDE button or a shell command, the full test suite must be a single, obvious, fast invocation. This is so fundamental that it belongs in the project README's first paragraph.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">Shell</span><span class="code-label-good">✓ One Command</span></div>
+    <pre><code>pnpm test          <span class="cm"># runs all unit tests</span>
+pnpm test:watch    <span class="cm"># watch mode during development</span>
+pnpm test:coverage <span class="cm"># with coverage report</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── FUNCTIONS ─── -->
+<div class="section" id="functions">
+  <div class="section-label">F &mdash; Functions</div>
+  <h2>Functions</h2>
+  <p class="lead">Functions are the primary unit of organisation in code. Small, focused functions with clear signatures are easier to name, test, understand, and compose than large, multipurpose ones.</p>
+
+  <h3><span class="rule-id">F1</span> Too Many Arguments</h3>
+  <div class="rule-quote">More than three is very questionable and should be avoided with prejudice.</div>
+  <p>Functions with many parameters are hard to call correctly, hard to test exhaustively, and a signal that the function may be doing too much. The solution is almost always to group related parameters into an object.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Bad</span></div>
+      <pre><code><span class="kw">function</span> <span class="fn">createUser</span><span class="pu">(</span>
+  firstName: <span class="ty">string</span>,
+  lastName: <span class="ty">string</span>,
+  email: <span class="ty">string</span>,
+  age: <span class="ty">number</span>,
+  isAdmin: <span class="ty">boolean</span>
+<span class="pu">)</span>: <span class="ty">void</span> <span class="pu">{</span> ... <span class="pu">}</span>
+
+<span class="fn">createUser</span><span class="pu">(</span><span class="st">"John"</span>, <span class="st">"Doe"</span>, <span class="st">"j@ex.com"</span>, <span class="nm">30</span>, <span class="kw">false</span><span class="pu">);</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Good</span></div>
+      <pre><code><span class="kw">interface</span> <span class="ty">CreateUserParams</span> <span class="pu">{</span>
+  firstName: <span class="ty">string</span>;
+  lastName: <span class="ty">string</span>;
+  email: <span class="ty">string</span>;
+  age: <span class="ty">number</span>;
+  isAdmin: <span class="ty">boolean</span>;
+<span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">createUser</span><span class="pu">(</span>params: <span class="ty">CreateUserParams</span><span class="pu">)</span>: <span class="ty">void</span> <span class="pu">{</span> ... <span class="pu">}</span>
+
+<span class="fn">createUser</span><span class="pu">({</span> firstName: <span class="st">"John"</span>, lastName: <span class="st">"Doe"</span>,
+  email: <span class="st">"j@ex.com"</span>, age: <span class="nm">30</span>, isAdmin: <span class="kw">false</span> <span class="pu">});</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">F2</span> Output Arguments</h3>
+  <div class="rule-quote">If your function must change the state of something, have it change the state of the object it is called on.</div>
+  <p>Readers expect function arguments to be inputs, not outputs. A function that modifies one of its arguments surprises the caller and forces them to read the implementation to understand what happened. Return new values or use class methods that operate on <code>this</code>.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Output Argument</span></div>
+      <pre><code><span class="kw">function</span> <span class="fn">updateEmail</span><span class="pu">(</span>
+  profile: <span class="ty">UserProfile</span>,
+  newEmail: <span class="ty">string</span>
+<span class="pu">)</span>: <span class="ty">void</span> <span class="pu">{</span>
+  profile.email = newEmail; <span class="cm">// mutates input</span>
+<span class="pu">}</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Returns New Value</span></div>
+      <pre><code><span class="kw">function</span> <span class="fn">withUpdatedEmail</span><span class="pu">(</span>
+  profile: <span class="ty">UserProfile</span>,
+  newEmail: <span class="ty">string</span>
+<span class="pu">)</span>: <span class="ty">UserProfile</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="pu">{</span> ...profile, email: newEmail <span class="pu">};</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">F3</span> Flag Arguments</h3>
+  <div class="rule-quote">It's recommended to split the function into multiple functions, each doing a single, well-defined task.</div>
+  <p>A boolean parameter loudly declares that the function does at least two different things depending on the flag. Split it into two clearly named functions instead.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Flag Argument</span></div>
+      <pre><code><span class="fn">updateUserProfile</span><span class="pu">(</span><span class="nm">1</span>, <span class="st">"new@ex.com"</span>, <span class="kw">true</span><span class="pu">);</span>
+<span class="cm">// What does `true` mean here?</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Split Functions</span></div>
+      <pre><code><span class="fn">updateUserProfile</span><span class="pu">(</span><span class="nm">1</span>, <span class="st">"new@ex.com"</span><span class="pu">);</span>
+<span class="fn">sendVerificationEmail</span><span class="pu">(</span><span class="st">"new@ex.com"</span><span class="pu">);</span>
+<span class="cm">// Intent is explicit at call site</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">F4</span> Dead Function</h3>
+  <div class="rule-quote">Keeping dead code around is wasteful.</div>
+  <p>Methods that are never called should be deleted. Every major IDE and editor has "Find All References" — use it. Your source control system remembers deleted code. Do not be afraid to remove functions that no longer serve a purpose. Dead code is cognitive overhead for every developer who reads the file.</p>
+</div>
+
+<!-- ─── GENERAL G1–G12 ─── -->
+<div class="section" id="general-1">
+  <div class="section-label">G &mdash; General (G1–G12)</div>
+  <h2>General Rules — Part 1</h2>
+  <p class="lead">General heuristics span architecture, structure, and behaviour. Many of the most damaging code quality problems are not about syntax or style — they are about where things are placed and how much they know about each other.</p>
+
+  <h3><span class="rule-id">G1</span> Multiple Languages in One Source File</h3>
+  <div class="rule-quote">The ideal is for a source file to contain one, and only one, language.</div>
+  <p>Mixing SQL strings, HTML templates, JSON blobs, and business logic in a single TypeScript file creates a file with no clear purpose and no clear owner. Extract SQL to repositories, HTML to template files, and configuration to dedicated modules. Minimise the number of languages cohabiting in any single file.</p>
+
+  <h3><span class="rule-id">G2</span> Obvious Behaviour Is Unimplemented</h3>
+  <div class="rule-quote">Following the Principle of Least Surprise — any function should implement the behaviours another programmer could reasonably expect.</div>
+  <p>A function named <code>stringToDay</code> that accepts <code>"Monday"</code> should also handle <code>"monday"</code>, <code>"MONDAY"</code>, and <code>"MON"</code>. When obvious behaviours are missing, developers lose trust in the codebase and must read every implementation in detail rather than relying on intuition.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Handles Expected Variants</span></div>
+    <pre><code><span class="kw">function</span> <span class="fn">stringToDay</span><span class="pu">(</span>dayName: <span class="ty">string</span><span class="pu">)</span>: <span class="ty">Day</span> | <span class="ty">undefined</span> <span class="pu">{</span>
+  <span class="kw">switch</span> <span class="pu">(</span>dayName.<span class="fn">toUpperCase</span><span class="pu">())</span> <span class="pu">{</span>   <span class="cm">// normalise case first</span>
+    <span class="kw">case</span> <span class="st">"MONDAY"</span>: <span class="kw">case</span> <span class="st">"MON"</span>: <span class="kw">return</span> Day.MONDAY;
+    <span class="kw">case</span> <span class="st">"TUESDAY"</span>: <span class="kw">case</span> <span class="st">"TUE"</span>: <span class="kw">return</span> Day.TUESDAY;
+    <span class="cm">// … etc</span>
+    <span class="kw">default</span>: <span class="kw">return</span> <span class="kw">undefined</span>;
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3><span class="rule-id">G3</span> Incorrect Behaviour at the Boundaries</h3>
+  <div class="rule-quote">There is no replacement for due diligence.</div>
+  <p>Developers write functions that "work" for the happy path and trust their intuition for the rest. Every boundary condition — null inputs, empty arrays, zero values, negative numbers, maximum values — represents a case that can break an algorithm that seems correct. Write tests for every boundary. Don't rely on intuition.</p>
+
+  <h3><span class="rule-id">G4</span> Overridden Safeties</h3>
+  <div class="rule-quote">Turning off certain compiler warnings may help you get the build to succeed, but at the risk of endless debugging sessions.</div>
+  <p>Using <code>// @ts-ignore</code>, <code>any</code> everywhere, or disabling <code>strict</code> in <code>tsconfig.json</code> to silence type errors is the TypeScript equivalent of overriding a safety mechanism. The type system exists to catch errors before runtime. Every suppressed warning is a deferred bug.</p>
+  <div class="code-block bad">
+    <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Suppressing Safeties</span></div>
+    <pre><code><span class="cm">// @ts-ignore  ← don't do this</span>
+<span class="kw">const</span> result = riskyOperation<span class="pu">();</span>
+
+<span class="kw">function</span> <span class="fn">processData</span><span class="pu">(</span>data: <span class="ty">any</span><span class="pu">)</span> <span class="pu">{</span>  <span class="cm">// ← `any` defeats the type system</span>
+  <span class="kw">return</span> data.someProp.nested;  <span class="cm">// runtime error waiting to happen</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3><span class="rule-id">G5</span> Duplication</h3>
+  <div class="rule-quote">Every time you see duplication in the code, it represents a missed opportunity for abstraction.</div>
+  <p>This is the DRY principle — Don't Repeat Yourself. Every duplication is a maintenance liability: when the logic changes, every copy must be found and updated. Three functions with slightly different discount rates all call for a single parameterised function.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Duplicated Logic</span></div>
+      <pre><code><span class="kw">function</span> <span class="fn">calcStudentDiscount</span><span class="pu">(</span>n: <span class="ty">number</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> n - n * <span class="nm">0.20</span>;
+<span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">calcTeacherDiscount</span><span class="pu">(</span>n: <span class="ty">number</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> n - n * <span class="nm">0.10</span>;
+<span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">calcSeniorDiscount</span><span class="pu">(</span>n: <span class="ty">number</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">return</span> n - n * <span class="nm">0.15</span>;
+<span class="pu">}</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Abstracted</span></div>
+      <pre><code><span class="kw">const</span> DISCOUNT_RATES = <span class="pu">{</span>
+  student: <span class="nm">0.20</span>,
+  teacher: <span class="nm">0.10</span>,
+  senior:  <span class="nm">0.15</span>,
+<span class="pu">}</span> <span class="kw">as const</span>;
+
+<span class="kw">function</span> <span class="fn">applyDiscount</span><span class="pu">(</span>
+  amount: <span class="ty">number</span>,
+  rate: <span class="ty">number</span>
+<span class="pu">)</span>: <span class="ty">number</span> <span class="pu">{</span>
+  <span class="kw">return</span> amount * <span class="pu">(</span><span class="nm">1</span> - rate<span class="pu">);</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G6</span> Code at Wrong Level of Abstraction</h3>
+  <div class="rule-quote">You cannot lie or fake your way out of misplaced abstraction.</div>
+  <p>Higher-level concepts belong in base classes or interfaces; lower-level implementation details belong in derivatives. When <code>percentFull()</code> appears on a generic <code>Stack</code> interface, it forces all stack implementations — including unbounded ones — to implement a concept that doesn't apply to them. Keep abstractions clean and complete.</p>
+
+  <h3><span class="rule-id">G7</span> Base Classes Depending on Their Derivatives</h3>
+  <div class="rule-quote">In general, base classes should know nothing about their derivatives.</div>
+  <p>When a base class contains <code>if (type === "cat")</code> or <code>instanceof Dog</code> checks, you've lost the benefit of inheritance. The base class is now coupled to every subclass — adding a new type requires modifying the base. Use polymorphism and factory patterns to decouple creation from usage.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Base Knows Derivatives</span></div>
+      <pre><code><span class="kw">class</span> <span class="ty">Animal</span> <span class="pu">{</span>
+  <span class="kw">static</span> <span class="fn">create</span><span class="pu">(</span>type: <span class="ty">string</span><span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(</span>type === <span class="st">"cat"</span><span class="pu">)</span> <span class="kw">return new</span> <span class="ty">Cat</span><span class="pu">();</span>
+    <span class="kw">if</span> <span class="pu">(</span>type === <span class="st">"dog"</span><span class="pu">)</span> <span class="kw">return new</span> <span class="ty">Dog</span><span class="pu">();</span>
+    <span class="kw">throw new</span> <span class="ty">Error</span><span class="pu">(</span><span class="st">"Unknown"</span><span class="pu">);</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Factory Decoupled</span></div>
+      <pre><code><span class="kw">abstract class</span> <span class="ty">Animal</span> <span class="pu">{</span>
+  <span class="kw">abstract</span> <span class="fn">makeSound</span><span class="pu">()</span>: <span class="ty">string</span>;
+<span class="pu">}</span>
+<span class="kw">class</span> <span class="ty">Cat</span> <span class="kw">extends</span> <span class="ty">Animal</span> <span class="pu">{</span>
+  <span class="fn">makeSound</span><span class="pu">()</span> <span class="pu">{</span> <span class="kw">return</span> <span class="st">"meow"</span>; <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="cm">// Factory lives separately from Animal</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G8</span> Too Much Information</h3>
+  <div class="rule-quote">The fewer methods a class has, the better. The fewer variables a function knows about, the better.</div>
+  <p>A well-designed interface is narrow. It exposes the minimum surface area necessary to accomplish its purpose. Wide interfaces with many public methods and properties create high coupling — consumers depend on things they don't need, and any internal change risks breaking them. Hide data, hide utility functions, hide temporaries.</p>
+
+  <h3><span class="rule-id">G9</span> Dead Code</h3>
+  <div class="rule-quote">When you find dead code, do the right thing. Give it a decent burial. Delete it from the system.</div>
+  <p>Dead code is code that can never execute: the body of an <code>if</code> on an impossible condition, a <code>catch</code> block for an exception that is never thrown, a utility function with zero callers. It compiles. It passes linting. And it slowly rots, becoming more misleading with every passing month. Delete it.</p>
+
+  <h3><span class="rule-id">G10</span> Vertical Separation</h3>
+  <div class="rule-quote">The vertical distance between a variable/function declaration and its usage should be minimal.</div>
+  <p>Local variables should be declared just above their first use, with the smallest possible scope. Private helper functions should appear just below the public method that calls them. When definitions and usages are far apart, reading the code requires constantly scrolling back and forth — a cognitive overhead that compounds on every read.</p>
+
+  <h3><span class="rule-id">G11</span> Inconsistency</h3>
+  <div class="rule-quote">If you do something a certain way, do all similar things in the same way.</div>
+  <p>If you name a variable <code>response</code> for an <code>HttpResponse</code> in one function, use <code>response</code> consistently across all functions that handle <code>HttpResponse</code>. If you name a method <code>processVerificationRequest</code>, name its sibling <code>processDeletionRequest</code> — not <code>handleDeleteData</code> or <code>delete_request</code>. Consistency is a courtesy to every future reader.</p>
+  <div class="code-block bad">
+    <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Inconsistent Naming</span></div>
+    <pre><code><span class="kw">class</span> <span class="ty">RequestHandler</span> <span class="pu">{</span>
+  <span class="fn">handleDataUpdate</span><span class="pu">(</span>request: <span class="ty">any</span><span class="pu">)</span>   <span class="cm">// "handle" + "request"</span>
+  <span class="fn">processDeletionData</span><span class="pu">(</span>req: <span class="ty">any</span><span class="pu">)</span>   <span class="cm">// "process" + "req"</span>
+  <span class="fn">verify_request</span><span class="pu">(</span>input: <span class="ty">any</span><span class="pu">)</span>      <span class="cm">// snake_case + "input"</span>
+  <span class="fn">fetchRecords</span><span class="pu">()</span>                  <span class="cm">// "fetch", no param at all</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3><span class="rule-id">G12</span> Clutter</h3>
+  <div class="rule-quote">Keep your source files clean, well organised, and free of clutter.</div>
+  <p>Unused variables, empty constructors with no implementation, never-called private functions, meaningless comments — all of these are clutter. They add lines without adding information. Every line of code is a line a developer must read and process. Earn every line's presence in your file.</p>
+</div>
+
+<!-- ─── GENERAL G13–G24 ─── -->
+<div class="section" id="general-2">
+  <div class="section-label">G &mdash; General (G13–G24)</div>
+  <h2>General Rules — Part 2</h2>
+
+  <h3><span class="rule-id">G13</span> Artificial Coupling</h3>
+  <div class="rule-quote">It is a result of putting a variable, constant, or function in a temporarily convenient location. This is lazy and careless.</div>
+  <p>General-purpose utilities should not live inside specific classes. A <code>formatDate</code> utility in a <code>User</code> class artificially couples every consumer of <code>formatDate</code> to <code>User</code>. Take the time to find where things genuinely belong — put shared utilities in a <code>utils</code> module, domain constants in their owning module, and general helpers at the appropriate level.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Artificially Coupled</span></div>
+      <pre><code><span class="kw">class</span> <span class="ty">User</span> <span class="pu">{</span>
+  <span class="cm">// A date util has nothing to do with User</span>
+  <span class="kw">static</span> <span class="fn">formatDate</span><span class="pu">(</span>date: <span class="ty">Date</span><span class="pu">)</span>: <span class="ty">string</span> <span class="pu">{</span>
+    <span class="kw">return</span> <span class="st">`</span><span class="pu">${</span>date.<span class="fn">getFullYear</span><span class="pu">()}</span><span class="st">-...</span><span class="st">`</span>;
+  <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="cm">// Bad: order.ts now depends on User</span>
+User.<span class="fn">formatDate</span><span class="pu">(</span>order.createdAt<span class="pu">);</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Correct Home</span></div>
+      <pre><code><span class="cm">// date-utils.ts — no coupling to any domain class</span>
+<span class="kw">export function</span> <span class="fn">formatDate</span><span class="pu">(</span>date: <span class="ty">Date</span><span class="pu">)</span>: <span class="ty">string</span> <span class="pu">{</span>
+  <span class="kw">return</span> <span class="st">`</span><span class="pu">${</span>date.<span class="fn">getFullYear</span><span class="pu">()}</span><span class="st">-...</span><span class="st">`</span>;
+<span class="pu">}</span>
+
+<span class="cm">// order.ts imports directly from utils</span>
+<span class="kw">import</span> <span class="pu">{</span> formatDate <span class="pu">}</span> <span class="kw">from</span> <span class="st">"../utils/date-utils"</span>;</code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G14</span> Feature Envy</h3>
+  <div class="rule-quote">We want to eliminate Feature Envy because it exposes the internals of one class to another.</div>
+  <p>A method suffers from feature envy when it spends more time using the data of another class than its own. It "wishes" it were inside that other class. The fix is to move the method to the class it envies — unless doing so violates the Single Responsibility Principle (e.g. a report formatter that needs employee data but shouldn't know about reporting format).</p>
+
+  <h3><span class="rule-id">G15</span> Selector Arguments</h3>
+  <div class="rule-quote">Selector arguments are just a lazy way to avoid splitting a large function into several smaller functions.</div>
+  <p>A boolean, enum, or integer argument used to select a code path within a function is a selector argument. They are confusing at call sites (<code>calculateWeeklyPay(false)</code> — what does false mean?) and signal that the function does more than one thing. Split the function instead.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Selector Argument</span></div>
+      <pre><code>calculator.<span class="fn">calculateWeeklyPay</span><span class="pu">(</span><span class="kw">false</span><span class="pu">);</span>
+<span class="cm">// false = no overtime? straight time? what?</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Explicit Intent</span></div>
+      <pre><code>calculator.<span class="fn">straightPay</span><span class="pu">();</span>
+calculator.<span class="fn">overtimePay</span><span class="pu">();</span>
+<span class="cm">// Intent is self-documenting</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G16</span> Obscured Intent</h3>
+  <div class="rule-quote">We want code to be as expressive as possible.</div>
+  <p>Run-on expressions, Hungarian notation, and magic numbers all obscure the author's intent. A dense calculation like <code>return this.iThsWkd * this.iThsRte + Math.round(0.5 * this.iThsRte * Math.max(0, this.iThsWkd - 400))</code> is virtually impenetrable. Break it up. Name the parts. Write for the reader.</p>
+
+  <h3><span class="rule-id">G17</span> Misplaced Responsibility</h3>
+  <div class="rule-quote">Code should be placed where a reader would naturally expect it to be.</div>
+  <p>The Principle of Least Surprise applies to code location. If a function is named <code>getTotalHours</code>, a reader expects it to be on the class that owns hours data — not on the report generator. Place logic where readers will naturally look for it, guided by the names of the functions and classes around it.</p>
+
+  <h3><span class="rule-id">G18</span> Inappropriate Static</h3>
+  <div class="rule-quote">When in doubt, make the function non-static. If you really want a function to be static, make sure there is no chance you'll want it to behave polymorphically.</div>
+  <p><code>Math.max</code> is a legitimate static method — it takes no instance state and has no meaningful polymorphic variant. But <code>HourlyPayCalculator.calculatePay(employee, overtimeRate)</code> should not be static if you might ever want <code>OvertimePayCalculator</code> and <code>StraightTimePayCalculator</code> to implement different strategies. Prefer instance methods; reserve static for true utilities.</p>
+
+  <h3><span class="rule-id">G19</span> Use Explanatory Variables</h3>
+  <div class="rule-quote">One of the more powerful ways to make a program readable is to break calculations up into intermediate values with meaningful names.</div>
+  <p>Named intermediate variables cost nothing at runtime (compilers optimise them away) and buy enormous clarity for human readers. It is hard to overdo this.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Opaque</span></div>
+      <pre><code><span class="kw">return</span> <span class="pu">{</span>
+  area: Math.PI * r * r,
+  circ: <span class="nm">2</span> * Math.PI * r,
+<span class="pu">};</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Transparent</span></div>
+      <pre><code><span class="kw">const</span> pi = Math.PI;
+<span class="kw">const</span> radiusSquared = r * r;
+<span class="kw">const</span> area = pi * radiusSquared;
+<span class="kw">const</span> circumference = <span class="nm">2</span> * pi * r;
+<span class="kw">return</span> <span class="pu">{</span> area, circumference <span class="pu">};</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G20</span> Function Names Should Say What They Do</h3>
+  <div class="rule-quote">If you have to look at the implementation to know what it does, work to find a better name.</div>
+  <p><code>date.add(5)</code> — does this add days? Hours? Does it mutate the date or return a new one? The name is ambiguous. <code>addDaysTo(date, 5)</code> or <code>daysLater(date, 5)</code> leave no doubt. Function names are the primary documentation — make them earn their keep.</p>
+
+  <h3><span class="rule-id">G21</span> Understand the Algorithm</h3>
+  <div class="rule-quote">Being unsure what your code does is just laziness.</div>
+  <p>Getting a function to pass tests by adding enough <code>if</code> statements and flags is not the same as understanding the algorithm. Before you consider a function done, be able to explain — without looking at it — exactly what it does and why. If you can't, refactor until the code itself makes the algorithm obvious.</p>
+
+  <h3><span class="rule-id">G22</span> Make Logical Dependencies Physical</h3>
+  <div class="rule-quote">Physicalise logical dependencies to clarify module relationships.</div>
+  <p>If module A depends on a constant that conceptually belongs to module B, don't hardcode it in A and assume B will always be compatible. Ask B for the value explicitly. In the classic example, <code>HourlyReporter</code> should not hardcode <code>PAGE_SIZE = 55</code> and assume <code>HourlyReportFormatter</code> will always accept 55-line pages. Instead, <code>HourlyReportFormatter</code> should expose a <code>getMaxPageSize()</code> method that <code>HourlyReporter</code> calls.</p>
+
+  <h3><span class="rule-id">G23</span> Prefer Polymorphism to If/Else or Switch/Case</h3>
+  <div class="rule-quote">Every switch statement should be suspect.</div>
+  <p>Most <code>switch</code> statements exist because polymorphism wasn't used. Every time you add a new type, you must find every switch on that type and add a case. With polymorphism, you add a new subclass and everything works. The ONE SWITCH rule: there may be at most one switch for a given type selection — and that switch should create polymorphic objects that replace all other switches in the system.</p>
+
+  <h3><span class="rule-id">G24</span> Follow Standard Conventions</h3>
+  <div class="rule-quote">The team should not need a document to describe these conventions because their code provides the examples.</div>
+  <p>Agree on a style guide (Airbnb, Google, or your own) and enforce it with ESLint and Prettier. The specific conventions matter less than their consistent application. A codebase where every file looks like it was written by the same person is dramatically easier to read than one where each developer has their own style.</p>
+</div>
+
+<!-- ─── GENERAL G25–G36 ─── -->
+<div class="section" id="general-3">
+  <div class="section-label">G &mdash; General (G25–G36)</div>
+  <h2>General Rules — Part 3</h2>
+
+  <h3><span class="rule-id">G25</span> Replace Magic Numbers with Named Constants</h3>
+  <div class="rule-quote">Having named constants for numbers is always a good idea.</div>
+  <p>A raw number in code carries no meaning. <code>86400</code> is just a number — <code>SECONDS_PER_DAY</code> is self-documenting. <code>7777</code> in a test assertion is a mystery — <code>HOURLY_EMPLOYEE_ID</code> communicates intent. The term "magic number" extends beyond integers to any token whose meaning isn't obvious: a magic string like <code>"john.doe"</code> is just as opaque as a magic integer.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Magic Numbers</span></div>
+      <pre><code><span class="kw">if</span> <span class="pu">(</span>sessionDuration > <span class="nm">1800</span><span class="pu">)</span> expireSession<span class="pu">();</span>
+<span class="fn">assertEqual</span><span class="pu">(</span><span class="nm">7777</span>, employee.<span class="fn">find</span><span class="pu">(</span><span class="st">"john.doe"</span><span class="pu">).</span>id<span class="pu">);</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Named Constants</span></div>
+      <pre><code><span class="kw">const</span> SESSION_TIMEOUT_SECONDS = <span class="nm">1800</span>;
+<span class="kw">if</span> <span class="pu">(</span>sessionDuration > SESSION_TIMEOUT_SECONDS<span class="pu">)</span> <span class="fn">expireSession</span><span class="pu">();</span>
+<span class="fn">assertEqual</span><span class="pu">(</span>HOURLY_EMPLOYEE_ID, employee.<span class="fn">find</span><span class="pu">(</span>HOURLY_EMPLOYEE_NAME<span class="pu">).</span>id<span class="pu">);</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G26</span> Be Precise</h3>
+  <div class="rule-quote">Ambiguities and imprecision in code are either a result of disagreements or laziness.</div>
+  <p>Using <code>number</code> for currency calculations introduces floating-point rounding errors. Assuming a query returns at most one result when it could return many causes silent data loss. Not handling <code>null</code> when a function can return <code>null</code> causes runtime crashes. When you make a decision in code, understand it precisely and handle every exception.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Imprecise</span></div>
+      <pre><code><span class="cm">// Floating point for money = rounding errors</span>
+<span class="kw">const</span> total = items.<span class="fn">reduce</span><span class="pu">(</span>
+  <span class="pu">(</span>sum, i<span class="pu">)</span> => sum + i.price * i.qty, <span class="nm">0.0</span>
+<span class="pu">);</span>
+<span class="cm">// Assumes at most one result</span>
+<span class="kw">return</span> items.<span class="fn">find</span><span class="pu">(</span>i => i.id === id<span class="pu">);</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Precise</span></div>
+      <pre><code><span class="cm">// Cents (integers) for money — no rounding errors</span>
+<span class="kw">const</span> totalCents = items.<span class="fn">reduce</span><span class="pu">(</span>
+  <span class="pu">(</span>sum, i<span class="pu">)</span> => sum + i.priceCents * i.qty, <span class="nm">0</span>
+<span class="pu">);</span>
+<span class="cm">// Returns all matches — caller decides</span>
+<span class="kw">return</span> items.<span class="fn">filter</span><span class="pu">(</span>i => i.id === id<span class="pu">);</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G27</span> Structure over Convention</h3>
+  <div class="rule-quote">Enforce design decisions with structure over convention.</div>
+  <p>Conventions rely on discipline — people can forget or ignore them. Structure enforces compliance automatically. An abstract class with an abstract method <code>makeSound()</code> forces every subclass to implement it at compile time. A <code>switch</code> with a naming convention does not. Prefer mechanisms that make incorrect implementations impossible over those that merely make them unconventional.</p>
+
+  <h3><span class="rule-id">G28</span> Encapsulate Conditionals</h3>
+  <div class="rule-quote">Extract complex conditionals into descriptive functions to clarify their intent.</div>
+  <p>Boolean logic is hard enough to reason about without having to parse it inside an <code>if</code> statement. Extract the condition into a named function whose name explains the intent.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Raw Conditional</span></div>
+      <pre><code><span class="kw">if</span> <span class="pu">(</span>timer.<span class="fn">hasExpired</span><span class="pu">()</span> && !timer.<span class="fn">isRecurrent</span><span class="pu">())</span> <span class="pu">{</span>
+  <span class="fn">deleteTimer</span><span class="pu">(</span>timer<span class="pu">);</span>
+<span class="pu">}</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Named Predicate</span></div>
+      <pre><code><span class="kw">function</span> <span class="fn">shouldBeDeleted</span><span class="pu">(</span>timer: <span class="ty">Timer</span><span class="pu">)</span>: <span class="ty">boolean</span> <span class="pu">{</span>
+  <span class="kw">return</span> timer.<span class="fn">hasExpired</span><span class="pu">()</span> && !timer.<span class="fn">isRecurrent</span><span class="pu">();</span>
+<span class="pu">}</span>
+<span class="kw">if</span> <span class="pu">(</span><span class="fn">shouldBeDeleted</span><span class="pu">(</span>timer<span class="pu">))</span> <span class="fn">deleteTimer</span><span class="pu">(</span>timer<span class="pu">);</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G29</span> Avoid Negative Conditionals</h3>
+  <div class="rule-quote">Prefer positive over negative conditionals for clearer logic.</div>
+  <p>Negatives require an extra mental step to parse. <code>if (buffer.shouldCompact())</code> reads naturally. <code>if (!buffer.shouldNotCompact())</code> requires the reader to flip a double negative. When you find yourself writing <code>!isNot...</code>, rename the predicate to the positive form.</p>
+
+  <h3><span class="rule-id">G30</span> Functions Should Do One Thing</h3>
+  <div class="rule-quote">Decompose functions into smaller ones that each perform a single task.</div>
+  <p>A function that loops over employees, checks if it's payday, calculates pay, and delivers pay does four things. Each of those is a separate concern that can be named, tested, and understood independently. Decompose until each function's name precisely describes its complete behaviour.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Does Three Things</span></div>
+      <pre><code><span class="kw">function</span> <span class="fn">pay</span><span class="pu">(</span>employees: <span class="ty">Employee</span>[]<span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">for</span> <span class="pu">(</span><span class="kw">const</span> e <span class="kw">of</span> employees<span class="pu">)</span> <span class="pu">{</span>
+    <span class="kw">if</span> <span class="pu">(</span>e.<span class="fn">isPayDay</span><span class="pu">())</span> <span class="pu">{</span>
+      <span class="kw">const</span> pay = e.<span class="fn">calculatePay</span><span class="pu">();</span>
+      e.<span class="fn">deliverPay</span><span class="pu">(</span>pay<span class="pu">);</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ One Thing Each</span></div>
+      <pre><code><span class="kw">function</span> <span class="fn">pay</span><span class="pu">(</span>employees: <span class="ty">Employee</span>[]<span class="pu">)</span> <span class="pu">{</span>
+  employees.<span class="fn">forEach</span><span class="pu">(</span>payIfNecessary<span class="pu">);</span>
+<span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">payIfNecessary</span><span class="pu">(</span>e: <span class="ty">Employee</span><span class="pu">)</span> <span class="pu">{</span>
+  <span class="kw">if</span> <span class="pu">(</span>e.<span class="fn">isPayDay</span><span class="pu">())</span> <span class="fn">calculateAndDeliverPay</span><span class="pu">(</span>e<span class="pu">);</span>
+<span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">calculateAndDeliverPay</span><span class="pu">(</span>e: <span class="ty">Employee</span><span class="pu">)</span> <span class="pu">{</span>
+  e.<span class="fn">deliverPay</span><span class="pu">(</span>e.<span class="fn">calculatePay</span><span class="pu">());</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G31</span> Hidden Temporal Couplings</h3>
+  <div class="rule-quote">Make temporal dependencies among function calls explicit to prevent misuse.</div>
+  <p>If function B must always be called after function A, and function C after B, that ordering constraint should be visible in the code — not hidden in a comment or tribal knowledge. Use a bucket-brigade pattern: make each function return a value that the next function requires as input, so calling them out of order is a type error, not a runtime surprise.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Hidden Order</span></div>
+      <pre><code>diver.<span class="fn">saturateGradient</span><span class="pu">();</span>  <span class="cm">// must be first</span>
+diver.<span class="fn">reticulateSplines</span><span class="pu">();</span> <span class="cm">// must be second</span>
+diver.<span class="fn">diveForMoog</span><span class="pu">(</span>reason<span class="pu">);</span>  <span class="cm">// must be third</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Explicit Order</span></div>
+      <pre><code><span class="kw">const</span> gradient = diver.<span class="fn">saturateGradient</span><span class="pu">();</span>
+<span class="kw">const</span> splines = diver.<span class="fn">reticulateSplines</span><span class="pu">(</span>gradient<span class="pu">);</span>
+diver.<span class="fn">diveForMoog</span><span class="pu">(</span>splines, reason<span class="pu">);</span>
+<span class="cm">// Out-of-order calls won't compile</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">G32</span> Don't Be Arbitrary</h3>
+  <div class="rule-quote">Have a reason for the way you structure your code, and make sure that reason is communicated by the structure.</div>
+  <p>If a class is nested inside another class, there should be a clear reason — it is a utility of that class and used nowhere else. If a helper function appears in a module, there should be a reason it belongs there. Arbitrary placement spreads confusion and forces future developers to guess at intent. Structure your code purposefully, and let the structure communicate that purpose.</p>
+
+  <h3><span class="rule-id">G33</span> Encapsulate Boundary Conditions</h3>
+  <div class="rule-quote">Boundary conditions are hard to keep track of. Put the processing of them in one place.</div>
+  <p>Off-by-one errors scatter <code>+1</code>s and <code>-1</code>s throughout the code. When a boundary value like <code>level + 1</code> appears in multiple places, extract it into a named variable: <code>const nextLevel = level + 1</code>. Now the boundary condition is defined once, used everywhere, and has a name that communicates its intent.</p>
+
+  <h3><span class="rule-id">G34</span> Functions Should Descend Only One Level of Abstraction</h3>
+  <div class="rule-quote">Maintain a single level of abstraction per function to clarify intent.</div>
+  <p>Every statement in a function should be at the same level of abstraction — one level below what the function's name describes. A <code>render()</code> function that both constructs an HTML tag structure (high-level) and manually builds attribute strings (low-level) mixes levels. Extract the low-level detail into a helper so <code>render()</code> only does high-level orchestration.</p>
+
+  <h3><span class="rule-id">G35</span> Keep Configurable Data at High Levels</h3>
+  <div class="rule-quote">Expose configurable data at high levels to make it easily accessible and modifiable.</div>
+  <p>Default values, configuration constants, and feature flags should be visible at the top level of the application — in a config module, environment variables, or a well-named constants file. Burying them in low-level functions forces developers to dig through multiple abstraction layers to find and change what should be a simple configuration decision.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Config at High Level</span></div>
+    <pre><code><span class="cm">// config.ts — all configurable values in one obvious place</span>
+<span class="kw">export const</span> CONFIG = <span class="pu">{</span>
+  DEFAULT_PORT: <span class="nm">3000</span>,
+  SESSION_TIMEOUT_MS: <span class="nm">30</span> * <span class="nm">60</span> * <span class="nm">1000</span>,
+  MAX_UPLOAD_SIZE_BYTES: <span class="nm">10</span> * <span class="nm">1024</span> * <span class="nm">1024</span>,
+  ITEMS_PER_PAGE: <span class="nm">25</span>,
+<span class="pu">}</span> <span class="kw">as const</span>;
+<span class="cm">// Low-level functions receive config values as params, not hardcoding them</span></code></pre>
+  </div>
+
+  <h3><span class="rule-id">G36</span> Avoid Transitive Navigation</h3>
+  <div class="rule-quote">Avoid having modules navigate through multiple layers of collaborators — the Law of Demeter.</div>
+  <p>If you find yourself writing <code>a.getB().getC().doSomething()</code>, your code knows too much about the internal structure of the object graph. This is "Train Wreck" code. If B's internal structure changes, every chain that traverses through B is broken. Instead, ask your immediate collaborator to do what you need: <code>a.doSomethingWithBAndC()</code>.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Train Wreck</span></div>
+      <pre><code>a.<span class="fn">getB</span><span class="pu">().</span><span class="fn">getC</span><span class="pu">().</span><span class="fn">doSomething</span><span class="pu">();</span>
+<span class="cm">// A knows about B AND C</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Law of Demeter</span></div>
+      <pre><code>a.<span class="fn">doSomethingWithBAndC</span><span class="pu">();</span>
+<span class="cm">// A only knows its immediate collaborator</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ─── JS / TS ─── -->
+<div class="section" id="js-ts">
+  <div class="section-label">JS &mdash; JavaScript / TypeScript</div>
+  <h2>JavaScript &amp; TypeScript Specifics</h2>
+  <p class="lead">These rules apply the general principles to JS/TS-specific patterns. If you are using a framework (React, Vue, Angular, Svelte), always defer to the framework's established conventions for imports and module structure first.</p>
+
+  <h3><span class="rule-id">JS1</span> Modularise and Structure Imports</h3>
+  <div class="rule-quote">Group exports in index files to simplify imports from a package or module.</div>
+  <p>Long lists of individual imports from deeply nested paths create tight coupling between import sites and file structure. Use <code>index.ts</code> barrel files to create a stable public API for each module. Internal rearrangements become transparent to consumers.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Scattered Imports</span></div>
+      <pre><code><span class="kw">import</span> <span class="pu">{</span> Button <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./components/Button'</span>;
+<span class="kw">import</span> <span class="pu">{</span> Input <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./components/Input'</span>;
+<span class="kw">import</span> <span class="pu">{</span> Modal <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./components/Modal'</span>;</code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Barrel Index</span></div>
+      <pre><code><span class="cm">// components/index.ts</span>
+<span class="kw">export</span> <span class="pu">{</span> Button <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./Button'</span>;
+<span class="kw">export</span> <span class="pu">{</span> Input <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./Input'</span>;
+<span class="kw">export</span> <span class="pu">{</span> Modal <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./Modal'</span>;
+
+<span class="cm">// Usage — one import, stable path</span>
+<span class="kw">import</span> <span class="pu">{</span> Button, Input, Modal <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./components'</span>;</code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">JS2</span> Use Exported Constants Rather Than Inheritance for Constants</h3>
+  <div class="rule-quote">This promotes clearer dependencies and easier maintenance.</div>
+  <p>Inheriting from a class to access its constants creates an artificial inheritance relationship for the wrong reason. Export constants directly from a dedicated module. Consumers import what they need without any class hierarchy entanglement.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Exported Constants</span></div>
+    <pre><code><span class="cm">// constants.ts</span>
+<span class="kw">export const</span> TENTHS_PER_WEEK = <span class="nm">400</span>;
+<span class="kw">export const</span> OVERTIME_RATE   = <span class="nm">1.5</span>;
+
+<span class="cm">// HourlyEmployee.ts — clean, explicit dependency</span>
+<span class="kw">import</span> <span class="pu">{</span> TENTHS_PER_WEEK, OVERTIME_RATE <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./constants'</span>;
+<span class="kw">class</span> <span class="ty">HourlyEmployee</span> <span class="pu">{</span> ... <span class="pu">}</span></code></pre>
+  </div>
+
+  <h3><span class="rule-id">JS3</span> Enums over Constants</h3>
+  <div class="rule-quote">Enums provide a clear, self-documenting way to represent a set of related values.</div>
+  <p>When a set of values are semantically related (different pay grades, order statuses, user roles), a TypeScript enum is better than a set of individual constants. Enums are self-documenting, grouping related values under a meaningful name, and they prevent mixing values from different domains.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Scattered Constants</span></div>
+      <pre><code><span class="kw">const</span> APPRENTICE_RATE    = <span class="nm">1.0</span>;
+<span class="kw">const</span> JOURNEYMAN_RATE    = <span class="nm">1.5</span>;
+<span class="kw">const</span> MASTER_RATE        = <span class="nm">2.0</span>;
+<span class="cm">// No connection between these is enforced</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Typed Enum</span></div>
+      <pre><code><span class="kw">enum</span> <span class="ty">HourlyPayGrade</span> <span class="pu">{</span>
+  Apprentice  = <span class="nm">1.0</span>,
+  Journeyman  = <span class="nm">1.5</span>,
+  Master      = <span class="nm">2.0</span>,
+<span class="pu">}</span>
+<span class="kw">function</span> <span class="fn">calculatePay</span><span class="pu">(</span>grade: <span class="ty">HourlyPayGrade</span><span class="pu">)</span> <span class="pu">{</span> ... <span class="pu">}</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ─── NAMES ─── -->
+<div class="section" id="names">
+  <div class="section-label">N &mdash; Names</div>
+  <h2>Names</h2>
+  <p class="lead">Names are the primary communication channel in code. Every variable, function, and class name is a tiny piece of documentation. Choosing names well is one of the most impactful things a developer can do for long-term code health.</p>
+
+  <h3><span class="rule-id">N1</span> Choose Descriptive Names</h3>
+  <div class="rule-quote">Names make the code readable and understandable.</div>
+  <p>A name is an opportunity to communicate. A single-letter variable or a cryptic abbreviation communicates nothing. The reader is forced to reverse-engineer meaning from context, which multiplies reading effort for every future read of that code.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Cryptic</span></div>
+      <pre><code><span class="kw">function</span> <span class="fn">f</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">let</span> q = <span class="nm">0</span>;
+  <span class="cm">// complex logic...</span>
+<span class="pu">}</span></code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Descriptive</span></div>
+      <pre><code><span class="kw">function</span> <span class="fn">calculateTotalScore</span><span class="pu">()</span> <span class="pu">{</span>
+  <span class="kw">let</span> totalScore = <span class="nm">0</span>;
+  <span class="cm">// clear, descriptive logic...</span>
+<span class="pu">}</span></code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">N2</span> Use Abstraction-Appropriate Names</h3>
+  <div class="rule-quote">Names should reflect the abstraction level of the class or function.</div>
+  <p>Names at a high abstraction level should be general; names at a low level can be specific. An interface named <code>Connectable</code> with a <code>connect(locator: string)</code> method is appropriately abstract — it accommodates database connections, socket connections, and HTTP connections without assuming any particular technology. Naming it <code>MySQLConnector</code> would bind a generic concept to a specific implementation.</p>
+
+  <h3><span class="rule-id">N3</span> Follow Standard Nomenclature</h3>
+  <div class="rule-quote">If a pattern or standard approach exists, use it.</div>
+  <p>Naming things after the patterns and conventions they implement helps readers immediately understand the role of a piece of code. <code>AutoLogoutDecorator</code> signals the Decorator pattern. <code>UserRepository</code> signals the Repository pattern. <code>OrderService</code> signals a service layer. Do not invent new terminology when established terminology already communicates the concept precisely.</p>
+
+  <h3><span class="rule-id">N4</span> Names Should Be Unambiguous</h3>
+  <div class="rule-quote">Choose names that clearly and unambiguously describe what a function or variable does.</div>
+  <p>Ambiguous names force readers to open the implementation to understand what something does. <code>renamePageAndReferences()</code> is unambiguous — you know exactly what it does without looking at a single line of its body. <code>process()</code> or <code>handle()</code> or <code>doStuff()</code> are not.</p>
+
+  <h3><span class="rule-id">N5</span> Scope-Length Names</h3>
+  <div class="rule-quote">Short names for short scopes; longer, more descriptive names for wider scopes.</div>
+  <p>A loop index <code>i</code> is fine when it's visible for two lines. A module-level constant or a function parameter that will be used across a 50-line function needs a full descriptive name. The rule of thumb: name length should be proportional to the scope in which it appears.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Scope-Appropriate Names</span></div>
+    <pre><code><span class="cm">// Short scope: i is fine — the loop is 2 lines</span>
+<span class="kw">for</span> <span class="pu">(</span><span class="kw">let</span> i = <span class="nm">0</span>; i < items.length; i++<span class="pu">)</span> <span class="pu">{</span> ... <span class="pu">}</span>
+
+<span class="cm">// Module-wide scope: full descriptive name</span>
+<span class="kw">const</span> defaultConnectionTimeoutMilliseconds = <span class="nm">30_000</span>;</code></pre>
+  </div>
+
+  <h3><span class="rule-id">N6</span> Avoid Encodings in Names</h3>
+  <div class="rule-quote">Modern IDEs and TypeScript provide type information — don't encode it in names.</div>
+  <p>Hungarian notation (prefixing variables with type indicators like <code>sName</code> for string, <code>nCount</code> for number) was a workaround for editors that couldn't display type information. TypeScript's type system and modern editors have made it obsolete. It adds noise without adding information.</p>
+  <div class="code-pair">
+    <div class="code-block bad">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-bad">✗ Hungarian Notation</span></div>
+      <pre><code><span class="kw">let</span> sName: <span class="ty">string</span>;
+<span class="kw">let</span> nCount: <span class="ty">number</span>;
+<span class="kw">let</span> bIsActive: <span class="ty">boolean</span>;</code></pre>
+    </div>
+    <div class="code-block good">
+      <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Clean Names</span></div>
+      <pre><code><span class="kw">let</span> name: <span class="ty">string</span>;
+<span class="kw">let</span> count: <span class="ty">number</span>;
+<span class="kw">let</span> isActive: <span class="ty">boolean</span>;</code></pre>
+    </div>
+  </div>
+
+  <h3><span class="rule-id">N7</span> Describe Side-Effects</h3>
+  <div class="rule-quote">Names should also hint at side effects to avoid surprises.</div>
+  <p>A function named <code>getSession()</code> suggests a pure read. A function that creates a session if one doesn't exist should be named to reveal that side effect: <code>getOrCreateSession()</code>. Functions that do more than their name suggests are land mines for future developers who call them expecting simple read behaviour.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">TypeScript</span><span class="code-label-good">✓ Side-Effect Revealed in Name</span></div>
+    <pre><code><span class="cm">// Name reveals: this may CREATE, not just get</span>
+<span class="kw">function</span> <span class="fn">getOrCreateObjectOutputStream</span><span class="pu">()</span>: <span class="ty">OutputStream</span> <span class="pu">{</span> ... <span class="pu">}</span>
+
+<span class="cm">// Compare to the misleading alternative:</span>
+<span class="cm">// function getOutputStream() — caller assumes no side effect</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── TESTS ─── -->
+<div class="section" id="tests">
+  <div class="section-label">T &mdash; Tests</div>
+  <h2>Tests</h2>
+  <p class="lead">Tests are not optional polish added at the end — they are a fundamental quality discipline. A test suite that is slow, incomplete, or hard to run will not be used. Tests that are not used cannot provide the safety net that makes confident refactoring possible.</p>
+
+  <h3><span class="rule-id">T1</span> Comprehensive Tests</h3>
+  <p>Ensure your test suite covers all possible scenarios and edge cases — not just the happy path. A test suite that only covers the most common case gives a false sense of security. Every code path, every branch, every error condition deserves a test.</p>
+
+  <h3><span class="rule-id">T2</span> Use Coverage Tools</h3>
+  <p>Coverage tools identify paths through the code that no test has ever executed. Use them, but don't worship them — 100% line coverage with tests that make no assertions is meaningless. Coverage reveals blind spots; it does not guarantee correctness.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">Shell — Vitest / Jest</span><span class="code-label-good">✓ Coverage Report</span></div>
+    <pre><code>pnpm vitest run --coverage
+<span class="cm"># Generates coverage/index.html</span>
+<span class="cm"># Look for uncovered branches, not just uncovered lines</span></code></pre>
+  </div>
+
+  <h3><span class="rule-id">T3</span> Don't Skip Simple Tests</h3>
+  <p>Trivial tests for obvious behaviour have value both as documentation (they demonstrate how the code is expected to be used) and as regression protection (they catch accidental breakage of behaviour that everyone assumed "would never change"). There is no test too simple to write.</p>
+
+  <h3><span class="rule-id">T4</span> Use Tests to Document Ambiguities</h3>
+  <p>When the correct behaviour of a function in an edge case is unclear, write a test that asserts the behaviour you have decided on and add a comment explaining why. The test becomes living documentation of a decision that would otherwise be invisible or forgotten.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">TypeScript — Vitest</span><span class="code-label-good">✓ Tests as Documentation</span></div>
+    <pre><code><span class="fn">it</span><span class="pu">(</span><span class="st">"returns empty array for null input (not an error)"</span>, <span class="pu">()</span> => <span class="pu">{</span>
+  <span class="cm">// Decision: we treat null as "no items" rather than throwing,</span>
+  <span class="cm">// because callers often chain this with optional data.</span>
+  <span class="fn">expect</span><span class="pu">(</span><span class="fn">processItems</span><span class="pu">(</span><span class="kw">null</span><span class="pu">)).</span><span class="fn">toEqual</span><span class="pu">([]);</span>
+<span class="pu">});</span></code></pre>
+  </div>
+
+  <h3><span class="rule-id">T5</span> Test Boundary Conditions</h3>
+  <p>Special attention should be given to testing edge cases: empty inputs, single-element inputs, maximum values, minimum values, exact boundary values, and zero. Algorithms that work correctly in the middle often fail at the edges — test the edges deliberately, not as an afterthought.</p>
+  <div class="code-block good">
+    <div class="code-header"><span class="code-lang">TypeScript — Boundary Tests</span><span class="code-label-good">✓ Test the Edges</span></div>
+    <pre><code><span class="fn">describe</span><span class="pu">(</span><span class="st">"calculateDiscount"</span>, <span class="pu">()</span> => <span class="pu">{</span>
+  <span class="fn">it</span><span class="pu">(</span><span class="st">"returns 0 for zero amount"</span>, <span class="pu">()</span> => <span class="pu">{</span>
+    <span class="fn">expect</span><span class="pu">(</span><span class="fn">calculateDiscount</span><span class="pu">(</span><span class="nm">0</span>, <span class="nm">0.1</span><span class="pu">)).</span><span class="fn">toBe</span><span class="pu">(</span><span class="nm">0</span><span class="pu">);</span>
+  <span class="pu">});</span>
+  <span class="fn">it</span><span class="pu">(</span><span class="st">"handles 100% discount"</span>, <span class="pu">()</span> => <span class="pu">{</span>
+    <span class="fn">expect</span><span class="pu">(</span><span class="fn">calculateDiscount</span><span class="pu">(</span><span class="nm">100</span>, <span class="nm">1.0</span><span class="pu">)).</span><span class="fn">toBe</span><span class="pu">(</span><span class="nm">0</span><span class="pu">);</span>
+  <span class="pu">});</span>
+  <span class="fn">it</span><span class="pu">(</span><span class="st">"throws for negative rate"</span>, <span class="pu">()</span> => <span class="pu">{</span>
+    <span class="fn">expect</span><span class="pu">(()</span> => <span class="fn">calculateDiscount</span><span class="pu">(</span><span class="nm">100</span>, -<span class="nm">0.1</span><span class="pu">)).</span><span class="fn">toThrow</span><span class="pu">();</span>
+  <span class="pu">});</span>
+<span class="pu">});</span></code></pre>
+  </div>
+
+  <h3><span class="rule-id">T6</span> Test Thoroughly Around Bug Fixes</h3>
+  <p>When you fix a bug, the area of code around the bug has already proven to be defect-prone. Add tests not just for the specific bug you fixed, but for related edge cases in the same function. Bugs rarely travel alone — they cluster in the areas of code that were the least well understood when they were written.</p>
+
+  <h3><span class="rule-id">T7 &amp; T8</span> Analyze Failure and Coverage Patterns</h3>
+  <p>Test failures often cluster. A pattern of failures in the same area of code reveals a design or understanding problem, not just a bug. Similarly, coverage gaps tend to cluster in code paths that were not well-understood. Use these patterns as signals for where deeper design attention is needed.</p>
+
+  <h3><span class="rule-id">T9</span> Maintain Fast Tests</h3>
+  <p>Slow tests are tests that don't get run during development. A test suite that takes 10 minutes will only be run before commits, not continuously. A suite that takes 10 seconds will be run after every change. Keep unit tests fast by avoiding I/O, database calls, and network access — mock those boundaries and test logic in isolation.</p>
+  <div class="tip"><div class="tip-label">The Test Speed Hierarchy</div>Unit tests should run in milliseconds. Integration tests in seconds. End-to-end tests in minutes. If your unit tests are slow, they probably aren't unit tests — they are integration tests in disguise. Find the I/O and mock it.</div>
+</div>
+
+<!-- ─── CONCLUSION ─── -->
+<div class="section" id="conclusion">
+  <div class="section-label">Conclusion</div>
+  <h2>The Value System Behind the Rules</h2>
+  <p class="lead">This list of heuristics could hardly be said to be complete. But completeness is not the goal — the goal is to imply a value system.</p>
+  <p>Clean code is not written by memorising a checklist. You don't become a software craftsperson by learning sixty rules. These heuristics are symptoms of values: care for the reader, respect for future maintainers (including your future self), intellectual honesty about what code actually does, and a commitment to leaving the codebase better than you found it.</p>
+  <div class="pullquote">"Professionalism and craftsmanship come from values that drive disciplines — not from following rules."<br/><span style="font-size:14px;font-style:normal">— Robert C. Martin, <em>Clean Code</em></span></div>
+  <h3>Quick Reference — All Rule Codes</h3>
+  <p>Use these codes in pull request comments to reference specific principles concisely:</p>
+  <div class="rules-index">
+    <a class="rule-chip" href="#comments">C1 – C5</a>
+    <a class="rule-chip" href="#environment">E1 – E2</a>
+    <a class="rule-chip" href="#functions">F1 – F4</a>
+    <a class="rule-chip" href="#general-1">G1 – G6</a>
+    <a class="rule-chip" href="#general-1">G7 – G12</a>
+    <a class="rule-chip" href="#general-2">G13 – G18</a>
+    <a class="rule-chip" href="#general-2">G19 – G24</a>
+    <a class="rule-chip" href="#general-3">G25 – G30</a>
+    <a class="rule-chip" href="#general-3">G31 – G36</a>
+    <a class="rule-chip" href="#js-ts">JS1 – JS3</a>
+    <a class="rule-chip" href="#names">N1 – N7</a>
+    <a class="rule-chip" href="#tests">T1 – T9</a>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<footer>
+  <strong>DevDive</strong> &mdash; Deep dives for serious developers<br/>
+  <span style="margin-top:8px;display:block">Clean Code: Developer Guidelines for JavaScript &amp; TypeScript &middot; June 2026</span>
+</footer>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+</script>
+</body>
+</html>

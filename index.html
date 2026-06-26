@@ -550,6 +550,9 @@
       .card[data-article="rdbms"] .read-link:hover {
         background: #bae6fd;
       }
+      .card[data-article="devguidelines"] .card-cover {
+        background: linear-gradient(140deg, #064e3b, #0d9488 60%, #34d399);
+      }
       .card[data-article="blockchain"] .card-cover {
         background: linear-gradient(140deg, #2e1065, #7c3aed 60%, #a78bfa);
       }
@@ -851,6 +854,13 @@
       .card[data-article="systems"] .read-link:hover {
         background: #e2e8f0;
       }
+      .card[data-article="devguidelines"] .read-link {
+        background: #f0fdf4;
+        color: #16a34a;
+      }
+      .card[data-article="devguidelines"] .read-link:hover {
+        background: #dcfce7;
+      }
       .card[data-article="blockchain"] .read-link {
         background: #ede9fe;
         color: #7c3aed;
@@ -910,6 +920,9 @@
       }
       .card[data-article="systems"]:hover {
         border-color: #cbd5e1;
+      }
+      .card[data-article="devguidelines"]:hover {
+        border-color: #6ee7b7;
       }
       .card[data-article="blockchain"]:hover {
         border-color: #c4b5fd;
@@ -1281,7 +1294,7 @@
       </div>
 
       <div class="nav-right">
-        <span class="nav-count" id="article-count">19 articles</span>
+        <span class="nav-count" id="article-count">20 articles</span>
       </div>
     </nav>
 
@@ -1459,7 +1472,7 @@
         >
           <div class="cat-ov-icon" style="background: #fffbeb">📋</div>
           <div class="cat-ov-name">Best Practices</div>
-          <div class="cat-ov-count">6 articles</div>
+          <div class="cat-ov-count">7 articles</div>
         </div>
 
         <div class="cat-overview-card">
@@ -1477,7 +1490,7 @@
       <div class="section-title-row">
         <h2 class="section-title">Published Articles</h2>
         <span class="section-meta" id="filter-label"
-          >Showing all · 19 articles</span
+          >Showing all · 20 articles</span
         >
       </div>
 
@@ -2464,6 +2477,54 @@
           <div class="card-footer">
             <span class="read-link">Read Article <span class="arr">→</span></span>
             <span class="card-rt">~42 min read</span>
+          </div>
+        </a>
+
+        <!-- Developer Guidelines Card -->
+        <a
+          class="card"
+          data-cat="practices"
+          data-article="devguidelines"
+          href="developer-guidelines.html"
+        >
+          <div class="card-cover">
+            <div class="cover-bg-text">CC</div>
+            <div class="cover-badge">
+              <span class="cover-badge-lang">✦ Clean Code</span>
+              <span class="cover-badge-sub">60+ Rules</span>
+            </div>
+            <div class="cover-pills">
+              <span class="cover-pill">JavaScript</span>
+              <span class="cover-pill">TypeScript</span>
+              <span class="cover-pill">Heuristics</span>
+              <span class="cover-pill">Code Review</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-row">
+              <span class="cat-chip" style="background:#f0fdf4;color:#16a34a">Best Practices</span>
+              <span class="card-sections">8 categories</span>
+            </div>
+            <div class="card-title">
+              Clean Code: Developer Guidelines for JavaScript &amp; TypeScript
+            </div>
+            <p class="card-desc">
+              Robert C. Martin's heuristics and smells from Clean Code, translated
+              to JavaScript and TypeScript — 60+ named rules across Comments,
+              Functions, General principles, Naming, and Testing. Use rule codes
+              directly in pull request reviews.
+            </p>
+            <div class="card-tags">
+              <span class="tag">DRY</span>
+              <span class="tag">SOLID</span>
+              <span class="tag">Naming</span>
+              <span class="tag">Testing</span>
+              <span class="tag">Code Review</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="read-link">Read Article <span class="arr">→</span></span>
+            <span class="card-rt">~35 min read</span>
           </div>
         </a>
       </div>
