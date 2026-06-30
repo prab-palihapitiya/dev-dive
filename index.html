@@ -550,6 +550,32 @@
       .card[data-article="rdbms"] .read-link:hover {
         background: #bae6fd;
       }
+      .card[data-article="design-systems"] .card-cover {
+        background: linear-gradient(140deg, #831843, #be185d 60%, #f9a8d4);
+      }
+      .card[data-article="design-systems"]:hover {
+        border-color: #fbcfe8;
+      }
+      .card[data-article="design-systems"] .read-link {
+        background: #fdf2f8;
+        color: #be185d;
+      }
+      .card[data-article="design-systems"] .read-link:hover {
+        background: #fce7f3;
+      }
+      .card[data-article="ai-frontend"] .card-cover {
+        background: linear-gradient(140deg, #78350f, #b45309 60%, #fbbf24);
+      }
+      .card[data-article="ai-frontend"]:hover {
+        border-color: #fde68a;
+      }
+      .card[data-article="ai-frontend"] .read-link {
+        background: #fffbeb;
+        color: #b45309;
+      }
+      .card[data-article="ai-frontend"] .read-link:hover {
+        background: #fef3c7;
+      }
       .card[data-article="react-senior"] .card-cover {
         background: linear-gradient(140deg, #0c4a6e, #0891b2 60%, #67e8f9);
       }
@@ -1307,7 +1333,7 @@
       </div>
 
       <div class="nav-right">
-        <span class="nav-count" id="article-count">21 articles</span>
+        <span class="nav-count" id="article-count">23 articles</span>
       </div>
     </nav>
 
@@ -1422,7 +1448,7 @@
         >
           <div class="cat-ov-icon" style="background: #fffbeb">⚡</div>
           <div class="cat-ov-name">JavaScript</div>
-          <div class="cat-ov-count">5 articles</div>
+          <div class="cat-ov-count">4 articles</div>
         </div>
 
         <div
@@ -1474,7 +1500,7 @@
         >
           <div class="cat-ov-icon" style="background: #f5f3ff">🤖</div>
           <div class="cat-ov-name">AI Engineering</div>
-          <div class="cat-ov-count">1 article</div>
+          <div class="cat-ov-count">2 articles</div>
         </div>
 
         <div
@@ -1491,7 +1517,7 @@
         <div class="cat-overview-card">
           <div class="cat-ov-icon" style="background: #f0fdfa">📖</div>
           <div class="cat-ov-name">Guidelines</div>
-          <div class="cat-ov-count">Planned</div>
+          <div class="cat-ov-count">1 article</div>
         </div>
       </div>
     </div>
@@ -1503,7 +1529,7 @@
       <div class="section-title-row">
         <h2 class="section-title">Published Articles</h2>
         <span class="section-meta" id="filter-label"
-          >Showing all · 21 articles</span
+          >Showing all · 23 articles</span
         >
       </div>
 
@@ -2421,14 +2447,11 @@
           </div>
           <div class="card-body">
             <div class="card-row">
-              <span class="cat-chip" style="background: #e0f2fe; color: #0369a1"
-                >Backend</span
-              >
+              <span class="cat-chip" style="background:#e0f2fe;color:#0369a1">Backend</span>
               <span class="card-sections">13 parts</span>
             </div>
             <div class="card-title">
-              Relational Databases: Zero to Hero — MySQL, PostgreSQL &amp;
-              Modern Data Platforms
+              Relational Databases: Zero to Hero — MySQL, PostgreSQL &amp; Modern Data Platforms
             </div>
             <p class="card-desc">
               From why databases exist and the relational model, through ACID
@@ -2445,9 +2468,7 @@
             </div>
           </div>
           <div class="card-footer">
-            <span class="read-link"
-              >Read Article <span class="arr">→</span></span
-            >
+            <span class="read-link">Read Article <span class="arr">→</span></span>
             <span class="card-rt">~38 min read</span>
           </div>
         </a>
@@ -2473,20 +2494,16 @@
           </div>
           <div class="card-body">
             <div class="card-row">
-              <span class="cat-chip" style="background: #ede9fe; color: #7c3aed"
-                >Backend</span
-              >
+              <span class="cat-chip" style="background:#ede9fe;color:#7c3aed">Backend</span>
               <span class="card-sections">14 parts</span>
             </div>
             <div class="card-title">
-              Blockchain &amp; Web3: Smart Contracts, DApps &amp; the
-              Decentralized Stack
+              Blockchain &amp; Web3: Smart Contracts, DApps &amp; the Decentralized Stack
             </div>
             <p class="card-desc">
-              From the trust problem and cryptographic primitives, through
-              Solidity, smart contract security, ERC token standards, DeFi
-              protocols, DAOs, Layer 2 rollups, and enterprise blockchain — with
-              real production patterns.
+              From the trust problem and cryptographic primitives, through Solidity,
+              smart contract security, ERC token standards, DeFi protocols, DAOs,
+              Layer 2 rollups, and enterprise blockchain — with real production patterns.
             </p>
             <div class="card-tags">
               <span class="tag">Solidity</span>
@@ -2497,9 +2514,7 @@
             </div>
           </div>
           <div class="card-footer">
-            <span class="read-link"
-              >Read Article <span class="arr">→</span></span
-            >
+            <span class="read-link">Read Article <span class="arr">→</span></span>
             <span class="card-rt">~42 min read</span>
           </div>
         </a>
@@ -2507,7 +2522,7 @@
         <!-- Developer Guidelines Card -->
         <a
           class="card"
-          data-cat="practices"
+          data-cat="guidelines"
           data-article="devguidelines"
           href="developer-guidelines.html"
         >
@@ -2526,19 +2541,17 @@
           </div>
           <div class="card-body">
             <div class="card-row">
-              <span class="cat-chip" style="background: #f0fdf4; color: #16a34a"
-                >Best Practices</span
-              >
+              <span class="cat-chip" style="background:#f0fdf4;color:#16a34a">Best Practices</span>
               <span class="card-sections">8 categories</span>
             </div>
             <div class="card-title">
               Clean Code: Developer Guidelines for JavaScript &amp; TypeScript
             </div>
             <p class="card-desc">
-              Robert C. Martin's heuristics and smells from Clean Code,
-              translated to JavaScript and TypeScript — 60+ named rules across
-              Comments, Functions, General principles, Naming, and Testing. Use
-              rule codes directly in pull request reviews.
+              Robert C. Martin's heuristics and smells from Clean Code, translated
+              to JavaScript and TypeScript — 60+ named rules across Comments,
+              Functions, General principles, Naming, and Testing. Use rule codes
+              directly in pull request reviews.
             </p>
             <div class="card-tags">
               <span class="tag">DRY</span>
@@ -2549,9 +2562,7 @@
             </div>
           </div>
           <div class="card-footer">
-            <span class="read-link"
-              >Read Article <span class="arr">→</span></span
-            >
+            <span class="read-link">Read Article <span class="arr">→</span></span>
             <span class="card-rt">~35 min read</span>
           </div>
         </a>
@@ -2578,20 +2589,17 @@
           </div>
           <div class="card-body">
             <div class="card-row">
-              <span class="cat-chip" style="background: #ecfeff; color: #0891b2"
-                >JavaScript</span
-              >
+              <span class="cat-chip" style="background:#ecfeff;color:#0891b2">JavaScript</span>
               <span class="card-sections">12 parts</span>
             </div>
             <div class="card-title">
-              React: The Complete Senior Engineer's Guide — From Components to
-              Frontend Architecture
+              React: The Complete Senior Engineer's Guide — From Components to Frontend Architecture
             </div>
             <p class="card-desc">
-              From React's Fiber internals and Concurrent Mode through hooks,
-              state architecture, TanStack Query, performance engineering, React
-              Server Components, frontend system design, and the patterns that
-              separate senior from staff-level engineers.
+              From React's Fiber internals and Concurrent Mode through hooks, state
+              architecture, TanStack Query, performance engineering, React Server
+              Components, frontend system design, and the patterns that separate
+              senior from staff-level engineers.
             </p>
             <div class="card-tags">
               <span class="tag">Fiber</span>
@@ -2602,10 +2610,103 @@
             </div>
           </div>
           <div class="card-footer">
-            <span class="read-link"
-              >Read Article <span class="arr">→</span></span
-            >
+            <span class="read-link">Read Article <span class="arr">→</span></span>
             <span class="card-rt">~45 min read</span>
+          </div>
+        </a>
+
+        <!-- AI Frontend Engineering Card -->
+        <a
+          class="card"
+          data-cat="ai"
+          data-article="ai-frontend"
+          href="ai-frontend-engineering.html"
+        >
+          <div class="card-cover">
+            <div class="cover-bg-text">AI</div>
+            <div class="cover-badge">
+              <span class="cover-badge-lang">✨ AI Native</span>
+              <span class="cover-badge-sub">Frontend</span>
+            </div>
+            <div class="cover-pills">
+              <span class="cover-pill">LLMs</span>
+              <span class="cover-pill">Agents</span>
+              <span class="cover-pill">RAG</span>
+              <span class="cover-pill">Streaming</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-row">
+              <span class="cat-chip" style="background:#fffbeb;color:#b45309">AI Engineering</span>
+              <span class="card-sections">12 parts</span>
+            </div>
+            <div class="card-title">
+              AI Frontend Engineering: Designing AI-Native Applications
+            </div>
+            <p class="card-desc">
+              From the AI-BFF pattern and RAG pipelines through agentic tool calling,
+              streaming UX, AI state management, prompt security, and observability —
+              the architecture behind AI-native frontend systems.
+            </p>
+            <div class="card-tags">
+              <span class="tag">RAG</span>
+              <span class="tag">Tool Calling</span>
+              <span class="tag">Streaming</span>
+              <span class="tag">Prompt Security</span>
+              <span class="tag">Observability</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="read-link">Read Article <span class="arr">→</span></span>
+            <span class="card-rt">~48 min read</span>
+          </div>
+        </a>
+
+        <!-- Design Systems Engineering Card -->
+        <a
+          class="card"
+          data-cat="practices"
+          data-article="design-systems"
+          href="design-systems-engineering.html"
+        >
+          <div class="card-cover">
+            <div class="cover-bg-text">DS</div>
+            <div class="cover-badge">
+              <span class="cover-badge-lang">🎨 Platform</span>
+              <span class="cover-badge-sub">Design Systems</span>
+            </div>
+            <div class="cover-pills">
+              <span class="cover-pill">Tokens</span>
+              <span class="cover-pill">Accessibility</span>
+              <span class="cover-pill">Headless UI</span>
+              <span class="cover-pill">Governance</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-row">
+              <span class="cat-chip" style="background:#fdf2f8;color:#be185d">Best Practices</span>
+              <span class="card-sections">11 parts</span>
+            </div>
+            <div class="card-title">
+              Design Systems Engineering: Building Scalable UI Platforms
+            </div>
+            <p class="card-desc">
+              From design tokens and component architecture through accessibility,
+              monorepo structure, theming, headless components, and organisational
+              governance — design systems as frontend platform engineering, not
+              just buttons and colours.
+            </p>
+            <div class="card-tags">
+              <span class="tag">Tokens</span>
+              <span class="tag">A11y</span>
+              <span class="tag">Monorepo</span>
+              <span class="tag">Theming</span>
+              <span class="tag">Governance</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="read-link">Read Article <span class="arr">→</span></span>
+            <span class="card-rt">~44 min read</span>
           </div>
         </a>
       </div>

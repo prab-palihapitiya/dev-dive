@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Design Systems Engineering: Building Scalable UI Platforms — DevDive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#faf8f5;--surface:#fff;--text-primary:#1a1a1a;--text-secondary:#6b6b6b;
+      --text-muted:#9a9a9a;--accent:#be185d;--accent-light:#fdf2f8;--accent-subtle:#fce7f3;
+      --border:#e8e3db;--code-bg:#0d1117;--code-text:#e6edf3;--tag-bg:#f3f0eb;
+      --tip-bg:#f0fdf4;--tip-border:#16a34a;--warn-bg:#fff7ed;--warn-border:#ea580c;
+      --info-bg:#eff6ff;--info-border:#2563eb;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Outfit",sans-serif;background:var(--bg);color:var(--text-primary);font-size:17px;line-height:1.8}
+    nav{position:sticky;top:0;z-index:100;background:rgba(250,248,245,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .nav-back{font-size:13px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .15s}
+    .nav-back:hover{color:var(--accent)}
+    .nav-pipe{color:var(--border);font-size:18px}
+    .nav-brand{font-size:14px;font-weight:700;letter-spacing:-.3px}
+    .nav-badge{font-size:11px;font-weight:600;padding:2px 10px;background:var(--accent-light);color:var(--accent);border-radius:100px}
+    .nav-links{display:flex;gap:0}
+    .nav-links a{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:5px 8px;border-radius:6px;transition:all .15s;white-space:nowrap}
+    .nav-links a:hover{background:var(--tag-bg);color:var(--text-primary)}
+    .nav-rt{font-size:13px;color:var(--text-muted);flex-shrink:0}
+    .hero{max-width:800px;margin:0 auto;padding:64px 2rem 48px}
+    .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-subtle);color:var(--accent);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px;margin-bottom:24px}
+    .hero h1{font-family:"Lora",serif;font-size:clamp(30px,4.5vw,48px);font-weight:600;line-height:1.15;letter-spacing:-.5px;margin-bottom:20px}
+    .hero-sub{font-size:19px;color:var(--text-secondary);font-weight:300;line-height:1.6;margin-bottom:32px}
+    .hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#9d174d,#be185d);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white}
+    .meta-text{font-size:14px;color:var(--text-secondary)}
+    .meta-text strong{color:var(--text-primary)}
+    .hero-divider{border:none;border-top:1px solid var(--border);margin-top:32px}
+    .toc-wrapper{max-width:800px;margin:0 auto;padding:0 2rem 8px}
+    .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:48px}
+    .toc h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:16px;font-weight:500}
+    .toc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px 20px}
+    .toc a{font-size:13.5px;color:var(--text-secondary);text-decoration:none;display:flex;align-items:center;gap:8px;padding:4px 0;transition:color .15s}
+    .toc a:hover{color:var(--accent)}
+    .toc-num{font-size:11px;color:var(--text-muted);font-weight:600;min-width:18px;flex-shrink:0}
+    .content{max-width:800px;margin:0 auto;padding:0 2rem 80px}
+    .section{margin-bottom:72px;scroll-margin-top:72px}
+    .section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .section-label::after{content:"";flex:1;height:1px;background:var(--accent-subtle)}
+    h2{font-family:"Lora",serif;font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.3px;margin-bottom:14px}
+    h3{font-size:18px;font-weight:600;margin:32px 0 10px}
+    p{margin-bottom:16px;color:#2d2d2d;line-height:1.8}
+    .lead{font-size:18px;color:var(--text-secondary);font-weight:300;margin-bottom:20px;line-height:1.7}
+    .code-block{background:var(--code-bg);border-radius:10px;margin:20px 0;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+    .code-header{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.05)}
+    .code-lang{font-size:11px;color:#6e7681;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+    .copy-btn{font-size:12px;color:#484f58;background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:"Outfit",sans-serif;transition:all .15s}
+    .copy-btn:hover{background:rgba(255,255,255,.07);color:#8b949e}
+    pre{padding:18px 20px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.75;color:var(--code-text)}
+    pre code{background:none;padding:0;font-size:inherit;color:inherit}
+    code{font-family:"JetBrains Mono",monospace;font-size:13px;background:#fce7f3;color:#be185d;padding:2px 6px;border-radius:4px}
+    .kw{color:#ff7b72}.ty{color:#79c0ff}.st{color:#a5d6ff}.nm{color:#f0883e}
+    .cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.op{color:#c9d1d9}
+    .pu{color:#e6edf3}.bi{color:#ffa657}.at{color:#79c0ff}
+    .tip{background:var(--tip-bg);border-left:3px solid var(--tip-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .tip-label{font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .warn{background:var(--warn-bg);border-left:3px solid var(--warn-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .warn-label{font-size:11px;font-weight:700;color:#ea580c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    .info{background:var(--info-bg);border-left:3px solid var(--info-border);border-radius:0 8px 8px 0;padding:14px 18px;margin:20px 0;font-size:15px}
+    .info-label{font-size:11px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+    table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14.5px}
+    th{background:var(--tag-bg);padding:10px 14px;text-align:left;font-weight:600;font-size:12px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+    td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:var(--bg)}
+    .pullquote{font-family:"Lora",serif;font-style:italic;font-size:20px;line-height:1.55;color:var(--text-secondary);border-left:4px solid var(--accent);padding:10px 22px;margin:32px 0}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:20px 0}
+    .concept-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 17px}
+    .concept-card h4{font-size:14px;font-weight:600;margin:0 0 5px}
+    .concept-card p{font-size:13px;color:var(--text-secondary);margin:0;line-height:1.5}
+    .concept-icon{font-size:19px;margin-bottom:8px}
+    .arch-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin:20px 0;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:2.1;color:var(--text-secondary);overflow-x:auto}
+    .arch-box .hl{color:var(--accent);font-weight:600}
+    .arch-box .dim{color:var(--text-muted)}
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+    .compare-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+    .compare-card h4{font-size:14px;font-weight:700;margin-bottom:10px}
+    .compare-card ul{margin:0;padding-left:18px}
+    .compare-card li{font-size:14px;color:var(--text-secondary);margin-bottom:4px;line-height:1.55}
+    .domain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:24px 0}
+    .domain-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+    .domain-name{font-size:13px;font-weight:700;margin-bottom:6px}
+    .dtag{font-size:11px;font-weight:600;padding:2px 7px;border-radius:100px;background:var(--accent-subtle);color:var(--accent);display:inline-block;margin:2px 2px 0 0}
+    .roadmap-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+    .roadmap-step{min-width:90px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:100px;text-align:center;flex-shrink:0;margin-top:2px}
+    .roadmap-content{font-size:14.5px;color:var(--text-secondary);line-height:1.6}
+    .token-swatch{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:middle;margin-right:6px;border:1px solid rgba(0,0,0,.1)}
+    footer{background:#1a1a1a;color:rgba(255,255,255,.65);text-align:center;padding:40px 2rem;font-size:14px}
+    footer strong{color:white}
+    @media(max-width:640px){.toc-grid{grid-template-columns:1fr 1fr}.nav-links{display:none}.concept-grid,.domain-grid{grid-template-columns:1fr 1fr}.compare-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="index.html">&#8592; DevDive</a>
+    <span class="nav-pipe">|</span>
+    <span class="nav-brand">Design Systems Engineering</span>
+    <span class="nav-badge">Best Practices</span>
+  </div>
+  <div class="nav-links">
+    <a href="#why">Why They Exist</a>
+    <a href="#tokens">Design Tokens</a>
+    <a href="#components">Component Engineering</a>
+    <a href="#a11y">Accessibility</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#theming">Theming</a>
+    <a href="#tooling">Tooling</a>
+    <a href="#governance">Governance</a>
+    <a href="#advanced">Advanced Patterns</a>
+    <a href="#scaling">Scaling</a>
+    <a href="#roadmap">Roadmap</a>
+  </div>
+  <span class="nav-rt">~44 min read</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">&#9679; Best Practices</div>
+  <h1>Design Systems Engineering: Building Scalable UI Platforms</h1>
+  <p class="hero-sub">
+    From design tokens and component architecture through accessibility, theming,
+    headless components, and organisational governance — design systems treated as
+    frontend platform engineering, not Figma files and button colours.
+  </p>
+  <div class="hero-meta">
+    <div class="avatar">DS</div>
+    <div class="meta-text">
+      <strong>Frontend Platform Field Guide</strong><br/>
+      11 Parts &middot; Tokens to Frontend Platforms &middot; Enterprise Scale &mdash; June 2026
+    </div>
+  </div>
+  <hr class="hero-divider"/>
+</div>
+
+<div class="toc-wrapper">
+  <div class="toc">
+    <h3>11 Parts &mdash; From Tokens to Frontend Platform Engineering</h3>
+    <div class="toc-grid">
+      <a href="#why"><span class="toc-num">01</span>Why They Exist</a>
+      <a href="#tooling"><span class="toc-num">07</span>Tooling &amp; Docs</a>
+      <a href="#tokens"><span class="toc-num">02</span>Design Tokens</a>
+      <a href="#governance"><span class="toc-num">08</span>Governance</a>
+      <a href="#components"><span class="toc-num">03</span>Component Engineering</a>
+      <a href="#advanced"><span class="toc-num">09</span>Advanced Patterns</a>
+      <a href="#a11y"><span class="toc-num">04</span>Accessibility</a>
+      <a href="#enterprise"><span class="toc-num">10</span>Enterprise Systems</a>
+      <a href="#architecture"><span class="toc-num">05</span>Monorepo Architecture</a>
+      <a href="#scaling"><span class="toc-num">11</span>Scaling &amp; Adoption</a>
+      <a href="#theming"><span class="toc-num">06</span>Theming &amp; White-Label</a>
+      <a href="#roadmap"><span class="toc-num">&#10003;</span>Senior → Staff Roadmap</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ─── 01 WHY ─── -->
+<div class="section" id="why">
+  <div class="section-label">01 &mdash; The Problem</div>
+  <h2>Why Design Systems Exist</h2>
+  <p class="lead">A design system is most often mistaken for a component library or a Figma file. Neither is correct. A design system is the platform that standardises how every product in an organisation is designed, built, tested, and shipped — and it exists because the cost of inconsistency compounds with every team you add.</p>
+
+  <h3>The Cost of Inconsistent UI</h3>
+  <p>Without a shared system, every team independently rebuilds the same primitives — and they rarely match. Team A's button has 4px border radius and a 200ms transition. Team B's has 8px radius and no transition. Team C copy-pasted from a tutorial and never updated it when the brand refreshed.</p>
+  <div class="arch-box">
+    <span class="hl">Team A</span> <span class="dim">→ Button: 4px radius, #1976d2, 200ms transition</span><br/>
+    <span class="hl">Team B</span> <span class="dim">→ Button: 8px radius, #1565c0, no transition</span><br/>
+    <span class="hl">Team C</span> <span class="dim">→ Button: 0px radius, #2196f3, 350ms transition</span><br/><br/>
+    <span class="dim">Same product. Three different "primary" colours. Three accessibility audits.</span><br/>
+    <span class="dim">Three maintenance burdens. Zero shared improvements.</span>
+  </div>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🔁</div><h4>Duplicate Work</h4><p>Every team builds, tests, and maintains its own version of buttons, inputs, modals, and tables — multiplying engineering cost without multiplying value.</p></div>
+    <div class="concept-card"><div class="concept-icon">🎭</div><h4>Inconsistent UX</h4><p>Users experience a fragmented product when navigating between features built by different teams — eroding trust in brand and product quality.</p></div>
+    <div class="concept-card"><div class="concept-icon">♿</div><h4>Accessibility Gaps</h4><p>Without centralised, audited components, every team must independently solve keyboard navigation, screen reader support, and focus management — and most won't.</p></div>
+    <div class="concept-card"><div class="concept-icon">🐌</div><h4>Slower Delivery</h4><p>Building from scratch every time means every feature ships slower than it would with a battle-tested component library to compose from.</p></div>
+  </div>
+
+  <h3>What a Design System Actually Is</h3>
+  <p>A design system is not Bootstrap, Material UI, Tailwind CSS, or any single tool. It is a composite of disciplines that together standardise how interfaces get built:</p>
+  <div class="arch-box">
+    <span class="hl">Design Principles</span>     <span class="dim">— the "why" behind every decision</span><br/>
+    <span class="op">+</span> <span class="hl">Design Language</span>      <span class="dim">— visual identity, voice, interaction feel</span><br/>
+    <span class="op">+</span> <span class="hl">Design Tokens</span>        <span class="dim">— the atomic values: color, spacing, type</span><br/>
+    <span class="op">+</span> <span class="hl">Components</span>          <span class="dim">— the reusable building blocks</span><br/>
+    <span class="op">+</span> <span class="hl">Accessibility</span>       <span class="dim">— built in, not bolted on</span><br/>
+    <span class="op">+</span> <span class="hl">Documentation</span>       <span class="dim">— usage guidance, anti-patterns</span><br/>
+    <span class="op">+</span> <span class="hl">Developer Tooling</span>   <span class="dim">— CLI, linters, code generators</span><br/>
+    <span class="op">+</span> <span class="hl">Governance</span>          <span class="dim">— versioning, contribution, ownership</span><br/>
+    <span class="op">=</span> <span class="hl">Design System</span>
+  </div>
+
+  <h3>The Evolution Toward Platforms</h3>
+  <div class="arch-box">
+    <span class="hl">Static HTML</span>          <span class="dim">→ hand-written markup, no reuse</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">CSS Frameworks</span>       <span class="dim">→ Bootstrap — shared styles, not components</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Component Libraries</span> <span class="dim">→ Material UI, Chakra — shared components, generic</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Design Systems</span>      <span class="dim">→ brand-specific tokens + components + governance</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Frontend Platforms</span>  <span class="dim">→ CLI, codegen, linting, CI/CD, analytics built on top</span>
+  </div>
+  <div class="pullquote">"A design system isn't a collection of reusable UI components. It's a product platform that standardises how interfaces are designed, built, tested, documented, and evolved across an organisation."</div>
+</div>
+
+<!-- ─── 02 TOKENS ─── -->
+<div class="section" id="tokens">
+  <div class="section-label">02 &mdash; Foundations</div>
+  <h2>Design Tokens</h2>
+  <p class="lead">Design tokens are the atomic values of a design system — every colour, spacing unit, font size, and shadow expressed as a named, reusable variable rather than a hardcoded value. They are what makes theming, multi-brand support, and dark mode possible without rewriting components.</p>
+
+  <h3>Why Hardcoded Values Fail</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">CSS</span><span class="code-lang" style="color:#f43f5e">✗ Hardcoded</span></div>
+    <pre><code><span class="cm">/* Scattered across 200 files — changing the brand colour means a global find-replace */</span>
+<span class="op">.</span>button <span class="pu">{</span> background<span class="op">:</span> <span class="nm">#1976d2</span><span class="pu">;</span> <span class="pu">}</span>
+<span class="op">.</span>link    <span class="pu">{</span> color<span class="op">:</span> <span class="nm">#1976d2</span><span class="pu">;</span> <span class="pu">}</span>
+<span class="op">.</span>badge   <span class="pu">{</span> border<span class="op">:</span> <span class="nm">1px</span> solid <span class="nm">#1976d2</span><span class="pu">;</span> <span class="pu">}</span></code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">CSS</span><span class="code-lang" style="color:#10b981">✓ Token-Based</span></div>
+    <pre><code><span class="cm">/* One source of truth — change once, propagates everywhere */</span>
+<span class="op">:</span>root <span class="pu">{</span>
+  <span class="op">--</span>color-primary-500<span class="op">:</span> <span class="nm">#1976d2</span><span class="pu">;</span>
+<span class="pu">}</span>
+<span class="op">.</span>button <span class="pu">{</span> background<span class="op">:</span> <span class="fn">var</span><span class="pu">(</span><span class="op">--</span>color-primary-500<span class="pu">);</span> <span class="pu">}</span>
+<span class="op">.</span>link    <span class="pu">{</span> color<span class="op">:</span> <span class="fn">var</span><span class="pu">(</span><span class="op">--</span>color-primary-500<span class="pu">);</span> <span class="pu">}</span>
+<span class="op">.</span>badge   <span class="pu">{</span> border<span class="op">:</span> <span class="nm">1px</span> solid <span class="fn">var</span><span class="pu">(</span><span class="op">--</span>color-primary-500<span class="pu">);</span> <span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>The Three-Layer Token Architecture</h3>
+  <p>Mature design systems organise tokens in three layers, each adding semantic meaning to the layer below. This indirection is what makes theming and rebranding possible without touching component code.</p>
+  <div class="arch-box">
+    <span class="hl">Primitive Tokens</span> <span class="dim">— raw values, no meaning</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;blue-500: #1976d2, spacing-4: 16px, radius-md: 8px</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓ referenced by</span><br/>
+    <span class="hl">Semantic Tokens</span> <span class="dim">— contextual meaning</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;color-action-primary: blue-500, space-gap-default: spacing-4</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓ referenced by</span><br/>
+    <span class="hl">Component Tokens</span> <span class="dim">— component-specific</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;button-primary-bg: color-action-primary, button-gap: space-gap-default</span>
+  </div>
+  <p>This indirection means a rebrand changes one primitive value, which cascades through every semantic and component token automatically — without touching a single component file.</p>
+
+  <h3>Token Categories</h3>
+  <table>
+    <thead><tr><th>Category</th><th>Examples</th><th>Why It's Tokenised</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Color</strong></td><td>primary, danger, surface, border, text-muted</td><td>Theming, dark mode, multi-brand, accessibility contrast control</td></tr>
+      <tr><td><strong>Typography</strong></td><td>font-size, line-height, font-weight, letter-spacing</td><td>Consistent vertical rhythm and reading experience across products</td></tr>
+      <tr><td><strong>Spacing</strong></td><td>space-1 through space-12 (4px scale)</td><td>Predictable layout rhythm; prevents arbitrary pixel values</td></tr>
+      <tr><td><strong>Radius</strong></td><td>radius-sm, radius-md, radius-full</td><td>Consistent corner treatment signals visual hierarchy and brand feel</td></tr>
+      <tr><td><strong>Shadow</strong></td><td>shadow-sm, shadow-md, shadow-lg</td><td>Consistent elevation system communicates layering and depth</td></tr>
+      <tr><td><strong>Motion</strong></td><td>duration-fast, duration-slow, ease-standard</td><td>Consistent animation feel; respects prefers-reduced-motion</td></tr>
+    </tbody>
+  </table>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">JSON — Token Definition (Style Dictionary format)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="pu">{</span>
+  <span class="st">"color"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="st">"primitive"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"blue"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"500"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"value"</span><span class="op">:</span> <span class="st">"#1976d2"</span> <span class="pu">}</span> <span class="pu">}</span>
+    <span class="pu">},</span>
+    <span class="st">"semantic"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"action"</span><span class="op">:</span> <span class="pu">{</span>
+        <span class="st">"primary"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"value"</span><span class="op">:</span> <span class="st">"{color.primitive.blue.500}"</span> <span class="pu">}</span>
+      <span class="pu">}</span>
+    <span class="pu">},</span>
+    <span class="st">"component"</span><span class="op">:</span> <span class="pu">{</span>
+      <span class="st">"button"</span><span class="op">:</span> <span class="pu">{</span>
+        <span class="st">"primary"</span><span class="op">:</span> <span class="pu">{</span>
+          <span class="st">"background"</span><span class="op">:</span> <span class="pu">{</span> <span class="st">"value"</span><span class="op">:</span> <span class="st">"{color.semantic.action.primary}"</span> <span class="pu">}</span>
+        <span class="pu">}</span>
+      <span class="pu">}</span>
+    <span class="pu">}</span>
+  <span class="pu">}</span>
+<span class="pu">}</span>
+<span class="cm">// Style Dictionary builds this into CSS variables, JS constants, iOS/Android resources</span></code></pre>
+  </div>
+  <div class="tip"><div class="tip-label">Tools for token pipelines</div>Style Dictionary (Amazon) and Tokens Studio (Figma plugin) are the standard tools for managing tokens as code and syncing between design and engineering. Define tokens once in JSON, generate CSS variables, JS/TS constants, and even native iOS/Android resources from the same source of truth.</div>
+</div>
+
+<!-- ─── 03 COMPONENTS ─── -->
+<div class="section" id="components">
+  <div class="section-label">03 &mdash; Component Engineering</div>
+  <h2>Component Engineering</h2>
+  <p class="lead">A component is not just JSX with props. A well-engineered component has a defined purpose, a stable API, complete state coverage, accessibility built in, and a composition strategy that scales beyond its original use case.</p>
+
+  <h3>What Every Component Must Define</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🎯</div><h4>Purpose</h4><p>What problem does this solve, and what does it explicitly not solve? A Button is not a Link; conflating them creates accessibility and SEO problems.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔌</div><h4>API</h4><p>Props that are predictable, typed, and minimal. Every prop should have an obvious purpose — resist the urge to add a prop "just in case."</p></div>
+    <div class="concept-card"><div class="concept-icon">🎭</div><h4>States</h4><p>Default, hover, active, focus, disabled, loading, error — and how they compose. A disabled+loading button is a real state that must be designed, not an edge case.</p></div>
+    <div class="concept-card"><div class="concept-icon">♿</div><h4>Accessibility</h4><p>Keyboard interaction, ARIA roles, focus management, screen reader announcements — defined as part of the spec, not added after a complaint.</p></div>
+  </div>
+
+  <h3>Component Anatomy — Button Example</h3>
+  <p>Even a "simple" button has more structure than it appears. Decomposing it into named parts clarifies styling boundaries and makes the component easier to extend.</p>
+  <div class="arch-box">
+    <span class="hl">Button Container</span> <span class="dim">— padding, border, background, focus ring</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── </span><span class="hl">Leading Icon</span> <span class="dim">(optional)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── </span><span class="hl">Label</span> <span class="dim">— text content, truncation behaviour</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── </span><span class="hl">Trailing Icon</span> <span class="dim">(optional)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;└── </span><span class="hl">Loading Indicator</span> <span class="dim">— replaces label, preserves width to avoid layout shift</span>
+  </div>
+
+  <h3>States — The Overlooked Discipline</h3>
+  <p>Most component bugs in production come from unhandled state combinations, not from the "default" state. A button can be simultaneously disabled and loading, focused and hovered, or in an error state while loading a retry. Document every combination explicitly.</p>
+  <table>
+    <thead><tr><th>State</th><th>Visual Treatment</th><th>Interaction</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Default</strong></td><td>Base styling per variant</td><td>Clickable, focusable</td></tr>
+      <tr><td><strong>Hover</strong></td><td>Background/border shift, cursor: pointer</td><td>Visual feedback only — no state change</td></tr>
+      <tr><td><strong>Focus</strong></td><td>Visible focus ring (never <code>outline: none</code> without a replacement)</td><td>Keyboard-navigable; ring must meet 3:1 contrast</td></tr>
+      <tr><td><strong>Active</strong></td><td>Pressed visual state (scale, darker background)</td><td>During pointer-down, before release</td></tr>
+      <tr><td><strong>Disabled</strong></td><td>Reduced opacity, no pointer cursor</td><td><code>aria-disabled</code>, removed from tab order or non-interactive</td></tr>
+      <tr><td><strong>Loading</strong></td><td>Spinner replaces label; same width to prevent layout shift</td><td>Non-interactive; <code>aria-busy="true"</code></td></tr>
+      <tr><td><strong>Error</strong></td><td>Border/text colour shift to danger token</td><td>Associated error message via <code>aria-describedby</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Composition Over Mega-Components</h3>
+  <p>A common anti-pattern: a single <code>&lt;Table&gt;</code> component with 40 props controlling every possible variation. This becomes unmaintainable. The compound component pattern composes smaller pieces that share implicit context — far more flexible and far easier to reason about.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Compound Component Pattern</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// ❌ Mega-component: every variation is a new prop</span>
+<span class="kw">&lt;Table</span>
+  <span class="at">data</span>=<span class="pu">{</span>rows<span class="pu">}</span>
+  <span class="at">showHeader</span>=<span class="pu">{</span><span class="kw">true</span><span class="pu">}</span>
+  <span class="at">sortable</span>=<span class="pu">{</span><span class="kw">true</span><span class="pu">}</span>
+  <span class="at">selectable</span>=<span class="pu">{</span><span class="kw">true</span><span class="pu">}</span>
+  <span class="at">stickyHeader</span>=<span class="pu">{</span><span class="kw">true</span><span class="pu">}</span>
+  <span class="at">expandable</span>=<span class="pu">{</span><span class="kw">true</span><span class="pu">}</span>
+  <span class="cm">// ...30 more props for every possible combination</span>
+<span class="kw">/&gt;</span>
+
+<span class="cm">// ✅ Compound components: compose only what you need</span>
+<span class="kw">&lt;Table&gt;</span>
+  <span class="kw">&lt;Table.Header</span> <span class="at">sticky</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;Table.SortableColumn</span> <span class="at">field</span>=<span class="st">"name"</span><span class="kw">&gt;</span>Name<span class="kw">&lt;/Table.SortableColumn&gt;</span>
+  <span class="kw">&lt;/Table.Header&gt;</span>
+  <span class="kw">&lt;Table.Body&gt;</span>
+    <span class="pu">{</span>rows.<span class="fn">map</span><span class="pu">(</span>row <span class="op">=&gt;</span> <span class="pu">(</span>
+      <span class="kw">&lt;Table.Row</span> <span class="at">key</span>=<span class="pu">{</span>row.id<span class="pu">}</span> <span class="at">selectable</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;Table.Cell&gt;</span><span class="pu">{</span>row.name<span class="pu">}</span><span class="kw">&lt;/Table.Cell&gt;</span>
+      <span class="kw">&lt;/Table.Row&gt;</span>
+    <span class="pu">))}</span>
+  <span class="kw">&lt;/Table.Body&gt;</span>
+<span class="kw">&lt;/Table&gt;</span>
+<span class="cm">// Each piece shares context via React Context internally —</span>
+<span class="cm">// consumer composes exactly what their use case needs</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── 04 ACCESSIBILITY ─── -->
+<div class="section" id="a11y">
+  <div class="section-label">04 &mdash; Accessibility Engineering</div>
+  <h2>Accessibility Engineering</h2>
+  <p class="lead">Accessibility built into a design system propagates automatically to every product built on top of it. Accessibility retrofitted feature-by-feature is ten times more expensive and produces inconsistent results. This is why accessibility belongs at the platform level, not the feature level.</p>
+
+  <h3>Accessibility by Default</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🏗️</div><h4>Semantic HTML First</h4><p>Use <code>&lt;button&gt;</code>, not <code>&lt;div onClick&gt;</code>. Native elements provide keyboard handling, focus management, and screen reader semantics for free — before you write a single line of ARIA.</p></div>
+    <div class="concept-card"><div class="concept-icon">🏷️</div><h4>ARIA as a Last Resort</h4><p>"No ARIA is better than bad ARIA." Use ARIA attributes only when semantic HTML cannot express the pattern — custom dropdowns, comboboxes, tab panels.</p></div>
+    <div class="concept-card"><div class="concept-icon">⌨️</div><h4>Keyboard Navigation</h4><p>Every interactive component must be fully operable by keyboard alone: Tab, Shift+Tab, Enter, Space, Escape, and arrow keys for composite widgets like menus and tabs.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔊</div><h4>Screen Reader Testing</h4><p>Test with VoiceOver (Mac), NVDA (Windows, free), or JAWS — not just automated tools. Automated checkers catch ~30-40% of real accessibility issues.</p></div>
+  </div>
+
+  <h3>Inclusive Design Beyond Screen Readers</h3>
+  <table>
+    <thead><tr><th>Consideration</th><th>Design Implication</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Motor impairments</strong></td><td>Large touch targets (44x44px minimum), no time-limited interactions without extensions, drag alternatives</td></tr>
+      <tr><td><strong>Cognitive accessibility</strong></td><td>Clear language, consistent navigation patterns, avoid unnecessary complexity, predictable behaviour</td></tr>
+      <tr><td><strong>Color blindness</strong></td><td>Never rely on colour alone to convey state — pair with icons, text, or patterns (8% of men are colour blind)</td></tr>
+      <tr><td><strong>Vestibular disorders</strong></td><td>Respect <code>prefers-reduced-motion</code>; avoid large parallax or auto-playing motion</td></tr>
+      <tr><td><strong>Low vision</strong></td><td>Support 200% browser zoom without breaking layout; sufficient contrast at all sizes</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Accessibility Testing Strategy</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Automated A11y Testing with axe-core</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="pu">{</span> render <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@testing-library/react'</span>
+<span class="kw">import</span> <span class="pu">{</span> axe, toHaveNoViolations <span class="pu">}</span> <span class="kw">from</span> <span class="st">'jest-axe'</span>
+
+expect.extend<span class="pu">(</span>toHaveNoViolations<span class="pu">)</span>
+
+<span class="fn">it</span><span class="pu">(</span><span class="st">'Button has no accessibility violations'</span>, <span class="kw">async</span> <span class="pu">()</span> <span class="op">=&gt;</span> <span class="pu">{</span>
+  <span class="kw">const</span> <span class="pu">{</span> container <span class="pu">}</span> = <span class="fn">render</span><span class="pu">(&lt;Button&gt;</span>Save<span class="kw">&lt;/Button&gt;)</span>
+  <span class="kw">const</span> results = <span class="kw">await</span> <span class="fn">axe</span><span class="pu">(</span>container<span class="pu">)</span>
+  <span class="fn">expect</span><span class="pu">(</span>results<span class="pu">).</span><span class="fn">toHaveNoViolations</span><span class="pu">()</span>
+<span class="pu">})</span>
+
+<span class="cm">// Run automated checks on EVERY component in CI — non-negotiable</span>
+<span class="cm">// Complement with Lighthouse CI for full-page audits</span>
+<span class="cm">// Complement with manual screen reader testing for complex widgets</span></code></pre>
+  </div>
+  <div class="warn"><div class="warn-label">Automated tools catch only ~30-40% of issues</div>axe-core and Lighthouse catch missing labels, contrast violations, and structural issues reliably. They cannot evaluate whether the reading order makes sense, whether focus management during a modal open/close is correct, or whether your custom dropdown is actually operable with a screen reader. Manual testing is mandatory for any custom interactive component.</div>
+</div>
+
+<!-- ─── 05 ARCHITECTURE ─── -->
+<div class="section" id="architecture">
+  <div class="section-label">05 &mdash; Monorepo Architecture</div>
+  <h2>Monorepo &amp; Package Architecture</h2>
+  <p class="lead">Enterprise design systems almost always live in a monorepo. This is not a stylistic preference — it is the only architecture that allows tokens, components, and consuming applications to evolve together with atomic commits and coordinated versioning.</p>
+
+  <h3>Folder Structure</h3>
+  <div class="arch-box">
+    <span class="dim">design-system/</span><br/>
+    <span class="hl">&nbsp;&nbsp;packages/</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;tokens/</span>          <span class="dim">&lt;-- @org/tokens — raw + semantic + component tokens</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;icons/</span>           <span class="dim">&lt;-- @org/icons — SVG sprite + React icon components</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;components/</span>      <span class="dim">&lt;-- @org/components — Button, Input, Modal...</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;hooks/</span>           <span class="dim">&lt;-- @org/hooks — useDisclosure, useFocusTrap</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;themes/</span>          <span class="dim">&lt;-- @org/themes — light, dark, brand variants</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;utils/</span>           <span class="dim">&lt;-- @org/utils — shared formatting, a11y helpers</span><br/>
+    <span class="hl">&nbsp;&nbsp;apps/</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;storybook/</span>       <span class="dim">&lt;-- component documentation site</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;docs-site/</span>       <span class="dim">&lt;-- design principles, guidelines, contribution docs</span><br/>
+    <span class="hl">&nbsp;&nbsp;tooling/</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;eslint-config/</span>   <span class="dim">&lt;-- @org/eslint-config — enforces token usage</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;cli/</span>             <span class="dim">&lt;-- @org/cli — scaffolds new components</span>
+  </div>
+
+  <h3>Why Separate Packages, Not One Big Package</h3>
+  <p>Splitting tokens, icons, components, and hooks into separate npm packages allows independent versioning and selective adoption. A team that only needs the design tokens for a marketing site does not need to install the entire component library and its dependency tree.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">📦</div><h4>Independent Versioning</h4><p>Tokens can bump to v3.0 (breaking colour palette change) without forcing a major version bump on components that haven't changed.</p></div>
+    <div class="concept-card"><div class="concept-icon">⚖️</div><h4>Bundle Size Control</h4><p>Consumers import only what they need. A static marketing site can use just <code>@org/tokens</code> with vanilla CSS — no React runtime required.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔗</div><h4>Clear Dependency Graph</h4><p>Components depend on tokens; tokens depend on nothing. This unidirectional flow prevents circular dependencies and clarifies what changes affect what.</p></div>
+    <div class="concept-card"><div class="concept-icon">🚀</div><h4>Tooling Standardisation</h4><p>Turborepo or Nx orchestrate builds across packages with caching — only rebuild what actually changed, dramatically speeding up CI in large monorepos.</p></div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">JSON — Workspace Package Configuration</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="cm">// packages/components/package.json</span>
+<span class="pu">{</span>
+  <span class="st">"name"</span><span class="op">:</span> <span class="st">"@org/components"</span>,
+  <span class="st">"version"</span><span class="op">:</span> <span class="st">"4.2.0"</span>,
+  <span class="st">"peerDependencies"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="st">"react"</span><span class="op">:</span> <span class="st">"&gt;=18"</span>
+  <span class="pu">},</span>
+  <span class="st">"dependencies"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="st">"@org/tokens"</span><span class="op">:</span> <span class="st">"workspace:*"</span>,
+    <span class="st">"@org/icons"</span><span class="op">:</span> <span class="st">"workspace:*"</span>
+  <span class="pu">},</span>
+  <span class="st">"exports"</span><span class="op">:</span> <span class="pu">{</span>
+    <span class="st">"."</span><span class="op">:</span> <span class="st">"./dist/index.js"</span>,
+    <span class="st">"./Button"</span><span class="op">:</span> <span class="st">"./dist/Button.js"</span>
+  <span class="pu">}</span>
+<span class="pu">}</span></code></pre>
+  </div>
+</div>
+
+<!-- ─── 06 THEMING ─── -->
+<div class="section" id="theming">
+  <div class="section-label">06 &mdash; Theming &amp; White-Label</div>
+  <h2>Theming, Dark Mode &amp; White-Label</h2>
+  <p class="lead">Theming is the direct payoff of a well-built token architecture. If every colour, spacing, and radius value flows through semantic tokens rather than being hardcoded, switching themes is a CSS variable swap — not a component rewrite.</p>
+
+  <h3>Dark Mode via CSS Variables</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">CSS — Theme-Aware Tokens</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="op">:</span>root <span class="pu">{</span>
+  <span class="op">--</span>color-bg-surface<span class="op">:</span> <span class="nm">#ffffff</span><span class="pu">;</span>
+  <span class="op">--</span>color-text-primary<span class="op">:</span> <span class="nm">#1a1a1a</span><span class="pu">;</span>
+  <span class="op">--</span>color-border<span class="op">:</span> <span class="nm">#e2e8f0</span><span class="pu">;</span>
+<span class="pu">}</span>
+
+<span class="op">[</span>data-theme<span class="op">=</span><span class="st">"dark"</span><span class="op">]</span> <span class="pu">{</span>
+  <span class="op">--</span>color-bg-surface<span class="op">:</span> <span class="nm">#1a1a1a</span><span class="pu">;</span>
+  <span class="op">--</span>color-text-primary<span class="op">:</span> <span class="nm">#f5f5f5</span><span class="pu">;</span>
+  <span class="op">--</span>color-border<span class="op">:</span> <span class="nm">#334155</span><span class="pu">;</span>
+<span class="pu">}</span>
+
+<span class="cm">/* Components reference semantic tokens — zero changes needed for dark mode */</span>
+<span class="op">.</span>card <span class="pu">{</span>
+  background<span class="op">:</span> <span class="fn">var</span><span class="pu">(</span><span class="op">--</span>color-bg-surface<span class="pu">);</span>
+  color<span class="op">:</span> <span class="fn">var</span><span class="pu">(</span><span class="op">--</span>color-text-primary<span class="pu">);</span>
+  border<span class="op">:</span> <span class="nm">1px</span> solid <span class="fn">var</span><span class="pu">(</span><span class="op">--</span>color-border<span class="pu">);</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>White-Label Architecture for Multi-Tenant SaaS</h3>
+  <p>Enterprise SaaS platforms often need per-customer branding — different logos, primary colours, and sometimes typography — without maintaining separate codebases. The architecture: runtime theme injection driven by tenant configuration, layered over the same semantic token structure.</p>
+  <div class="arch-box">
+    <span class="hl">Tenant Config (from API)</span> <span class="dim">→ { primaryColor: "#7c3aed", logo: "...", fontFamily: "Inter" }</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Theme Generator</span> <span class="dim">→ derives full token set from a single brand colour (tints, shades, contrast-safe text)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">CSS Variables Injected at Runtime</span> <span class="dim">→ document.documentElement.style.setProperty(...)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Components Render</span> <span class="dim">— zero awareness of which tenant is active</span>
+  </div>
+  <div class="tip"><div class="tip-label">Generate full palettes from one brand colour</div>Tools like Radix Colors and the OKLCH colour space let you generate an accessible 12-step palette (with guaranteed contrast ratios) from a single customer-provided brand colour. This is essential for white-label products — you cannot ask every customer to define 12 colour shades manually.</div>
+</div>
+
+<!-- ─── 07 TOOLING ─── -->
+<div class="section" id="tooling">
+  <div class="section-label">07 &mdash; Tooling &amp; Documentation</div>
+  <h2>Design System Tooling</h2>
+  <p class="lead">A design system without documentation and visual testing tooling will drift from its own specification within months. Storybook and visual regression testing are not optional extras — they are the mechanisms that keep the system honest.</p>
+
+  <h3>Storybook — The Living Documentation</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Storybook Story with Controls</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> type <span class="pu">{</span> Meta, StoryObj <span class="pu">}</span> <span class="kw">from</span> <span class="st">'@storybook/react'</span>
+<span class="kw">import</span> <span class="pu">{</span> Button <span class="pu">}</span> <span class="kw">from</span> <span class="st">'./Button'</span>
+
+<span class="kw">const</span> meta<span class="op">:</span> <span class="ty">Meta</span><span class="op">&lt;</span><span class="kw">typeof</span> Button<span class="op">&gt;</span> = <span class="pu">{</span>
+  title<span class="op">:</span> <span class="st">'Components/Button'</span>,
+  component<span class="op">:</span> Button,
+  argTypes<span class="op">:</span> <span class="pu">{</span>
+    variant<span class="op">:</span> <span class="pu">{</span> control<span class="op">:</span> <span class="st">'select'</span>, options<span class="op">:</span> <span class="pu">[</span><span class="st">'primary'</span>, <span class="st">'secondary'</span>, <span class="st">'danger'</span><span class="pu">]</span> <span class="pu">},</span>
+    size<span class="op">:</span>    <span class="pu">{</span> control<span class="op">:</span> <span class="st">'select'</span>, options<span class="op">:</span> <span class="pu">[</span><span class="st">'sm'</span>, <span class="st">'md'</span>, <span class="st">'lg'</span><span class="pu">]</span> <span class="pu">},</span>
+    disabled<span class="op">:</span> <span class="pu">{</span> control<span class="op">:</span> <span class="st">'boolean'</span> <span class="pu">},</span>
+  <span class="pu">},</span>
+<span class="pu">}</span>
+<span class="kw">export default</span> meta
+
+<span class="kw">type</span> <span class="ty">Story</span> = <span class="ty">StoryObj</span><span class="op">&lt;</span><span class="kw">typeof</span> Button<span class="op">&gt;</span>
+
+<span class="kw">export const</span> Primary<span class="op">:</span> <span class="ty">Story</span> = <span class="pu">{</span>
+  args<span class="op">:</span> <span class="pu">{</span> variant<span class="op">:</span> <span class="st">'primary'</span>, children<span class="op">:</span> <span class="st">'Save Changes'</span> <span class="pu">},</span>
+<span class="pu">}</span>
+
+<span class="kw">export const</span> LoadingState<span class="op">:</span> <span class="ty">Story</span> = <span class="pu">{</span>
+  args<span class="op">:</span> <span class="pu">{</span> variant<span class="op">:</span> <span class="st">'primary'</span>, isLoading<span class="op">:</span> <span class="kw">true</span>, children<span class="op">:</span> <span class="st">'Saving...'</span> <span class="pu">},</span>
+<span class="pu">}</span>
+
+<span class="cm">// Storybook auto-generates a controls panel — designers and PMs</span>
+<span class="cm">// can explore every variant/state combination without reading code</span></code></pre>
+  </div>
+
+  <h3>Visual Regression Testing</h3>
+  <p>Code review catches logic bugs. It does not catch "this button is now 2px taller than yesterday." Visual regression testing renders every component story, screenshots it, and diffs against a baseline — catching unintended visual changes before they reach production.</p>
+  <table>
+    <thead><tr><th>Tool</th><th>Approach</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Chromatic</strong></td><td>Cloud-hosted, integrates directly with Storybook</td><td>Teams already using Storybook; zero infra to manage</td></tr>
+      <tr><td><strong>Playwright</strong></td><td>Self-hosted screenshot comparison in E2E suite</td><td>Teams wanting full control and no per-snapshot cost</td></tr>
+      <tr><td><strong>Percy</strong></td><td>Cloud-hosted, framework-agnostic</td><td>Multi-framework design systems (React + Vue + Angular)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Component Documentation Standard</h3>
+  <p>Every component's documentation page should answer the same questions, consistently, so consumers know exactly where to look:</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">📋</div><h4>Props Table</h4><p>Auto-generated from TypeScript types. Every prop with its type, default value, and description.</p></div>
+    <div class="concept-card"><div class="concept-icon">🎨</div><h4>Variants</h4><p>Visual grid showing every variant and size combination side by side for quick comparison.</p></div>
+    <div class="concept-card"><div class="concept-icon">♿</div><h4>Accessibility Notes</h4><p>Keyboard shortcuts, ARIA roles used, and screen reader behaviour explicitly documented.</p></div>
+    <div class="concept-card"><div class="concept-icon">🚫</div><h4>Anti-Patterns</h4><p>Explicit "don't do this" examples — the most valuable and most often skipped documentation.</p></div>
+  </div>
+</div>
+
+<!-- ─── 08 GOVERNANCE ─── -->
+<div class="section" id="governance">
+  <div class="section-label">08 &mdash; Governance</div>
+  <h2>Versioning &amp; Governance</h2>
+  <p class="lead">A design system used by dozens of teams needs explicit rules for how it changes. Without governance, every breaking change becomes a cross-team incident, and every team eventually forks the system rather than dealing with the coordination overhead.</p>
+
+  <h3>Semantic Versioning Discipline</h3>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">Semantic Versioning for Design Systems</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code>MAJOR.MINOR.PATCH
+
+<span class="cm">// PATCH (4.2.0 → 4.2.1): bug fixes, no API change</span>
+<span class="cm">// Fixed: Button focus ring not visible in Safari</span>
+
+<span class="cm">// MINOR (4.2.0 → 4.3.0): new features, backward compatible</span>
+<span class="cm">// Added: Button now supports a new "ghost" variant</span>
+
+<span class="cm">// MAJOR (4.2.0 → 5.0.0): breaking changes</span>
+<span class="cm">// Changed: Button's `color` prop renamed to `variant`
+// Migration guide + codemod provided</span></code></pre>
+  </div>
+
+  <h3>Deprecation Strategy</h3>
+  <p>Never remove an API in the same release that introduces its replacement. Mark it deprecated, log a console warning, provide the migration path, and give consumers at least one full major version cycle to migrate before actual removal.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Graceful Deprecation</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">interface</span> <span class="ty">ButtonProps</span> <span class="pu">{</span>
+  variant<span class="op">:</span> <span class="st">'primary'</span> | <span class="st">'secondary'</span> | <span class="st">'danger'</span>
+  <span class="cm">/** @deprecated Use `variant` instead. Will be removed in v6.0.0 */</span>
+  color?<span class="op">:</span> <span class="st">'primary'</span> | <span class="st">'secondary'</span>
+<span class="pu">}</span>
+
+<span class="kw">function</span> <span class="fn">Button</span><span class="pu">({</span> variant, color, ...props <span class="pu">}:</span> <span class="ty">ButtonProps</span><span class="pu">) {</span>
+  <span class="kw">if</span> <span class="pu">(</span>color <span class="op">&amp;&amp;</span> <span class="kw">process</span>.env.NODE_ENV === <span class="st">'development'</span><span class="pu">) {</span>
+    console.<span class="fn">warn</span><span class="pu">(</span>
+      <span class="st">'[Button] `color` prop is deprecated and will be removed in v6.0.0. Use `variant` instead.'</span>
+    <span class="pu">)</span>
+  <span class="pu">}</span>
+  <span class="kw">const</span> resolvedVariant = variant ?? color ?? <span class="st">'primary'</span>
+  <span class="cm">// ... render using resolvedVariant</span>
+<span class="pu">}</span></code></pre>
+  </div>
+
+  <h3>The Contribution Model</h3>
+  <div class="arch-box">
+    <span class="hl">Proposal</span> <span class="dim">— RFC describing the problem, not just the solution</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Design Review</span> <span class="dim">— does it fit the design language? Is there a simpler existing pattern?</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Engineering Review</span> <span class="dim">— API design, accessibility, performance implications</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Implementation</span> <span class="dim">— built by proposer or core team, reviewed against the RFC</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Documentation</span> <span class="dim">— Storybook stories, usage guidance, a11y notes — required, not optional</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Release</span> <span class="dim">— versioned, changelogged, announced to consuming teams</span>
+  </div>
+  <div class="tip"><div class="tip-label">Federated contribution beats centralised bottleneck</div>A single core team approving every component change becomes a bottleneck at scale. Mature systems allow any team to propose and even implement components, with the core team focused on API review, accessibility sign-off, and consistency — not writing every line themselves.</div>
+</div>
+
+<!-- ─── 09 ADVANCED ─── -->
+<div class="section" id="advanced">
+  <div class="section-label">09 &mdash; Advanced Patterns</div>
+  <h2>Advanced Component API Design</h2>
+  <p class="lead">At the staff level, design system work shifts from building components to designing component APIs that remain stable across years of evolution. Headless architecture, polymorphic components, and cross-framework strategy are the tools that make this possible.</p>
+
+  <h3>Headless Component Architecture</h3>
+  <p>Headless components separate behaviour (state management, keyboard handling, ARIA wiring) from presentation (visual styling). The same dropdown logic can power a Tailwind-styled dropdown in one product and a completely different visual treatment in another — without duplicating the accessibility-critical behaviour code.</p>
+  <div class="arch-box">
+    <span class="hl">Headless Logic Layer</span> <span class="dim">(Radix UI, Headless UI, Ariakit, React Aria)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── State management (open/closed, selected index)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;├── Keyboard interaction (arrow keys, Escape, type-ahead)</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;└── ARIA attributes and focus management</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓ consumed by</span><br/>
+    <span class="hl">Your Design System's Presentation Layer</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;└── Brand-specific styling, animations, layout</span>
+  </div>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Headless Dropdown via Radix Primitives</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">import</span> <span class="op">*</span> <span class="kw">as</span> DropdownPrimitive <span class="kw">from</span> <span class="st">'@radix-ui/react-dropdown-menu'</span>
+
+<span class="cm">// Radix handles: focus trap, keyboard nav, ARIA, positioning</span>
+<span class="cm">// Your design system handles: visual styling only</span>
+<span class="kw">export function</span> <span class="fn">Dropdown</span><span class="pu">({</span> trigger, children <span class="pu">}:</span> <span class="ty">DropdownProps</span><span class="pu">) {</span>
+  <span class="kw">return</span> <span class="pu">(</span>
+    <span class="op">&lt;</span>DropdownPrimitive.Root<span class="op">&gt;</span>
+      <span class="op">&lt;</span>DropdownPrimitive.Trigger asChild<span class="op">&gt;</span>
+        <span class="pu">{</span>trigger<span class="pu">}</span>
+      <span class="op">&lt;/</span>DropdownPrimitive.Trigger<span class="op">&gt;</span>
+      <span class="op">&lt;</span>DropdownPrimitive.Content className<span class="op">=</span><span class="st">"ds-dropdown-content"</span><span class="op">&gt;</span>
+        <span class="pu">{</span>children<span class="pu">}</span>
+      <span class="op">&lt;/</span>DropdownPrimitive.Content<span class="op">&gt;</span>
+    <span class="op">&lt;/</span>DropdownPrimitive.Root<span class="op">&gt;</span>
+  <span class="pu">)</span>
+<span class="pu">}</span>
+<span class="cm">// 100% of accessibility-critical logic comes from Radix, battle-tested</span>
+<span class="cm">// 100% of visual identity comes from your CSS classes</span></code></pre>
+  </div>
+
+  <h3>Polymorphic Components</h3>
+  <p>A Button that renders as an <code>&lt;a&gt;</code> when given an <code>href</code>, but as a <code>&lt;button&gt;</code> otherwise, avoids forcing consumers to choose between two nearly identical components. TypeScript's generic constraints make this type-safe.</p>
+  <div class="code-block">
+    <div class="code-header"><span class="code-lang">TypeScript — Polymorphic "as" Prop</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><code><span class="kw">type</span> <span class="ty">ButtonOwnProps</span><span class="op">&lt;</span><span class="ty">E</span> <span class="kw">extends</span> <span class="ty">React.ElementType</span><span class="op">&gt;</span> = <span class="pu">{</span>
+  as?<span class="op">:</span> <span class="ty">E</span>
+  variant?<span class="op">:</span> <span class="st">'primary'</span> | <span class="st">'secondary'</span>
+<span class="pu">}</span>
+
+<span class="kw">type</span> <span class="ty">ButtonProps</span><span class="op">&lt;</span><span class="ty">E</span> <span class="kw">extends</span> <span class="ty">React.ElementType</span><span class="op">&gt;</span> =
+  <span class="ty">ButtonOwnProps</span><span class="op">&lt;</span><span class="ty">E</span><span class="op">&gt;</span> <span class="op">&amp;</span> <span class="ty">Omit</span><span class="op">&lt;</span><span class="ty">React.ComponentPropsWithoutRef</span><span class="op">&lt;</span><span class="ty">E</span><span class="op">&gt;</span>, <span class="kw">keyof</span> <span class="ty">ButtonOwnProps</span><span class="op">&lt;</span><span class="ty">E</span><span class="op">&gt;&gt;</span>
+
+<span class="kw">function</span> <span class="fn">Button</span><span class="op">&lt;</span><span class="ty">E</span> <span class="kw">extends</span> <span class="ty">React.ElementType</span> = <span class="st">'button'</span><span class="op">&gt;</span><span class="pu">({</span>
+  as, variant = <span class="st">'primary'</span>, ...props
+<span class="pu">}:</span> <span class="ty">ButtonProps</span><span class="op">&lt;</span><span class="ty">E</span><span class="op">&gt;</span><span class="pu">) {</span>
+  <span class="kw">const</span> Component = as ?? <span class="st">'button'</span>
+  <span class="kw">return</span> <span class="op">&lt;</span>Component className<span class="op">=</span><span class="pu">{</span><span class="fn">cx</span><span class="pu">(</span><span class="st">'ds-button'</span>, variant<span class="pu">)}</span> <span class="pu">{...</span>props<span class="pu">}</span> <span class="op">/&gt;</span>
+<span class="pu">}</span>
+
+<span class="cm">// Type-safe in both directions:</span>
+<span class="op">&lt;</span>Button<span class="op">&gt;</span>Submit<span class="op">&lt;/</span>Button<span class="op">&gt;</span>                            <span class="cm">// renders &lt;button&gt;</span>
+<span class="op">&lt;</span>Button as<span class="op">=</span><span class="st">"a"</span> href<span class="op">=</span><span class="st">"/pricing"</span><span class="op">&gt;</span>View Plans<span class="op">&lt;/</span>Button<span class="op">&gt;</span>  <span class="cm">// renders &lt;a&gt;, href is type-checked</span></code></pre>
+  </div>
+
+  <h3>Cross-Framework Strategy</h3>
+  <p>Organisations with React, Angular, and Vue products simultaneously face a hard choice: maintain three parallel component libraries, or build on Web Components for true framework portability. Web Components provide native browser-level encapsulation but lose some React-specific ergonomics (synthetic events, easy prop typing).</p>
+  <table>
+    <thead><tr><th>Strategy</th><th>Approach</th><th>Trade-off</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Per-Framework Libraries</strong></td><td>Separate React, Vue, Angular component packages sharing only design tokens</td><td>Best DX per framework; 3x maintenance burden</td></tr>
+      <tr><td><strong>Web Components</strong></td><td>Framework-agnostic custom elements (Lit, Stencil) wrapped per framework</td><td>True portability; loses some framework-specific idioms</td></tr>
+      <tr><td><strong>Design Tokens Only</strong></td><td>Share only tokens; each framework builds its own components</td><td>Minimal shared code; visual consistency without component reuse</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Internationalisation-Ready Components</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">↔️</div><h4>RTL Support</h4><p>Use CSS logical properties (<code>margin-inline-start</code> instead of <code>margin-left</code>) so layouts flip automatically for Arabic, Hebrew, and other RTL languages.</p></div>
+    <div class="concept-card"><div class="concept-icon">📏</div><h4>Variable Text Length</h4><p>German text runs ~30% longer than English for the same content. Components must handle text overflow gracefully — never hardcode fixed widths around text.</p></div>
+    <div class="concept-card"><div class="concept-icon">📅</div><h4>Locale-Aware Formatting</h4><p>Dates, numbers, and currency must format per locale (<code>Intl.NumberFormat</code>, <code>Intl.DateTimeFormat</code>) — never hardcode "MM/DD/YYYY" or "$".</p></div>
+    <div class="concept-card"><div class="concept-icon">🔤</div><h4>Font Fallbacks</h4><p>Latin-optimised fonts often lack glyphs for CJK or Arabic scripts. Define font stacks with appropriate fallbacks per script to avoid missing-character boxes.</p></div>
+  </div>
+</div>
+
+<!-- ─── 10 ENTERPRISE ─── -->
+<div class="section" id="enterprise">
+  <div class="section-label">10 &mdash; Enterprise Systems</div>
+  <h2>Enterprise Design System Patterns</h2>
+  <p class="lead">ERP, FinTech, and survey platforms push design systems beyond marketing-site components into territory most public component libraries don't cover: dense data grids, complex permission-aware forms, and domain-specific widgets.</p>
+
+  <div class="domain-grid">
+    <div class="domain-card">
+      <div class="domain-name">📊 ERP Systems</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Data Grids</span><span class="dtag">Permissions</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Virtualized tables handling 100k+ rows, multi-step wizard forms, role-aware field visibility, and workflow status components (approval chains, audit trails).</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">📈 Dashboards</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Charts</span><span class="dtag">KPIs</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Chart component wrappers around D3/Recharts with consistent token-based theming, KPI cards, time range pickers, and filter bar patterns shared across every reporting view.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">💳 FinTech</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Currency</span><span class="dtag">Risk</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Currency-aware input components with locale formatting, transaction history tables with status badges, audit timeline components, and risk indicator scales with accessible colour encoding.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-name">📋 Survey Platforms</div>
+      <div class="domain-tags" style="margin-top:6px;margin-bottom:8px"><span class="dtag">Form Builder</span><span class="dtag">Logic</span></div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.5">Drag-and-drop form builder primitives, conditional logic editors (if-this-then-show patterns), question type libraries, and embedded analytics widgets.</p>
+    </div>
+  </div>
+  <div class="info"><div class="info-label">Anti-pattern: encoding business logic into the design system</div>A design system component should never know about "invoices" or "tenants" — that is domain logic and belongs in the application layer. The design system provides a <code>DataTable</code> with sorting and virtualization; the application composes it into an <code>InvoiceTable</code> with business-specific columns and actions.</div>
+</div>
+
+<!-- ─── 11 SCALING ─── -->
+<div class="section" id="scaling">
+  <div class="section-label">11 &mdash; Scaling &amp; Adoption</div>
+  <h2>Scaling Design Systems</h2>
+  <p class="lead">Building a design system is the easy part. Getting dozens of teams with existing legacy applications to adopt it, measuring whether it's actually working, and avoiding the anti-patterns that erode trust — that is where most design system initiatives succeed or fail.</p>
+
+  <h3>Adoption Strategy</h3>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h4>💥 Big Bang Migration</h4>
+      <ul>
+        <li>Replace all legacy components at once in a coordinated release</li>
+        <li>Fast but extremely high risk</li>
+        <li>Only viable for small, single-team applications</li>
+        <li>Almost always fails at enterprise scale</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h4>🪜 Incremental / Strangler Pattern</h4>
+      <ul>
+        <li>New features use the design system; legacy code migrates opportunistically</li>
+        <li>Lower risk, slower visible progress</li>
+        <li>Both systems coexist during transition — needs clear boundaries</li>
+        <li>The proven approach for large, multi-team codebases</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Measuring Success</h3>
+  <table>
+    <thead><tr><th>Metric</th><th>What It Tells You</th><th>How to Measure</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Component Adoption Rate</strong></td><td>% of UI built with design system components vs custom code</td><td>Static analysis of imports across the codebase</td></tr>
+      <tr><td><strong>Duplicate Component Count</strong></td><td>How much reinvention is still happening</td><td>Search for component names/patterns repeated across repos</td></tr>
+      <tr><td><strong>Accessibility Score</strong></td><td>Aggregate a11y health across consuming products</td><td>Lighthouse CI scores tracked over time per product</td></tr>
+      <tr><td><strong>Time-to-Ship</strong></td><td>Whether the system actually accelerates delivery</td><td>Compare feature delivery time before/after adoption</td></tr>
+      <tr><td><strong>Developer Satisfaction</strong></td><td>Whether teams want to use the system or are forced to</td><td>Quarterly DX survey — NPS-style scoring</td></tr>
+      <tr><td><strong>Bug Rate in DS Components</strong></td><td>Quality of the shared layer — bugs here multiply across products</td><td>Issue tracker labels filtered to design-system-owned components</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Organisational Challenges</h3>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🏛️</div><h4>Platform Ownership</h4><p>Someone must own the roadmap, prioritise requests, and say no to scope creep. Without clear ownership, the system becomes everyone's responsibility and nobody's priority.</p></div>
+    <div class="concept-card"><div class="concept-icon">⚖️</div><h4>Standardisation vs Autonomy</h4><p>Teams resist being told exactly how to build everything. The system should standardise primitives while leaving room for product-specific composition and innovation.</p></div>
+    <div class="concept-card"><div class="concept-icon">📜</div><h4>RFC Process</h4><p>A lightweight, written proposal process for significant changes prevents both bottlenecks (everything needs approval) and chaos (anyone changes anything).</p></div>
+    <div class="concept-card"><div class="concept-icon">👥</div><h4>Dedicated Team</h4><p>At meaningful scale (50+ engineers, multiple products), a design system needs a dedicated team — not a side project for whoever has spare time.</p></div>
+  </div>
+
+  <h3>Anti-Patterns to Avoid</h3>
+  <table>
+    <thead><tr><th>Anti-Pattern</th><th>Why It Hurts</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Over-engineering every component</strong></td><td>A Button doesn't need 40 props for every imaginable use case — most will never be used and all of them add maintenance burden</td></tr>
+      <tr><td><strong>Exposing unstable APIs</strong></td><td>Internal implementation details leaking into the public API lock you into supporting them forever</td></tr>
+      <tr><td><strong>Encoding business logic</strong></td><td>A design system component that knows about "invoices" can't be reused for "orders" — keep it domain-agnostic</td></tr>
+      <tr><td><strong>Too many variants</strong></td><td>Five button variants that look nearly identical create decision paralysis, not flexibility</td></tr>
+      <tr><td><strong>Premature abstraction</strong></td><td>Building a flexible, generic API before you have 2-3 real use cases guarantees you'll guess wrong</td></tr>
+      <tr><td><strong>Ignoring accessibility until launch</strong></td><td>Retrofitting a11y is dramatically more expensive than building it in from day one</td></tr>
+      <tr><td><strong>Poor or absent documentation</strong></td><td>An undocumented component gets reimplemented by every team that doesn't know it exists</td></tr>
+    </tbody>
+  </table>
+
+  <h3>AI's Role in Design Systems</h3>
+  <p>AI tooling is changing how design systems are maintained — not by replacing human design judgment, but by automating the repetitive parts of building and validating components.</p>
+  <div class="concept-grid">
+    <div class="concept-card"><div class="concept-icon">🤖</div><h4>AI Component Scaffolding</h4><p>Generate boilerplate component structure, Storybook stories, and test files from a spec — freeing engineers to focus on the actual API design.</p></div>
+    <div class="concept-card"><div class="concept-icon">🔍</div><h4>AI Design Review</h4><p>Automated checks for token usage, missing states, and consistency violations before a PR even reaches human review.</p></div>
+    <div class="concept-card"><div class="concept-icon">📝</div><h4>AI Documentation</h4><p>Draft usage guidance and prop descriptions from component code — a human reviews and refines rather than writing from scratch.</p></div>
+    <div class="concept-card"><div class="concept-icon">🎨</div><h4>AI Theme Generation</h4><p>Generate accessible full token palettes from a single brand colour or natural-language description, with contrast validation built in.</p></div>
+  </div>
+</div>
+
+<!-- ─── ROADMAP ─── -->
+<div class="section" id="roadmap">
+  <div class="section-label">Senior → Staff Roadmap</div>
+  <h2>The Design System Engineer Roadmap</h2>
+  <p class="lead">Design system engineering is one of the clearest paths from senior to staff-level impact in frontend engineering, because the discipline inherently requires thinking beyond a single team's codebase.</p>
+
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#dbeafe;color:#1d4ed8">Beginner</div>
+    <div class="roadmap-content">
+      <strong>Foundation:</strong> HTML semantics, CSS fundamentals, responsive design. Build components using an existing library (MUI, Chakra) to understand consumption patterns before building your own.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#dcfce7;color:#15803d">Intermediate</div>
+    <div class="roadmap-content">
+      <strong>Core practice:</strong> Design tokens, Storybook, accessibility fundamentals (semantic HTML, ARIA basics, keyboard navigation), basic theming with CSS variables.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#fef3c7;color:#b45309">Advanced</div>
+    <div class="roadmap-content">
+      <strong>System building:</strong> Monorepo architecture, package versioning, cross-team governance, component API design (compound components, polymorphic components), performance optimization, visual regression testing.
+    </div>
+  </div>
+  <div class="roadmap-row">
+    <div class="roadmap-step" style="background:#fdf2f8;color:#9d174d">Staff+</div>
+    <div class="roadmap-content">
+      <strong>Platform &amp; strategy:</strong> Frontend platform engineering (CLI, codegen, linting), enterprise multi-brand architecture, cross-framework component strategy, organisational governance, developer experience metrics, AI-assisted design system automation, and design system ROI measurement that justifies continued investment to leadership.
+    </div>
+  </div>
+
+  <h3>The Evolution Mindset</h3>
+  <div class="arch-box">
+    <span class="hl">CSS Styles</span> <span class="dim">→ shared visual rules</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">UI Components</span> <span class="dim">→ reusable pieces</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Component Libraries</span> <span class="dim">→ generic, framework-level reuse</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Design Systems</span> <span class="dim">→ brand-specific, governed, documented</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">Frontend Platforms</span> <span class="dim">→ CLI, codegen, CI/CD, analytics</span><br/>
+    <span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br/>
+    <span class="hl">AI-Assisted Design Platforms</span> <span class="dim">→ automated generation, review, validation</span>
+  </div>
+  <div class="pullquote">"At the Staff and Principal level, design system engineering becomes less about individual components and more about platform strategy, governance, developer experience, and enabling teams to build great products faster and more reliably."</div>
+
+  <h3>Quick-Reference Tool Decisions</h3>
+  <table>
+    <thead><tr><th>Need</th><th>Tool</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Token pipeline</td><td>Style Dictionary</td><td>Single source of truth → CSS, JS, iOS, Android outputs</td></tr>
+      <tr><td>Headless behaviour primitives</td><td>Radix UI, React Aria</td><td>Battle-tested accessibility logic; bring your own styling</td></tr>
+      <tr><td>Component documentation</td><td>Storybook</td><td>Industry standard; controls panel, addon ecosystem</td></tr>
+      <tr><td>Visual regression</td><td>Chromatic</td><td>Zero-infra, integrates directly with existing Storybook</td></tr>
+      <tr><td>Accessibility testing</td><td>axe-core + jest-axe</td><td>Catches ~30-40% of issues automatically in CI</td></tr>
+      <tr><td>Monorepo tooling</td><td>Turborepo, Nx</td><td>Build caching across packages; only rebuild what changed</td></tr>
+      <tr><td>Accessible colour generation</td><td>Radix Colors</td><td>Generates contrast-safe 12-step scales from one brand colour</td></tr>
+      <tr><td>CSS strategy</td><td>Vanilla Extract, Panda CSS</td><td>Type-safe tokens, zero-runtime, scales well for design systems</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- /content -->
+
+<footer>
+  <strong>DevDive</strong> &mdash; Deep dives for serious developers<br/>
+  <span style="margin-top:8px;display:block">Design Systems Engineering: Building Scalable UI Platforms &middot; June 2026</span>
+</footer>
+
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1800);
+  });
+}
+</script>
+</body>
+</html>
